@@ -6,9 +6,12 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
+//Packed C -> S: int ID, int Tick, int SizesSize, int[SizesSize] Size, Input[SizesSize][Size[i]]
+//Packed S -> C: int Tick, Gamestate[] States
+
 enum InputType : byte {FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN }
 
-[StructLayout(LayoutKind.Explicit, Size = sizeof(uint) + sizeof(InputType))]
+[StructLayout(LayoutKind.Explicit)]
 struct InputMessageItem {
 	[FieldOffset(0)]
 	public uint tick;
@@ -20,14 +23,14 @@ struct InputMessageItem {
 	public byte[] data;
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 2 * sizeof(uint) + 3 * sizeof(float))]
+[StructLayout(LayoutKind.Explicit)]
 struct GameStateMessageItem {
 	[FieldOffset(0)]
-	uint tick;
+	public uint tick;
 	[FieldOffset(sizeof(uint))]
-	uint iD;
+	public uint iD;
 	[FieldOffset(2*sizeof(uint))]
-	Vector3 pos;
+	public Vector3 pos;
 
 	[FieldOffset(0)]
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2 * sizeof(uint) + 3 * sizeof(float))]
@@ -35,6 +38,8 @@ struct GameStateMessageItem {
 }
 
 public class LockstepTest : MonoBehaviour {
+
+	public static Action<uint> DoTick;
 
 	uint m_currentTick = 0;
 	UdpClient socket;
@@ -63,6 +68,9 @@ public class LockstepTest : MonoBehaviour {
 
 	public int m_iD = -1;
 
+	List<GameStateMessageItem> m_gameStates = new List<GameStateMessageItem>();//unordert
+	List<InputMessageItem> m_inputs = new List<InputMessageItem>();
+
 	void Start() {
 		socket = new UdpClient();
 		ep = new IPEndPoint(IPAddress.Parse(m_iP), m_serverPort); // endpoint where server is listening
@@ -71,24 +79,49 @@ public class LockstepTest : MonoBehaviour {
 
 		socket.Send(BitConverter.GetBytes(m_iD), sizeof(int), ep);
 	}
-
 	private void OnDestroy() {
 		socket.Close();
 	}
 
 	void Update() {
+		Listen();
+	}
+
+	private void FixedUpdate() {
+		GameStateMessageItem[] tick = m_gameStates.FindAll(x => x.tick == m_currentTick).ToArray();
+
+		if (tick.Length == m_gameStates.Count || tick.Length == 0) {
+			print("Network Pause");
+			return;
+		}
+
+		//set gamestate on live data
+		DoTick.Invoke(m_currentTick);
+
+		foreach(var it in tick) {
+			m_gameStates.Remove(it);
+		}
+	}
+
+	void Listen() {
 		if (socket.Available <= 0)
 			return;
 
 		byte[] receivedData = socket.Receive(ref ep);
 
-		if(receivedData.Length == sizeof(int)) {
-			m_iD = BitConverter.ToInt32(receivedData, 0);
-			return;
+		if (receivedData.Length == sizeof(int)) {
+			int tmp = BitConverter.ToInt32(receivedData, 0);
+			if (tmp >= 0) {
+				m_iD = tmp;
+				return;
+			}
 		}
 
-		GameStateMessageItem[] newGameState = new GameStateMessageItem[receivedData.Length / Marshal.SizeOf<GameStateMessageItem>()];
-
+		for (int i = 0; i < receivedData.Length; i += m_sizeofGameStateMessageItem) {//no check for duplicates
+			GameStateMessageItem element = new GameStateMessageItem();
+			Buffer.BlockCopy(receivedData, i, element.data, 0, m_sizeofGameStateMessageItem);
+			m_gameStates.Add(element);
+		}
 	}
 
 #endif
