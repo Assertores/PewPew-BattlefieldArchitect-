@@ -6,10 +6,25 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-//Packed C -> S: int ID, {tick, size, input[] inputs}[] tickInputs
-//Packed S -> C: int Tick, Gamestate[] States
+/// <summary>
+/// ===== ===== Package Layout ===== =====
+/// every packages first byte descripes the package type (MessageType)
+/// Client -> Server:
+/// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
+/// CONNECT:    byte Type
+/// DISCONNECT: byte Type, int ID
+/// RECONNECT:  byte Type, int ID
+/// CONFIRM:    byte Type, uint Tick
+/// Server -> Client:
+/// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
+/// NEWID:      byte Type, int ID
+/// ===== ===== GameState buffer ===== =====
+/// server buffers all gamestates of all players upto the last confirmed tick, the server resived from that client
+/// client buffers all gamestates                upto the last gamestate the server used as references
+/// </summary>
+//TODO: mal in memorystream rein schauen
 
-enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
+enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID, CONFIRM }
 
 enum InputType : byte { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN }
 
