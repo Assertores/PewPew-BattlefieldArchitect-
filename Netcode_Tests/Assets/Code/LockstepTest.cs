@@ -21,6 +21,7 @@ using UnityEngine;
 /// ===== ===== GameState buffer ===== =====
 /// server buffers all gamestates of all players upto the last confirmed tick, the server resived from that client
 /// client buffers all gamestates                upto the last gamestate the server used as references
+/// ===== ===== ===== =====
 /// </summary>
 //TODO: mal in memorystream rein schauen
 
@@ -155,6 +156,18 @@ public class LockstepTest : MonoBehaviour {
         socket.Close();
     }
 
+    /// <summary>
+    /// Listens for new Packages
+    /// if new package
+    /// \/
+    /// checks if new tick kan be simulated
+    /// \/
+    /// simulate until no newer tick kan be simulated
+    ///     pop input queue
+    /// Create new delta for all players
+    /// save player specific gamestate
+    /// Send Packages to all players
+    /// </summary>
     void Update() {
         if (!Listen())
             return;
@@ -172,6 +185,10 @@ public class LockstepTest : MonoBehaviour {
         Send();
     }
 
+    /// <summary>
+    /// reads and interprates new packages
+    /// </summary>
+    /// <returns>if a new package was read</returns>
     bool Listen() {
         if (socket.Available <= 0)
             return false;
@@ -217,7 +234,7 @@ public class LockstepTest : MonoBehaviour {
         case MessageType.RECONNECT:
             break;
         default:
-            break;
+            return false;
         }
 
         return true;
@@ -264,13 +281,31 @@ public class LockstepTest : MonoBehaviour {
         Listen();
     }
 
+    /// <summary>
+    /// Send Player Inputs
+    /// check if next tick is available
+    /// if not
+    ///     check if future tick is available (interpolate)
+    ///     if not
+    ///         Network pause
+    /// set Live data to GameState
+    /// Make Client GameTick
+    /// tick increment
+    /// </summary>
     private void FixedUpdate() {
-
-        //set gamestate on live data
-
         Send();
     }
 
+    /// <summary>
+    /// check for new Packages
+    /// \/
+    /// if new gamestate
+    /// \/
+    /// check if package gamestate is newer then current gamestate
+    /// \/
+    /// calculate complete gamestate //perhaps outsource to another funktion
+    /// dequeue all gamestates upto but not include reference gamestate of package
+    /// </summary>
     void Listen() {
         if (socket.Available <= 0)
             return;
@@ -294,6 +329,9 @@ public class LockstepTest : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// creates package with all inputs form last confirmed tick until newest tick
+    /// </summary>
     void Send() {
         int size = sizeof(int) + sizeof(MessageType);
         int pos = size;
