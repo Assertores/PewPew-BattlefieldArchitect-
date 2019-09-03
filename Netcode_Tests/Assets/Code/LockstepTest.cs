@@ -110,7 +110,7 @@ public class LockstepTest : MonoBehaviour {
 
     uint m_currentTick = 0;
     UdpClient socket;
-
+    
     public int m_serverPort = 11000;
 
     int m_sizeofInputMessageItem = Marshal.SizeOf<InputMessageItem>();
@@ -118,16 +118,101 @@ public class LockstepTest : MonoBehaviour {
 
 #if UNITY_SERVER
 
-    //array von allen inputs queues mit id und lastIPEndPoint
+    //array von allen inputs queues mit id und lastIPEndPoint und maxtickimput
+    class inputQueueElement {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct
+        public int iD;
+        public IPEndPoint eP;
+        public uint maxTick;
+        public List<InputMessage> inputs;
+    }
 
-	void Start() {
+    List<inputQueueElement> inputs = new List<inputQueueElement>();
+    GameStateMessage currentGameState;
+
+    int nextID = 0;
+
+    void Start() {
         socket = new UdpClient(11000);
         Debug.Log("[Server] server is ready and lisents");
         socket.DontFragment = true;
     }
-	
-	void Update() {
+    private void OnDestroy() {
+        socket.Close();
+    }
+
+    void Update() {
+        if (!Listen())
+            return;
+
+        uint min = uint.MaxValue;
+        foreach(var it in inputs) {
+            if (min > it.maxTick)
+                min = it.maxTick;
+        }
+        if (min <= m_currentTick)
+            return;
+
+        //simulate
+
+        Send();
+    }
+
+    bool Listen() {
+        if (socket.Available <= 0)
+            return false;
+
         IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 11000);
+        byte[] data = socket.Receive(ref remoteEP);
+
+        MessageType messageType = (MessageType)data[0];
+        switch (messageType) {
+        case MessageType.NON:
+            int clientID = BitConverter.ToInt32(data, sizeof(MessageType));
+            int index = inputs.FindIndex(x => x.iD == clientID);
+            //TODO: was wenn es den index nicht gibt?
+
+            inputs[index].eP = remoteEP;
+
+            int offset = sizeof(int) + sizeof(MessageType);
+            while(offset <= data.Length) {
+                InputMessage IMelement = new InputMessage();
+                offset += IMelement.Decrypt(data, offset);
+                if(IMelement.tick > inputs[index].maxTick) {
+                    inputs[index].inputs.Add(IMelement);
+                    inputs[index].maxTick = IMelement.tick;
+                }
+            }
+            break;
+        case MessageType.CONNECT:
+            inputQueueElement IQEelement = new inputQueueElement();
+            IQEelement.eP = remoteEP;
+            IQEelement.iD = nextID;
+            nextID++;
+            IQEelement.maxTick = 0;
+            IQEelement.inputs = new List<InputMessage>();
+            inputs.Add(IQEelement);
+
+            byte[] msg = new byte[1 + sizeof(int)];
+            msg[0] = (byte)MessageType.NEWID;
+            Buffer.BlockCopy(BitConverter.GetBytes(IQEelement.iD), 0, msg, 1, sizeof(int));
+            socket.Send(msg, msg.Length);
+            break;
+        case MessageType.DISCONNECT:
+            break;
+        case MessageType.RECONNECT:
+            break;
+        default:
+            break;
+        }
+
+        return true;
+    }
+
+    void Send() {
+        foreach(var it in inputs) {
+            byte[] msg = currentGameState.Encrypt();
+            socket.Send(msg, msg.Length, it.eP);
+        }
     }
 
 #else
@@ -175,17 +260,17 @@ public class LockstepTest : MonoBehaviour {
         if (socket.Available <= 0)
             return;
 
-        byte[] receivedData = socket.Receive(ref ep);
+        byte[] data = socket.Receive(ref ep);
 
-        MessageType messageType = (MessageType)receivedData[0];
+        MessageType messageType = (MessageType)data[0];
 
         switch (messageType) {
         case MessageType.NEWID:
-            m_iD = BitConverter.ToInt32(receivedData, 1);
+            m_iD = BitConverter.ToInt32(data, 1);
             break;
         case MessageType.NON:
             GameStateMessage element = new GameStateMessage();
-            element.Decrypt(receivedData, sizeof(MessageType));
+            element.Decrypt(data, sizeof(MessageType));
             SetConfirmedTick(element.tick);
             m_gameStates.Add(element);
             break;
