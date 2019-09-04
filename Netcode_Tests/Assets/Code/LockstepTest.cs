@@ -84,10 +84,12 @@ struct GameStateItem {
     [FieldOffset(0)]
     public uint iD;
     [FieldOffset(sizeof(uint))]
+    public int health;
+    [FieldOffset(sizeof(uint) + sizeof(int))]
     public Vector3 pos;
 
     [FieldOffset(0)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(uint) + 3 * sizeof(float))]
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(uint) + sizeof(int) + 3 * sizeof(float))]
     public byte[] data;
 }
 
@@ -135,10 +137,11 @@ public class LockstepTest : MonoBehaviour {
 #if UNITY_SERVER
 
     //array von allen inputs queues mit id und lastIPEndPoint und maxtickimput
-    class inputQueueElement {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct
+    class inputQueueElement {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct (Ligt an List bei array würde es funktionieren)
         public int iD;
         public IPEndPoint eP;
         public uint maxTick;
+        public uint confirmedTick;
         public List<InputMessage> inputs;
     }
 
@@ -204,7 +207,7 @@ public class LockstepTest : MonoBehaviour {
             //TODO: was wenn es den index nicht gibt?
 
             inputs[index].eP = remoteEP;
-
+            uint min = uint.MaxValue;
             int offset = sizeof(int) + sizeof(MessageType);
             while(offset <= data.Length) {
                 InputMessage IMelement = new InputMessage();
@@ -213,7 +216,12 @@ public class LockstepTest : MonoBehaviour {
                     inputs[index].inputs.Add(IMelement);
                     inputs[index].maxTick = IMelement.tick;
                 }
+                if (min > IMelement.tick)
+                    min = IMelement.tick;
             }
+            if (min > 0 && inputs[index].confirmedTick < min - 1)
+                inputs[index].confirmedTick = min - 1;
+
             break;
         case MessageType.CONNECT:
             inputQueueElement IQEelement = new inputQueueElement();
