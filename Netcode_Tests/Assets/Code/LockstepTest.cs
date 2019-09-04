@@ -161,6 +161,9 @@ public class LockstepTest : MonoBehaviour {
 
     /// <summary>
     /// reads and interprates new packages
+    /// if input
+    /// set last confirmed Tick
+    /// dequeue all Gamestates previus for that tick for that player
     /// </summary>
     /// <returns>if a new package was read</returns>
     bool Listen() {
@@ -267,6 +270,8 @@ public class LockstepTest : MonoBehaviour {
     ///     check if future tick is available (interpolate)
     ///     if not
     ///         Network pause
+    /// calculates GameState from reference GameState and delta data
+    /// dequeues all gamestate previus to reference GameState
     /// set Live data to GameState
     /// Make Client GameTick
     /// tick increment
