@@ -29,32 +29,6 @@ enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID, CONFIRM }
 
 enum InputType : byte { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN }
 
-[StructLayout(LayoutKind.Explicit)]
-struct InputMessageItem {
-    [FieldOffset(0)]
-    public uint tick;
-    [FieldOffset(sizeof(uint))]
-    public InputType type;
-
-    [FieldOffset(0)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(uint) + sizeof(InputType))]
-    public byte[] data;
-}
-
-[StructLayout(LayoutKind.Explicit)]
-struct GameStateMessageItem {
-    [FieldOffset(0)]
-    public uint tick;
-    [FieldOffset(sizeof(uint))]
-    public uint iD;
-    [FieldOffset(2 * sizeof(uint))]
-    public Vector3 pos;
-
-    [FieldOffset(0)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2 * sizeof(uint) + 3 * sizeof(float))]
-    public byte[] data;
-}
-
 struct InputMessage {
     public uint tick;
     public InputType[] inputs;
@@ -130,9 +104,6 @@ public class LockstepTest : MonoBehaviour {
     UdpClient socket;
     
     public int m_serverPort = 11000;
-
-    int m_sizeofInputMessageItem = Marshal.SizeOf<InputMessageItem>();
-    int m_sizeofGameStateMessageItem = Marshal.SizeOf<GameStateMessageItem>();
 
 #if UNITY_SERVER
 
