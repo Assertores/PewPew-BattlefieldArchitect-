@@ -130,15 +130,15 @@ namespace T2 {
                 return false;
 
             List<GameStateItem> delta = new List<GameStateItem>();
-            foreach(var it in states) {
+            foreach (var it in states) {
                 int index = -1;
-                for(int i = 0; i < reference.states.Length; i++) {
-                    if(reference.states[i].iD == it.iD) {
+                for (int i = 0; i < reference.states.Length; i++) {
+                    if (reference.states[i].iD == it.iD) {
                         index = i;
                         break;
                     }
                 }
-                if(index == -1 ||
+                if (index == -1 ||
                     it.health != reference.states[index].health ||
                     it.pos != reference.states[index].pos) {
                     delta.Add(it);
@@ -189,6 +189,7 @@ namespace T2 {
 
     #endregion
 
+    //#define UNITY_SERVER
     public class LockstepTest2 : MonoBehaviour {
 
         public static Action<uint> DoTick;
@@ -199,7 +200,6 @@ namespace T2 {
         public int m_serverPort = 11000;
 
 #if UNITY_SERVER
-
         //array von allen inputs queues mit id und lastIPEndPoint und maxtickimput
         class Client {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct (Ligt an List bei array würde es funktionieren)
             public int iD;
@@ -215,7 +215,17 @@ namespace T2 {
         public static Gamestate currentGameState;
 
         int nextID = 0;
-        
+#else
+        IPEndPoint ep;
+        public string m_iP = "127.0.0.1";
+
+        public int m_iD = -1;
+
+        List<Gamestate> upComingStates = new List<Gamestate>();//deltas
+        List<Gamestate> pastStates = new List<Gamestate>();//real states
+        List<Input> unconfirmedInputs = new List<Input>();
+#endif
+#if UNITY_SERVER
         void Start() {
             socket = new UdpClient(11000);
             Debug.Log("[Server] server is ready and lisents");
@@ -274,7 +284,103 @@ namespace T2 {
 
             return true;
         }
+#else
+        void Start() {
+            socket = new UdpClient();
+            ep = new IPEndPoint(IPAddress.Parse(m_iP), m_serverPort); // endpoint where server is listening
+            socket.Connect(ep);
+            socket.DontFragment = true;
 
+            byte[] msg = new byte[1];
+            msg[0] = (byte)MessageType.CONNECT;
+            socket.Send(msg, msg.Length);
+        }
+        private void OnDestroy() {
+            byte[] msg = new byte[1 + sizeof(int)];
+            msg[0] = (byte)MessageType.DISCONNECT;
+            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, msg, 1, sizeof(int));
+            socket.Send(msg, msg.Length);
+
+            socket.Close();
+        }
+
+        private void Update() {
+            Listen();
+        }
+
+        /// <summary>
+        /// Send Player Inputs
+        /// if next tick is available {
+        ///     calculates GameState from reference GameState and delta data
+        /// } else {
+        ///     check if future tick is available (interpolate)
+        ///     if not
+        ///         Network pause
+        /// }
+        /// dequeues all gamestate previus to reference GameState
+        /// dequeue all upcomming gamestate previus to current gametick
+        /// set Live data to GameState
+        /// Make Client GameTick
+        /// tick increment
+        /// </summary>
+        private void FixedUpdate() {
+            Send();
+
+            if (!upComingStates.Exists(x => x.tick > m_currentTick)) {
+                upComingStates.Clear();
+                print("Network Pause");
+                return;
+            }
+
+            uint min = uint.MaxValue;
+            foreach (var it in upComingStates) {
+                if (min > it.tick)
+                    min = it.tick;
+            }
+
+            Gamestate currentGamestate = upComingStates.Find(x => x.tick == min);
+
+            if (currentGamestate.tick > m_currentTick) {
+                uint max = 0;
+                foreach (var it in pastStates) {
+                    if (max < it.tick)
+                        max = it.tick;
+                }
+                currentGamestate.Lerp(pastStates.Find(x => x.tick == max), m_currentTick);
+            } else {
+                upComingStates.Remove(currentGamestate);
+                currentGamestate.CreateFullTick(pastStates.Find(x => x.tick == currentGamestate.refTick));
+                pastStates.Add(currentGamestate);
+            }
+            pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
+
+            //TODO: set live data to currentGamestate
+            //TODO: make Client Tick
+
+            m_currentTick++;
+        }
+
+        void Listen() {
+            if (socket.Available <= 0)
+                return;
+
+            byte[] data = socket.Receive(ref ep);
+
+            MessageType messageType = (MessageType)data[0];
+
+            switch (messageType) {
+            case MessageType.NON:
+                HandleNON(data);
+                break;
+            case MessageType.NEWID:
+                HandleNewID(data);
+                break;
+            default:
+                break;
+            }
+        }
+#endif
+#if UNITY_SERVER
         /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
         void HandleNON(byte[] data, IPEndPoint ep) {
             int id = BitConverter.ToInt32(data, 1);
@@ -303,7 +409,66 @@ namespace T2 {
                 client.gameStates.RemoveAll(x => x.tick < client.confirmedTick);
             }
         }
+#else
+        /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
+        void Send() {
+            int size = sizeof(int) + sizeof(MessageType);
+            int pos = size;
+            List<byte[]> values = new List<byte[]>();
+            foreach (var it in unconfirmedInputs) {
+                byte[] element = it.Encrypt();
+                size += element.Length;
+                values.Add(element);
+            }
 
+            byte[] value = new byte[size];
+            value[0] = (byte)MessageType.NON;
+            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, value, sizeof(MessageType), sizeof(int));
+
+            for (int i = 0; i < values.Count; i++) {
+                Buffer.BlockCopy(values[i], 0, value, pos, values[i].Length);
+                pos += values[i].Length;
+            }
+
+            socket.Send(value, value.Length);
+        }
+#endif
+#if UNITY_SERVER
+        /// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
+        void Send() {
+            foreach(var it in clients) {
+                if (!it.isConnected)
+                    continue;
+
+                Gamestate currentStateCopy = it.gameStates.Find(x => x.tick == m_currentTick);
+                Gamestate confirmedStateCopy = it.gameStates.Find(x => x.tick == it.confirmedTick);
+                currentStateCopy.CreateDelta(confirmedStateCopy);
+
+                byte[] enc = currentStateCopy.Encrypt();
+                byte[] msg = new byte[enc.Length + 1];
+                msg[0] = (byte)MessageType.NON;
+                Buffer.BlockCopy(enc, 0, msg, 1, enc.Length);
+
+                socket.Send(msg, msg.Length, it.eP);
+            }
+        }
+#else
+        //dequeue confirmed inputs
+        //check if package gamestate is newer then current gamestate
+        //add gamestate to upcomingStates
+        /// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
+        void HandleNON(byte[] data) {
+            Gamestate element = new Gamestate();
+            element.Decrypt(data, 1);
+
+            if (element.tick <= m_currentTick)
+                return;
+
+            upComingStates.Add(element);
+            unconfirmedInputs.RemoveAll(x => x.tick <= element.tick);
+        }
+#endif
+#if UNITY_SERVER
         /// CONNECT:    byte Type
         /// NEWID:      byte Type, int ID
         void HandleConnect(byte[] data, IPEndPoint ep) {
@@ -347,173 +512,10 @@ namespace T2 {
                 HandleConnect(data, ep);
             }
         }
-
-        /// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
-        void Send() {
-            foreach(var it in clients) {
-                if (!it.isConnected)
-                    continue;
-
-                Gamestate currentStateCopy = it.gameStates.Find(x => x.tick == m_currentTick);
-                Gamestate confirmedStateCopy = it.gameStates.Find(x => x.tick == it.confirmedTick);
-                currentStateCopy.CreateDelta(confirmedStateCopy);
-
-                byte[] enc = currentStateCopy.Encrypt();
-                byte[] msg = new byte[enc.Length + 1];
-                msg[0] = (byte)MessageType.NON;
-                Buffer.BlockCopy(enc, 0, msg, 1, enc.Length);
-
-                socket.Send(msg, msg.Length, it.eP);
-            }
-        }
 #else
-
-        IPEndPoint ep;
-        public string m_iP = "127.0.0.1";
-
-        public int m_iD = -1;
-
-        List<Gamestate> upComingStates = new List<Gamestate>();//deltas
-        List<Gamestate> pastStates = new List<Gamestate>();//real states
-        List<Input> unconfirmedInputs = new List<Input>();
-
-        void Start() {
-            socket = new UdpClient();
-            ep = new IPEndPoint(IPAddress.Parse(m_iP), m_serverPort); // endpoint where server is listening
-            socket.Connect(ep);
-            socket.DontFragment = true;
-
-            byte[] msg = new byte[1];
-            msg[0] = (byte)MessageType.CONNECT;
-            socket.Send(msg, msg.Length);
-        }
-        private void OnDestroy() {
-            byte[] msg = new byte[1  + sizeof(int)];
-            msg[0] = (byte)MessageType.DISCONNECT;
-            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, msg, 1, sizeof(int));
-            socket.Send(msg, msg.Length);
-
-            socket.Close();
-        }
-
-        private void Update() {
-            Listen();
-        }
-
-        /// <summary>
-        /// Send Player Inputs
-        /// if next tick is available {
-        ///     calculates GameState from reference GameState and delta data
-        /// } else {
-        ///     check if future tick is available (interpolate)
-        ///     if not
-        ///         Network pause
-        /// }
-        /// dequeues all gamestate previus to reference GameState
-        /// dequeue all upcomming gamestate previus to current gametick
-        /// set Live data to GameState
-        /// Make Client GameTick
-        /// tick increment
-        /// </summary>
-        private void FixedUpdate() {
-            Send();
-
-            if(!upComingStates.Exists(x => x.tick > m_currentTick)) {
-                upComingStates.Clear();
-                print("Network Pause");
-                return;
-            }
-
-            uint min = uint.MaxValue;
-            foreach(var it in upComingStates) {
-                if (min > it.tick)
-                    min = it.tick;
-            }
-
-            Gamestate currentGamestate = upComingStates.Find(x => x.tick == min);
-
-            if (currentGamestate.tick > m_currentTick) {
-                uint max = 0;
-                foreach(var it in pastStates) {
-                    if (max < it.tick)
-                        max = it.tick;
-                }
-                currentGamestate.Lerp(pastStates.Find(x => x.tick == max), m_currentTick);
-            } else {
-                upComingStates.Remove(currentGamestate);
-                currentGamestate.CreateFullTick(pastStates.Find(x => x.tick == currentGamestate.refTick));
-                pastStates.Add(currentGamestate);
-            }
-            pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
-
-            //TODO: set live data to currentGamestate
-            //TODO: make Client Tick
-
-            m_currentTick++;
-        }
-
-        void Listen() {
-            if (socket.Available <= 0)
-                return;
-
-            byte[] data = socket.Receive(ref ep);
-
-            MessageType messageType = (MessageType)data[0];
-
-            switch (messageType) {
-            case MessageType.NON:
-                HandleNON(data);
-                break;
-            case MessageType.NEWID:
-                HandleNewID(data);
-                break;
-            default:
-                break;
-            }
-        }
-
-        //dequeue confirmed inputs
-        //check if package gamestate is newer then current gamestate
-        //add gamestate to upcomingStates
-        /// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
-        void HandleNON(byte[] data) {
-            Gamestate element = new Gamestate();
-            element.Decrypt(data, 1);
-
-            if (element.tick <= m_currentTick)
-                return;
-
-            upComingStates.Add(element);
-            unconfirmedInputs.RemoveAll(x => x.tick <= element.tick);
-        }
-
         void HandleNewID(byte[] data) {
             m_iD = BitConverter.ToInt32(data, 1);
         }
-
-        /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
-        void Send() {
-            int size = sizeof(int) + sizeof(MessageType);
-            int pos = size;
-            List<byte[]> values = new List<byte[]>();
-            foreach(var it in unconfirmedInputs) {
-                byte[] element = it.Encrypt();
-                size += element.Length;
-                values.Add(element);
-            }
-
-            byte[] value = new byte[size];
-            value[0] = (byte)MessageType.NON;
-            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, value, sizeof(MessageType), sizeof(int));
-
-            for (int i = 0; i < values.Count; i++) {
-                Buffer.BlockCopy(values[i], 0, value, pos, values[i].Length);
-                pos += values[i].Length;
-            }
-
-            socket.Send(value, value.Length);
-        }
-
 #endif
     }
 }
