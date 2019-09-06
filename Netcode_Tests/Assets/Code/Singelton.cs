@@ -16,9 +16,9 @@ public abstract class Singelton<T> : MonoBehaviour where T : MonoBehaviour{
         }
     }
 
-    public Singelton() {
-        if(m_singleton != null) {
-            Debug.Log("multible instances of type " + typeof(T) + ". " + this.name + " was Distroyed");
+    private void Awake() {
+        if (m_singleton != null) {
+            Debug.Log("multible instances of type " + typeof(T));
             Destroy(this);
             return;
         }
