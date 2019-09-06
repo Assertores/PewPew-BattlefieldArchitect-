@@ -33,13 +33,13 @@ namespace T2 {
 
     public struct Input {
         public uint tick;
-        public InputType[] inputs;
+        public List<InputType> inputs;
 
         public byte[] Encrypt() {
-            byte[] value = new byte[2 * sizeof(uint) + inputs.Length * sizeof(InputType)];
+            byte[] value = new byte[2 * sizeof(uint) + inputs.Count * sizeof(InputType)];
             Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
-            Buffer.BlockCopy(BitConverter.GetBytes(inputs.Length), 0, value, sizeof(uint), sizeof(int));
-            Buffer.BlockCopy(inputs, 0, value, sizeof(uint) + sizeof(int), inputs.Length * sizeof(InputType));
+            Buffer.BlockCopy(BitConverter.GetBytes(inputs.Count), 0, value, sizeof(uint), sizeof(int));
+            Buffer.BlockCopy(inputs.ToArray(), 0, value, sizeof(uint) + sizeof(int), inputs.Count * sizeof(InputType));
             return value;
         }
 
@@ -48,9 +48,9 @@ namespace T2 {
             tick = BitConverter.ToUInt32(msg, offset);
             int size = BitConverter.ToInt32(msg, offset + sizeof(uint));
 
-            inputs = new InputType[size];
+            inputs = new List<InputType>(size);
 
-            Buffer.BlockCopy(msg, offset, inputs, 0, size * sizeof(InputType));
+            Buffer.BlockCopy(msg, offset, inputs.ToArray(), 0, size * sizeof(InputType));
             return offset + size * sizeof(InputType);
         }
     }
@@ -75,16 +75,16 @@ namespace T2 {
         public bool isDelta;
         public bool isLerped;
         public uint refTick;
-        public GameStateItem[] states;
+        public List<GameStateItem> states;
 
         public byte[] Encrypt() {
             int sizeofGameState = sizeof(uint) + 3 * sizeof(float);
-            byte[] value = new byte[2 * sizeof(uint) + states.Length * sizeofGameState];
+            byte[] value = new byte[2 * sizeof(uint) + states.Count * sizeofGameState];
 
             Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
             Buffer.BlockCopy(BitConverter.GetBytes(refTick), 0, value, sizeof(uint), sizeof(uint));
 
-            for (int i = 0; i < states.Length; i++) {
+            for (int i = 0; i < states.Count; i++) {
                 Buffer.BlockCopy(states[i].data, 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeofGameState);
             }
 
@@ -100,8 +100,8 @@ namespace T2 {
             refTick = BitConverter.ToUInt32(msg, offset);
             offset += sizeof(uint);
 
-            states = new GameStateItem[(msg.Length - offset) / sizeofGameState];
-            for (int i = 0; i < states.Length; i++) {
+            states = new List<GameStateItem>((msg.Length - offset) / sizeofGameState);
+            for (int i = 0; i < states.Count; i++) {
                 Buffer.BlockCopy(msg, offset + i * sizeofGameState, states[i].data, 0, sizeofGameState);
             }
         }
@@ -118,7 +118,7 @@ namespace T2 {
                     newState.Add(it);
             }
 
-            states = newState.ToArray();
+            states = newState;
             isDelta = false;
             return true;
         }
@@ -132,7 +132,7 @@ namespace T2 {
             List<GameStateItem> delta = new List<GameStateItem>();
             foreach (var it in states) {
                 int index = -1;
-                for (int i = 0; i < reference.states.Length; i++) {
+                for (int i = 0; i < reference.states.Count; i++) {
                     if (reference.states[i].iD == it.iD) {
                         index = i;
                         break;
@@ -145,7 +145,7 @@ namespace T2 {
                 }
             }
 
-            states = delta.ToArray();
+            states = delta;
             isDelta = true;
             refTick = reference.tick;
             return true;
@@ -178,7 +178,7 @@ namespace T2 {
                 newState[index] = element;
             }
 
-            states = newState.ToArray();
+            states = newState;
 
             isDelta = false;
             isLerped = true;
