@@ -7,11 +7,12 @@ namespace T2 {
 
         static uint s_nextID = 0;
 
-        public uint m_iD;
-
-        public float m_health;
+        [SerializeField] public float m_maxHealth;
+        [HideInInspector] public uint m_iD;
+        [HideInInspector] public float m_health;
 
         private void Start() {
+            m_health = m_maxHealth;
             m_iD = s_nextID;
             s_nextID++;
             FaceGamestateHandler.s_singelton.m_objects.Add(this);
