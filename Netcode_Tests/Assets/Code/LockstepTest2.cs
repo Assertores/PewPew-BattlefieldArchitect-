@@ -29,31 +29,6 @@ namespace T2 {
 
     enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
 
-    public enum InputType : byte { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN }
-
-    public struct Input {
-        public uint tick;
-        public List<InputType> inputs;
-
-        public byte[] Encrypt() {
-            byte[] value = new byte[2 * sizeof(uint) + inputs.Count * sizeof(InputType)];
-            Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
-            Buffer.BlockCopy(BitConverter.GetBytes(inputs.Count), 0, value, sizeof(uint), sizeof(int));
-            Buffer.BlockCopy(inputs.ToArray(), 0, value, sizeof(uint) + sizeof(int), inputs.Count * sizeof(InputType));
-            return value;
-        }
-
-        public int Decrypt(byte[] msg, int offset) {
-            offset += sizeof(uint) + sizeof(int);
-            tick = BitConverter.ToUInt32(msg, offset);
-            int size = BitConverter.ToInt32(msg, offset + sizeof(uint));
-
-            inputs = new List<InputType>(size);
-
-            Buffer.BlockCopy(msg, offset, inputs.ToArray(), 0, size * sizeof(InputType));
-            return offset + size * sizeof(InputType);
-        }
-    }
 
     [StructLayout(LayoutKind.Explicit)]
     public struct GameStateItem {
@@ -202,12 +177,11 @@ namespace T2 {
 #if UNITY_SERVER
         //array von allen inputs queues mit id und lastIPEndPoint und maxtickimput
         class Client {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct (Ligt an List bei array würde es funktionieren)
-            public int iD;
             public bool isConnected;
             public IPEndPoint eP;
             public uint maxTick;
             public uint confirmedTick;
-            public List<Input> inputs;//TODO: change to linked list
+            public FaceInput inputHandler;
             public List<Gamestate> gameStates;//TODO: change to linked list
         }
 
@@ -219,11 +193,9 @@ namespace T2 {
         IPEndPoint ep;
         public string m_iP = "127.0.0.1";
 
-        public int m_iD = -1;
-
         List<Gamestate> upComingStates = new List<Gamestate>();//deltas
         List<Gamestate> pastStates = new List<Gamestate>();//real states
-        List<Input> unconfirmedInputs = new List<Input>();
+        [SerializeField] FaceInput m_input;
 #endif
 #if UNITY_SERVER
         void Start() {
@@ -246,12 +218,14 @@ namespace T2 {
             }
             if (min <= m_currentTick)
                 return;
-
-            //TODO: simulate
-            //TODO: set current tick on last simulated tick
+            
+            for(uint i = m_currentTick; i <= min; i++) {
+                DoTick.Invoke(i);
+            }
+            m_currentTick = min;
 
             foreach(var it in clients) {
-                it.inputs.RemoveAll(x => x.tick <= m_currentTick);
+                it.inputHandler.DequeueUptoTick(m_currentTick);
             }
 
             Send();
@@ -294,11 +268,13 @@ namespace T2 {
             byte[] msg = new byte[1];
             msg[0] = (byte)MessageType.CONNECT;
             socket.Send(msg, msg.Length);
+
+            m_input.CreateNewElement(m_currentTick);
         }
         private void OnDestroy() {
             byte[] msg = new byte[1 + sizeof(int)];
             msg[0] = (byte)MessageType.DISCONNECT;
-            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, msg, 1, sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(m_input.m_iD), 0, msg, 1, sizeof(int));
             socket.Send(msg, msg.Length);
 
             socket.Close();
@@ -355,9 +331,12 @@ namespace T2 {
             pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
 
             //TODO: set live data to currentGamestate
-            //TODO: make Client Tick
+            DoTick.Invoke(m_currentTick);
 
             m_currentTick++;
+
+            //TODO: was pasiert mit input während einem Network Pause
+            m_input.CreateNewElement(m_currentTick);
         }
 
         void Listen() {
@@ -384,7 +363,7 @@ namespace T2 {
         /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
         void HandleNON(byte[] data, IPEndPoint ep) {
             int id = BitConverter.ToInt32(data, 1);
-            Client client = clients.Find(x => x.iD == id);
+            Client client = clients.Find(x => x.inputHandler.m_iD == id);
 
             if (client == null)
                 return;
@@ -394,10 +373,10 @@ namespace T2 {
             uint min = uint.MaxValue;
             int offset = sizeof(int) + sizeof(MessageType);
             while (offset <= data.Length) {
-                Input IMelement = new Input();
+                d_Input IMelement = new d_Input();
                 offset += IMelement.Decrypt(data, offset);
                 if (IMelement.tick > client.maxTick) {
-                    client.inputs.Add(IMelement);
+                    client.inputHandler.AddNewElement(IMelement);
                     client.maxTick = IMelement.tick;
                 }
                 if (min > IMelement.tick)
@@ -412,25 +391,9 @@ namespace T2 {
 #else
         /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
         void Send() {
-            int size = sizeof(int) + sizeof(MessageType);
-            int pos = size;
-            List<byte[]> values = new List<byte[]>();
-            foreach (var it in unconfirmedInputs) {
-                byte[] element = it.Encrypt();
-                size += element.Length;
-                values.Add(element);
-            }
+            byte[] msg = m_input.Encrypt();
 
-            byte[] value = new byte[size];
-            value[0] = (byte)MessageType.NON;
-            Buffer.BlockCopy(BitConverter.GetBytes(m_iD), 0, value, sizeof(MessageType), sizeof(int));
-
-            for (int i = 0; i < values.Count; i++) {
-                Buffer.BlockCopy(values[i], 0, value, pos, values[i].Length);
-                pos += values[i].Length;
-            }
-
-            socket.Send(value, value.Length);
+            socket.Send(msg, msg.Length);
         }
 #endif
 #if UNITY_SERVER
@@ -465,7 +428,7 @@ namespace T2 {
                 return;
 
             upComingStates.Add(element);
-            unconfirmedInputs.RemoveAll(x => x.tick <= element.tick);
+            m_input.DequeueUptoTick(element.tick);
         }
 #endif
 #if UNITY_SERVER
@@ -473,13 +436,14 @@ namespace T2 {
         /// NEWID:      byte Type, int ID
         void HandleConnect(byte[] data, IPEndPoint ep) {
             Client element = new Client();
-
-            element.iD = nextID;
+            
             element.isConnected = true;
             element.maxTick = 0;
             element.confirmedTick = 0;
             element.eP = ep;
-            element.inputs = new List<Input>();
+            GameObject tmp = new GameObject();
+            element.inputHandler = tmp.AddComponent<FaceInput>();
+            element.inputHandler.m_iD = nextID;
             element.gameStates = new List<Gamestate>();
 
             clients.Add(element);
@@ -494,7 +458,7 @@ namespace T2 {
         /// DISCONNECT: byte Type, int ID
         void HandleDisconnect(byte[] data, IPEndPoint ep) {
             int RemoteID = BitConverter.ToInt32(data, 1);
-            Client element = clients.Find(x => x.iD == RemoteID);
+            Client element = clients.Find(x => x.inputHandler.m_iD == RemoteID);
             if (element != null) {
                 element.isConnected = false;
                 element.eP = ep;
@@ -504,7 +468,7 @@ namespace T2 {
         /// RECONNECT:  byte Type, int ID
         void HandleReconnect(byte[] data, IPEndPoint ep) {
             int RemoteID = BitConverter.ToInt32(data, 1);
-            Client element = clients.Find(x => x.iD == RemoteID);
+            Client element = clients.Find(x => x.inputHandler.m_iD == RemoteID);
             if (element != null) {
                 element.isConnected = true;
                 element.eP = ep;
@@ -514,7 +478,7 @@ namespace T2 {
         }
 #else
         void HandleNewID(byte[] data) {
-            m_iD = BitConverter.ToInt32(data, 1);
+            m_input.m_iD = BitConverter.ToInt32(data, 1);
         }
 #endif
     }
