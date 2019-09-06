@@ -38,7 +38,7 @@ namespace T2 {
         public int m_iD = -1;
         uint m_buffersize = 6;
 
-        List<d_Input> m_inputQueue { get; private set; } = new List<d_Input>();
+        List<d_Input> m_inputQueue = new List<d_Input>();
         
         void Start() {
             s_refList.Add(this);
