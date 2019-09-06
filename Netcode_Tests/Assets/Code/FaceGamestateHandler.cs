@@ -30,13 +30,15 @@ namespace T2 {
 
         public byte[] Encrypt() {
             int sizeofGameState = sizeof(uint) + 3 * sizeof(float);
-            byte[] value = new byte[2 * sizeof(uint) + states.Count * sizeofGameState];
+            byte[] value = new byte[2 * sizeof(uint) + (states == null ? 0 : states.Count * sizeofGameState)];
 
             Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
             Buffer.BlockCopy(BitConverter.GetBytes(refTick), 0, value, sizeof(uint), sizeof(uint));
 
-            for (int i = 0; i < states.Count; i++) {
-                Buffer.BlockCopy(states[i].data, 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeofGameState);
+            if(states != null) {
+                for (int i = 0; i < states.Count; i++) {
+                    Buffer.BlockCopy(states[i].data, 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeofGameState);
+                }
             }
 
             return value;
@@ -75,6 +77,8 @@ namespace T2 {
         }
 
         public bool CreateDelta(Gamestate reference) {
+            if (reference.states == null)
+                return false;
             if (reference.tick >= tick)
                 return false;
             if (reference.isDelta)
@@ -167,6 +171,7 @@ namespace T2 {
             value.isDelta = false;
             value.isLerped = false;
             value.refTick = tick;
+            value.states = new List<GameStateItem>();
             foreach(var it in m_objects) {
                 GameStateItem element = new GameStateItem();
                 element.iD = it.m_iD;

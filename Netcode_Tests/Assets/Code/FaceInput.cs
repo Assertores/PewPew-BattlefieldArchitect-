@@ -12,7 +12,13 @@ namespace T2 {
         public List<InputType> inputs;
 
         public byte[] Encrypt() {
-            byte[] value = new byte[2 * sizeof(uint) + inputs.Count * sizeof(InputType)];
+            if(inputs == null) {
+                byte[] tmp = new byte[sizeof(uint) + sizeof(int)];
+                Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, tmp, 0, sizeof(uint));
+                Buffer.BlockCopy(BitConverter.GetBytes(0), 0, tmp, sizeof(uint), sizeof(int));
+                return tmp;
+            }
+            byte[] value = new byte[sizeof(uint) + sizeof(int) + inputs.Count * sizeof(InputType)];
             Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
             Buffer.BlockCopy(BitConverter.GetBytes(inputs.Count), 0, value, sizeof(uint), sizeof(int));
             Buffer.BlockCopy(inputs.ToArray(), 0, value, sizeof(uint) + sizeof(int), inputs.Count * sizeof(InputType));
@@ -20,13 +26,15 @@ namespace T2 {
         }
 
         public int Decrypt(byte[] msg, int offset) {
-            offset += sizeof(uint) + sizeof(int);
             tick = BitConverter.ToUInt32(msg, offset);
-            int size = BitConverter.ToInt32(msg, offset + sizeof(uint));
+            offset += sizeof(uint);
+            int size = BitConverter.ToInt32(msg, offset);
+            offset += sizeof(int);
 
             inputs = new List<InputType>(size);
+            if(size > 0)
+                Buffer.BlockCopy(msg, offset, inputs.ToArray(), 0, size * sizeof(InputType));
 
-            Buffer.BlockCopy(msg, offset, inputs.ToArray(), 0, size * sizeof(InputType));
             return offset + size * sizeof(InputType);
         }
     }
@@ -41,6 +49,10 @@ namespace T2 {
         List<d_Input> m_inputQueue = new List<d_Input>();
         
         void Start() {
+#if UNITY_SERVER
+            Destroy(this);
+            return;
+#endif
             s_refList.Add(this);
         }
 

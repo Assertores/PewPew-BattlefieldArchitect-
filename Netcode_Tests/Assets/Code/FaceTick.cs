@@ -8,13 +8,13 @@ namespace T2 {
         [SerializeField] GSObject m_exampleObject;
 
         void Start() {
-#if !UNITY_SERVER
+#if UNITY_SERVER
             LockstepTest2.DoTick += ServerTick;
 #endif
         }
 
         private void OnDestroy() {
-#if !UNITY_SERVER
+#if UNITY_SERVER
             LockstepTest2.DoTick -= ServerTick;
 #endif
         }

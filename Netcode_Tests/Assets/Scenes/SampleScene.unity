@@ -367,9 +367,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139806145}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f22208bfdbe3ddf4db4585ff1363927b, type: 3}
+  m_Script: {fileID: 11500000, guid: f2568535eec065b4b99463ce92d1a553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iD: -1
 --- !u!4 &1139806147
 Transform:
   m_ObjectHideFlags: 0
@@ -507,7 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_serverPort: 11000
   m_iP: 127.0.0.1
-  m_input: {fileID: 0}
+  m_input: {fileID: 1139806146}
 --- !u!4 &1574894429
 Transform:
   m_ObjectHideFlags: 0

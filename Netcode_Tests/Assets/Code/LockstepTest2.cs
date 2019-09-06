@@ -87,6 +87,11 @@ namespace T2 {
             }
             m_currentTick = min;
 
+            Gamestate currentState = FaceGamestateHandler.s_singelton.CreateGameState(m_currentTick);
+            foreach (var it in clients) {
+                it.gameStates.Add(currentState);
+            }
+
             foreach(var it in clients) {
                 it.inputHandler.DequeueUptoTick(m_currentTick);
             }
@@ -192,8 +197,8 @@ namespace T2 {
                 pastStates.Add(currentGamestate);
             }
             pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
-
-            //TODO: set live data to currentGamestate
+            
+            FaceGamestateHandler.s_singelton.ApplyGameState(currentGamestate);
             DoTick.Invoke(m_currentTick);
 
             m_currentTick++;
