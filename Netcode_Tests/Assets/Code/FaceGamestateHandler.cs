@@ -13,7 +13,11 @@ namespace T2 {
         [FieldOffset(sizeof(uint))]
         public float health;
         [FieldOffset(sizeof(uint) + sizeof(float))]
-        public Vector3 pos;
+        public float posX;
+        [FieldOffset(sizeof(uint) + 2 * sizeof(float))]
+        public float posY;
+        [FieldOffset(sizeof(uint) + 3 * sizeof(float))]
+        public float posZ;
 
         [FieldOffset(0)]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(uint) + sizeof(float) + 3 * sizeof(float))]
@@ -29,15 +33,20 @@ namespace T2 {
         public List<GameStateItem> states;
 
         public byte[] Encrypt() {
-            int sizeofGameState = sizeof(uint) + 3 * sizeof(float);
+            int sizeofGameState = sizeof(uint) + sizeof(float) + 3 * sizeof(float);
             byte[] value = new byte[2 * sizeof(uint) + (states == null ? 0 : states.Count * sizeofGameState)];
 
             Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, value, 0, sizeof(uint));
             Buffer.BlockCopy(BitConverter.GetBytes(refTick), 0, value, sizeof(uint), sizeof(uint));
 
-            if(states != null) {
+            if (states != null) {
                 for (int i = 0; i < states.Count; i++) {
-                    Buffer.BlockCopy(states[i].data, 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeofGameState);
+                    //Buffer.BlockCopy(states[i].data, 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeofGameState);
+                    Buffer.BlockCopy(BitConverter.GetBytes(states[i].iD), 0, value, 2 * sizeof(uint) + i * sizeofGameState, sizeof(uint));
+                    Buffer.BlockCopy(BitConverter.GetBytes(states[i].health), 0, value, 2 * sizeof(uint) + i * sizeofGameState + sizeof(uint), sizeof(float));
+                    Buffer.BlockCopy(BitConverter.GetBytes(states[i].posX), 0, value, 2 * sizeof(uint) + i * sizeofGameState + sizeof(uint) + sizeof(float), sizeof(float));
+                    Buffer.BlockCopy(BitConverter.GetBytes(states[i].posY), 0, value, 2 * sizeof(uint) + i * sizeofGameState + sizeof(uint) + sizeof(float) + sizeof(float), sizeof(float));
+                    Buffer.BlockCopy(BitConverter.GetBytes(states[i].posZ), 0, value, 2 * sizeof(uint) + i * sizeofGameState + sizeof(uint) + sizeof(float) + 2 * sizeof(float), sizeof(float));
                 }
             }
 
@@ -95,7 +104,9 @@ namespace T2 {
                 }
                 if (index == -1 ||
                     it.health != reference.states[index].health ||
-                    it.pos != reference.states[index].pos) {
+                    it.posX != reference.states[index].posX ||
+                    it.posY != reference.states[index].posY ||
+                    it.posZ != reference.states[index].posZ) {
                     delta.Add(it);
                 }
             }
@@ -119,7 +130,10 @@ namespace T2 {
             float lv = (float)((double)t / (tick - start.tick));
 
             tick = t;
-            List<GameStateItem> newState = new List<GameStateItem>(start.states);
+            List<GameStateItem> newState = new List<GameStateItem>();
+            if (start.states != null)
+                newState.AddRange(start.states);
+
             foreach (var it in states) {
                 if (!newState.Exists(x => x.iD == it.iD) && lv > 0.5f) {
                     newState.Add(it);
@@ -127,7 +141,9 @@ namespace T2 {
                 }
                 int index = newState.FindIndex(x => x.iD == it.iD);
                 GameStateItem element = newState[index];
-                element.pos = Vector3.Lerp(element.pos, it.pos, lv);
+                element.posX = Mathf.Lerp(element.posX, it.posX, lv);
+                element.posY = Mathf.Lerp(element.posY, it.posY, lv);
+                element.posZ = Mathf.Lerp(element.posZ, it.posZ, lv);
                 element.health = (int)Mathf.Lerp(element.health, it.health, lv);
 
                 newState[index] = element;
@@ -156,7 +172,7 @@ namespace T2 {
                     continue;
                 }
                 element.m_health = it.health;
-                element.transform.position = it.pos;
+                element.transform.position = new Vector3(it.posX, it.posY, it.posZ);
             }
             foreach(var it in m_objects) {
                 if(!state.states.Exists(x => x.iD == it.m_iD)) {//TODO: somehow element was removed
@@ -167,18 +183,22 @@ namespace T2 {
 
         public Gamestate CreateGameState(uint tick) {
             Gamestate value = new Gamestate();
-            value.tick = tick;
-            value.isDelta = false;
-            value.isLerped = false;
-            value.refTick = tick;
             value.states = new List<GameStateItem>();
             foreach(var it in m_objects) {
                 GameStateItem element = new GameStateItem();
                 element.iD = it.m_iD;
                 element.health = it.m_health;
-                element.pos = it.transform.position;
+                element.posX = it.transform.position.x;
+                element.posY = it.transform.position.y;
+                element.posZ = it.transform.position.z;
                 value.states.Add(element);
             }
+
+            value.tick = tick;
+            value.isDelta = false;
+            value.isLerped = false;
+            value.refTick = tick;
+
             return value;
         }
     }

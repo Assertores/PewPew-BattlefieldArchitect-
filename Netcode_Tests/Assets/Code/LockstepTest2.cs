@@ -27,7 +27,7 @@ namespace T2 {
 
     enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
 
-    //#define UNITY_SERVER
+//#define UNITY_SERVER
     public class LockstepTest2 : MonoBehaviour {
 
         public static Action<uint> DoTick;
@@ -81,9 +81,10 @@ namespace T2 {
             }
             if (min <= m_currentTick)
                 return;
-            
-            for(uint i = m_currentTick; i <= min; i++) {
-                DoTick.Invoke(i);
+
+            for (uint i = m_currentTick + 1; i <= min; i++) {
+                Debug.Log("[Server] simulating tick: " + i);
+                DoTick?.Invoke(i);
             }
             m_currentTick = min;
 
@@ -92,7 +93,8 @@ namespace T2 {
                 it.gameStates.Add(currentState);
             }
 
-            foreach(var it in clients) {
+            Debug.Log("[Server] dequeuing inputs of all clients upto tick: " + m_currentTick);
+            foreach (var it in clients) {
                 it.inputHandler.DequeueUptoTick(m_currentTick);
             }
 
@@ -105,6 +107,8 @@ namespace T2 {
 
             IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 11000);
             byte[] data = socket.Receive(ref remoteEP);
+
+            Debug.Log("[Server] reseaved package");
 
             MessageType messageType = (MessageType)data[0];
             switch (messageType) {
@@ -121,6 +125,7 @@ namespace T2 {
                 HandleReconnect(data, remoteEP);
                 break;
             default:
+                Debug.Log("[Server] package type was not handled" + messageType);
                 break;
             }
 
@@ -199,7 +204,7 @@ namespace T2 {
             pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
             
             FaceGamestateHandler.s_singelton.ApplyGameState(currentGamestate);
-            DoTick.Invoke(m_currentTick);
+            DoTick?.Invoke(m_currentTick);
 
             m_currentTick++;
 
@@ -240,7 +245,7 @@ namespace T2 {
 
             uint min = uint.MaxValue;
             int offset = sizeof(int) + sizeof(MessageType);
-            while (offset <= data.Length) {
+            while (offset < data.Length) {
                 d_Input IMelement = new d_Input();
                 offset += IMelement.Decrypt(data, offset);
                 if (IMelement.tick > client.maxTick) {
@@ -250,11 +255,17 @@ namespace T2 {
                 if (min > IMelement.tick)
                     min = IMelement.tick;
             }
-            if (min > 0 && client.confirmedTick < min - 1) {
+
+            
+
+            if (client.confirmedTick < min - 1 && min - 1 <= m_currentTick) {
                 client.confirmedTick = min - 1;
 
-                client.gameStates.RemoveAll(x => x.tick < client.confirmedTick);
+                if (client.confirmedTick < m_currentTick)
+                    client.gameStates.RemoveAll(x => x.tick < client.confirmedTick);
             }
+
+            Debug.Log("[Server] client " + client.inputHandler.m_iD + " has send new inputs of the tickrange " + client.confirmedTick + " - " + client.maxTick);
         }
 #else
         /// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
@@ -267,7 +278,7 @@ namespace T2 {
 #if UNITY_SERVER
         /// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
         void Send() {
-            foreach(var it in clients) {
+            foreach (var it in clients) {
                 if (!it.isConnected)
                     continue;
 
@@ -279,6 +290,8 @@ namespace T2 {
                 byte[] msg = new byte[enc.Length + 1];
                 msg[0] = (byte)MessageType.NON;
                 Buffer.BlockCopy(enc, 0, msg, 1, enc.Length);
+
+                Debug.Log("[Server] sending gamestate delta of tick " + currentStateCopy.tick + " with reference to tick " + currentStateCopy.refTick);
 
                 socket.Send(msg, msg.Length, it.eP);
             }
@@ -304,7 +317,7 @@ namespace T2 {
         /// NEWID:      byte Type, int ID
         void HandleConnect(byte[] data, IPEndPoint ep) {
             Client element = new Client();
-            
+
             element.isConnected = true;
             element.maxTick = 0;
             element.confirmedTick = 0;
@@ -315,6 +328,8 @@ namespace T2 {
             element.gameStates = new List<Gamestate>();
 
             clients.Add(element);
+
+            Debug.Log("[Server] new client connected. id: " + element.inputHandler.m_iD);
 
             byte[] msg = new byte[1 + sizeof(int)];
             msg[0] = (byte)MessageType.NEWID;
@@ -327,10 +342,13 @@ namespace T2 {
         void HandleDisconnect(byte[] data, IPEndPoint ep) {
             int RemoteID = BitConverter.ToInt32(data, 1);
             Client element = clients.Find(x => x.inputHandler.m_iD == RemoteID);
-            if (element != null) {
-                element.isConnected = false;
-                element.eP = ep;
-            }
+            if (element == null)
+                return;
+
+            element.isConnected = false;
+            element.eP = ep;
+
+            Debug.Log("[Server] client " + element.inputHandler.m_iD + " disconnected");
         }
 
         /// RECONNECT:  byte Type, int ID
@@ -340,6 +358,8 @@ namespace T2 {
             if (element != null) {
                 element.isConnected = true;
                 element.eP = ep;
+
+                Debug.Log("[Server] client " + element.inputHandler.m_iD + " Reconnected");
             } else {
                 HandleConnect(data, ep);
             }

@@ -7,12 +7,12 @@ namespace T2 {
 
     public enum InputType : byte { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN }
 
-    public struct d_Input {
+    public class d_Input {
         public uint tick;
-        public List<InputType> inputs;
+        public List<byte> inputs = new List<byte>();
 
         public byte[] Encrypt() {
-            if(inputs == null) {
+            if(inputs == null || inputs.Count == 0) {
                 byte[] tmp = new byte[sizeof(uint) + sizeof(int)];
                 Buffer.BlockCopy(BitConverter.GetBytes(tick), 0, tmp, 0, sizeof(uint));
                 Buffer.BlockCopy(BitConverter.GetBytes(0), 0, tmp, sizeof(uint), sizeof(int));
@@ -31,9 +31,11 @@ namespace T2 {
             int size = BitConverter.ToInt32(msg, offset);
             offset += sizeof(int);
 
-            inputs = new List<InputType>(size);
+            byte[] tmp = new byte[size];
             if(size > 0)
-                Buffer.BlockCopy(msg, offset, inputs.ToArray(), 0, size * sizeof(InputType));
+                Buffer.BlockCopy(msg, offset, tmp, 0, size);
+
+            inputs = new List<byte>(tmp);
 
             return offset + size * sizeof(InputType);
         }
@@ -45,13 +47,17 @@ namespace T2 {
 
         public int m_iD = -1;
         uint m_buffersize = 6;
+        [SerializeField] bool onlyClientSide = false;
 
         List<d_Input> m_inputQueue = new List<d_Input>();
+        d_Input m_currentInputElement = new d_Input();
         
         void Start() {
 #if UNITY_SERVER
-            Destroy(this);
-            return;
+            if (onlyClientSide) {
+                Destroy(this);
+                return;
+            }
 #endif
             s_refList.Add(this);
         }
@@ -62,16 +68,16 @@ namespace T2 {
         
         void Update() {
             if (Input.GetKey(KeyCode.W))
-                m_inputQueue[m_inputQueue.Count - 1].inputs.Add(InputType.FORWARD);
+                m_currentInputElement.inputs.Add((byte)InputType.FORWARD);
 
             if (Input.GetKey(KeyCode.A))
-                m_inputQueue[m_inputQueue.Count - 1].inputs.Add(InputType.LEFT);
+                m_currentInputElement.inputs.Add((byte)InputType.LEFT);
 
             if (Input.GetKey(KeyCode.S))
-                m_inputQueue[m_inputQueue.Count - 1].inputs.Add(InputType.BACKWARD);
+                m_currentInputElement.inputs.Add((byte)InputType.BACKWARD);
 
             if (Input.GetKey(KeyCode.D))
-                m_inputQueue[m_inputQueue.Count - 1].inputs.Add(InputType.RIGHT);
+                m_currentInputElement.inputs.Add((byte)InputType.RIGHT);
         }
 
         public d_Input GetInputForTick(uint tick) {
@@ -85,6 +91,7 @@ namespace T2 {
             d_Input element = new d_Input();
             element.tick = tick + m_buffersize;
             m_inputQueue.Add(element);
+            m_currentInputElement = element;
         }
         
         public void AddNewElement(d_Input tick) {
@@ -92,6 +99,7 @@ namespace T2 {
                 return;
 
             m_inputQueue.Add(tick);
+            m_currentInputElement = tick;
         }
 
         public byte[] Encrypt() {

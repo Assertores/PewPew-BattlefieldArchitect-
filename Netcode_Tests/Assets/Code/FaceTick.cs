@@ -20,9 +20,18 @@ namespace T2 {
         }
 
         void ServerTick(uint tick) {
-            foreach(var IN in FaceInput.s_refList) {
-                foreach(var it in IN.GetInputForTick(tick).inputs) {
-                    switch (it) {
+            
+
+            foreach (var IN in FaceInput.s_refList) {
+                Debug.Log("[Server] start calculating tick " + tick + " for client " + IN.m_iD);
+                d_Input tmp = IN.GetInputForTick(tick);
+                if (tmp == null || tmp.inputs == null)
+                    continue;
+
+                foreach (var it in tmp.inputs) {
+                    Debug.Log("[Server] client " + IN.m_iD + " has inputed " + (InputType)it);
+
+                    switch ((InputType)it) {
                     case InputType.FORWARD:
                         m_exampleObject.transform.position += new Vector3(Time.fixedDeltaTime, 0, 0);
                         break;
@@ -46,6 +55,8 @@ namespace T2 {
                     }
                 }
             }
+
+            Debug.Log("[Server] example object is now at " + m_exampleObject.transform.position);
         }
     }
 }
