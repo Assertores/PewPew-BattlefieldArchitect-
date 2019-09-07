@@ -167,8 +167,10 @@ namespace T2 {
                 return;
 
             foreach(var it in state.states) {
+                print(it.iD);
                 GSObject element = m_objects.Find(x => x.m_iD == it.iD);
                 if (!element) {//TODO: somehow new element
+                    print("element not found");
                     continue;
                 }
                 element.m_health = it.health;
@@ -176,6 +178,7 @@ namespace T2 {
             }
             foreach(var it in m_objects) {
                 if(!state.states.Exists(x => x.iD == it.m_iD)) {//TODO: somehow element was removed
+                    print("element " + it.m_iD + " not in new gamestate");
                     continue;
                 }
             }
