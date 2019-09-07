@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using System;
+using System.Text;
 
 namespace T2 {
 
@@ -54,7 +55,7 @@ namespace T2 {
         }
 
         public void Decrypt(byte[] msg, int offset) {
-            int sizeofGameState = sizeof(uint) + 3 * sizeof(float);
+            int sizeofGameState = sizeof(uint) + 4 * sizeof(float);
             tick = BitConverter.ToUInt32(msg, offset);
             offset += sizeof(uint);
             isDelta = true;
@@ -63,24 +64,38 @@ namespace T2 {
             offset += sizeof(uint);
 
             states = new List<GameStateItem>((msg.Length - offset) / sizeofGameState);
-            for (int i = 0; i < states.Count; i++) {
-                Buffer.BlockCopy(msg, offset + i * sizeofGameState, states[i].data, 0, sizeofGameState);
+            for (int i = 0; i < (msg.Length - offset) / sizeofGameState; i++) {
+                GameStateItem tmp = new GameStateItem();
+                //Buffer.BlockCopy(msg, offset + i * sizeofGameState, tmp.data, 0, sizeofGameState);
+                
+                tmp.iD = BitConverter.ToUInt32(msg, offset + i * sizeofGameState);
+                tmp.health = BitConverter.ToSingle(msg, offset + i * sizeofGameState + sizeof(uint));
+                tmp.posX = BitConverter.ToSingle(msg, offset + i * sizeofGameState + sizeof(uint) + sizeof(float));
+                tmp.posY = BitConverter.ToSingle(msg, offset + i * sizeofGameState + sizeof(uint) + 2 * sizeof(float));
+                tmp.posZ = BitConverter.ToSingle(msg, offset + i * sizeofGameState + sizeof(uint) + 3 * sizeof(float));
+
+                states.Add(tmp);
             }
         }
 
         public bool CreateFullTick(Gamestate reference) {
-            if (reference.tick != refTick)
-                return false;
-            if (reference.isDelta)
-                return false;
+            //if (reference.tick != refTick)
+            //    return false;
+            //if (reference.isDelta)
+            //    return false;
 
-            List<GameStateItem> newState = new List<GameStateItem>(states);
-            foreach (var it in reference.states) {
-                if (!newState.Exists(x => x.iD == it.iD))
-                    newState.Add(it);
+            //List<GameStateItem> newState = new List<GameStateItem>(states);
+            if(states == null) {
+                states = new List<GameStateItem>();
+            }
+            if(reference.states != null) {
+                foreach (var it in reference.states) {
+                    if (!states.Exists(x => x.iD == it.iD))
+                        states.Add(it);
+                }
             }
 
-            states = newState;
+            //states = newState;
             isDelta = false;
             return true;
         }
@@ -135,11 +150,14 @@ namespace T2 {
                 newState.AddRange(start.states);
 
             foreach (var it in states) {
-                if (!newState.Exists(x => x.iD == it.iD) && lv > 0.5f) {
-                    newState.Add(it);
+                if (!newState.Exists(x => x.iD == it.iD)) {
+                    if(lv > 0.5f)
+                        newState.Add(it);
+
                     continue;
                 }
                 int index = newState.FindIndex(x => x.iD == it.iD);
+                Debug.Log("1: " + index);
                 GameStateItem element = newState[index];
                 element.posX = Mathf.Lerp(element.posX, it.posX, lv);
                 element.posY = Mathf.Lerp(element.posY, it.posY, lv);
@@ -184,7 +202,6 @@ namespace T2 {
                 return;
 
             foreach(var it in state.states) {
-                print(it.iD);
                 GSObject element = m_objects.Find(x => x.m_iD == it.iD);
                 if (!element) {//TODO: somehow new element
                     print("element not found");
