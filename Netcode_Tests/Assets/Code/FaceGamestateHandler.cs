@@ -156,6 +156,23 @@ namespace T2 {
             refTick = start.refTick;
             return true;
         }
+
+        public override string ToString() {
+            StringBuilder stg = new StringBuilder();
+            stg.Append("Tick: " + tick + ", ");
+            stg.Append("isDelta: " + isDelta + ", ");
+            stg.Append("isLerped: " + isLerped + ", ");
+            stg.Append("reference Tick: " + refTick);
+
+            foreach (var it in states) {
+                stg.Append("\n");
+                stg.Append("ID: " + it.iD + ", ");
+                stg.Append("Health: " + it.health + ", ");
+                stg.Append("pos: " + it.posX + ", " + it.posY + ", " + it.posZ);
+            }
+
+            return stg.ToString();
+        }
     }
 
     public class FaceGamestateHandler : Singelton<FaceGamestateHandler> {

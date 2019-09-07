@@ -89,6 +89,7 @@ namespace T2 {
             m_currentTick = min;
 
             Gamestate currentState = FaceGamestateHandler.s_singelton.CreateGameState(m_currentTick);
+            Debug.Log("[Server] State: \n" + currentState.ToString());
             foreach (var it in clients) {
                 it.gameStates.Add(currentState);
             }
@@ -189,6 +190,8 @@ namespace T2 {
 
             Gamestate currentGamestate = upComingStates.Find(x => x.tick == min);
 
+            Debug.Log("[Client] State: \n" + currentGamestate.ToString());
+
             if (currentGamestate.tick > m_currentTick) {
                 uint max = 0;
                 foreach (var it in pastStates) {
@@ -202,7 +205,9 @@ namespace T2 {
                 pastStates.Add(currentGamestate);
             }
             pastStates.RemoveAll(x => x.tick < currentGamestate.refTick);
-            
+
+            Debug.Log("[Client] Recreated State: \n" + currentGamestate.ToString());
+
             FaceGamestateHandler.s_singelton.ApplyGameState(currentGamestate);
             DoTick?.Invoke(m_currentTick);
 
@@ -286,6 +291,8 @@ namespace T2 {
                 Gamestate confirmedStateCopy = it.gameStates.Find(x => x.tick == it.confirmedTick);
                 currentStateCopy.CreateDelta(confirmedStateCopy);
 
+                Debug.Log("[Server] DeltaState: \n" + currentStateCopy.ToString());
+
                 byte[] enc = currentStateCopy.Encrypt();
                 byte[] msg = new byte[enc.Length + 1];
                 msg[0] = (byte)MessageType.NON;
@@ -304,6 +311,8 @@ namespace T2 {
         void HandleNON(byte[] data) {
             Gamestate element = new Gamestate();
             element.Decrypt(data, 1);
+
+            Debug.Log("[Client] server State message: \n" + element.ToString());
 
             if (element.tick <= m_currentTick)
                 return;

@@ -39,16 +39,16 @@ namespace T2 {
                         m_exampleObject.transform.position -= new Vector3(Time.fixedDeltaTime, 0, 0);
                         break;
                     case InputType.LEFT:
-                        m_exampleObject.transform.position += new Vector3(0, Time.fixedDeltaTime, 0);
-                        break;
-                    case InputType.RIGHT:
-                        m_exampleObject.transform.position -= new Vector3(0, Time.fixedDeltaTime, 0);
-                        break;
-                    case InputType.UP:
                         m_exampleObject.transform.position += new Vector3(0, 0, Time.fixedDeltaTime);
                         break;
-                    case InputType.DOWN:
+                    case InputType.RIGHT:
                         m_exampleObject.transform.position -= new Vector3(0, 0, Time.fixedDeltaTime);
+                        break;
+                    case InputType.UP:
+                        m_exampleObject.transform.position += new Vector3(0, Time.fixedDeltaTime, 0);
+                        break;
+                    case InputType.DOWN:
+                        m_exampleObject.transform.position -= new Vector3(0, Time.fixedDeltaTime, 0);
                         break;
                     default:
                         break;
