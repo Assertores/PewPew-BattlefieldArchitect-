@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5906789159644270489
+--- !u!1 &1020188656846151831
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5548423460151412799}
-  - component: {fileID: 7326965579343987252}
-  - component: {fileID: 7868164988789063415}
-  - component: {fileID: 2824531097594701665}
-  - component: {fileID: 2218319396170387668}
-  - component: {fileID: -6744262462311527876}
+  - component: {fileID: 6328012598949331552}
+  - component: {fileID: 4284890852579005542}
+  - component: {fileID: 7687364515122044731}
+  - component: {fileID: 206182210994347129}
+  - component: {fileID: 1568528707367255737}
+  - component: {fileID: 1568528707367255738}
   m_Layer: 0
-  m_Name: Pawn
-  m_TagString: Pawn
+  m_Name: HealFountain
+  m_TagString: Healer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5548423460151412799
+--- !u!4 &6328012598949331552
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
+  m_GameObject: {fileID: 1020188656846151831}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -39.7, y: 3, z: 30.4}
+  m_LocalScale: {x: 1, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7326965579343987252
+--- !u!33 &4284890852579005542
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7868164988789063415
+  m_GameObject: {fileID: 1020188656846151831}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &7687364515122044731
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
+  m_GameObject: {fileID: 1020188656846151831}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -81,57 +81,45 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &2824531097594701665
+--- !u!136 &206182210994347129
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
+  m_GameObject: {fileID: 1020188656846151831}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.5000001
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2218319396170387668
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &1568528707367255737
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
+  m_GameObject: {fileID: 1020188656846151831}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a7ed50208ea9a246ab04f6decb51938, type: 3}
+  m_Script: {fileID: 11500000, guid: 253d1e10634ddde4d85710f4d9afd845, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
-  isAttacking: 0
-  health: 100
-  maxHealth: 100
-  attackDistance: 5
-  attackDamage: 2
---- !u!195 &-6744262462311527876
-NavMeshAgent:
+  closePawns: []
+  healAmount: 1
+--- !u!135 &1568528707367255738
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906789159644270489}
+  m_GameObject: {fileID: 1020188656846151831}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  serializedVersion: 2
+  m_Radius: 5
+  m_Center: {x: 0, y: -1, z: 0}
