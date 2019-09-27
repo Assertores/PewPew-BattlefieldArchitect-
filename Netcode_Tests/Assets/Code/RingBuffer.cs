@@ -30,7 +30,7 @@ public class RingBuffer<T> {
 				
 			}
 			if(m_highend-m_lowend >= m_backingArray.Length) {
-				T[] tmp = new T[m_backingArray.Length * 2];
+				T[] tmp = new T[Mathf.NextPowerOfTwo(m_highend - m_lowend + 1)];
 				int firstBlock = m_backingArray.Length - m_lowPos;
 				int elementSize = System.Buffer.ByteLength(m_backingArray)/m_backingArray.Length;
 				System.Buffer.BlockCopy(m_backingArray, m_lowPos * elementSize, tmp, 0, firstBlock * elementSize);
