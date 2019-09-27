@@ -24,4 +24,8 @@ public abstract class Singelton<T> : MonoBehaviour where T : MonoBehaviour{
         }
         m_singleton = this as T;
     }
+
+	public static bool Exists() {
+		return m_singleton == default;
+	}
 }
