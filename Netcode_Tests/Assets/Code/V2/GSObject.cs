@@ -18,7 +18,8 @@ namespace T2 {
             FaceGamestateHandler.s_singelton.m_objects.Add(this);
         }
         private void OnDestroy() {
-            FaceGamestateHandler.s_singelton.m_objects.Remove(this);
+			if(FaceGamestateHandler.Exists())
+				FaceGamestateHandler.s_singelton.m_objects.Remove(this);
         }
     }
 }
