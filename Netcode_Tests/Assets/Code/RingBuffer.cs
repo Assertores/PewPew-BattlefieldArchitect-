@@ -27,7 +27,6 @@ public class RingBuffer<T> {
 				m_lowend = key;
 			}else if(key > m_highend) {
 				m_highend = key;
-				
 			}
 			if(m_highend-m_lowend >= m_backingArray.Length) {
 				T[] tmp = new T[Mathf.NextPowerOfTwo(m_highend - m_lowend + 1)];
@@ -58,6 +57,7 @@ public class RingBuffer<T> {
 		if (key <= m_lowend)
 			return;
 
+		ClearRange(m_lowend, key);
 		m_lowPos += key - m_lowend;
 		m_lowPos = Lib.mod(m_lowPos, m_backingArray.Length);
 		m_lowend = key;
@@ -70,7 +70,24 @@ public class RingBuffer<T> {
 		if (key >= m_highend)
 			return;
 
+		ClearRange(key + 1, m_highend + 1);
 		m_highend = key;
+	}
+
+	/// <summary>
+	/// clears a range and takes care of looping around
+	/// </summary>
+	/// <param name="start">includet</param>
+	/// <param name="end">excludet</param>
+	public void ClearRange(int start, int end) {
+		start = index(start);
+		end = index(end);
+		if(start <= end) {
+			System.Array.Clear(m_backingArray, start, end - start);
+		} else {
+			System.Array.Clear(m_backingArray, 0, end);
+			System.Array.Clear(m_backingArray, start, m_backingArray.Length - start);
+		}
 	}
 
 	public override string ToString() {
