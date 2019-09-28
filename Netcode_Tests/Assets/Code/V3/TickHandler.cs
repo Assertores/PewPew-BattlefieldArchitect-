@@ -32,8 +32,13 @@ namespace NT3 {
 		}
 #endif
 
-		public void SimulateUptoTick(int maxTick) {
-
+		public int Simulate() {
+			//server
+			//	if(no new input available
+			//		return min value
+			//	for all ticks lower than lowest tick
+			//		simulate
+			return m_currentTick;
 		}
 
 		private void FixedUpdate() {

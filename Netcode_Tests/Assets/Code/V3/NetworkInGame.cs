@@ -22,7 +22,33 @@ namespace NT3 {
 		public string m_iP = "127.0.0.1";
 
 #if UNITY_SERVER
+		void Start() {
+            socket = new UdpClient(11000);
+            Debug.Log("[Server] server is ready and lisents");
+            socket.DontFragment = true;
+        }
+        private void OnDestroy() {
+            socket.Close();
+        }
 
+		private void Update() {
+			if (!Listen())
+				return;
+
+			int tick = TickHandler.s_singelton.Simulate();
+			if (tick == int.MinValue)
+				return;
+
+			Send(tick);
+		}
+
+		bool Listen() {
+			return false;
+		}
+
+		void Send(int tick) {
+
+		}
 #else
 		void Start() {
 			socket = new UdpClient();
