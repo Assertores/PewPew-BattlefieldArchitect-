@@ -5,8 +5,8 @@ using UnityEngine;
 namespace NT3 {
 	public class GameState {
 
-		public void Encrypt() {
-
+		public byte[] Encrypt() {
+			return null;
 		}
 
 		public void Decrypt(byte[] msg, int offset) {

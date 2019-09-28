@@ -6,8 +6,8 @@ namespace NT3 {
 	public class InputElement {
 
 
-		public void Encrypt() {
-
+		public byte[] Encrypt() {
+			return null;
 		}
 
 		public void Decrypt(byte[] msg, int offset) {
