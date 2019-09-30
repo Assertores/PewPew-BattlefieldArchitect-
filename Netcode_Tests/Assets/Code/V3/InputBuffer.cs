@@ -17,6 +17,7 @@ namespace NT3 {
 
 	public class InputBuffer : RingBuffer<InputElement> {
 
+		public int m_iD = -1;
 		public InputElement m_currentInputElement { get; private set; } = new InputElement();
 
 		public new InputElement this[int key] {
