@@ -5,6 +5,7 @@ using UnityEngine;
 namespace NT3 {
 	public class GameState {
 
+		public int RefTick = -1;
 		public byte[] Encrypt() {
 			return null;
 		}
@@ -21,7 +22,7 @@ namespace NT3 {
 			return false;
 		}
 
-		public bool Lerp(GameState start, GameState end, uint t) {
+		public bool Lerp(GameState start, GameState end, int t) {
 			return false;
 		}
 	}

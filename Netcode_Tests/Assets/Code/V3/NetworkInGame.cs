@@ -9,6 +9,11 @@ using System.Net.Sockets;
 //#define UNITY_SERVER
 namespace NT3 {
 
+	class ClientInfos {
+		public bool m_isConnected;
+		public IPEndPoint m_eP;
+	}
+
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
 
 	public class NetworkInGame : Singelton<NetworkInGame> {
@@ -16,20 +21,22 @@ namespace NT3 {
 		UdpClient socket;
 		public int m_serverPort = 11000;
 
-        int nextID = 0;
+		int nextID = 0;
 
 		IPEndPoint ep;
 		public string m_iP = "127.0.0.1";
 
 #if UNITY_SERVER
+		List<ClientInfos> m_clients = new List<ClientInfos>();
+
 		void Start() {
-            socket = new UdpClient(11000);
-            Debug.Log("[Server] server is ready and lisents");
-            socket.DontFragment = true;
-        }
-        private void OnDestroy() {
-            socket.Close();
-        }
+			socket = new UdpClient(11000);
+			Debug.Log("[Server] server is ready and lisents");
+			socket.DontFragment = true;
+		}
+		private void OnDestroy() {
+			socket.Close();
+		}
 
 		private void Update() {
 			if (!Listen())
@@ -43,7 +50,81 @@ namespace NT3 {
 		}
 
 		bool Listen() {
-			return false;
+			if (socket.Available <= 0)
+				return false;
+
+			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 11000);
+			byte[] data = socket.Receive(ref remoteEP);
+
+			Debug.Log("[Server] reseaved package");
+
+			MessageType messageType = (MessageType)data[0];
+			switch (messageType) {
+			case MessageType.NON:
+				HandleNON(data, remoteEP);
+				break;
+			case MessageType.CONNECT:
+				HandleConnect(data, remoteEP);
+				break;
+			case MessageType.DISCONNECT:
+				HandleDisconnect(data, remoteEP);
+				break;
+			case MessageType.RECONNECT:
+				HandleReconnect(data, remoteEP);
+				break;
+			default:
+				Debug.Log("[Server] package type was not handled" + messageType);
+				break;
+			}
+
+			return true;
+		}
+
+		void HandleNON(byte[] data, IPEndPoint ep) {
+
+		}
+
+		void HandleConnect(byte[] data, IPEndPoint ep) {
+			ClientInfos element = new ClientInfos();
+
+			element.m_isConnected = true;
+			element.m_eP = ep;
+
+			m_clients.Add(element);
+
+			TickHandler.s_singelton.AddNewClient();
+
+			Debug.Log("[Server] new client connected. id: " + (m_clients.Count-1));
+
+			byte[] msg = new byte[1 + sizeof(int)];
+			msg[0] = (byte)MessageType.NEWID;
+			Buffer.BlockCopy(BitConverter.GetBytes(nextID), 0, msg, 1, sizeof(int));
+			socket.Send(msg, msg.Length, ep);
+			nextID++;
+		}
+
+		void HandleDisconnect(byte[] data, IPEndPoint ep) {
+			int RemoteID = BitConverter.ToInt32(data, 1);
+
+			if (RemoteID <= m_clients.Count)
+				return;
+
+			m_clients[RemoteID].m_isConnected = false;
+			m_clients[RemoteID].m_eP = ep;
+
+			Debug.Log("[Server] client " + RemoteID + " disconnected");
+		}
+
+		void HandleReconnect(byte[] data, IPEndPoint ep) {
+			int RemoteID = BitConverter.ToInt32(data, 1);
+
+			if (RemoteID <= m_clients.Count)
+				HandleConnect(data, ep);
+
+			m_clients[RemoteID].m_isConnected = true;
+			m_clients[RemoteID].m_eP = ep;
+
+			Debug.Log("[Server] client " + RemoteID + " reconnected");
 		}
 
 		void Send(int tick) {
@@ -106,7 +187,7 @@ namespace NT3 {
 
 			if (TickHandler.s_singelton.AddGameState(element, tick)) {
 				element.Decrypt(data, 1 + sizeof(int));
-				TickHandler.s_singelton.m_input.m_inputBuffer.FreeUpTo(tick);
+				TickHandler.s_singelton.m_input.FreeUpTo(tick);
 			}
 		}
 
@@ -120,7 +201,7 @@ namespace NT3 {
 			msg.Add((byte)MessageType.NON);
 			msg.AddRange(BitConverter.GetBytes(TickHandler.s_singelton.m_input.m_iD));
 
-			InputBuffer ib = TickHandler.s_singelton.m_input.m_inputBuffer;
+			InputBuffer ib = TickHandler.s_singelton.m_input;
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++) {
 				byte[] tmp = ib[i].Encrypt();
 				if (tmp == null)
