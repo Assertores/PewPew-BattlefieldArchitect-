@@ -9,6 +9,8 @@ public class TeamCommander : MonoBehaviour
     [SerializeField] private List<FountainController> fountainControllers;
     [SerializeField] private PawnController[] pawns;
 
+    public Camera mainCam;
+
     private void Awake()
     {
         pawns = FindObjectsOfType<PawnController>();

@@ -18,7 +18,7 @@ public class FountainController : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.25f);
             SprayHeal();
         }
     }
@@ -27,7 +27,7 @@ public class FountainController : MonoBehaviour
     {
         foreach (PawnController pawn in closePawns.Where(p => p != null && p.team == team))
         {
-            pawn.Heal(healAmount);
+            pawn.Heal(healAmount * 5f);
         }
     }
 

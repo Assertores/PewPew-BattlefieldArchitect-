@@ -45,3 +45,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healFountains: []
   fountainControllers: []
+  pawns: []
+  mainCam: {fileID: 0}
