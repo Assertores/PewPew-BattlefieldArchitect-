@@ -22,8 +22,6 @@ namespace NT3 {
 
         List<Client> m_clients = new List<Client>();
 #else
-
-		RingBuffer<GameState> m_gameStates = new RingBuffer<GameState>();
 		[SerializeField] InputHandler m_inputHandler;
 		public InputBuffer m_input { get; private set; }
 #endif
@@ -78,27 +76,27 @@ namespace NT3 {
 			m_input = m_inputHandler.m_inputBuffer;
 		}
 		private void FixedUpdate() {
-			if(m_gameStates.GetHighEnd() < m_currentTick) {
+			if(GameStateHandler.s_singelton.m_gameStates.GetHighEnd() < m_currentTick) {
 				Debug.Log("Network Pause");
 				return;
 			}
 			GameState nextState = default;
 			int nextStateTick = m_currentTick;
 			for(; nextState == default; nextStateTick++) {
-				nextState = m_gameStates[nextStateTick];
+				nextState = GameStateHandler.s_singelton.m_gameStates[nextStateTick];
 			}
 			if(nextStateTick != m_currentTick) {
 				GameState tmp = new GameState();
-				if(nextState.RefTick < m_gameStates.GetLowEnd() || m_gameStates[nextState.RefTick] == default) {
+				if(nextState.m_refTick < GameStateHandler.s_singelton.m_gameStates.GetLowEnd() || GameStateHandler.s_singelton.m_gameStates[nextState.m_refTick] == default) {
 					Debug.LogError("Reference Tick for Lerp not Found");
 					return;//no idea how to fix this
 				}
 
-				tmp.Lerp(m_gameStates[nextState.RefTick], nextState, m_currentTick);
+				tmp.Lerp(GameStateHandler.s_singelton.m_gameStates[nextState.m_refTick], nextState, m_currentTick);
 				nextState = tmp;
 			}
 
-			//TODO: apply nextTick to live data
+			GameStateHandler.s_singelton.SetGameState(m_currentTick);
 
 			s_DoTick?.Invoke(m_currentTick, GetInputs());
 			m_currentTick++;
@@ -109,7 +107,7 @@ namespace NT3 {
 			if (tick < m_currentTick)
 				return false;
 
-			m_gameStates[tick] = newGameState;
+			GameStateHandler.s_singelton.m_gameStates[tick] = newGameState;
 			return true;
 		}
 #endif
