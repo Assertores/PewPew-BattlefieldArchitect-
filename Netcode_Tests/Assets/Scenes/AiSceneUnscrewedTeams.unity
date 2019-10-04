@@ -2318,6 +2318,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HealFountain (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1020188656846151831, guid: 10658a968aa94be43b1efb43e259d40f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6328012598949331552, guid: 10658a968aa94be43b1efb43e259d40f,
         type: 3}
       propertyPath: m_LocalPosition.x

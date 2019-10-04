@@ -35,7 +35,10 @@ public class TeamCommander : MonoBehaviour
         foreach (FountainController fountain in fountainControllers.Where(f => f.team == team))
         {
             if (Vector3.Distance(targetPosition, fountain.transform.position) < distance)
+            {
                 returnPosition = fountain.transform.position;
+                distance = Vector3.Distance(targetPosition, returnPosition);
+            }
         }
 
         if (returnPosition == Vector3.zero)
@@ -47,7 +50,11 @@ public class TeamCommander : MonoBehaviour
     public PawnController FindClosestEnemy(Vector3 shooterPosition, int shooterTeam)
     {
         float minDistance = 99999999f;
-        PawnController tempEnemy = pawns[0];
+        PawnController tempEnemy;
+        if (pawns[0] != null)
+            tempEnemy = pawns[0];
+        else
+            tempEnemy = new PawnController();
 
         foreach (PawnController pawn in pawns.Where(p => p != null && p.team != shooterTeam))
         {

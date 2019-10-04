@@ -77,7 +77,7 @@ public class PawnController : MonoBehaviour
     {
         closestFountain = teamCommander.FindClosestHealFountain(transform.position, team);
         targetEnemy = teamCommander.FindClosestEnemy(transform.position, team);
-        
+
         if (EvaluateAttack() < EvaluateHeal())
         {
             GoToHeal(closestFountain);
@@ -95,28 +95,29 @@ public class PawnController : MonoBehaviour
         float enemyDistance = Mathf.Clamp(Vector3.Distance(transform.position, targetEnemy.transform.position), 0f, 30f);
         float enemyDistanceFactor = Mathf.Clamp(1f - 0.3f * Mathf.Clamp(enemyDistance / 30f, 0f, 1f), 0f, 1f);
         float enemyHealthFactor = Mathf.Clamp(1f - 0.15f * Mathf.Clamp(targetEnemy.health / targetEnemy.maxHealth, 0f, 1f), 0f, 1f);
-        float ownHealthFactor = Mathf.Clamp(0.5f + 0.5f * Mathf.Clamp(health / maxHealth, 0f, 1f) , 0f, 1f);
+        float ownHealthFactor = Mathf.Clamp(0.5f + 0.5f * Mathf.Clamp(health / maxHealth, 0f, 1f), 0f, 1f);
         float enemyFountainDistance = Vector3.Distance(transform.position, teamCommander.FindClosestHealFountain(transform.position, enemyTeam));
         float enemyFountainFactor = Mathf.Clamp(enemyFountainDistance / 5f, 0f, 1f);
-        return enemyDistanceFactor * enemyHealthFactor * ownHealthFactor;
+        return enemyDistanceFactor * enemyHealthFactor * ownHealthFactor * enemyFountainDistance;
     }
 
     //HEAL
     private float EvaluateHeal()
-    {        
+    {
         closestFountain = teamCommander.FindClosestHealFountain(transform.position, team);
         float fountainDistance = Vector3.Distance(transform.position, closestFountain);
         float fountainDistanceFactor = Mathf.Clamp(1f - 0.1f * Mathf.Clamp((fountainDistance / 30), 0f, 1f), 0f, 1f);
         float ownHealthFactor = Mathf.Clamp(1f - 1f * Mathf.Clamp(health / maxHealth, 0f, 1f), 0f, 1f);
         return fountainDistanceFactor * ownHealthFactor;
-    }    
+    }
     #endregion
 
     #region Doing Things
     private void GoToAttack(Vector3 target)
     {
         isAttacking = true;
-        navMeshAgent.SetDestination(targetEnemy.transform.position);
+        if (navMeshAgent.enabled)
+            navMeshAgent.SetDestination(targetEnemy.transform.position);
         if (Vector3.Distance(transform.position, targetEnemy.transform.position) < attackDistance)
             targetEnemy.TakeDamage(attackDamage);
     }
@@ -124,7 +125,8 @@ public class PawnController : MonoBehaviour
     private void GoToHeal(Vector3 target)
     {
         isAttacking = false;
-        navMeshAgent.SetDestination(target);
+        if (navMeshAgent.enabled)
+            navMeshAgent.SetDestination(target);
     }
 
     public void Heal(float amount)
