@@ -22,7 +22,7 @@ public static class CurveResponder
             case CurveType.Quadratic:
                 return Mathf.Clamp(m * Mathf.Pow(x - c, k) + b, 0f, 1f);
             case CurveType.Logistic:
-                return 1;
+                return 1; //Mathf.Clamp(k / (1+Mathf.));
             case CurveType.Logit:
                 return 1;
             default:

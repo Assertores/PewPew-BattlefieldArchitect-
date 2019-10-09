@@ -78,7 +78,7 @@ public class PawnController : MonoBehaviour
         closestFountain = teamCommander.FindClosestHealFountain(transform.position, team);
         targetEnemy = teamCommander.FindClosestEnemy(transform.position, team);
 
-        if (EvaluateAttack() < EvaluateHeal())
+        if (EvaluateAttack() < EvaluateHeal() * 10)
         {
             GoToHeal(closestFountain);
         }
