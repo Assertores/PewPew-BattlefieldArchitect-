@@ -15,8 +15,9 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     
     for (int i = 0; i < PointSize; ++i)
     {
-        float dis = distance(float2(id.x, id.y), coords[i].xy);
-        float t = smoothstep( dis ,dis *2, 0.1 * 512);
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x , coords[i].z));
+      //  float dis = distance(float2(id.x, id.y), coords[i].xy);
+        float t = smoothstep( dis ,dis *2, coords[i].w);
         float3 col = lerp(black, white, t);
         mask += col;
     }

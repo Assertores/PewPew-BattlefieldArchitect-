@@ -17,41 +17,48 @@ public class HarvestResources : MonoBehaviour
         //StartCoroutine(HarvestResource());
     }
 
-    IEnumerator HarvestResource()
+    public void SetBuilding()
     {
-        while (true)
-        {
-            yield return new WaitForSeconds(0.2f);
-            test.ChangeColor(texture, (int)pos.x, (int)pos.y, 20, isreduce);
-        }
+
+
     }
 
-    IEnumerator RefreshResouceValue()
-    {
-        yield return new WaitForSeconds(1f);
-        Vector2 pos = GetPixelUVPosition();
-        float res = test.ReadRessourceValue(texture, (int)pos.x, (int)pos.y, 20);
-    }
 
-    Vector2 GetPixelUVPosition()
-    {
-        RaycastHit hit;
-        Vector2 pixelUV;
+    //IEnumerator HarvestResource()
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(0.2f);
+    //        test.ChangeColor(texture, (int)pos.x, (int)pos.y, 20, isreduce);
+    //    }
+    //}
 
-        if (Physics.Raycast(this.transform.position, Vector3.down, out hit, 2))
-        {
-            Renderer renderer = hit.transform.GetComponent<Renderer>();
-            //Texture texture = renderer.material.mainTexture as Texture2D;
-            texture = renderer.material.GetTexture("_NoiseMap") as Texture2D;
+    //IEnumerator RefreshResouceValue()
+    //{
+    //    yield return new WaitForSeconds(1f);
+    //    Vector2 pos = GetPixelUVPosition();
+    //    float res = test.ReadRessourceValue(texture, (int)pos.x, (int)pos.y, 20);
+    //}
 
-            pixelUV = hit.textureCoord;
-            pixelUV.x = Mathf.FloorToInt(pixelUV.x *= texture.width);
-            pixelUV.y = Mathf.FloorToInt(pixelUV.y *= texture.height);
+    //Vector2 GetPixelUVPosition()
+    //{
+    //    RaycastHit hit;
+    //    Vector2 pixelUV;
 
-            print("pixels " + pixelUV.x + " " + pixelUV.y);
-            return pixelUV;
-        }
-        return Vector2.zero;
-    }
+    //    if (Physics.Raycast(this.transform.position, Vector3.down, out hit, 2))
+    //    {
+    //        Renderer renderer = hit.transform.GetComponent<Renderer>();
+    //        //Texture texture = renderer.material.mainTexture as Texture2D;
+    //        texture = renderer.material.GetTexture("_NoiseMap") as Texture2D;
+
+    //        pixelUV = hit.textureCoord;
+    //        pixelUV.x = Mathf.FloorToInt(pixelUV.x *= texture.width);
+    //        pixelUV.y = Mathf.FloorToInt(pixelUV.y *= texture.height);
+
+    //        print("pixels " + pixelUV.x + " " + pixelUV.y);
+    //        return pixelUV;
+    //    }
+    //    return Vector2.zero;
+    //}
 
 }

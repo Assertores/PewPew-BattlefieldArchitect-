@@ -28,10 +28,10 @@ public class TestSetPixels : MonoBehaviour
     }
     void Start()
     {
-        kernel = compute.FindKernel("CSMain");
-        result = new RenderTexture(512, 512, 24);
-        result.enableRandomWrite = true;
-        result.Create();
+        //kernel = compute.FindKernel("CSMain");
+        //result = new RenderTexture(512, 512, 24);
+        //result.enableRandomWrite = true;
+        //result.Create();
 
         //compute.SetTexture(kernel, "Result", result);
         //compute.SetVector("coords", center);
@@ -64,15 +64,13 @@ public class TestSetPixels : MonoBehaviour
     private void Update()
     {
 
-            compute.SetInt("PointSize", size);
-            //compute.SetVector("coords", center[i]);
-            compute.SetVectorArray("coords", center);
-            compute.SetTexture(kernel, "Result", result);
+        //compute.SetInt("PointSize", size);
+        //compute.SetVectorArray("coords", center);
+        //compute.SetTexture(kernel, "Result", result);
 
+        //compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
 
-        compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
-
-        rend.material.SetTexture("_NoiseMap", result);
+        //rend.material.SetTexture("_NoiseMap", result);
 
         //RaycastHit hit;
         //if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))
@@ -85,12 +83,6 @@ public class TestSetPixels : MonoBehaviour
 
         //    print("pixels " + pixelUV.x + " " + pixelUV.y);
         //}
-    }
-
-    public void kreis()
-    {
-        //Circle(texture, texture.width / 2, texture.height / 2, 20,);
-
     }
 
     public float ReadRessourceValue(Texture2D tex, int cx, int cy, int r)
@@ -149,9 +141,6 @@ public class TestSetPixels : MonoBehaviour
         tex.SetPixels(tempArray);
         tex.Apply();
     }
-
-
-
 
     public void Circle(Texture2D tex, int cx, int cy, int r, Color col)
     {
