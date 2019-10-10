@@ -13,8 +13,8 @@ public class HarvestResources : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        pos = GetPixelUVPosition();
-        StartCoroutine(HarvestResource());
+        //pos = GetPixelUVPosition();
+        //StartCoroutine(HarvestResource());
     }
 
     IEnumerator HarvestResource()

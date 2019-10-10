@@ -4,21 +4,41 @@ using UnityEngine;
 
 public class TestSetPixels : MonoBehaviour
 {
+    int kernel;
+    Renderer rend;
     public Texture2D texture;
     Material mat;
     bool schalter = false;
     public Color testcolor;
+    public ComputeShader compute;
+    public RenderTexture result;
 
+    public Vector4[] center;
+    public int size = 2;
 
     private void Awake()
     {
-        Renderer rend = GetComponent<Renderer>();
+        //Renderer rend = GetComponent<Renderer>();
+        //texture = Instantiate(rend.material.GetTexture("_NoiseMap")) as Texture2D;
+        //rend.material.SetTexture("_NoiseMap", texture);
+
+        rend = GetComponent<Renderer>();
         texture = Instantiate(rend.material.GetTexture("_NoiseMap")) as Texture2D;
-        rend.material.SetTexture("_NoiseMap", texture);
 
     }
     void Start()
     {
+        kernel = compute.FindKernel("CSMain");
+        result = new RenderTexture(512, 512, 24);
+        result.enableRandomWrite = true;
+        result.Create();
+
+        //compute.SetTexture(kernel, "Result", result);
+        //compute.SetVector("coords", center);
+
+        //compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
+
+        //rend.material.SetTexture("_NoiseMap", result);
 
         //// colors used to tint the first 3 mip levels
         //Color[] colors = new Color[3];
@@ -43,6 +63,16 @@ public class TestSetPixels : MonoBehaviour
 
     private void Update()
     {
+
+            compute.SetInt("PointSize", size);
+            //compute.SetVector("coords", center[i]);
+            compute.SetVectorArray("coords", center);
+            compute.SetTexture(kernel, "Result", result);
+
+
+        compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
+
+        rend.material.SetTexture("_NoiseMap", result);
 
         //RaycastHit hit;
         //if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))

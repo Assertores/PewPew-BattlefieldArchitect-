@@ -1,15 +1,30 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float> Result;
+int PointSize;
+float4 coords[50];
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+RWTexture2D<float4> Result;
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
 {
-    // TODO: insert actual code here!
+    float3 mask = float3(0.0, 0.0, 0.0);
+    const float3 white = float3(1.0, 1.0, 1.0);
+    const float3 black = float3(0.0, 0.0, 0.0);
+    
+    for (int i = 0; i < PointSize; ++i)
+    {
+        float dis = distance(float2(id.x, id.y), coords[i].xy);
+        float t = smoothstep( dis ,dis *2, 0.1 * 512);
+        float3 col = lerp(black, white, t);
+        mask += col;
+    }
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
-	Result[id.xy] =
+    //Result[id.xy] = float4(col, 1.0);
+    Result[id.xy] = float4(mask, 1.0);
+    //Result[id.xy] = float4(id.x & id.y, (id.x & 15) / 15.0, (id.y & 15) / 15.0, 0.0);
 }
+
+
+//clamp(t,0.0,1.0);
