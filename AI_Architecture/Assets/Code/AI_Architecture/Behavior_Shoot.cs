@@ -4,28 +4,44 @@ using UnityEngine;
 
 public class Behavior_Shoot : Behavior
 {
+    public static Behavior_Shoot instance;
+
+    void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
-    public override float Calculate(Pawn pawn)
+
+    public override void Execute(Pawn pawn)
     {
         throw new System.NotImplementedException();
     }
 
-    public override float Execute(Pawn pawn)
+    public override void FindBestTarget(Pawn pawn)
     {
         throw new System.NotImplementedException();
     }
 
-    public override float AxisInputs(string name)
+    protected override float PawnAxisInputs(Pawn pawn, string name)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override float TargetAxisInputs(Pawn pawn, string name)
     {
         throw new System.NotImplementedException();
     }

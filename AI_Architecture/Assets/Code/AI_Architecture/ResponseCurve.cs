@@ -16,6 +16,8 @@ public static class ResponseCurve
     /// </summary>
     public static float RespondCurve(float x, CurveType type, float m, float k, float b, float c)
     {
+        x = Mathf.Clamp(x, 0f, 1f);
+
         switch (type)
         {
             case CurveType.Linear:
@@ -32,5 +34,4 @@ public static class ResponseCurve
                 return 1;//defaulting to 1 to have no effect on behavior-score
         }
     }
-
 }
