@@ -8,7 +8,7 @@ public class ResourceMapChanger : MonoBehaviour
     public static ResourceMapChanger instance { get { return s_Instance; } }
 
     public Renderer texturRenderer;
-    private Texture resourceTexture;
+    private Texture2D resourceTexture;
     private RenderTexture result;
     private int resourceCalcKernel;
     private bool changeMap = false;
@@ -45,35 +45,49 @@ public class ResourceMapChanger : MonoBehaviour
     private void Start()
     {
         fabricCenter = new List<Vector4>();
-  //      texturRenderer = GetComponent<Renderer>();
         resourceTexture = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
+        //texturRenderer.material.SetTexture("_NoiseMap", result);
+
+        //resourceTexture.Resize(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit));
+        //resourceTexture.Apply();
+
 
         resourceCalcKernel = computeShader.FindKernel("CSMain");
-        result = new RenderTexture(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit), 24)
+        //result = new RenderTexture(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit), 24, RenderTextureFormat.RFloat)
+        //{
+        //    enableRandomWrite = true
+        //};
+
+        result = new RenderTexture(resourceTexture.height, resourceTexture.width, 24, RenderTextureFormat.RFloat)
         {
             enableRandomWrite = true
+
         };
+
         result.Create();
+        Graphics.CopyTexture(resourceTexture, result);
     }
 
     private void Update()
     {
         if (fabricCenter.Count > 0 && hierKoennteIhrTickStehen)
         {
+            hierKoennteIhrTickStehen = false;
             CalcRes();
         }
     }
 
-    public void AddFabric(Vector3 pos, float radius)
+    public void AddFabric(Vector3 pos, float intensity, float radius)
     {
         // (pos - texture position) * ppu
-        Vector3 position = (pos - ground) * PixelPerUnit;
-        print(pos);
-        fabricCenter.Add(new Vector4(position.x, position.y, position.z, radius));
+      //  Vector3 position = (pos - ground) * PixelPerUnit;
+
+        fabricCenter.Add(new Vector4(pos.x, pos.z, intensity, radius));
     }
 
     private void CalcRes()
     {
+        computeShader.SetTexture(resourceCalcKernel, "InputTexture", result);
         computeShader.SetInt("PointSize", fabricCenter.Count);
         computeShader.SetVectorArray("coords", fabricCenter.ToArray());
         computeShader.SetTexture(resourceCalcKernel, "Result", result);

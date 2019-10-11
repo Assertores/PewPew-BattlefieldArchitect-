@@ -15,6 +15,8 @@ public class BuildManager : MonoBehaviour
     private float mouseWheelRotation;
     private int currentPrefabIndex = -1;
 
+    Vector2 pixelUV = Vector2.zero;
+
     private void Update()
     {
         HandleNewObjectHotKey();
@@ -32,7 +34,8 @@ public class BuildManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            ResourceMapChanger.instance.AddFabric(currentPlaceableObject.transform.position, 30.0f);
+            ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), 0.5f, 30.0f);
+            
             currentPlaceableObject = null;
         }
     }
@@ -50,6 +53,10 @@ public class BuildManager : MonoBehaviour
         RaycastHit hitInfo;
         if (Physics.Raycast(ray, out hitInfo,1000, ignore))
         {
+            pixelUV = hitInfo.textureCoord;
+            pixelUV.x = Mathf.FloorToInt(pixelUV.x *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").width);
+            pixelUV.y = Mathf.FloorToInt(pixelUV.y *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").height);
+
             currentPlaceableObject.transform.position = hitInfo.point;
             currentPlaceableObject.transform.rotation = Quaternion.FromToRotation(Vector3.up,hitInfo.normal);
         }

@@ -5,26 +5,34 @@ int PointSize;
 float4 coords[50];
 
 RWTexture2D<float4> Result;
+Texture2D<float4> InputTexture;
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-    float3 mask = float3(0.0, 0.0, 0.0);
+    float3 mask = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
     const float3 white = float3(1.0, 1.0, 1.0);
     const float3 black = float3(0.0, 0.0, 0.0);
     
     for (int i = 0; i < PointSize; ++i)
     {
-        float dis = distance(float2(id.x, id.y), float2(coords[i].x , coords[i].z));
+
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x , coords[i].y));
       //  float dis = distance(float2(id.x, id.y), coords[i].xy);
         float t = smoothstep( dis ,dis *2, coords[i].w);
-        float3 col = lerp(black, white, t);
+    //    float3 col = lerp(black, white * coords[i].z, t);
+
+		float3 curCol = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
+		float3 newCol = curCol + coords[i].z;
+        float3 col = lerp(curCol, newCol , t);
+		col = clamp(col,0.0,1.0);
+
+
+     //   float3 col = lerp(black, cnewColurCol , t);
         mask += col;
     }
 
-    //Result[id.xy] = float4(col, 1.0);
     Result[id.xy] = float4(mask, 1.0);
-    //Result[id.xy] = float4(id.x & id.y, (id.x & 15) / 15.0, (id.y & 15) / 15.0, 0.0);
 }
 
 
