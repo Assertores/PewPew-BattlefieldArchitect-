@@ -11,20 +11,8 @@ namespace NT3 {
 
 		int m_currentTick = 0;
 
-		public static System.Action<int, InputBuffer[]> s_DoTick = null;
+		public static System.Action<int> s_DoTick = null;
 
-#if UNITY_SERVER
-        class Client {//weil c# dum ist und mir eine kopie des structs zurück giebt anstadt eine reference auf das struct (Ligt an List bei array würde es funktionieren)
-            
-            public InputBuffer m_inputBuffer = new InputBuffer();//highend = maxTick;
-            public RingBuffer<GameState> m_gameStates = new RingBuffer<GameState>();//lowend = confirmedTick;
-        }
-
-        List<Client> m_clients = new List<Client>();
-#else
-		[SerializeField] InputHandler m_inputHandler;
-		public InputBuffer m_input { get; private set; }
-#endif
 #if UNITY_SERVER
 		public int Simulate() {
 			int min = int.MaxValue;
@@ -66,15 +54,6 @@ namespace NT3 {
 			m_clients.Add(tmp);
 		}
 #else
-		private void Awake() {
-			if (!m_inputHandler) {
-				Debug.Log("no InputHandler asigned");
-				GameObject tmp = new GameObject("AUTO_InputHandler");
-				m_inputHandler = tmp.AddComponent<InputHandler>();
-			}
-
-			m_input = m_inputHandler.m_inputBuffer;
-		}
 		private void FixedUpdate() {
 			if(GameStateHandler.s_singelton.m_gameStates.GetHighEnd() < m_currentTick) {
 				Debug.Log("Network Pause");
@@ -98,9 +77,9 @@ namespace NT3 {
 
 			GameStateHandler.s_singelton.SetGameState(m_currentTick);
 
-			s_DoTick?.Invoke(m_currentTick, GetInputs());
+			s_DoTick?.Invoke(m_currentTick);
 			m_currentTick++;
-			m_input.CreateNewElement(m_currentTick);
+			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.CreateNewElement(m_currentTick);
 		}
 
 		public bool AddGameState(GameState newGameState, int tick) {
@@ -111,17 +90,5 @@ namespace NT3 {
 			return true;
 		}
 #endif
-		InputBuffer[] GetInputs() {
-#if UNITY_SERVER
-			List<InputBuffer> value = new List<InputBuffer>(m_clients.Count);
-			foreach(var it in m_clients) {
-				//if (it.m_isConnected)//only netcode knows who is connected
-					value.Add(it.m_inputBuffer);
-			}
-			return value.ToArray();
-#else
-			return new InputBuffer[] { m_input };
-#endif
-		}
 	}
 }

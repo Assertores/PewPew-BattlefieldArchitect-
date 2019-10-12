@@ -9,11 +9,6 @@ using System.Net.Sockets;
 //#define UNITY_SERVER
 namespace NT3 {
 
-	class ClientInfos {
-		public bool m_isConnected;
-		public IPEndPoint m_eP;
-	}
-
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
 
 	public class NetworkInGame : Singelton<NetworkInGame> {
@@ -21,13 +16,12 @@ namespace NT3 {
 		UdpClient socket;
 		public int m_serverPort = 11000;
 
-		int nextID = 0;
+		int m_nextID = 0;
 
 		IPEndPoint ep;
 		public string m_iP = "127.0.0.1";
 
 #if UNITY_SERVER
-		List<ClientInfos> m_clients = new List<ClientInfos>();
 
 		void Start() {
 			socket = new UdpClient(11000);
@@ -80,37 +74,52 @@ namespace NT3 {
 			return true;
 		}
 
+		/// NON:        byte Type, int ID, {uint tick, InputType[] inputs}[] tickInputs
 		void HandleNON(byte[] data, IPEndPoint ep) {
+			int RemoteID = BitConverter.ToInt32(data, 1);
 
+			if (!GlobalValues.s_singelton.m_clients.Exists(x => x.m_ID == RemoteID))
+				return;
+
+			Client client = GlobalValues.s_singelton.m_clients.Find(x => x.m_ID == RemoteID);
+			int offset = 1 + sizeof(int);
+			while(offset < data.Length) {
+				int tick = BitConverter.ToInt32(data, offset);
+				offset += sizeof(int);
+
+				InputElement tmp = new InputElement();
+				offset = tmp.Decrypt(data, offset);
+				client.m_inputBuffer.AddNewElement(tmp, tick);
+			}
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep) {
-			ClientInfos element = new ClientInfos();
+			Client element = new Client();
 
 			element.m_isConnected = true;
 			element.m_eP = ep;
+			element.m_ID = m_nextID;
+			m_nextID++;
 
-			m_clients.Add(element);
+			GlobalValues.s_singelton.m_clients.Add(element);
 
-			TickHandler.s_singelton.AddNewClient();
-
-			Debug.Log("[Server] new client connected. id: " + (m_clients.Count-1));
+			Debug.Log("[Server] new client connected. id: " + (element.m_ID));
 
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.NEWID;
-			Buffer.BlockCopy(BitConverter.GetBytes(nextID), 0, msg, 1, sizeof(int));
+			Buffer.BlockCopy(BitConverter.GetBytes(element.m_ID), 0, msg, 1, sizeof(int));
 			socket.Send(msg, msg.Length, ep);
-			nextID++;
 		}
 
 		void HandleDisconnect(byte[] data, IPEndPoint ep) {
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
-			if (RemoteID <= m_clients.Count)
+			if(!GlobalValues.s_singelton.m_clients.Exists(x => x.m_ID == RemoteID))
 				return;
 
-			m_clients[RemoteID].m_isConnected = false;
-			m_clients[RemoteID].m_eP = ep;
+			Client target = GlobalValues.s_singelton.m_clients.Find(x => x.m_ID == RemoteID);
+			target.m_isConnected = false;
+			target.m_eP = ep;
 
 			Debug.Log("[Server] client " + RemoteID + " disconnected");
 		}
@@ -118,17 +127,20 @@ namespace NT3 {
 		void HandleReconnect(byte[] data, IPEndPoint ep) {
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
-			if (RemoteID <= m_clients.Count)
+			if (!GlobalValues.s_singelton.m_clients.Exists(x => x.m_ID == RemoteID)) {
 				HandleConnect(data, ep);
+				return;
+			}
 
-			m_clients[RemoteID].m_isConnected = true;
-			m_clients[RemoteID].m_eP = ep;
+			Client target = GlobalValues.s_singelton.m_clients.Find(x => x.m_ID == RemoteID);
+			target.m_isConnected = true;
+			target.m_eP = ep;
 
 			Debug.Log("[Server] client " + RemoteID + " reconnected");
 		}
 
 		void Send(int tick) {
-
+			//foreach(var it in )
 		}
 #else
 		void Start() {
@@ -144,7 +156,7 @@ namespace NT3 {
 		private void OnDestroy() {
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.DISCONNECT;
-			Buffer.BlockCopy(BitConverter.GetBytes(TickHandler.s_singelton.m_input.m_iD), 0, msg, 1, sizeof(int));
+			Buffer.BlockCopy(BitConverter.GetBytes(GlobalValues.s_singelton.m_clients[0].m_ID), 0, msg, 1, sizeof(int));
 			socket.Send(msg, msg.Length);
 
 			socket.Close();
@@ -187,28 +199,27 @@ namespace NT3 {
 
 			if (TickHandler.s_singelton.AddGameState(element, tick)) {
 				element.Decrypt(data, 1 + sizeof(int));
-				TickHandler.s_singelton.m_input.FreeUpTo(tick);
+				GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);
 			}
 		}
 
 		void HandleNewID(byte[] data) {
-			TickHandler.s_singelton.m_input.m_iD = BitConverter.ToInt32(data, 1);
+			GlobalValues.s_singelton.m_clients[0].m_ID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, {uint tick, int size, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, {uint tick, InputType[] inputs}[] tickInputs
 		void Send() {
 			List<byte> msg = new List<byte>();
 			msg.Add((byte)MessageType.NON);
-			msg.AddRange(BitConverter.GetBytes(TickHandler.s_singelton.m_input.m_iD));
+			msg.AddRange(BitConverter.GetBytes(GlobalValues.s_singelton.m_clients[0].m_ID));
 
-			InputBuffer ib = TickHandler.s_singelton.m_input;
+			InputBuffer ib = GlobalValues.s_singelton.m_clients[0].m_inputBuffer;
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++) {
 				byte[] tmp = ib[i].Encrypt();
 				if (tmp == null)
 					continue;
 
 				msg.AddRange(BitConverter.GetBytes(i));
-				msg.AddRange(BitConverter.GetBytes(tmp.Length));
 				msg.AddRange(tmp);
 			}
 

@@ -10,8 +10,14 @@ namespace NT3 {
 			return null;
 		}
 
-		public void Decrypt(byte[] msg, int offset) {
-
+		/// <summary>
+		/// Decypts an byte-array to usable data
+		/// </summary>
+		/// <param name="msg">the byte-array</param>
+		/// <param name="offset">the start offset</param>
+		/// <returns>the offset at with point i stopt to read</returns>
+		public int Decrypt(byte[] msg, int offset) {
+			return offset;
 		}
 	}
 
