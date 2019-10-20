@@ -21,14 +21,14 @@ public class BitField2D {
 	public bool this[int x, int y] {
 		get {
 			if ((x < 0 || x >= m_fieldWidth) || (y < 0 || y >= (m_backingArray.Length * 8) / m_fieldWidth))
-				throw new System.IndexOutOfRangeException();
+				throw new IndexOutOfRangeException();
 
 			int bit = y * m_fieldWidth + x;
 			return (m_backingArray[bit / 8] & (1 << (bit % 8))) != 0;
 		}
 		set {
 			if ((x < 0 || x >= m_fieldWidth) || (y < 0 || y >= (m_backingArray.Length * 8) / m_fieldWidth))
-				throw new System.IndexOutOfRangeException();
+				throw new IndexOutOfRangeException();
 
 			int bit = y * m_fieldWidth + x;
 			if (value) {
@@ -41,5 +41,17 @@ public class BitField2D {
 
 	public byte[] ToArray() {
 		return m_backingArray;
+	}
+
+	public static BitField2D operator+ (BitField2D lhs, BitField2D rhs) {
+		if (lhs.m_fieldWidth != rhs.m_fieldWidth || lhs.m_backingArray.Length != rhs.m_backingArray.Length)
+			throw new ArgumentException();
+
+		byte[] tmp = new byte[lhs.m_backingArray.Length];
+		for (int i = 0; i < lhs.m_backingArray.Length; i++) {
+			tmp[i] = (byte)(lhs.m_backingArray[i] | rhs.m_backingArray[i]);
+		}
+
+		return new BitField2D(lhs.m_fieldWidth, (lhs.m_backingArray.Length * 8) / lhs.m_fieldWidth, tmp);
 	}
 }
