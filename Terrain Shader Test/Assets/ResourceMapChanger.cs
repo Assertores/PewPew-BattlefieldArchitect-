@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class ResourceMapChanger : MonoBehaviour
 {
     protected static ResourceMapChanger s_Instance;
@@ -11,17 +12,19 @@ public class ResourceMapChanger : MonoBehaviour
     private Texture2D resourceTexture;
     private RenderTexture result;
     private int resourceCalcKernel;
+    private int resourceCalcKernel2;
     private bool changeMap = false;
     public List<Vector4> fabricCenter;
 
     public ComputeShader computeShader;
     ComputeBuffer buffer;
-        
+
     public bool hierKoennteIhrTickStehen;
 
     public Vector3 ground;
 
-    public float[] values;
+    [SerializeField]
+    private int[] values;
 
     private void Awake()
     {
@@ -46,10 +49,11 @@ public class ResourceMapChanger : MonoBehaviour
 
         //result = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as RenderTexture;
 
-        buffer = new ComputeBuffer(50, sizeof(float));
-        values = new float[50];
+
+        values = new int[50];
 
         resourceCalcKernel = computeShader.FindKernel("CSMain");
+        resourceCalcKernel2 = computeShader.FindKernel("CSInit");
         //result = new RenderTexture(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit), 24, RenderTextureFormat.RFloat)
         //{
         //    enableRandomWrite = true
@@ -120,28 +124,32 @@ public class ResourceMapChanger : MonoBehaviour
 
     private void RefreshCalcRes()
     {
-        for (int i = 0; i < values.Length; i++)
-        {
-            values[i] = 0;
-        }
+        buffer = new ComputeBuffer(50, sizeof(int));
 
         //computeShader.SetTexture(resourceCalcKernel, "Result", result);
         computeShader.SetInt("PointSize", fabricCenter.Count);
         computeShader.SetVectorArray("coords", fabricCenter.ToArray());
+
+        computeShader.SetBuffer(resourceCalcKernel2, "buffer", buffer);
         computeShader.SetBuffer(resourceCalcKernel, "buffer", buffer);
 
+        computeShader.SetTexture(resourceCalcKernel2, "Result", result);
         computeShader.SetTexture(resourceCalcKernel, "Result", result);
 
+
+        computeShader.Dispatch(resourceCalcKernel2, 50, 1, 1);
         computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
         buffer.GetData(values);
+        buffer.Release();
+        buffer = null;
         texturRenderer.material.SetTexture("_NoiseMap", result);
 
-        for (int i = 0; i < fabricCenter.Count; i++)
-        {
-            print("value " + values[i] + "counter " + i);
+        //for (int i = 0; i < fabricCenter.Count; i++)
+        //{
+        //    print("value " + valuesArray[i] + "counter " + i);
 
-        }
+        //}
     }
 
     public void SwitchMap()
