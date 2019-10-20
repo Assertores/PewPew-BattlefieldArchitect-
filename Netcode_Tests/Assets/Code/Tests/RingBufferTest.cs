@@ -11,132 +11,132 @@ namespace Tests {
 		public void RingBufferTestSimplePasses() {
 			// Use the Assert class to test conditions
 
-			RingBuffer<int> element = new RingBuffer<int>();
+			RingBuffer<int> target = new RingBuffer<int>();
 
-			element[0] = 0;
-			element[2] = 2;
+			target[0] = 0;
+			target[2] = 2;
 			{
-				Assert.Catch(delegate () { int x = element[-1]; });
-				Assert.DoesNotThrow(delegate () { int x = element[0]; });
-				Assert.AreEqual(0, element[0]);
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(0, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.Catch(delegate () { int x = element[3]; });
-				Assert.AreEqual(0, element.GetLowEnd());
-				Assert.AreEqual(2, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[-1]; });
+				Assert.DoesNotThrow(delegate () { int x = target[0]; });
+				Assert.AreEqual(0, target[0]);
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(0, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.Catch(delegate () { int x = target[3]; });
+				Assert.AreEqual(0, target.GetLowEnd());
+				Assert.AreEqual(2, target.GetHighEnd());
 			}
 
-			element[1] = 1;
-			element[-1] = -1;
+			target[1] = 1;
+			target[-1] = -1;
 			{
-				Assert.Catch(delegate () { int x = element[-2]; });
-				Assert.DoesNotThrow(delegate () { int x = element[-1]; });
-				Assert.AreEqual(-1, element[-1]);
-				Assert.DoesNotThrow(delegate () { int x = element[0]; });
-				Assert.AreEqual(0, element[0]);
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.Catch(delegate () { int x = element[3]; });
-				Assert.AreEqual(-1, element.GetLowEnd());
-				Assert.AreEqual(2, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[-2]; });
+				Assert.DoesNotThrow(delegate () { int x = target[-1]; });
+				Assert.AreEqual(-1, target[-1]);
+				Assert.DoesNotThrow(delegate () { int x = target[0]; });
+				Assert.AreEqual(0, target[0]);
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.Catch(delegate () { int x = target[3]; });
+				Assert.AreEqual(-1, target.GetLowEnd());
+				Assert.AreEqual(2, target.GetHighEnd());
 			}
 
-			element[3] = 3;
+			target[3] = 3;
 			{
-				Assert.Catch(delegate () { int x = element[-2]; });
-				Assert.DoesNotThrow(delegate () { int x = element[-1]; });
-				Assert.AreEqual(-1, element[-1]);
-				Assert.DoesNotThrow(delegate () { int x = element[0]; });
-				Assert.AreEqual(0, element[0]);
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.DoesNotThrow(delegate () { int x = element[3]; });
-				Assert.AreEqual(3, element[3]);
-				Assert.Catch(delegate () { int x = element[4]; });
-				Assert.AreEqual(-1, element.GetLowEnd());
-				Assert.AreEqual(3, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[-2]; });
+				Assert.DoesNotThrow(delegate () { int x = target[-1]; });
+				Assert.AreEqual(-1, target[-1]);
+				Assert.DoesNotThrow(delegate () { int x = target[0]; });
+				Assert.AreEqual(0, target[0]);
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.DoesNotThrow(delegate () { int x = target[3]; });
+				Assert.AreEqual(3, target[3]);
+				Assert.Catch(delegate () { int x = target[4]; });
+				Assert.AreEqual(-1, target.GetLowEnd());
+				Assert.AreEqual(3, target.GetHighEnd());
 			}
 
-			element.FreeUpTo(1);
+			target.FreeUpTo(1);
 			{
-				Assert.Catch(delegate () { int x = element[-2]; });
-				Assert.Catch(delegate () { int x = element[-1]; });
-				Assert.Catch(delegate () { int x = element[0]; });
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.DoesNotThrow(delegate () { int x = element[3]; });
-				Assert.AreEqual(3, element[3]);
-				Assert.Catch(delegate () { int x = element[4]; });
-				Assert.AreEqual(1, element.GetLowEnd());
-				Assert.AreEqual(3, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[-2]; });
+				Assert.Catch(delegate () { int x = target[-1]; });
+				Assert.Catch(delegate () { int x = target[0]; });
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.DoesNotThrow(delegate () { int x = target[3]; });
+				Assert.AreEqual(3, target[3]);
+				Assert.Catch(delegate () { int x = target[4]; });
+				Assert.AreEqual(1, target.GetLowEnd());
+				Assert.AreEqual(3, target.GetHighEnd());
 			}
 
-			element.FreeDownTo(2);
+			target.FreeDownTo(2);
 			{
-				Assert.Catch(delegate () { int x = element[0]; });
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.Catch(delegate () { int x = element[3]; });
-				Assert.Catch(delegate () { int x = element[4]; });
-				Assert.AreEqual(1, element.GetLowEnd());
-				Assert.AreEqual(2, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[0]; });
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.Catch(delegate () { int x = target[3]; });
+				Assert.Catch(delegate () { int x = target[4]; });
+				Assert.AreEqual(1, target.GetLowEnd());
+				Assert.AreEqual(2, target.GetHighEnd());
 			}
 
-			element[3] = 10;
-			element[30] = 30;
+			target[3] = 10;
+			target[30] = 30;
 			{
-				Assert.Catch(delegate () { int x = element[0]; });
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.DoesNotThrow(delegate () { int x = element[3]; });
-				Assert.AreEqual(10, element[3]);
-				Assert.DoesNotThrow(delegate () { int x = element[30]; });
-				Assert.AreEqual(30, element[30]);
-				Assert.Catch(delegate () { int x = element[31]; });
-				Assert.AreEqual(1, element.GetLowEnd());
-				Assert.AreEqual(30, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[0]; });
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.DoesNotThrow(delegate () { int x = target[3]; });
+				Assert.AreEqual(10, target[3]);
+				Assert.DoesNotThrow(delegate () { int x = target[30]; });
+				Assert.AreEqual(30, target[30]);
+				Assert.Catch(delegate () { int x = target[31]; });
+				Assert.AreEqual(1, target.GetLowEnd());
+				Assert.AreEqual(30, target.GetHighEnd());
 			}
 
-			element[0] = 22;
-			element[31] = 31;
+			target[0] = 22;
+			target[31] = 31;
 			{
-				Assert.Catch(delegate () { int x = element[-1]; });
-				Assert.DoesNotThrow(delegate () { int x = element[0]; });
-				Assert.AreEqual(22, element[0]);
-				Assert.DoesNotThrow(delegate () { int x = element[1]; });
-				Assert.AreEqual(1, element[1]);
-				Assert.DoesNotThrow(delegate () { int x = element[2]; });
-				Assert.AreEqual(2, element[2]);
-				Assert.DoesNotThrow(delegate () { int x = element[3]; });
-				Assert.AreEqual(10, element[3]);
-				Assert.DoesNotThrow(delegate () { int x = element[30]; });
-				Assert.AreEqual(30, element[30]);
-				Assert.DoesNotThrow(delegate () { int x = element[31]; });
-				Assert.AreEqual(31, element[31]);
-				Assert.Catch(delegate () { int x = element[32]; });
-				Assert.AreEqual(0, element.GetLowEnd());
-				Assert.AreEqual(31, element.GetHighEnd());
+				Assert.Catch(delegate () { int x = target[-1]; });
+				Assert.DoesNotThrow(delegate () { int x = target[0]; });
+				Assert.AreEqual(22, target[0]);
+				Assert.DoesNotThrow(delegate () { int x = target[1]; });
+				Assert.AreEqual(1, target[1]);
+				Assert.DoesNotThrow(delegate () { int x = target[2]; });
+				Assert.AreEqual(2, target[2]);
+				Assert.DoesNotThrow(delegate () { int x = target[3]; });
+				Assert.AreEqual(10, target[3]);
+				Assert.DoesNotThrow(delegate () { int x = target[30]; });
+				Assert.AreEqual(30, target[30]);
+				Assert.DoesNotThrow(delegate () { int x = target[31]; });
+				Assert.AreEqual(31, target[31]);
+				Assert.Catch(delegate () { int x = target[32]; });
+				Assert.AreEqual(0, target.GetLowEnd());
+				Assert.AreEqual(31, target.GetHighEnd());
 			}
 
 			Debug.Log("befor");
-			Debug.Log(element.ToString());
+			Debug.Log(target.ToString());
 
-			element[32] = 32;
+			target[32] = 32;
 
 			Debug.Log("after");
-			Debug.Log(element.ToString());
+			Debug.Log(target.ToString());
 		}
 	}
 }
