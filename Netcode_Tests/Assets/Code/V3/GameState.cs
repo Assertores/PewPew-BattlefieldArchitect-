@@ -36,7 +36,7 @@ namespace NT3 {
 
 		}
 
-		public bool CreateDelta(GameState reference) {
+		public bool CreateDelta(RingBuffer<GameState> reference, int tick) {
 			return false;
 		}
 

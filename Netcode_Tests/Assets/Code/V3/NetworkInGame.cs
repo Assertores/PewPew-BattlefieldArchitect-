@@ -16,12 +16,12 @@ namespace NT3 {
 		UdpClient socket;
 		public int m_serverPort = 11000;
 
-		int m_nextID = 0;
-
 		IPEndPoint ep;
 		public string m_iP = "127.0.0.1";
 
 #if UNITY_SERVER
+
+		int m_nextID = 0;
 
 		void Start() {
 			socket = new UdpClient(11000);
@@ -54,21 +54,21 @@ namespace NT3 {
 
 			MessageType messageType = (MessageType)data[0];
 			switch (messageType) {
-			case MessageType.NON:
-				HandleNON(data, remoteEP);
-				break;
-			case MessageType.CONNECT:
-				HandleConnect(data, remoteEP);
-				break;
-			case MessageType.DISCONNECT:
-				HandleDisconnect(data, remoteEP);
-				break;
-			case MessageType.RECONNECT:
-				HandleReconnect(data, remoteEP);
-				break;
-			default:
-				Debug.Log("[Server] package type was not handled" + messageType);
-				break;
+				case MessageType.NON:
+					HandleNON(data, remoteEP);
+					break;
+				case MessageType.CONNECT:
+					HandleConnect(data, remoteEP);
+					break;
+				case MessageType.DISCONNECT:
+					HandleDisconnect(data, remoteEP);
+					break;
+				case MessageType.RECONNECT:
+					HandleReconnect(data, remoteEP);
+					break;
+				default:
+					Debug.Log("[Server] package type was not handled" + messageType);
+					break;
 			}
 
 			return true;
@@ -82,8 +82,11 @@ namespace NT3 {
 				return;
 
 			Client client = GlobalValues.s_singelton.m_clients.Find(x => x.m_ID == RemoteID);
+			if (client == null)
+				return;
+
 			int offset = 1 + sizeof(int);
-			while(offset < data.Length) {
+			while (offset < data.Length) {
 				int tick = BitConverter.ToInt32(data, offset);
 				offset += sizeof(int);
 
@@ -114,7 +117,7 @@ namespace NT3 {
 		void HandleDisconnect(byte[] data, IPEndPoint ep) {
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
-			if(!GlobalValues.s_singelton.m_clients.Exists(x => x.m_ID == RemoteID))
+			if (!GlobalValues.s_singelton.m_clients.Exists(x => x.m_ID == RemoteID))
 				return;
 
 			Client target = GlobalValues.s_singelton.m_clients.Find(x => x.m_ID == RemoteID);
@@ -139,8 +142,24 @@ namespace NT3 {
 			Debug.Log("[Server] client " + RemoteID + " reconnected");
 		}
 
+		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
 		void Send(int tick) {
-			//foreach(var it in )
+			foreach (var it in GlobalValues.s_singelton.m_clients) {
+				if (!it.m_isConnected)
+					return;
+
+				List<byte> msg = new List<byte>();
+
+				msg.Add((byte)MessageType.NON);
+				msg.AddRange(BitConverter.GetBytes(tick));
+
+				it.m_gameStates[tick].CreateDelta(it.m_gameStates, it.m_gameStates.GetLowEnd());
+				msg.AddRange(it.m_gameStates[tick].Encrypt());
+
+				socket.Send(msg.ToArray(), msg.Count, it.m_eP);
+
+				it.m_gameStates[tick].DismantleDelta(it.m_gameStates[it.m_gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
+			}
 		}
 #else
 		void Start() {
@@ -190,7 +209,7 @@ namespace NT3 {
 			}
 		}
 
-		/// NON:        byte Type, int Tick, int RefTick, Gamestate[] states
+		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
 		void HandleNON(byte[] data) {
 			GameState element = new GameState();
 			int tick = BitConverter.ToInt32(data, 1);

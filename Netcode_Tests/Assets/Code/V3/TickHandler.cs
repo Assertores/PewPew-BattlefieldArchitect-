@@ -16,7 +16,7 @@ namespace NT3 {
 #if UNITY_SERVER
 		public int Simulate() {
 			int min = int.MaxValue;
-			foreach(var it in m_clients) {
+			foreach(var it in GlobalValues.s_singelton.m_clients) {
 				if (it.m_isConnected && it.m_inputBuffer.GetHighEnd() < min)//Game goes on if some clients disconnect
 					min = it.m_inputBuffer.GetHighEnd();
 			}
@@ -24,58 +24,40 @@ namespace NT3 {
 			if (min == int.MaxValue)
 				return m_currentTick;
 
-			InputBuffer[] inputs = GetInputs();
 			for(; m_currentTick < min; m_currentTick++) {
-				s_DoTick?.Invoke(m_currentTick, inputs);
+				s_DoTick?.Invoke(m_currentTick);
 			}
-			foreach(var it in m_clients) {
-				it.m_gameStates[m_currentTick] = new GameState();
-				//TODO: Gamestates zu den clients speichern
+			foreach(var it in GlobalValues.s_singelton.m_clients) {
+				it.m_gameStates[m_currentTick] = GameStateHandler.s_singelton.RetreveCurrentGameState();
 			}
 
 			return m_currentTick;
 		}
-
-		public void AddInputToClient(int clientID,int firstTick, InputElement[] element) {
-			if (!m_clients.Exists(x => x.m_inputBuffer.m_iD == clientID))
-				return;
-
-			InputBuffer inputs = m_clients.Find(x => x.m_inputBuffer.m_iD == clientID).m_inputBuffer;
-
-			for(int i = inputs.GetHighEnd(); i < firstTick + element.Length; i++) {
-				inputs.AddNewElement(element[i - firstTick], i);
-			}
-		}
-
-		public void AddNewClient() {
-			Client tmp = new Client();
-			tmp.m_inputBuffer.m_iD = m_clients.Count;
-
-			m_clients.Add(tmp);
-		}
 #else
 		private void FixedUpdate() {
-			if(GameStateHandler.s_singelton.m_gameStates.GetHighEnd() < m_currentTick) {
+			if(GlobalValues.s_singelton.m_clients[0].m_gameStates.GetHighEnd() < m_currentTick) {
 				Debug.Log("Network Pause");
 				return;
 			}
 			GameState nextState = default;
 			int nextStateTick = m_currentTick;
 			for(; nextState == default; nextStateTick++) {
-				nextState = GameStateHandler.s_singelton.m_gameStates[nextStateTick];
+				nextState = GlobalValues.s_singelton.m_clients[0].m_gameStates[nextStateTick];
 			}
+			nextStateTick--;//nextStateTick++ will be executed once to often
+
 			if(nextStateTick != m_currentTick) {
 				GameState tmp = new GameState();
-				if(nextState.m_refTick < GameStateHandler.s_singelton.m_gameStates.GetLowEnd() || GameStateHandler.s_singelton.m_gameStates[nextState.m_refTick] == default) {
+				if(nextState.m_refTick < GlobalValues.s_singelton.m_clients[0].m_gameStates.GetLowEnd() || GlobalValues.s_singelton.m_clients[0].m_gameStates[nextState.m_refTick] == default) {
 					Debug.LogError("Reference Tick for Lerp not Found");
 					return;//no idea how to fix this
 				}
 
-				tmp.Lerp(GameStateHandler.s_singelton.m_gameStates[nextState.m_refTick], nextState, m_currentTick);
+				tmp.Lerp(GlobalValues.s_singelton.m_clients[0].m_gameStates[nextState.m_refTick], nextState, m_currentTick);//TODO: Rework Lerp
 				nextState = tmp;
 			}
 
-			GameStateHandler.s_singelton.SetGameState(m_currentTick);
+			GameStateHandler.s_singelton.SetGameState(nextState);
 
 			s_DoTick?.Invoke(m_currentTick);
 			m_currentTick++;
@@ -86,7 +68,7 @@ namespace NT3 {
 			if (tick < m_currentTick)
 				return false;
 
-			GameStateHandler.s_singelton.m_gameStates[tick] = newGameState;
+			GlobalValues.s_singelton.m_clients[0].m_gameStates[tick] = newGameState;
 			return true;
 		}
 #endif
