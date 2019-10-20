@@ -17,25 +17,27 @@ public class BuildManager : MonoBehaviour
 
     Vector2 pixelUV = Vector2.zero;
 
+    public float radius = 100;
+    public float intensity = 1;
+
+
     private void Update()
     {
         HandleNewObjectHotKey();
-
+        
         if (currentPlaceableObject!= null)
         {
             MoveCurrentObjectToMouse();
             RotateFromMouseWheel();
             ReleaseIfClicked();
         }
-
     }
 
     private void ReleaseIfClicked()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), 0.5f, 30.0f);
-            
+            ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), intensity, radius);
             currentPlaceableObject = null;
         }
     }

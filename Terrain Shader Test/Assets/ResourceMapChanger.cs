@@ -15,20 +15,13 @@ public class ResourceMapChanger : MonoBehaviour
     public List<Vector4> fabricCenter;
 
     public ComputeShader computeShader;
+    ComputeBuffer buffer;
+        
     public bool hierKoennteIhrTickStehen;
 
     public Vector3 ground;
 
-    [SerializeField]
-    private float PixelPerUnit = 1;
-
-    [Tooltip("muss durch ppu teilbar sein!")]
-    [SerializeField]
-    private float mapWith;
-
-    [Tooltip("muss durch ppu teilbar sein!")]
-    [SerializeField]
-    private float mapHeigth;
+    public float[] values;
 
     private void Awake()
     {
@@ -51,6 +44,10 @@ public class ResourceMapChanger : MonoBehaviour
         //resourceTexture.Resize(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit));
         //resourceTexture.Apply();
 
+        //result = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as RenderTexture;
+
+        buffer = new ComputeBuffer(50, sizeof(float));
+        values = new float[50];
 
         resourceCalcKernel = computeShader.FindKernel("CSMain");
         //result = new RenderTexture(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit), 24, RenderTextureFormat.RFloat)
@@ -58,7 +55,7 @@ public class ResourceMapChanger : MonoBehaviour
         //    enableRandomWrite = true
         //};
 
-        result = new RenderTexture(resourceTexture.height, resourceTexture.width, 24, RenderTextureFormat.RFloat)
+        result = new RenderTexture(resourceTexture.height, resourceTexture.width, 24)
         {
             enableRandomWrite = true
 
@@ -68,33 +65,83 @@ public class ResourceMapChanger : MonoBehaviour
         Graphics.CopyTexture(resourceTexture, result);
     }
 
+
     private void Update()
     {
-        if (fabricCenter.Count > 0 && hierKoennteIhrTickStehen)
+        if (isRunning == false && fabricCenter.Count > 0)
         {
-            hierKoennteIhrTickStehen = false;
-            CalcRes();
+            StartCoroutine(StartResourceHarvest());
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            RefreshCalcRes();
+        }
+
+
+    }
+
+    bool isRunning = false;
+
+    IEnumerator StartResourceHarvest()
+    {
+        isRunning = true;
+        while (fabricCenter.Count > 0)
+        {
+            yield return new WaitForSeconds(0.1f);
+            //RefreshCalcRes();
         }
     }
 
     public void AddFabric(Vector3 pos, float intensity, float radius)
     {
         // (pos - texture position) * ppu
-      //  Vector3 position = (pos - ground) * PixelPerUnit;
+        //  Vector3 position = (pos - ground) * PixelPerUnit;
 
         fabricCenter.Add(new Vector4(pos.x, pos.z, intensity, radius));
+        //NewhCalcBuild(new Vector4(pos.x, pos.z, intensity, radius));
     }
 
-    private void CalcRes()
+    //public void NewCalcBuild(Vector4 build)
+    //{
+    //    Vector4[] _builds = new Vector4[1];
+    //    _builds[0] = build;
+
+    //    computeShader.SetTexture(resourceCalcKernel, "Result", result);
+    //    computeShader.SetInt("PointSize", _builds.Length);
+    //    computeShader.SetVectorArray("coords", _builds);
+    //    computeShader.SetTexture(resourceCalcKernel, "Result", result);
+
+    //    computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
+
+    //    texturRenderer.material.SetTexture("_NoiseMap", result);
+    //}
+
+
+    private void RefreshCalcRes()
     {
-        computeShader.SetTexture(resourceCalcKernel, "InputTexture", result);
+        for (int i = 0; i < values.Length; i++)
+        {
+            values[i] = 0;
+        }
+
+        //computeShader.SetTexture(resourceCalcKernel, "Result", result);
         computeShader.SetInt("PointSize", fabricCenter.Count);
         computeShader.SetVectorArray("coords", fabricCenter.ToArray());
+        computeShader.SetBuffer(resourceCalcKernel, "buffer", buffer);
+
         computeShader.SetTexture(resourceCalcKernel, "Result", result);
 
         computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
+        buffer.GetData(values);
         texturRenderer.material.SetTexture("_NoiseMap", result);
+
+        for (int i = 0; i < fabricCenter.Count; i++)
+        {
+            print("value " + values[i] + "counter " + i);
+
+        }
     }
 
     public void SwitchMap()

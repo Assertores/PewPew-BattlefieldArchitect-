@@ -4,6 +4,7 @@
 int PointSize;
 float4 coords[50];
 
+RWStructuredBuffer<float3> buffer;
 RWTexture2D<float4> Result;
 Texture2D<float4> InputTexture;
 
@@ -11,28 +12,33 @@ Texture2D<float4> InputTexture;
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     float3 mask = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
-    const float3 white = float3(1.0, 1.0, 1.0);
-    const float3 black = float3(0.0, 0.0, 0.0);
-    
-    for (int i = 0; i < PointSize; ++i)
+  //  const float3 white = float3(1.0, 1.0, 1.0);
+    //const float3 black = float3(0.0, 0.0, 0.0);
+    float e;
+
+    for (int i = 0; i < PointSize; i++)
     {
 
-        float dis = distance(float2(id.x, id.y), float2(coords[i].x , coords[i].y));
-      //  float dis = distance(float2(id.x, id.y), coords[i].xy);
-        float t = smoothstep( dis ,dis *2, coords[i].w);
-    //    float3 col = lerp(black, white * coords[i].z, t);
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
+        //float t = smoothstep(dis, dis * 2, coords[i].w);
+        float t = step(dis, coords[i].w);
 
-		float3 curCol = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
-		float3 newCol = curCol + coords[i].z;
-        float3 col = lerp(curCol, newCol , t);
-		col = clamp(col,0.0,1.0);
+        float3 curCol = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
+        float3 newCol = curCol - coords[i].z;
+        float3 col = lerp(curCol, newCol, t);
+        col = clamp(col, 0.0, 1.0);
 
+        //float d = lerp(0, 1, t);
 
-     //   float3 col = lerp(black, cnewColurCol , t);
-        mask += col;
+        //if (dis <= coords[i].w)
+        //{
+            buffer[i] += 1;
+        //}
+               
+        mask = col;
+        
+        Result[id.xy] = float4(mask, 1.0);
     }
-
-    Result[id.xy] = float4(mask, 1.0);
 }
 
 

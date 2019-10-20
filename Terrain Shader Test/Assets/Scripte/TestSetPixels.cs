@@ -64,25 +64,25 @@ public class TestSetPixels : MonoBehaviour
     private void Update()
     {
 
-        //compute.SetInt("PointSize", size);
-        //compute.SetVectorArray("coords", center);
-        //compute.SetTexture(kernel, "Result", result);
+        compute.SetInt("PointSize", size);
+        compute.SetVectorArray("coords", center);
+        compute.SetTexture(kernel, "Result", result);
 
-        //compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
+        compute.Dispatch(kernel, 512 / 8, 512 / 8, 1);
 
-        //rend.material.SetTexture("_NoiseMap", result);
+        rend.material.SetTexture("_NoiseMap", result);
 
-        //RaycastHit hit;
-        //if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))
-        //{
-        //    Renderer renderer = hit.transform.GetComponent<Renderer>();
-        //    Texture2D texture = renderer.material.mainTexture as Texture2D;
-        //    Vector2 pixelUV = hit.textureCoord;
-        //    pixelUV.x = Mathf.FloorToInt(pixelUV.x *= texture.width);
-        //    pixelUV.y = Mathf.FloorToInt(pixelUV.y *= texture.height);
+        RaycastHit hit;
+        if (Input.GetMouseButtonDown(0) && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1000))
+        {
+            Renderer renderer = hit.transform.GetComponent<Renderer>();
+            Texture2D texture = renderer.material.mainTexture as Texture2D;
+            Vector2 pixelUV = hit.textureCoord;
+            pixelUV.x = Mathf.FloorToInt(pixelUV.x *= texture.width);
+            pixelUV.y = Mathf.FloorToInt(pixelUV.y *= texture.height);
 
-        //    print("pixels " + pixelUV.x + " " + pixelUV.y);
-        //}
+            print("pixels " + pixelUV.x + " " + pixelUV.y);
+        }
     }
 
     public float ReadRessourceValue(Texture2D tex, int cx, int cy, int r)
