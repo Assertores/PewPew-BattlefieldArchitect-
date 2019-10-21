@@ -61,6 +61,43 @@ namespace Tests {
 				Assert.AreEqual(true, target[1, 3]);
 				Assert.Catch(delegate () { bool tmp = target[0, 4]; });
 			}
+
+			BitField2D a = new BitField2D(2, 4);
+			BitField2D b = new BitField2D(2, 4);
+			a[0, 0] = true;
+			a[0, 1] = true;
+			b[1, 2] = true;
+			b[1, 3] = true;
+
+			target = a + b;
+			{
+				Assert.AreEqual(true, target[0, 0]);
+				Assert.AreEqual(true, target[0, 1]);
+				Assert.AreEqual(true, target[1, 2]);
+				Assert.AreEqual(true, target[1, 3]);
+			}
+
+			a.FromArray(target.ToArray());
+			{
+				Assert.AreEqual(true, a[0, 0]);
+				Assert.AreEqual(true, a[0, 1]);
+				Assert.AreEqual(true, a[1, 2]);
+				Assert.AreEqual(true, a[1, 3]);
+			}
+
+			byte[] tmpByteArray = new byte[2];
+			{
+				Assert.Catch(delegate () { b.FromArray(tmpByteArray); });
+			}
+
+			Vector2[] result = target.GetActiveBits();
+			{
+				Assert.AreEqual(4, result.Length);
+				Assert.AreEqual(new Vector2(0, 0), result[0]);
+				Assert.AreEqual(new Vector2(0, 1), result[1]);
+				Assert.AreEqual(new Vector2(1, 2), result[2]);
+				Assert.AreEqual(new Vector2(1, 3), result[3]);
+			}
 		}
 	}
 }
