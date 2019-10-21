@@ -43,6 +43,13 @@ public class BitField2D {
 		return m_backingArray;
 	}
 
+	public void FromArray(byte[] value) {
+		if (value.Length != m_backingArray.Length)
+			throw new ArgumentException();
+
+		m_backingArray = value;
+	}
+
 	public static BitField2D operator+ (BitField2D lhs, BitField2D rhs) {
 		if (lhs.m_fieldWidth != rhs.m_fieldWidth || lhs.m_backingArray.Length != rhs.m_backingArray.Length)
 			throw new ArgumentException();
