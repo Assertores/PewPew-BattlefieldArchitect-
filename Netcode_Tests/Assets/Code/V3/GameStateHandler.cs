@@ -11,7 +11,7 @@ namespace NT3 {
 			GameState value = new GameState();
 
 			for (int i = m_liveStateElements.GetLowEnd(); i <= m_liveStateElements.GetHighEnd(); i++) {
-				GSI_Pos pos = new GSI_Pos() {
+				GSI_Transform pos = new GSI_Transform() {
 					m_id = i,
 					m_x = m_liveStateElements[i].transform.position.x,
 					m_y = m_liveStateElements[i].transform.position.y,
