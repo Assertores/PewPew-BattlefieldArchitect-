@@ -61,4 +61,17 @@ public class BitField2D {
 
 		return new BitField2D(lhs.m_fieldWidth, (lhs.m_backingArray.Length * 8) / lhs.m_fieldWidth, tmp);
 	}
+
+	public Vector2[] GetActiveBits() {
+		List<Vector2> value = new List<Vector2>();
+
+		for(int y = 0; y < (m_backingArray.Length * 8) / m_fieldWidth; y++) {
+			for(int x = 0; x < m_fieldWidth; x++) {
+				if (this[x, y])
+					value.Add(new Vector2(x, y));
+			}
+		}
+
+		return value.ToArray();
+	}
 }
