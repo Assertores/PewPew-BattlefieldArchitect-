@@ -17,7 +17,7 @@ namespace NT3 {
 					m_y = m_liveStateElements[i].transform.position.y,
 					m_z = m_liveStateElements[i].transform.position.z
 				};
-				value.m_positions.Add(pos);
+				value.m_transforms.Add(pos);
 
 				GSI_Health health = new GSI_Health() {
 					m_id = i,
@@ -36,7 +36,7 @@ namespace NT3 {
 		}
 
 		public void SetGameState(GameState gamestate) {
-			foreach (var it in gamestate.m_positions) {
+			foreach (var it in gamestate.m_transforms) {
 				m_liveStateElements[it.m_id].m_pos.x = it.m_x;
 				m_liveStateElements[it.m_id].m_pos.y = it.m_y;
 				m_liveStateElements[it.m_id].m_pos.z = it.m_z;

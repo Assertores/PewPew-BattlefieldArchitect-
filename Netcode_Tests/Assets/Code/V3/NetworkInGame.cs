@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 
 
-#define UNITY_SERVER
+//#define UNITY_SERVER
 namespace NT3 {
 
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
