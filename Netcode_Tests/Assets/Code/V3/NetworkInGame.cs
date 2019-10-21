@@ -144,19 +144,24 @@ namespace NT3 {
 
 		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
 		void Send(int tick) {
+			List<byte> msg = new List<byte>();
+
 			foreach (var it in GlobalValues.s_singelton.m_clients) {
 				if (!it.m_isConnected)
 					return;
 
-				List<byte> msg = new List<byte>();
-
-				msg.Add((byte)MessageType.NON);
-				msg.AddRange(BitConverter.GetBytes(tick));
-
 				it.m_gameStates[tick].CreateDelta(it.m_gameStates, it.m_gameStates.GetLowEnd());
-				msg.AddRange(it.m_gameStates[tick].Encrypt());
 
-				socket.Send(msg.ToArray(), msg.Count, it.m_eP);
+				List<byte[]> state = it.m_gameStates[tick].Encrypt();//if gamestate exiets max udp package size
+				foreach (var jt in state) {
+					msg.Clear();
+
+					msg.Add((byte)MessageType.NON);
+					msg.AddRange(BitConverter.GetBytes(tick));
+					msg.AddRange(jt);
+
+					socket.Send(msg.ToArray(), msg.Count, it.m_eP);
+				}
 
 				it.m_gameStates[tick].DismantleDelta(it.m_gameStates[it.m_gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
 			}
@@ -211,15 +216,20 @@ namespace NT3 {
 
 		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
 		void HandleNON(byte[] data) {
-			GameState element = new GameState();
 			int tick = BitConverter.ToInt32(data, 1);
+
+			GameState element = GlobalValues.s_singelton.m_clients[0].m_gameStates[tick];
+
+			if (element == default) {
+				element = new GameState();
+				TickHandler.s_singelton.AddGameState(element, tick);
+			}
 
 			Debug.Log("[Client] server State message: \n" + element.ToString());
 
-			if (TickHandler.s_singelton.AddGameState(element, tick)) {
-				element.Decrypt(data, 1 + sizeof(int));
-				GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);
-			}
+			element.Decrypt(data, 1 + sizeof(int));
+
+			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);
 		}
 
 		void HandleNewID(byte[] data) {
