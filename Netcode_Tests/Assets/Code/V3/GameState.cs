@@ -69,8 +69,8 @@ namespace NT3 {
 
 		bool m_isLerped;
 		bool m_isDelta;
-		public List<byte[]> Encrypt() {
-			return null;
+		public List<byte[]> Encrypt(int maxPackageSize) {
+			return new List<byte[]>();
 		}
 
 		public void Decrypt(byte[] msg, int offset) {

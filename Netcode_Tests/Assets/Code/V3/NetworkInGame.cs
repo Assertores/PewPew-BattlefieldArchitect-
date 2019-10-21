@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 
 
-//#define UNITY_SERVER
+#define UNITY_SERVER
 namespace NT3 {
 
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
@@ -18,6 +18,8 @@ namespace NT3 {
 
 		IPEndPoint ep;
 		public string m_iP = "127.0.0.1";
+
+		public int m_maxPackageSize = 65500;
 
 #if UNITY_SERVER
 
@@ -152,7 +154,7 @@ namespace NT3 {
 
 				it.m_gameStates[tick].CreateDelta(it.m_gameStates, it.m_gameStates.GetLowEnd());
 
-				List<byte[]> state = it.m_gameStates[tick].Encrypt();//if gamestate exiets max udp package size
+				List<byte[]> state = it.m_gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
 				foreach (var jt in state) {
 					msg.Clear();
 
