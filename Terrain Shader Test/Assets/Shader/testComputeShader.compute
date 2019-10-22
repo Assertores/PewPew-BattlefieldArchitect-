@@ -10,7 +10,7 @@ RWTexture2D<float4> Result;
 Texture2D<float4> InputTexture;
 
 
-[numthreads(1, 1, 1)]
+[numthreads(1, 1, 1)] // was bedeuetet das wirklich
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
     for (int i = 0; i < 50; i++)
@@ -23,36 +23,25 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-    float3 mask = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
-  //  const float3 white = float3(1.0, 1.0, 1.0);
-    //const float3 black = float3(0.0, 0.0, 0.0);
-    float e;
-
     for (int i = 0; i < PointSize; i++)
     {
-
         float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
-        //float t = smoothstep(dis, dis * 2, coords[i].w);
+    //    float t = smoothstep(dis, dis * 2, coords[i].w); 
         float t = step(dis, coords[i].w);
 
+		if (dis > coords[i].w)
+        {
+			continue;
+		}
+
+		float erg = t * coords[i].z;
         float3 curCol = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
-        float3 newCol = curCol - coords[i].z;
+		float minValue = float(min(curCol.x , erg));
+        float3 newCol = curCol - minValue;
+
         float3 col = lerp(curCol, newCol, t);
         col = clamp(col, 0.0, 1.0);
-
-        //float d = lerp(0, 1, t);
-
-        if (dis <= coords[i].w)
-        {
-            //buffer[i] += 1;
-            InterlockedAdd(buffer[i], newCol.x * 10);
-        }
-               
-        mask = col;
-        
-        Result[id.xy] = float4(mask, 1.0);
+        InterlockedAdd(buffer[i], newCol.x * 100); // hier hinzufügen was abgebaut wurde
+        Result[id.xy] = float4(col, 1.0);
     }
 }
-
-
-//clamp(t,0.0,1.0);

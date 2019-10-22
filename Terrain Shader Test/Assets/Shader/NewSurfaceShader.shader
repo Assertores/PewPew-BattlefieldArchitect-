@@ -72,6 +72,7 @@
 				
 				int i = step(_MetalResourcesInt,0);
 
+
 			//	noise.r +=  _valueIntensity;
 				fixed4 z = lerp(_ColorResource,map,_valueIntensity);
 

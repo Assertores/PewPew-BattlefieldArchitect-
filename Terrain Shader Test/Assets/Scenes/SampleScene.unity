@@ -1539,7 +1539,7 @@ MonoBehaviour:
   placeObjectPrefabs:
   - {fileID: 7351922941053595226, guid: 5d3f9aee8db0b2b409bd08444b78e1c5, type: 3}
   radius: 20
-  intensity: 0.5
+  intensity: 0.1
 --- !u!114 &1928556888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1557,4 +1557,4 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: c2291d5be2c8f47409e3b36e7b2fb353, type: 3}
   hierKoennteIhrTickStehen: 1
   ground: {x: -5, y: 0, z: -5}
-  values: []
+  values: 

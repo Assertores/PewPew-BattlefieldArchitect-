@@ -126,30 +126,21 @@ public class ResourceMapChanger : MonoBehaviour
     {
         buffer = new ComputeBuffer(50, sizeof(int));
 
-        //computeShader.SetTexture(resourceCalcKernel, "Result", result);
         computeShader.SetInt("PointSize", fabricCenter.Count);
         computeShader.SetVectorArray("coords", fabricCenter.ToArray());
 
         computeShader.SetBuffer(resourceCalcKernel2, "buffer", buffer);
         computeShader.SetBuffer(resourceCalcKernel, "buffer", buffer);
 
-        computeShader.SetTexture(resourceCalcKernel2, "Result", result);
         computeShader.SetTexture(resourceCalcKernel, "Result", result);
 
-
-        computeShader.Dispatch(resourceCalcKernel2, 50, 1, 1);
+        computeShader.Dispatch(resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
         computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
         buffer.GetData(values);
         buffer.Release();
         buffer = null;
         texturRenderer.material.SetTexture("_NoiseMap", result);
-
-        //for (int i = 0; i < fabricCenter.Count; i++)
-        //{
-        //    print("value " + valuesArray[i] + "counter " + i);
-
-        //}
     }
 
     public void SwitchMap()
