@@ -20,6 +20,8 @@ public class BuildManager : MonoBehaviour
     public float radius = 100;
     public float intensity = 1;
 
+    private bool isBuildingActiv = false;
+
 
     private void Update()
     {

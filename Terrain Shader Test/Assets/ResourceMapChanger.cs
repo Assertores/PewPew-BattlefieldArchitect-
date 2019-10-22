@@ -14,7 +14,7 @@ public class ResourceMapChanger : MonoBehaviour
     private int resourceCalcKernel;
     private int resourceCalcKernel2;
     private bool changeMap = false;
-    public List<Vector4> fabricCenter;
+    public List<Vector4> fabricCenter = new List<Vector4>();
 
     public ComputeShader computeShader;
     ComputeBuffer buffer;
@@ -40,24 +40,11 @@ public class ResourceMapChanger : MonoBehaviour
 
     private void Start()
     {
-        fabricCenter = new List<Vector4>();
+        //fabricCenter = new List<Vector4>();
         resourceTexture = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
-        //texturRenderer.material.SetTexture("_NoiseMap", result);
-
-        //resourceTexture.Resize(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit));
-        //resourceTexture.Apply();
-
-        //result = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as RenderTexture;
-
-
         values = new int[50];
-
         resourceCalcKernel = computeShader.FindKernel("CSMain");
         resourceCalcKernel2 = computeShader.FindKernel("CSInit");
-        //result = new RenderTexture(Mathf.RoundToInt(mapHeigth * PixelPerUnit), Mathf.RoundToInt(mapWith * PixelPerUnit), 24, RenderTextureFormat.RFloat)
-        //{
-        //    enableRandomWrite = true
-        //};
 
         result = new RenderTexture(resourceTexture.height, resourceTexture.width, 24)
         {
@@ -93,34 +80,13 @@ public class ResourceMapChanger : MonoBehaviour
         while (fabricCenter.Count > 0)
         {
             yield return new WaitForSeconds(0.1f);
-            //RefreshCalcRes();
         }
     }
 
     public void AddFabric(Vector3 pos, float intensity, float radius)
     {
-        // (pos - texture position) * ppu
-        //  Vector3 position = (pos - ground) * PixelPerUnit;
-
         fabricCenter.Add(new Vector4(pos.x, pos.z, intensity, radius));
-        //NewhCalcBuild(new Vector4(pos.x, pos.z, intensity, radius));
     }
-
-    //public void NewCalcBuild(Vector4 build)
-    //{
-    //    Vector4[] _builds = new Vector4[1];
-    //    _builds[0] = build;
-
-    //    computeShader.SetTexture(resourceCalcKernel, "Result", result);
-    //    computeShader.SetInt("PointSize", _builds.Length);
-    //    computeShader.SetVectorArray("coords", _builds);
-    //    computeShader.SetTexture(resourceCalcKernel, "Result", result);
-
-    //    computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
-
-    //    texturRenderer.material.SetTexture("_NoiseMap", result);
-    //}
-
 
     private void RefreshCalcRes()
     {
