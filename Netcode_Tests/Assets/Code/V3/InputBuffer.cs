@@ -19,6 +19,10 @@ namespace NT3 {
 		public int Decrypt(byte[] msg, int offset) {
 			return offset;
 		}
+
+		public List<int> GetInputIDs() {
+			return new List<int>();
+		}
 	}
 
 	public class InputBuffer : RingBuffer<InputElement> {

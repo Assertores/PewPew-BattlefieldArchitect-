@@ -5,7 +5,7 @@ using System;
 
 namespace NT3 {
 
-	enum DataType : byte {NON, TYPE, TRANSFORM, SCALE, AMMO, PATH, HEALTH, ARGUMENT, BEHAVIOUR, MAP };
+	enum DataType : byte {NON, TYPE, TRANSFORM, SCALE, AMMO, PATH, HEALTH, ARGUMENT, BEHAVIOUR, MAP, INPUTS };
 
 	namespace GSI {
 		public class type {
@@ -73,6 +73,7 @@ namespace NT3 {
 		public List<GSI.arg> m_arguments = new List<GSI.arg>();
 		public List<GSI.behaviour> m_behaviours = new List<GSI.behaviour>();
 		public List<GSI.map> m_maps = new List<GSI.map>();
+		public List<int> m_denyedInputIDs = new List<int>();
 
 		bool m_isLerped;
 		bool m_isDelta;
@@ -194,6 +195,16 @@ namespace NT3 {
 
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
+			}
+			if(m_denyedInputIDs.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.INPUTS);
+				msg.AddRange(BitConverter.GetBytes(m_denyedInputIDs.Count));
+				foreach (var it in m_denyedInputIDs) {
+					msg.AddRange(BitConverter.GetBytes(it));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
 
 			m_messageHolder = value;
@@ -349,6 +360,13 @@ namespace NT3 {
 
 						m_maps.Add(tmp);
 						break;
+					case DataType.INPUTS:
+						m_denyedInputIDs = new List<int>(count);
+						for (int i = 0; i < count; i++) {
+							m_denyedInputIDs.Add(BitConverter.ToInt32(msg, offset));
+							offset += sizeof(int);
+						}
+						break;
 					default:
 						Debug.LogError("unhandler DataType: " + (DataType)msg[offset - 1]);
 						break;
@@ -447,28 +465,37 @@ namespace NT3 {
 
 				m_types.RemoveAt(index);
 			}
-			for(int i = tick; i < tick+length; i++) {
-				foreach(var it in reference[i].m_maps) {
-					int index = m_maps.FindIndex(x => x.m_id == it.m_id);
-					m_maps[i].m_mask += it.m_mask;
-				}
+			{
+				for (int i = tick; i < tick + length; i++) {
+					foreach (var it in reference[i].m_maps) {
+						int index = m_maps.FindIndex(x => x.m_id == it.m_id);
+						m_maps[i].m_mask += it.m_mask;
+					}
 
-				if (m_maps[i].m_mask.AreAllByteInactive())
-					m_maps.RemoveAt(i);
-			}
-			foreach(var it in m_maps) {
-				Vector2[] changedPositions = it.m_mask.GetActiveBits();
-				it.m_values.Clear();
-				foreach(var jt in changedPositions) {
-					it.m_values.Add(0.0f);//TODO: read pixel from heatmap
+					if (m_maps[i].m_mask.AreAllByteInactive())
+						m_maps.RemoveAt(i);
 				}
+				foreach (var it in m_maps) {
+					Vector2[] changedPositions = it.m_mask.GetActiveBits();
+					it.m_values.Clear();
+					foreach (var jt in changedPositions) {
+						it.m_values.Add(0.0f);//TODO: read pixel from heatmap
+					}
+				}
+			}
+			{
+				List<int> inputs = new List<int>();
+				for (int i = tick; i < tick + length; i++) {
+					inputs.AddRange(reference[i].m_denyedInputIDs);
+				}
+				m_denyedInputIDs = inputs;
 			}
 
 			m_isDelta = true;
 			return true;
 		}
 
-		public bool DismantleDelta(GameState reference) {
+		public bool DismantleDelta(GameState reference, List<int> expactedInputs) {
 			if (reference == null)
 				return false;
 
@@ -521,7 +548,7 @@ namespace NT3 {
 
 				m_behaviours.Add(it);
 			}
-			foreach(var it in reference.m_maps) {
+			foreach (var it in reference.m_maps) {
 				if (m_maps.Exists(x => x.m_id == it.m_id))
 					continue;
 
@@ -533,6 +560,12 @@ namespace NT3 {
 				m_maps.Add(tmp);
 			}
 			//maps are somewhat always delta like
+			foreach(var it in m_denyedInputIDs) {
+				if (expactedInputs.Exists(x => x == it))
+					continue;
+
+				m_denyedInputIDs.Remove(it);
+			}
 
 			m_isDelta = false;
 			return true;

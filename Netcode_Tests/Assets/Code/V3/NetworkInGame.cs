@@ -90,7 +90,6 @@ namespace NT3 {
 			//resend missing packages
 			byte[] field = new byte[data[1 + sizeof(int)]];
 			Buffer.BlockCopy(data, 2 + sizeof(int), field, 0, field.Length);
-			BitField2D missingPackages = new BitField2D(field.Length, 1, field);
 			int fieldTick = BitConverter.ToInt32(data, 2 + sizeof(int) + field.Length);
 			client.m_gameStates[fieldTick].m_receivedMessages.FromArray(field);
 			SendGameStateToClient(fieldTick, client);
@@ -163,7 +162,7 @@ namespace NT3 {
 			if (!client.m_isConnected)
 				return;
 
-			client.m_gameStates[tick].CreateDelta(client.m_gameStates, client.m_gameStates.GetLowEnd());
+			client.m_gameStates[tick].CreateDelta(client.m_gameStates, client.m_gameStates.GetLowEnd(), tick - client.m_gameStates.GetLowEnd());
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client.m_gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size

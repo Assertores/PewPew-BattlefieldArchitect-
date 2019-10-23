@@ -35,33 +35,37 @@ namespace NT3 {
 		}
 #else
 		private void FixedUpdate() {
-			if(GlobalValues.s_singelton.m_clients[0].m_gameStates.GetHighEnd() < m_currentTick) {
+			Client me = GlobalValues.s_singelton.m_clients[0];
+			if (me.m_gameStates.GetHighEnd() < m_currentTick || !me.m_gameStates[m_currentTick].m_receivedMessages.AreAllBytesActive()) {
 				Debug.Log("Network Pause");
 				return;
 			}
 			GameState nextState = default;
 			int nextStateTick = m_currentTick;
 			for(; nextState == default; nextStateTick++) {
-				nextState = GlobalValues.s_singelton.m_clients[0].m_gameStates[nextStateTick];
+				nextState = me.m_gameStates[nextStateTick];
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			if(nextStateTick != m_currentTick) {
-				GameState tmp = new GameState();
-				if(nextState.m_refTick < GlobalValues.s_singelton.m_clients[0].m_gameStates.GetLowEnd() || GlobalValues.s_singelton.m_clients[0].m_gameStates[nextState.m_refTick] == default) {
-					Debug.LogError("Reference Tick for Lerp not Found");
-					return;//no idea how to fix this
-				}
+			if (nextState.m_refTick < me.m_gameStates.GetLowEnd() || me.m_gameStates[nextState.m_refTick] == default) {
+				Debug.LogError("Reference Tick not Found");
+				return;//no idea how to fix this
+			}
 
-				tmp.Lerp(GlobalValues.s_singelton.m_clients[0].m_gameStates[nextState.m_refTick], nextState, m_currentTick);//TODO: Rework Lerp
+			if (nextStateTick != m_currentTick) {
+				GameState tmp = new GameState();
+
+				tmp.Lerp(me.m_gameStates[nextState.m_refTick], nextState, m_currentTick);//TODO: Rework Lerp
 				nextState = tmp;
+			} else {
+				nextState.DismantleDelta(me.m_gameStates[nextState.m_refTick], me.m_inputBuffer[nextStateTick].GetInputIDs());
 			}
 
 			GameStateHandler.s_singelton.SetGameState(nextState);
 
 			s_DoTick?.Invoke(m_currentTick);
 			m_currentTick++;
-			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.CreateNewElement(m_currentTick);
+			me.m_inputBuffer.CreateNewElement(m_currentTick);
 		}
 
 		public bool AddGameState(GameState newGameState, int tick) {
