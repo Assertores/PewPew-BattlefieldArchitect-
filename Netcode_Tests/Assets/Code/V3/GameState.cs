@@ -183,18 +183,17 @@ namespace NT3 {
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
 			if (m_maps.Count > 0) {
-				msg.Clear();
-				msg.Add((byte)DataType.MAP);
-				msg.AddRange(BitConverter.GetBytes(m_maps.Count));
-				foreach (var it in m_maps) {
-					msg.AddRange(BitConverter.GetBytes(it.m_id));
+				foreach(var it in m_maps) {
+					msg.Clear();
+					msg.Add((byte)DataType.MAP);
+					msg.AddRange(BitConverter.GetBytes(it.m_id));//overloads the count bytes in compareson to all other types
 					msg.AddRange(it.m_mask.ToArray());
 					for (int i = 0; i < it.m_values.Count; i++) {
 						msg.AddRange(BitConverter.GetBytes(it.m_values[i]));
 					}
-				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+					HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				}
 			}
 
 			m_messageHolder = value;
@@ -232,6 +231,129 @@ namespace NT3 {
 
 		public void Decrypt(byte[] msg, int offset) {
 
+			int count;
+			int size;
+			while (offset < msg.Length) {
+				count = 0;
+				count = BitConverter.ToInt32(msg, offset + 1);
+				offset += sizeof(int) + 1;
+				switch ((DataType)msg[offset - 1 - sizeof(int)]) {
+					case DataType.NON:
+						Debug.LogError("DataType should not be used!!");
+						break;
+					case DataType.TYPE:
+						m_types = new List<GSI.type>(count);
+						for (int i = 0; i < count; i++) {
+							m_types.Add(new GSI.type {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_type = BitConverter.ToInt32(msg, offset + sizeof(int)),
+							});
+							offset += 2 * sizeof(int);
+						}
+						break;
+					case DataType.TRANSFORM:
+						m_transforms = new List<GSI.transform>(count);
+						for (int i = 0; i < count; i++) {
+							m_transforms.Add(new GSI.transform {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_x = BitConverter.ToSingle(msg, offset + sizeof(int)),
+								m_y = BitConverter.ToSingle(msg, offset + sizeof(int) + sizeof(float)),
+								m_z = BitConverter.ToSingle(msg, offset + sizeof(int) + 2 * sizeof(float)),
+								m_alpha = BitConverter.ToSingle(msg, offset + sizeof(int) + 3 * sizeof(float)),
+							});
+							offset += sizeof(int) + 4 * sizeof(float);
+						}
+						break;
+					case DataType.SCALE:
+						m_scales = new List<GSI.scale>(count);
+						for (int i = 0; i < count; i++) {
+							m_scales.Add(new GSI.scale {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_length = BitConverter.ToSingle(msg, offset + sizeof(int)),
+							});
+							offset += sizeof(int) + sizeof(float);
+						}
+						break;
+					case DataType.AMMO:
+						m_ammos = new List<GSI.ammo>(count);
+						for (int i = 0; i < count; i++) {
+							m_ammos.Add(new GSI.ammo {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_bullets = BitConverter.ToInt32(msg, offset + sizeof(int)),
+								m_grenades = BitConverter.ToInt32(msg, offset + 2 * sizeof(int)),
+							});
+							offset += 3 * sizeof(int);
+						}
+						break;
+					case DataType.PATH:
+						m_paths = new List<GSI.paths>(count);
+						for(int i = 0; i < count; i++) {
+							m_paths[i].m_id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+							size = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							m_paths[i].m_path = new List<Vector3>(size);
+							for(int j = 0; j < size; j++) {
+								m_paths[i].m_path.Add(new Vector3(BitConverter.ToSingle(msg, offset), BitConverter.ToSingle(msg, offset + sizeof(float)), BitConverter.ToSingle(msg, offset + 2 * sizeof(float))));
+								offset += 3 * sizeof(float);
+							}
+						}
+						break;
+					case DataType.HEALTH:
+						m_healths = new List<GSI.health>(count);
+						for (int i = 0; i < count; i++) {
+							m_healths.Add(new GSI.health {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_health = BitConverter.ToSingle(msg, offset + sizeof(int)),
+							});
+							offset += sizeof(int) + sizeof(float);
+						}
+						break;
+					case DataType.ARGUMENT:
+						m_arguments = new List<GSI.arg>(count);
+						for (int i = 0; i < count; i++) {
+							m_arguments.Add(new GSI.arg {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_arg = msg[offset + sizeof	(int)],
+							});
+							offset += sizeof(int) + 1;
+						}
+						break;
+					case DataType.BEHAVIOUR:
+						m_behaviours = new List<GSI.behaviour>(count);
+						for (int i = 0; i < count; i++) {
+							m_behaviours.Add(new GSI.behaviour {
+								m_id = BitConverter.ToInt32(msg, offset),
+								m_behaviour = msg[offset + sizeof(int)],
+							});
+							offset += sizeof(int) + 1;
+						}
+						break;
+					case DataType.MAP:
+						GSI.map tmp = new GSI.map {
+							m_id = count, //only case where no count is send, so the bytes that would signify the count of the type array happen to be the id of the map
+						};
+
+						byte[] mask = new byte[GlobalValues.s_singelton.m_mapWidth + GlobalValues.s_singelton.m_mapHight];
+						Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
+						offset += mask.Length;
+						tmp.m_mask = new BitField2D(GlobalValues.s_singelton.m_mapWidth, GlobalValues.s_singelton.m_mapHight, mask);
+
+						size = tmp.m_mask.GetActiveBits().Length;
+						tmp.m_values = new List<float>(size);
+						for (int j = 0; j < size; j++) {
+							tmp.m_values.Add(BitConverter.ToSingle(msg, offset));
+							offset += sizeof(float);
+						}
+
+						m_maps.Add(tmp);
+						break;
+					default:
+						Debug.LogError("unhandler DataType: " + (DataType)msg[offset - 1]);
+						break;
+				}
+			}
 		}
 
 		public bool CreateDelta(RingBuffer<GameState> reference, int tick, int length) {
@@ -405,7 +527,7 @@ namespace NT3 {
 
 				GSI.map tmp = new GSI.map();
 				tmp.m_id = it.m_id;
-				tmp.m_mask = new BitField2D(it.m_mask, true);
+				tmp.m_mask = new BitField2D(GlobalValues.s_singelton.m_mapHight, GlobalValues.s_singelton.m_mapHight);
 				tmp.m_values = new List<float>();
 
 				m_maps.Add(tmp);

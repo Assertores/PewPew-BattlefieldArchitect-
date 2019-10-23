@@ -22,6 +22,9 @@ namespace NT3 {
 
 		public List<Client> m_clients = new List<Client>();
 
+		public int m_mapWidth = 5;//TODO: this information hast to come from Rene
+		public int m_mapHight = 5;//TODO: this information hast to come from Rene
+
 		private void Start() {
 #if !UNITY_SERVER
 			m_clients.Add(new Client());
