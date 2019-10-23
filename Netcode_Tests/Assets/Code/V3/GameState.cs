@@ -4,53 +4,55 @@ using UnityEngine;
 
 namespace NT3 {
 
-	public struct GSI_Type{
-		public int m_id;
-		public int m_type;
-	}
+	namespace GSI {
+		public struct type {
+			public int m_id;
+			public int m_type;
+		}
 
-	public struct GSI_Transform {
-		public int m_id;
-		public float m_x;
-		public float m_y;
-		public float m_z;
-		public float m_alpha;
-	}
+		public struct transform {
+			public int m_id;
+			public float m_x;
+			public float m_y;
+			public float m_z;
+			public float m_alpha;
+		}
 
-	public struct GSI_Scale {
-		public int m_id;
-		public float m_length;
-	}
+		public struct scale {
+			public int m_id;
+			public float m_length;
+		}
 
-	public struct GSI_Ammo {
-		public int m_id;
-		public int m_bullets;
-		public int m_grenades;
-	}
+		public struct ammo {
+			public int m_id;
+			public int m_bullets;
+			public int m_grenades;
+		}
 
-	public struct GSI_Paths {
-		public int m_id;
-		public List<Vector3> m_path;
-	}
+		public struct paths {
+			public int m_id;
+			public List<Vector3> m_path;
+		}
 
-	public struct GSI_Health {
-		public int m_id;
-		public float m_health;
-	}
-	public struct GSI_Arg {
-		public int m_id;
-		public byte m_arg;
-	}
+		public struct health {
+			public int m_id;
+			public float m_health;
+		}
+		public struct arg {
+			public int m_id;
+			public byte m_arg;
+		}
 
-	public struct GSI_Behaviour {
-		public int m_id;
-		public byte m_behaviour;
-	}
+		public struct behaviour {
+			public int m_id;
+			public byte m_behaviour;
+		}
 
-	public struct GSI_Map {
-		public int m_id;
-		public BitField2D m_mask;
-		public List<float> m_values;
+		public struct map {
+			public int m_id;
+			public BitField2D m_mask;
+			public List<float> m_values;
+		}
 	}
 
 	public class GameState {
@@ -59,15 +61,15 @@ namespace NT3 {
 		public byte m_messageCount;
 		public BitField2D m_receivedMessages;
 
-		public List<GSI_Type> m_types = new List<GSI_Type>();
-		public List<GSI_Transform> m_transforms = new List<GSI_Transform>();
-		public List<GSI_Scale> m_scales = new List<GSI_Scale>();
-		public List<GSI_Ammo> m_ammos = new List<GSI_Ammo>();
-		public List<GSI_Paths> m_paths = new List<GSI_Paths>();
-		public List<GSI_Health> m_healths = new List<GSI_Health>();
-		public List<GSI_Arg> m_arguments = new List<GSI_Arg>();
-		public List<GSI_Behaviour> m_behaviours = new List<GSI_Behaviour>();
-		public List<GSI_Map> m_maps = new List<GSI_Map>();
+		public List<GSI.type> m_types = new List<GSI.type>();
+		public List<GSI.transform> m_transforms = new List<GSI.transform>();
+		public List<GSI.scale> m_scales = new List<GSI.scale>();
+		public List<GSI.ammo> m_ammos = new List<GSI.ammo>();
+		public List<GSI.paths> m_paths = new List<GSI.paths>();
+		public List<GSI.health> m_healths = new List<GSI.health>();
+		public List<GSI.arg> m_arguments = new List<GSI.arg>();
+		public List<GSI.behaviour> m_behaviours = new List<GSI.behaviour>();
+		public List<GSI.map> m_maps = new List<GSI.map>();
 
 		bool m_isLerped;
 		bool m_isDelta;

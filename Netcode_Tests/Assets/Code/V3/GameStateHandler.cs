@@ -11,7 +11,7 @@ namespace NT3 {
 			GameState value = new GameState();
 
 			for (int i = m_liveStateElements.GetLowEnd(); i <= m_liveStateElements.GetHighEnd(); i++) {
-				GSI_Transform pos = new GSI_Transform() {
+				GSI.transform pos = new GSI.transform() {
 					m_id = i,
 					m_x = m_liveStateElements[i].transform.position.x,
 					m_y = m_liveStateElements[i].transform.position.y,
@@ -19,13 +19,13 @@ namespace NT3 {
 				};
 				value.m_transforms.Add(pos);
 
-				GSI_Health health = new GSI_Health() {
+				GSI.health health = new GSI.health() {
 					m_id = i,
 					m_health = m_liveStateElements[i].m_health
 				};
 				value.m_healths.Add(health);
 
-				GSI_Arg arg = new GSI_Arg() {
+				GSI.arg arg = new GSI.arg() {
 					m_id = i,
 					m_arg = m_liveStateElements[i].m_arg
 				};
