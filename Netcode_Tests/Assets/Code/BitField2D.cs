@@ -74,4 +74,25 @@ public class BitField2D {
 
 		return value.ToArray();
 	}
+
+	public Vector2[] GetInactiveBits() {
+		List<Vector2> value = new List<Vector2>();
+
+		for (int y = 0; y < (m_backingArray.Length * 8) / m_fieldWidth; y++) {
+			for (int x = 0; x < m_fieldWidth; x++) {
+				if (!this[x, y])
+					value.Add(new Vector2(x, y));
+			}
+		}
+
+		return value.ToArray();
+	}
+
+	public bool AreAllBytesSet() {
+		foreach (var it in m_backingArray)
+			if (it != byte.MaxValue)
+				return false;
+
+		return true;
+	}
 }

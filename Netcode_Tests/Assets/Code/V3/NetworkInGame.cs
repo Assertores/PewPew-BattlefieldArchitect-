@@ -76,7 +76,7 @@ namespace NT3 {
 			return true;
 		}
 
-		/// NON:        byte Type, int ID, {uint tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
 		void HandleNON(byte[] data, IPEndPoint ep) {
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
@@ -87,7 +87,15 @@ namespace NT3 {
 			if (client == null)
 				return;
 
-			int offset = 1 + sizeof(int);
+			//resend missing packages
+			byte[] field = new byte[data[1 + sizeof(int)]];
+			Buffer.BlockCopy(data, 2 + sizeof(int), field, 0, field.Length);
+			BitField2D missingPackages = new BitField2D(field.Length, 1, field);
+			int fieldTick = BitConverter.ToInt32(data, 2 + sizeof(int) + field.Length);
+			client.m_gameStates[fieldTick].m_receivedMessages.FromArray(field);
+			SendGameStateToClient(fieldTick, client);
+
+			int offset = 2 + sizeof(int) + field.Length;
 			while (offset < data.Length) {
 				int tick = BitConverter.ToInt32(data, offset);
 				offset += sizeof(int);
@@ -144,29 +152,34 @@ namespace NT3 {
 			Debug.Log("[Server] client " + RemoteID + " reconnected");
 		}
 
-		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
+		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
 		void Send(int tick) {
-			List<byte> msg = new List<byte>();
-
 			foreach (var it in GlobalValues.s_singelton.m_clients) {
-				if (!it.m_isConnected)
-					return;
-
-				it.m_gameStates[tick].CreateDelta(it.m_gameStates, it.m_gameStates.GetLowEnd());
-
-				List<byte[]> state = it.m_gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
-				foreach (var jt in state) {
-					msg.Clear();
-
-					msg.Add((byte)MessageType.NON);
-					msg.AddRange(BitConverter.GetBytes(tick));
-					msg.AddRange(jt);
-
-					socket.Send(msg.ToArray(), msg.Count, it.m_eP);
-				}
-
-				it.m_gameStates[tick].DismantleDelta(it.m_gameStates[it.m_gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
+				SendGameStateToClient(tick, it);
 			}
+		}
+
+		void SendGameStateToClient(int tick, Client client) {
+			if (!client.m_isConnected)
+				return;
+
+			client.m_gameStates[tick].CreateDelta(client.m_gameStates, client.m_gameStates.GetLowEnd());
+
+			List<byte> msg = new List<byte>();
+			List<byte[]> state = client.m_gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
+			for (byte i = 0; i < state.Count; i++) {
+				msg.Clear();
+
+				msg.Add((byte)MessageType.NON);
+				msg.Add(i);
+				msg.Add((byte)state.Count);
+				msg.AddRange(BitConverter.GetBytes(tick));
+				msg.AddRange(state[i]);
+
+				socket.Send(msg.ToArray(), msg.Count, client.m_eP);
+			}
+
+			client.m_gameStates[tick].DismantleDelta(client.m_gameStates[client.m_gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
 		}
 #else
 		void Start() {
@@ -216,20 +229,26 @@ namespace NT3 {
 			}
 		}
 
-		/// NON:        byte Type, int Tick, Gamestate[] states(with reftick)
+		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
 		void HandleNON(byte[] data) {
-			int tick = BitConverter.ToInt32(data, 1);
+			int tick = BitConverter.ToInt32(data, 3);
+			
 
 			GameState element = GlobalValues.s_singelton.m_clients[0].m_gameStates[tick];
 
 			if (element == default) {
 				element = new GameState();
 				TickHandler.s_singelton.AddGameState(element, tick);
+				element.m_messageCount = data[2];
+				element.m_receivedMessages = new BitField2D(data[2], 1);
 			}
 
 			Debug.Log("[Client] server State message: \n" + element.ToString());
 
-			element.Decrypt(data, 1 + sizeof(int));
+			if (!element.m_receivedMessages[data[1], 0]) {
+				element.Decrypt(data, 3 + sizeof(int));
+				element.m_receivedMessages[data[1], 0] = true;
+			}
 
 			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);
 		}
@@ -238,13 +257,16 @@ namespace NT3 {
 			GlobalValues.s_singelton.m_clients[0].m_ID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, {uint tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
 		void Send() {
 			List<byte> msg = new List<byte>();
 			msg.Add((byte)MessageType.NON);
 			msg.AddRange(BitConverter.GetBytes(GlobalValues.s_singelton.m_clients[0].m_ID));
 
 			InputBuffer ib = GlobalValues.s_singelton.m_clients[0].m_inputBuffer;
+
+			msg.AddRange(GlobalValues.s_singelton.m_clients[0].m_gameStates[ib.GetLowEnd()].m_receivedMessages.ToArray());
+
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++) {
 				byte[] tmp = ib[i].Encrypt();
 				if (tmp == null)

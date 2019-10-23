@@ -56,6 +56,8 @@ namespace NT3 {
 	public class GameState {
 
 		public int m_refTick = -1;
+		public byte m_messageCount;
+		public BitField2D m_receivedMessages;
 
 		public List<GSI_Type> m_types = new List<GSI_Type>();
 		public List<GSI_Transform> m_transforms = new List<GSI_Transform>();
