@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(SphereCollider))]
 public abstract class Pawn : MonoBehaviour
 {
     //Behaviors
@@ -28,12 +29,19 @@ public abstract class Pawn : MonoBehaviour
     //Components
     //[HideInInspector]
     public NavMeshAgent navMeshAgent;
+    private SphereCollider sphereCollider;
+
+    private object target;
+
+    //target lists
+    // pawns, covers, depots, bringjobs, buildjobs, deconstructjobs
 
     // Start is called before the first frame update
     public void Start()
     {
         InitiateBehaviors();
         navMeshAgent = GetComponent<NavMeshAgent>();
+        sphereCollider = GetComponent<SphereCollider>();
         StartCoroutine(DoTick());
     }
 
@@ -97,14 +105,6 @@ public abstract class Pawn : MonoBehaviour
     }
     #endregion
 
-    #region Gizmos
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, navMeshAgent.destination);
-    }
-    #endregion
-
     #region FakeTick
     protected IEnumerator DoTick()
     {
@@ -116,4 +116,29 @@ public abstract class Pawn : MonoBehaviour
         }
     }
     #endregion
+
+    #region Physics
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Wurstbrot")
+        {
+            print("this be a wurstbrot");
+            //add wurstbrot to wurstbrot targetlist
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        
+    }
+    #endregion
+
+    #region Gizmos
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, navMeshAgent.destination);
+    }
+    #endregion
+
 }

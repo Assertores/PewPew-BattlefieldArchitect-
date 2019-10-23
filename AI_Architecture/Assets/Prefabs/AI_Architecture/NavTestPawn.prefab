@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3257966617531606106
+--- !u!1 &9045889514976648859
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,49 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3257966617531606111}
-  - component: {fileID: 3257966617531606110}
-  - component: {fileID: 3257966617531606105}
-  - component: {fileID: 3257966617531606104}
-  - component: {fileID: 3257966617531606107}
-  - component: {fileID: 5794997361048839341}
-  - component: {fileID: 4341673038164540779}
+  - component: {fileID: 2269213977559219467}
+  - component: {fileID: 5575257471312719319}
+  - component: {fileID: 7319224823624882542}
+  - component: {fileID: 923391171931823736}
+  - component: {fileID: 1888622540330024112}
+  - component: {fileID: 2821973275340798653}
   m_Layer: 0
-  m_Name: DumbPawn
+  m_Name: NavTestPawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3257966617531606111
+--- !u!4 &2269213977559219467
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
+  m_GameObject: {fileID: 9045889514976648859}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1, z: 0}
+  m_LocalPosition: {x: 11.5, y: 1, z: 2.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3257966617531606110
+--- !u!33 &5575257471312719319
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
+  m_GameObject: {fileID: 9045889514976648859}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3257966617531606105
+--- !u!23 &7319224823624882542
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
+  m_GameObject: {fileID: 9045889514976648859}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -82,13 +81,13 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &3257966617531606104
+--- !u!136 &923391171931823736
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
+  m_GameObject: {fileID: 9045889514976648859}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
@@ -96,34 +95,13 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3257966617531606107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4d316e11824e004386e14b267c14153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  e_behaviors: 00000000
-  behavior_scores: []
-  team: 0
-  isAttacking: 0
-  health: 100
-  maxHealth: 100
-  attackDistance: 5
-  attackDamage: 2
-  navMeshAgent: {fileID: 5794997361048839341}
---- !u!195 &5794997361048839341
+--- !u!195 &1888622540330024112
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
+  m_GameObject: {fileID: 9045889514976648859}
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
@@ -139,16 +117,16 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!135 &4341673038164540779
-SphereCollider:
+--- !u!114 &2821973275340798653
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3257966617531606106}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_GameObject: {fileID: 9045889514976648859}
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 15
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd4a1381bda26a42b670a78dce0eb34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToFollow: {fileID: 0}
