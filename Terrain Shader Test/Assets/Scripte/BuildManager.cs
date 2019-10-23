@@ -21,26 +21,46 @@ public class BuildManager : MonoBehaviour
     public float intensity = 1;
 
     private bool isBuildingActiv = false;
-
+    private InventoryItem curItem;
 
     private void Update()
     {
-        HandleNewObjectHotKey();
-        
+       
         if (currentPlaceableObject!= null)
         {
+            isCancelBuilding();
             MoveCurrentObjectToMouse();
             RotateFromMouseWheel();
             ReleaseIfClicked();
         }
     }
 
+    int _buildingINdex;
+
     private void ReleaseIfClicked()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), intensity, radius);
-            currentPlaceableObject = null;
+            if (!curItem.canConnect)
+            {
+                ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), intensity, radius);
+                currentPlaceableObject = null;
+            }
+            else
+            {
+                _buildingINdex++;
+                currentPlaceableObject = null;
+                currentPlaceableObject = Instantiate(curItem.prefab);
+                ConnectingBuildings();
+            }
+        }
+    }
+
+    private void ConnectingBuildings()
+    {
+        if (_buildingINdex < 0)
+        {
+
         }
     }
 
@@ -66,36 +86,53 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-    private void HandleNewObjectHotKey()
+    public void HandleNewObject(InventoryItem ip)
     {
-        for (int i = 0; i < placeObjectPrefabs.Length; i++)
+        curItem = ip;
+        currentPlaceableObject = Instantiate(curItem.prefab);
+    }
+
+    public void isCancelBuilding()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
         {
-            if (Input.GetKeyDown(KeyCode.Alpha0 + 1 + i))
-            {
-                if (PressedKeyCurrentPrefab(i))
-                {
-                    Destroy(currentPlaceableObject);
-                    currentPrefabIndex = -1;
-                }
-                else
-                {
-                    if (currentPlaceableObject != null)
-                    {
-                        Destroy(currentPlaceableObject);
-                    }
-                    currentPlaceableObject = Instantiate(placeObjectPrefabs[i]);
-                    currentPrefabIndex = i;
-                }
-                // not more then one buttonpress at frame
-                break;
-
-            }
+            curItem = null;
+            Destroy(currentPlaceableObject);
         }
-
     }
 
-    private bool PressedKeyCurrentPrefab(int i)
-    {
-        return currentPlaceableObject != null && currentPrefabIndex == i;
-    }
+    // old keyspress 1-9 for building
+    //private void HandleNewObjectHotKey()
+    //{
+    //    for (int i = 0; i < placeObjectPrefabs.Length; i++)
+    //    {
+    //        if (Input.GetKeyDown(KeyCode.Alpha0 + 1 + i))
+    //        {
+    //            if (PressedKeyCurrentPrefab(i))
+    //            {
+    //                Destroy(currentPlaceableObject);
+    //                currentPrefabIndex = -1;
+    //            }
+    //            else
+    //            {
+    //                if (currentPlaceableObject != null)
+    //                {
+    //                    Destroy(currentPlaceableObject);
+    //                }
+    //                currentPlaceableObject = Instantiate(placeObjectPrefabs[i]);
+    //                currentPrefabIndex = i;
+    //            }
+    //            // not more then one buttonpress at frame
+    //            break;
+
+    //        }
+    //    }
+
+    //}
+
+    //private bool PressedKeyCurrentPrefab(int i)
+    //{
+    //    return currentPlaceableObject != null && currentPrefabIndex == i;
+    //}
 }
+

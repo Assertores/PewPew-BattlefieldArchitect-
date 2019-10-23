@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5708567638031699702}
   - component: {fileID: 3672940726969945317}
   - component: {fileID: 1795641180259223542}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mauer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

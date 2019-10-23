@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Refinery
   m_EditorClassIdentifier: 
   itemName: Refinery
-  sprite: {fileID: 0}
-  picSound: {fileID: 0}
-  prefab: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ebea763556f2f424d88a37f4928623b1, type: 3}
+  ConstructSound: {fileID: 0}
+  prefab: {fileID: 7351922941053595226, guid: 5d3f9aee8db0b2b409bd08444b78e1c5, type: 3}
   costs: 0
+  canConnect: 0
   UnlockBuildings: []
   IncreaseMoney: 0
   IncreaseEnergy: 0

@@ -2,16 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-public class Inventory : MonoBehaviour {
-
+public class Inventory : MonoBehaviour
+{
+    private BuildManager buildManager;
     public InventoryItem[] StartBuilds;
     public GameObject inventoryPanel;
     public GameObject inventoryTiles;
     private Button button;
 
+
     public List<Image> guiItemImages = new List<Image>();
     public Dictionary<InventoryItem, int> items = new Dictionary<InventoryItem, int>();
+
+    private void Awake()
+    {
+        buildManager = GetComponent<BuildManager>();
+    }
 
     private void Start()
     {
@@ -42,7 +50,7 @@ public class Inventory : MonoBehaviour {
             if (items.Count < guiItemImages.Count)
             {
                 items.Add(ip, 1);
-                //button.onClick.AddListener(delegate { buildManager.SetBuilding(ip); }); // weißt button function zu
+                button.onClick.AddListener(delegate { buildManager.HandleNewObject(ip); }); // weißt button function zu
             }
             else
             {
@@ -85,7 +93,7 @@ public class Inventory : MonoBehaviour {
         for (int i = 0; i < guiCount; i++)
         {
             guiItemImages[i].enabled = false;
-            guiItemImages[i].GetComponentInChildren<Text>().text = "";
+            guiItemImages[i].GetComponentInChildren<TextMeshProUGUI>().text = "";
         }
 
         int index = 0;
@@ -93,12 +101,12 @@ public class Inventory : MonoBehaviour {
         {
             guiItemImages[index].enabled = true;
             guiItemImages[index].sprite = current.Key.sprite;
-            guiItemImages[index].GetComponentInChildren<Text>().text = current.Value.ToString();
+            guiItemImages[index].GetComponentInChildren<TextMeshProUGUI>().text = current.Value.ToString();
             index++;
         }
     }
 
-
+    public TextMeshPro Text;
 
     void AddInventoryImage()
     {
