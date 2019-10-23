@@ -5,12 +5,12 @@ using UnityEngine;
 namespace NT3 {
 
 	namespace GSI {
-		public struct type {
+		public class type {
 			public int m_id;
 			public int m_type;
 		}
 
-		public struct transform {
+		public class transform {
 			public int m_id;
 			public float m_x;
 			public float m_y;
@@ -18,37 +18,37 @@ namespace NT3 {
 			public float m_alpha;
 		}
 
-		public struct scale {
+		public class scale {
 			public int m_id;
 			public float m_length;
 		}
 
-		public struct ammo {
+		public class ammo {
 			public int m_id;
 			public int m_bullets;
 			public int m_grenades;
 		}
 
-		public struct paths {
+		public class paths {
 			public int m_id;
 			public List<Vector3> m_path;
 		}
 
-		public struct health {
+		public class health {
 			public int m_id;
 			public float m_health;
 		}
-		public struct arg {
+		public class arg {
 			public int m_id;
 			public byte m_arg;
 		}
 
-		public struct behaviour {
+		public class behaviour {
 			public int m_id;
 			public byte m_behaviour;
 		}
 
-		public struct map {
+		public class map {
 			public int m_id;
 			public BitField2D m_mask;
 			public List<float> m_values;
@@ -81,12 +81,170 @@ namespace NT3 {
 
 		}
 
-		public bool CreateDelta(RingBuffer<GameState> reference, int tick) {
-			return false;
+		public bool CreateDelta(RingBuffer<GameState> reference, int tick, int length) {
+			if (reference == null)
+				return false;
+			if (reference[tick] == default)
+				return false;
+			if (reference[tick].m_isDelta)
+				return false;
+
+			//--> reference is valide <--
+
+			GameState refState = reference[tick];
+
+			m_refTick = tick;
+
+			foreach(var it in refState.m_types) {
+				int index = m_types.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_type != m_types[index].m_type)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_transforms) {
+				int index = m_transforms.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_x != m_transforms[index].m_x)
+					continue;
+				if (it.m_y != m_transforms[index].m_y)
+					continue;
+				if (it.m_z != m_transforms[index].m_z)
+					continue;
+				if (it.m_alpha != m_transforms[index].m_alpha)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_scales) {
+				int index = m_scales.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_length != m_scales[index].m_length)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_ammos) {
+				int index = m_ammos.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_bullets != m_ammos[index].m_bullets)
+					continue;
+				if (it.m_grenades != m_ammos[index].m_grenades)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_paths) {
+				int index = m_paths.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_path.Count != m_paths[index].m_path.Count)
+					continue;
+				for(int i = 0; i < it.m_path.Count; i++) {
+					if (it.m_path[i] != m_paths[index].m_path[i])
+						continue;
+				}
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_healths) {
+				int index = m_healths.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_health != m_healths[index].m_health)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_arguments) {
+				int index = m_arguments.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_arg != m_arguments[index].m_arg)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			foreach (var it in refState.m_behaviours) {
+				int index = m_behaviours.FindIndex(x => x.m_id == it.m_id);
+
+				if (it.m_behaviour != m_behaviours[index].m_behaviour)
+					continue;
+
+				m_types.RemoveAt(index);
+			}
+			for(int i = tick; i < tick+length; i++) {
+				foreach(var it in reference[i].m_maps) {
+					int index = m_maps.FindIndex(x => x.m_id == it.m_id);
+					m_maps[i].m_mask += it.m_mask;
+				}
+			}
+			foreach(var it in m_maps) {
+				Vector2[] changedPositions = it.m_mask.GetActiveBits();
+				it.m_values.Clear();
+				foreach(var jt in changedPositions) {
+					it.m_values.Add(0.0f);//TODO: read pixel from heatmap
+				}
+			}
+
+			m_isDelta = true;
+			return true;
 		}
 
 		public bool DismantleDelta(GameState reference) {
-			return false;
+			if (reference == null)
+				return false;
+
+			foreach(var it in reference.m_types) {
+				if (m_types.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_types.Add(it);
+			}
+			foreach (var it in reference.m_transforms) {
+				if (m_transforms.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_transforms.Add(it);
+			}
+			foreach (var it in reference.m_scales) {
+				if (m_scales.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_scales.Add(it);
+			}
+			foreach (var it in reference.m_ammos) {
+				if (m_ammos.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_ammos.Add(it);
+			}
+			foreach (var it in reference.m_paths) {
+				if (m_paths.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_paths.Add(it);
+			}
+			foreach (var it in reference.m_healths) {
+				if (m_healths.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_healths.Add(it);
+			}
+			foreach (var it in reference.m_arguments) {
+				if (m_arguments.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_arguments.Add(it);
+			}
+			foreach (var it in reference.m_behaviours) {
+				if (m_behaviours.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				m_behaviours.Add(it);
+			}
+			//maps are somewhat always delta like
+
+			m_isDelta = false;
+			return true;
 		}
 
 		public bool Lerp(GameState start, GameState end, int t) {
