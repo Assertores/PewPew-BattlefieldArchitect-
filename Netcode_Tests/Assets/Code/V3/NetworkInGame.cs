@@ -257,7 +257,7 @@ namespace NT3 {
 			GlobalValues.s_singelton.m_clients[0].m_ID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
 		void Send() {
 			List<byte> msg = new List<byte>();
 			msg.Add((byte)MessageType.NON);
@@ -265,7 +265,9 @@ namespace NT3 {
 
 			InputBuffer ib = GlobalValues.s_singelton.m_clients[0].m_inputBuffer;
 
-			msg.AddRange(GlobalValues.s_singelton.m_clients[0].m_gameStates[ib.GetLowEnd()].m_receivedMessages.ToArray());
+			byte[] field = GlobalValues.s_singelton.m_clients[0].m_gameStates[ib.GetLowEnd()].m_receivedMessages.ToArray();
+			msg.Add((byte)field.Length);
+			msg.AddRange(field);
 
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++) {
 				byte[] tmp = ib[i].Encrypt();
