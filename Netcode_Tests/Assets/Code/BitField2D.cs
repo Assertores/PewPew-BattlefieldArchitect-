@@ -18,6 +18,16 @@ public class BitField2D {
 		Buffer.BlockCopy(values, 0, m_backingArray, 0, Mathf.CeilToInt((width * hight) / 8.0f));
 	}
 
+	public BitField2D(BitField2D origin, bool doEmpty) {
+		m_fieldWidth = origin.m_fieldWidth;
+		if (doEmpty) {
+			m_backingArray = new byte[origin.m_backingArray.Length];
+		} else {
+			m_backingArray = new byte[origin.m_backingArray.Length];
+			Buffer.BlockCopy(origin.m_backingArray, 0, m_backingArray, 0, m_backingArray.Length);
+		}
+	}
+
 	public bool this[int x, int y] {
 		get {
 			if ((x < 0 || x >= m_fieldWidth) || (y < 0 || y >= (m_backingArray.Length * 8) / m_fieldWidth))
@@ -88,9 +98,17 @@ public class BitField2D {
 		return value.ToArray();
 	}
 
-	public bool AreAllBytesSet() {
+	public bool AreAllBytesActive() {
 		foreach (var it in m_backingArray)
 			if (it != byte.MaxValue)
+				return false;
+
+		return true;
+	}
+
+	public bool AreAllByteInactive() {
+		foreach (var it in m_backingArray)
+			if (it != byte.MinValue)
 				return false;
 
 		return true;

@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace NT3 {
+
+	enum DataType : byte {NON, TYPE, TRANSFORM, SCALE, AMMO, PATH, HEALTH, ARGUMENT, BEHAVIOUR, MAP };
 
 	namespace GSI {
 		public class type {
@@ -73,8 +76,158 @@ namespace NT3 {
 
 		bool m_isLerped;
 		bool m_isDelta;
+		List<byte[]> m_messageHolder = null;
+
 		public List<byte[]> Encrypt(int maxPackageSize) {
-			return new List<byte[]>();
+			if (m_messageHolder != null)
+				return m_messageHolder;
+
+			List<byte[]> value = new List<byte[]>();
+			List<byte> msg = new List<byte>();
+
+			if(m_types.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.TYPE);
+				msg.AddRange(BitConverter.GetBytes(m_types.Count));
+				foreach(var it in m_types) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_type));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_transforms.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.TRANSFORM);
+				msg.AddRange(BitConverter.GetBytes(m_transforms.Count));
+				foreach (var it in m_transforms) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_x));
+					msg.AddRange(BitConverter.GetBytes(it.m_y));
+					msg.AddRange(BitConverter.GetBytes(it.m_z));
+					msg.AddRange(BitConverter.GetBytes(it.m_alpha));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_scales.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.SCALE);
+				msg.AddRange(BitConverter.GetBytes(m_scales.Count));
+				foreach (var it in m_scales) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_length));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_ammos.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.AMMO);
+				msg.AddRange(BitConverter.GetBytes(m_ammos.Count));
+				foreach (var it in m_ammos) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_bullets));
+					msg.AddRange(BitConverter.GetBytes(it.m_grenades));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_paths.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.PATH);
+				msg.AddRange(BitConverter.GetBytes(m_paths.Count));
+				foreach (var it in m_paths) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_path.Count));
+					for(int i = 0; i < it.m_path.Count; i++) {
+						msg.AddRange(BitConverter.GetBytes(it.m_path[i].x));
+						msg.AddRange(BitConverter.GetBytes(it.m_path[i].y));
+						msg.AddRange(BitConverter.GetBytes(it.m_path[i].z));
+					}
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_healths.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.HEALTH);
+				msg.AddRange(BitConverter.GetBytes(m_healths.Count));
+				foreach (var it in m_healths) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(BitConverter.GetBytes(it.m_health));
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_arguments.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.ARGUMENT);
+				msg.AddRange(BitConverter.GetBytes(m_arguments.Count));
+				foreach (var it in m_arguments) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.Add(it.m_arg);
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_behaviours.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.BEHAVIOUR);
+				msg.AddRange(BitConverter.GetBytes(m_behaviours.Count));
+				foreach (var it in m_behaviours) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.Add(it.m_behaviour);
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+			if (m_maps.Count > 0) {
+				msg.Clear();
+				msg.Add((byte)DataType.MAP);
+				msg.AddRange(BitConverter.GetBytes(m_maps.Count));
+				foreach (var it in m_maps) {
+					msg.AddRange(BitConverter.GetBytes(it.m_id));
+					msg.AddRange(it.m_mask.ToArray());
+					for (int i = 0; i < it.m_values.Count; i++) {
+						msg.AddRange(BitConverter.GetBytes(it.m_values[i]));
+					}
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
+
+			m_messageHolder = value;
+
+			return value;
+		}
+
+		/// <summary>
+		/// packs the message into the next best package
+		/// </summary>
+		/// <param name="maxPackageSize">the maximum size of packages</param>
+		/// <param name="packages">the lost of already existing packages</param>
+		/// <param name="additionalMessage">the message that should be inserted</param>
+		void HandlePackageSize(int maxPackageSize, List<byte[]> packages, byte[] additionalMessage) {
+			int index = -1;
+			int remainder = int.MaxValue;
+
+			for(int i = 0; i < packages.Count; i++) {
+				int currentRefmainter = maxPackageSize - (packages[i].Length + additionalMessage.Length);
+				if (currentRefmainter >= 0 && currentRefmainter < remainder) {
+					remainder = currentRefmainter;
+					index = i;
+				}
+			}
+
+			if (index < 0) {
+				packages.Add(additionalMessage);
+			} else {
+				byte[] tmp = new byte[packages[index].Length + additionalMessage.Length];
+				Buffer.BlockCopy(packages[index], 0, tmp, 0, packages[index].Length);
+				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
+				packages[index] = tmp;
+			}
 		}
 
 		public void Decrypt(byte[] msg, int offset) {
@@ -91,6 +244,7 @@ namespace NT3 {
 
 			//--> reference is valide <--
 
+			m_messageHolder = null;
 			GameState refState = reference[tick];
 
 			m_refTick = tick;
@@ -176,6 +330,9 @@ namespace NT3 {
 					int index = m_maps.FindIndex(x => x.m_id == it.m_id);
 					m_maps[i].m_mask += it.m_mask;
 				}
+
+				if (m_maps[i].m_mask.AreAllByteInactive())
+					m_maps.RemoveAt(i);
 			}
 			foreach(var it in m_maps) {
 				Vector2[] changedPositions = it.m_mask.GetActiveBits();
@@ -193,6 +350,7 @@ namespace NT3 {
 			if (reference == null)
 				return false;
 
+			m_messageHolder = null;
 			foreach(var it in reference.m_types) {
 				if (m_types.Exists(x => x.m_id == it.m_id))
 					continue;
@@ -240,6 +398,17 @@ namespace NT3 {
 					continue;
 
 				m_behaviours.Add(it);
+			}
+			foreach(var it in reference.m_maps) {
+				if (m_maps.Exists(x => x.m_id == it.m_id))
+					continue;
+
+				GSI.map tmp = new GSI.map();
+				tmp.m_id = it.m_id;
+				tmp.m_mask = new BitField2D(it.m_mask, true);
+				tmp.m_values = new List<float>();
+
+				m_maps.Add(tmp);
 			}
 			//maps are somewhat always delta like
 
