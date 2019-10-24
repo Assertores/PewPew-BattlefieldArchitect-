@@ -47,10 +47,11 @@ public class Behavior_GoAnywhere : Behavior
         }
     }
 
-    protected override float TargetAxisInputs(Pawn pawn, string name)
+    protected float TargetAxisInputs(Pawn pawn, string name)
     {
         switch (name)
         {
+            case "Distance":
             case "DistanceToTarget":
                 return Vector3.Distance(pawn.transform.position, bestTarget) / maxDistance;
             default:
@@ -59,11 +60,11 @@ public class Behavior_GoAnywhere : Behavior
         }
     }
 
-    public override void FindBestTarget(Pawn pawn)
+    public override float FindBestTarget(Pawn pawn)
     {
         bestTarget = GetRandomPoint(pawn);
         bestTarget = pawn.transform.position + Vector3.forward;
-        targetScore = 1;
+        return 1;
     }
 
     /// <summary> Gets a random point up to 3 from transform.position </summary>

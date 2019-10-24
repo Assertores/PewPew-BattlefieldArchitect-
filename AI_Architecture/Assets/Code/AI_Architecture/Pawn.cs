@@ -35,6 +35,8 @@ public abstract class Pawn : MonoBehaviour
 
     //target lists
     // pawns, covers, depots, bringjobs, buildjobs, deconstructjobs
+    public List<Pawn> closePawns;
+    public List<Cover> closeCover;
 
     // Start is called before the first frame update
     public void Start()
@@ -120,16 +122,38 @@ public abstract class Pawn : MonoBehaviour
     #region Physics
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Wurstbrot")
+        //Add relevant objects to closeLists
+        if (other.tag == "Pawn")
         {
-            print("this be a wurstbrot");
-            //add wurstbrot to wurstbrot targetlist
+            Pawn temp = other.gameObject.GetComponent<Pawn>();
+            if (temp)
+                closePawns.Add(temp);
+        }
+        
+        if (other.tag == "Cover")
+        {
+            Cover temp = other.gameObject.GetComponent<Cover>();
+            if (temp)
+                closeCover.Add(temp);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        
+        //Remove objects from closeLists
+        if (other.tag == "Pawn")
+        {
+            Pawn temp = other.gameObject.GetComponent<Pawn>();
+            if (temp && closePawns.Contains(temp))
+                closePawns.Remove(temp);
+        }
+
+        if (other.tag == "Cover")
+        {
+            Cover temp = other.gameObject.GetComponent<Cover>();
+            if (temp && closeCover.Contains(temp))
+                closeCover.Remove(temp);
+        }
     }
     #endregion
 
@@ -140,5 +164,4 @@ public abstract class Pawn : MonoBehaviour
         Gizmos.DrawLine(transform.position, navMeshAgent.destination);
     }
     #endregion
-
 }

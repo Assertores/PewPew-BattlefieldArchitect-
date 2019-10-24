@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7515035436285199967}
   - component: {fileID: 7515035436285199964}
   - component: {fileID: 1942481249}
+  - component: {fileID: 7515035436541505344}
   m_Layer: 0
   m_Name: BehaviorContainer
   m_TagString: Untagged
@@ -47,19 +48,57 @@ MonoBehaviour:
   pawn_axes:
   - isEnabled: 1
     name: Health
-    type: 0
-    m: 0.5
-    k: 1
-    b: 1
-    c: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   target_axes:
   - isEnabled: 1
     name: DistanceToTarget
-    type: 1
-    m: -0.5
-    k: 1
-    b: 1
-    c: 0
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.9989319
+        inSlope: -0.30317467
+        outSlope: -0.30317467
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.99853516
+        value: 0.6962013
+        inSlope: -0.30317467
+        outSlope: -0.30317467
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   maxDistance: 30
 --- !u!114 &1942481249
 MonoBehaviour:
@@ -68,10 +107,102 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7515035436285199966}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cd09e9309edc214599edf478ddba7e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pawn_axes: []
   target_axes: []
+--- !u!114 &7515035436541505344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515035436285199966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23853585da3fba43b1f91b3b1a7b276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pawn_axes:
+  - isEnabled: 1
+    name: Health
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.609375
+        inSlope: 0.390625
+        outSlope: 0.390625
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.390625
+        outSlope: 0.390625
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  target_axes:
+  - isEnabled: 1
+    name: Distance
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.29948044
+        outSlope: -0.29948044
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.70051956
+        inSlope: -0.29948044
+        outSlope: -0.29948044
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - isEnabled: 1
+    name: Score
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.68489456
+        inSlope: 0.31510544
+        outSlope: 0.31510544
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0.31510544
+        outSlope: 0.31510544
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4

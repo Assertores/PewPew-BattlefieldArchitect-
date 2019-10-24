@@ -5,6 +5,9 @@ using UnityEngine;
 public class Behavior_Shoot : Behavior
 {
     public static Behavior_Shoot instance;
+    
+    public Dictionary<Pawn, Pawn> targetDictionary;
+    
 
     void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
     {
@@ -31,7 +34,7 @@ public class Behavior_Shoot : Behavior
         throw new System.NotImplementedException();
     }
 
-    public override void FindBestTarget(Pawn pawn)
+    public override float FindBestTarget(Pawn pawn)
     {
         throw new System.NotImplementedException();
     }
@@ -41,8 +44,8 @@ public class Behavior_Shoot : Behavior
         throw new System.NotImplementedException();
     }
 
-    protected override float TargetAxisInputs(Pawn pawn, string name)
+    protected float TargetAxisInputs(Pawn pawn, string name)
     {
-        throw new System.NotImplementedException();
+        return 1;
     }
 }
