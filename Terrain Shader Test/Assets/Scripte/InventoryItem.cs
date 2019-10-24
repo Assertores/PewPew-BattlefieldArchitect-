@@ -11,13 +11,8 @@ public class InventoryItem : ScriptableObject {
     public bool canConnect = false;
     public GameObject ConnectingObject;
     public InventoryItem[] UnlockBuildings;
-
-    public int IncreaseMoney;
-    public int IncreaseEnergy;
-    public int DecreaseMoney;
-    public int DecreaseEnergy;
-
     public float SpeedBonus;
     public float ProtectionValue;
-
+    public float HarvestIntensity;
+    public float Radius;
 }
