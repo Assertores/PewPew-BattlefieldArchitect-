@@ -7,35 +7,55 @@ public class BuildManager : MonoBehaviour
 {
     public LayerMask ignore;
 
-    [SerializeField]
-    private GameObject[] placeObjectPrefabs;
+    private MouseInputs inputs;
 
     private GameObject currentPlaceableObject;
+    private InventoryItem curItem;
 
     private float mouseWheelRotation;
-    private int currentPrefabIndex = -1;
+    private int currentPrefabIndex = 0;
 
     Vector2 pixelUV = Vector2.zero;
 
     public float radius = 100;
     public float intensity = 1;
 
-    private bool isBuildingActiv = false;
-    private InventoryItem curItem;
+    private bool creatingBuild = false;
+
+    private GameObject lastPole;
+
+    private void Start()
+    {
+        inputs = GetComponent<MouseInputs>();
+    }
 
     private void Update()
     {
-       
-        if (currentPlaceableObject!= null)
+
+        if (currentPlaceableObject != null)
         {
-            isCancelBuilding();
-            MoveCurrentObjectToMouse();
-            RotateFromMouseWheel();
+            CancelBuilding();
+
+            if (currentPrefabIndex == 0)
+            {
+                MoveCurrentObjectToMouse();
+                RotateFromMouseWheel();
+
+            }
+            else if (curItem.canConnect)
+            {
+                RotateBuild();
+                CreateSegment();
+            }
+
             ReleaseIfClicked();
         }
     }
 
-    int _buildingINdex;
+    private void RotateBuild()
+    {
+        currentPlaceableObject.transform.LookAt(inputs.GetWorldPoint());
+    }
 
     private void ReleaseIfClicked()
     {
@@ -43,26 +63,52 @@ public class BuildManager : MonoBehaviour
         {
             if (!curItem.canConnect)
             {
-                ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x , 0 , pixelUV.y), intensity, radius);
+                // to do in constructBuild einfügen
+                ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x, 0, pixelUV.y), intensity, radius);
                 currentPlaceableObject = null;
+                curItem = null;
+                return;
             }
-            else
-            {
-                _buildingINdex++;
-                currentPlaceableObject = null;
-                currentPlaceableObject = Instantiate(curItem.prefab);
-                ConnectingBuildings();
-            }
+            ConstructBuild();
+            currentPrefabIndex++;
+            currentPlaceableObject.transform.position += Vector3.forward * 2;
         }
     }
 
-    private void ConnectingBuildings()
+    private void CreateSegment()
     {
-        if (_buildingINdex < 0)
-        {
+        //Vector3 cPos = currentPlaceableObject.transform.position;
+        Vector3 dir = currentPlaceableObject.transform.position - inputs.GetWorldPoint();
+        float dis = dir.magnitude;
 
+    //https://forum.unity.com/threads/solved-rotate-around-an-object-based-on-mouse-position.446461/
+
+        //currentPlaceableObject.transform.RotateAround(currentPlaceableObject.transform.position, Vector3.up  );
+
+        Vector3 orbVector = Camera.main.WorldToScreenPoint(lastPole.transform.position);
+        orbVector = Input.mousePosition - orbVector;
+        float angle = Mathf.Atan2(orbVector.y, orbVector.x) * Mathf.Rad2Deg;
+
+        //currentPlaceableObject.transform.position = lastPole.transform.position;
+        currentPlaceableObject.transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+
+
+
+        // todo länge des meshes einfügen
+        print("dis " + dis);
+        if (dis > 50)
+        {
+            ConstructBuild();
         }
     }
+
+    private void ConstructBuild()
+    {
+        lastPole = currentPlaceableObject;
+        currentPlaceableObject = null;
+        currentPlaceableObject = Instantiate(curItem.prefab);
+    }
+
 
     private void RotateFromMouseWheel()
     {
@@ -75,14 +121,14 @@ public class BuildManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         RaycastHit hitInfo;
-        if (Physics.Raycast(ray, out hitInfo,1000, ignore))
+        if (Physics.Raycast(ray, out hitInfo, 1000, ignore))
         {
             pixelUV = hitInfo.textureCoord;
             pixelUV.x = Mathf.FloorToInt(pixelUV.x *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").width);
             pixelUV.y = Mathf.FloorToInt(pixelUV.y *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").height);
 
             currentPlaceableObject.transform.position = hitInfo.point;
-            currentPlaceableObject.transform.rotation = Quaternion.FromToRotation(Vector3.up,hitInfo.normal);
+            currentPlaceableObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
         }
     }
 
@@ -92,7 +138,7 @@ public class BuildManager : MonoBehaviour
         currentPlaceableObject = Instantiate(curItem.prefab);
     }
 
-    public void isCancelBuilding()
+    public void CancelBuilding()
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
         {
