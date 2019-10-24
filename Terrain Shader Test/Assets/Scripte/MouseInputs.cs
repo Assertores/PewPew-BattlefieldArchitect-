@@ -42,5 +42,4 @@ public class MouseInputs : MonoBehaviour
         snapped.z = Mathf.Floor(originalPos.z + 0.1f);
         return snapped;
     }
-
 }

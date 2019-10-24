@@ -1155,6 +1155,7 @@ MonoBehaviour:
     m_Bits: 55
   radius: 20
   intensity: 0.1
+  angle: 0
 --- !u!114 &1928556888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,4 +1209,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ignore:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 4294967295

@@ -5,110 +5,109 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    public LayerMask ignore;
+	public LayerMask ignore;
 
-    private MouseInputs inputs;
+	private MouseInputs inputs;
 
-    private GameObject currentPlaceableObject;
-    private InventoryItem curItem;
+	private GameObject currentPlaceableObject;
+	private InventoryItem curItem;
 
-    private float mouseWheelRotation;
-    private int currentPrefabIndex = 0;
+	private float mouseWheelRotation;
+	private int currentPrefabIndex = 0;
 
-    Vector2 pixelUV = Vector2.zero;
+	Vector2 pixelUV = Vector2.zero;
 
-    public float radius = 100;
-    public float intensity = 1;
+	public float radius = 100;
+	public float intensity = 1;
 
-    private bool creatingBuild = false;
+	private bool creatingBuild = false;
 
-    private GameObject lastPole;
+	private GameObject lastPole;
 
-    private void Start()
-    {
-        inputs = GetComponent<MouseInputs>();
-    }
+	private void Start()
+	{
+		inputs = GetComponent<MouseInputs>();
+	}
 
-    private void Update()
-    {
+	private void Update()
+	{
 
-        if (currentPlaceableObject != null)
-        {
-            CancelBuilding();
+		if (currentPlaceableObject != null)
+		{
+			CancelBuilding();
 
-            if (currentPrefabIndex == 0)
-            {
-                MoveCurrentObjectToMouse();
-                RotateFromMouseWheel();
+			if (currentPrefabIndex == 0)
+			{
+				MoveCurrentObjectToMouse();
+				RotateFromMouseWheel();
 
-            }
-            else if (curItem.canConnect)
-            {
-                RotateBuild();
-                CreateSegment();
-            }
+			}
+			else if (curItem != null && curItem.canConnect)
+			{
+				CreateSegment();
+			}
 
-            ReleaseIfClicked();
-        }
-    }
+			ReleaseIfClicked();
+		}
+	}
 
-    private void RotateBuild()
-    {
-        currentPlaceableObject.transform.LookAt(inputs.GetWorldPoint());
-    }
+	private void ReleaseIfClicked()
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			if (!curItem.canConnect)
+			{
+				// to do in constructBuild einfügen
+				ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x, 0, pixelUV.y), intensity, radius);
+				currentPlaceableObject = null;
+				curItem = null;
+				return;
+			}
+			ConstructBuild();
+			currentPrefabIndex++;
+		}
+	}
 
-    private void ReleaseIfClicked()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (!curItem.canConnect)
-            {
-                // to do in constructBuild einfügen
-                ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x, 0, pixelUV.y), intensity, radius);
-                currentPlaceableObject = null;
-                curItem = null;
-                return;
-            }
-            ConstructBuild();
-            currentPrefabIndex++;
-            currentPlaceableObject.transform.position += Vector3.forward * 2;
-        }
-    }
+	public float angle = 0;
+	private void CreateSegment()
+	{
+		Vector3 dir = (inputs.GetWorldPoint() - lastPole.transform.position);
+		float dis = dir.magnitude;
 
-    private void CreateSegment()
-    {
-        //Vector3 cPos = currentPlaceableObject.transform.position;
-        Vector3 dir = currentPlaceableObject.transform.position - inputs.GetWorldPoint();
-        float dis = dir.magnitude;
+		if (dis < 1)
+		{
+			return;
+		}
 
-    //https://forum.unity.com/threads/solved-rotate-around-an-object-based-on-mouse-position.446461/
+		Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPole.transform.position);
+		v3Pos = Input.mousePosition - v3Pos;
+		angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
+		v3Pos = Quaternion.AngleAxis(-angle, Vector3.up) * (Vector3.back * 1);
+		currentPlaceableObject.transform.position = lastPole.transform.position + v3Pos;
 
-        //currentPlaceableObject.transform.RotateAround(currentPlaceableObject.transform.position, Vector3.up  );
+		// todo länge des meshes einfügen
+		if (dis > 2)
+		{
+			ConstructBetween();
+			ConstructBuild();
+		}
+	}
 
-        Vector3 orbVector = Camera.main.WorldToScreenPoint(lastPole.transform.position);
-        orbVector = Input.mousePosition - orbVector;
-        float angle = Mathf.Atan2(orbVector.y, orbVector.x) * Mathf.Rad2Deg;
+	private void ConstructBuild()
+	{
+		lastPole = currentPlaceableObject;
+		currentPlaceableObject = null;
+		currentPlaceableObject = Instantiate(curItem.prefab);
+	}
 
-        //currentPlaceableObject.transform.position = lastPole.transform.position;
-        currentPlaceableObject.transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+	private void ConstructBetween()
+	{
+		Vector3 dir = (currentPlaceableObject.transform.position - lastPole.transform.position);
+		Vector3 pos = dir * 0.5f + lastPole.transform.position;
+		Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
 
-
-
-        // todo länge des meshes einfügen
-        print("dis " + dis);
-        if (dis > 50)
-        {
-            ConstructBuild();
-        }
-    }
-
-    private void ConstructBuild()
-    {
-        lastPole = currentPlaceableObject;
-        currentPlaceableObject = null;
-        currentPlaceableObject = Instantiate(curItem.prefab);
-    }
-
+		Instantiate(curItem.ConnectingObject, pos, rotation);
+	}
 
     private void RotateFromMouseWheel()
     {
@@ -144,7 +143,9 @@ public class BuildManager : MonoBehaviour
         {
             curItem = null;
             Destroy(currentPlaceableObject);
-        }
+			currentPrefabIndex = 0;
+
+		}
     }
 
     // old keyspress 1-9 for building
