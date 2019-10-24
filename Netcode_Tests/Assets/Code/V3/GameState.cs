@@ -306,7 +306,9 @@ namespace NT3 {
 
 							m_paths[i].m_path = new List<Vector3>(size);
 							for(int j = 0; j < size; j++) {
-								m_paths[i].m_path.Add(new Vector3(BitConverter.ToSingle(msg, offset), BitConverter.ToSingle(msg, offset + sizeof(float)), BitConverter.ToSingle(msg, offset + 2 * sizeof(float))));
+								m_paths[i].m_path.Add(new Vector3(BitConverter.ToSingle(msg, offset),
+																  BitConverter.ToSingle(msg, offset + sizeof(float)),
+																  BitConverter.ToSingle(msg, offset + 2 * sizeof(float))));
 								offset += 3 * sizeof(float);
 							}
 						}
