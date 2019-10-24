@@ -62,7 +62,7 @@ namespace NT3 {
 		/// </summary>
 		/// <param name="msg">the byte-array</param>
 		/// <param name="offset">the start offset</param>
-		/// <returns>the offset at with point i stopt to read</returns>
+		/// <returns>the offset alfter the point it stoped reading</returns>
 		public int Decrypt(byte[] msg, int offset) {
 			int count = BitConverter.ToInt32(msg, offset);
 			offset += sizeof(int);
