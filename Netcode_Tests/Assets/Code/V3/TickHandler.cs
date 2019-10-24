@@ -11,6 +11,8 @@ namespace NT3 {
 
 		int m_currentTick = 0;
 
+		public static System.Action<int> s_DoInput = null;
+		public static System.Action<int> s_CalculateValues = null;
 		public static System.Action<int> s_DoTick = null;
 
 #if UNITY_SERVER
@@ -25,6 +27,8 @@ namespace NT3 {
 				return m_currentTick;
 
 			for(; m_currentTick < min; m_currentTick++) {
+				s_DoInput?.Invoke(m_currentTick);
+				s_CalculateValues?.Invoke(m_currentTick);
 				s_DoTick?.Invoke(m_currentTick);
 			}
 			foreach(var it in GlobalValues.s_singelton.m_clients) {
@@ -61,10 +65,11 @@ namespace NT3 {
 				nextState.DismantleDelta(me.m_gameStates[nextState.m_refTick], me.m_inputBuffer[nextStateTick].GetInputIDs());
 			}
 
-			GameStateHandler.s_singelton.SetGameState(nextState);
-
+			s_DoInput?.Invoke(m_currentTick);
+			s_CalculateValues?.Invoke(m_currentTick);
 			s_DoTick?.Invoke(m_currentTick);
 			m_currentTick++;
+
 			me.m_inputBuffer.CreateNewElement(m_currentTick);
 		}
 
