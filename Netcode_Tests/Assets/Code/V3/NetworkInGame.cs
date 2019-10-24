@@ -19,7 +19,7 @@ namespace NT3 {
 		IPEndPoint ep;
 		public string m_iP = "127.0.0.1";
 
-		public int m_maxPackageSize = 65500;
+		public int m_maxPackageSize = 1470;
 
 #if UNITY_SERVER
 
