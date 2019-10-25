@@ -2,37 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+namespace PPBA
 {
-
-	private static T s_instanceBackingField = default;
-	public static T s_instance
+	public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 	{
-		get
+
+		private static T s_instanceBackingField = default;
+		public static T s_instance
 		{
-			if(s_instanceBackingField == null)
+			get
 			{
-				Debug.Log("no object of type " + typeof(T) + " was found.");
-				GameObject tmp = new GameObject("SINGELTON_" + typeof(T));
-				s_instanceBackingField = tmp.AddComponent<T>();
+				if(s_instanceBackingField == null)
+				{
+					Debug.Log("no object of type " + typeof(T) + " was found.");
+					GameObject tmp = new GameObject("SINGELTON_" + typeof(T));
+					s_instanceBackingField = tmp.AddComponent<T>();
+				}
+				return s_instanceBackingField;
 			}
-			return s_instanceBackingField;
 		}
-	}
 
-	private void Awake()
-	{
-		if(s_instanceBackingField != null)
+		private void Awake()
 		{
-			Debug.Log("multible instances of type " + typeof(T));
-			Destroy(this);
-			return;
+			if(s_instanceBackingField != null)
+			{
+				Debug.Log("multible instances of type " + typeof(T));
+				Destroy(this);
+				return;
+			}
+			s_instanceBackingField = this as T;
 		}
-		s_instanceBackingField = this as T;
-	}
 
-	public static bool Exists()
-	{
-		return s_instanceBackingField != default;
+		public static bool Exists()
+		{
+			return s_instanceBackingField != default;
+		}
 	}
 }
