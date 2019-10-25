@@ -8,6 +8,8 @@ public class ResourceMapChanger : MonoBehaviour
     protected static ResourceMapChanger s_Instance;
     public static ResourceMapChanger instance { get { return s_Instance; } }
 
+	private RessourceManager ressourceManager;
+
     public Renderer texturRenderer;
     private Texture2D resourceTexture;
     private RenderTexture result;
@@ -17,7 +19,7 @@ public class ResourceMapChanger : MonoBehaviour
     public List<Vector4> fabricCenter = new List<Vector4>();
 
     public ComputeShader computeShader;
-    ComputeBuffer buffer;
+    private ComputeBuffer buffer;
 
     public bool hierKoennteIhrTickStehen;
 
@@ -40,8 +42,9 @@ public class ResourceMapChanger : MonoBehaviour
 
     private void Start()
     {
-        //fabricCenter = new List<Vector4>();
-        resourceTexture = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
+		ressourceManager = FindObjectOfType<RessourceManager>();
+
+		resourceTexture = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
         values = new int[50];
         resourceCalcKernel = computeShader.FindKernel("CSMain");
         resourceCalcKernel2 = computeShader.FindKernel("CSInit");
@@ -49,7 +52,6 @@ public class ResourceMapChanger : MonoBehaviour
         result = new RenderTexture(resourceTexture.height, resourceTexture.width, 24)
         {
             enableRandomWrite = true
-
         };
 
         result.Create();
@@ -107,7 +109,14 @@ public class ResourceMapChanger : MonoBehaviour
         buffer.Release();
         buffer = null;
         texturRenderer.material.SetTexture("_NoiseMap", result);
-    }
+		SendToRessourcesManager();
+
+	}
+
+	private void SendToRessourcesManager()
+	{
+		ressourceManager.AddRessourcesToRefineries(values);
+	}
 
     public void SwitchMap()
     {

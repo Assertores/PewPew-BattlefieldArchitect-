@@ -34,12 +34,10 @@ public class MouseInputs : MonoBehaviour
         return Vector3.zero;
     }
 
-    public Vector3 SnapPosition(Vector3 originalPos)
-    {
-        Vector3 snapped;
-        snapped.x = Mathf.Floor(originalPos.x + 0.1f);
-        snapped.y = Mathf.Floor(originalPos.y + 0.1f);
-        snapped.z = Mathf.Floor(originalPos.z + 0.1f);
-        return snapped;
-    }
+
+
+
+
+
+
 }

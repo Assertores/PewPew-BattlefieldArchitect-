@@ -10,6 +10,7 @@ public class BuildManager : MonoBehaviour
 	private MouseInputs inputs;
 
 	private GameObject currentPlaceableObject;
+	private GameObject currentBetweenObject;
 	private InventoryItem curItem;
 
 	private float mouseWheelRotation;
@@ -65,6 +66,8 @@ public class BuildManager : MonoBehaviour
 			}
 			ConstructBuild();
 			currentPrefabIndex++;
+			currentBetweenObject = Instantiate(curItem.ConnectingObject);
+
 		}
 	}
 
@@ -74,19 +77,27 @@ public class BuildManager : MonoBehaviour
 		Vector3 dir = (inputs.GetWorldPoint() - lastPole.transform.position);
 		float dis = dir.magnitude;
 
-		if (dis < 1)
-		{
-			return;
-		}
+		//if (dis < 1)
+		//{
+		//	return;
+		//}
+		float length = curItem.ConnectingObject.GetComponent<MeshRenderer>().bounds.size.z;
 
 		Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPole.transform.position);
 		v3Pos = Input.mousePosition - v3Pos;
 		angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-		v3Pos = Quaternion.AngleAxis(-angle, Vector3.up) * (Vector3.back * 1);
+		v3Pos = Quaternion.AngleAxis(-angle, Vector3.up) * (Vector3.back * length);
 		currentPlaceableObject.transform.position = lastPole.transform.position + v3Pos;
 
-		// todo länge des meshes einfügen
-		if (dis > 2)
+
+		Vector3 dir2 = (currentPlaceableObject.transform.position - lastPole.transform.position);
+		Vector3 pos = dir2 * 0.5f  + lastPole.transform.position;
+		Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+		currentBetweenObject.transform.position = pos;
+		currentBetweenObject.transform.rotation = rotationObj;
+
+	// todo länge des meshes einfügen
+		if (dis > length)
 		{
 			ConstructBetween();
 			ConstructBuild();
@@ -102,14 +113,15 @@ public class BuildManager : MonoBehaviour
 
 	private void ConstructBetween()
 	{
-		Vector3 dir = (currentPlaceableObject.transform.position - lastPole.transform.position);
-		Vector3 pos = dir * 0.5f + lastPole.transform.position;
-		Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
+		Vector3 dir2 = (currentPlaceableObject.transform.position - lastPole.transform.position);
+		Vector3 pos = dir2 * 0.5f + lastPole.transform.position;
+		Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
-		Instantiate(curItem.ConnectingObject, pos, rotation);
+		Instantiate(curItem.ConnectingObject, pos, rotationObj);
+
 	}
 
-    private void RotateFromMouseWheel()
+	private void RotateFromMouseWheel()
     {
         mouseWheelRotation += Input.mouseScrollDelta.y;
         currentPlaceableObject.transform.Rotate(Vector3.up, mouseWheelRotation * 10);

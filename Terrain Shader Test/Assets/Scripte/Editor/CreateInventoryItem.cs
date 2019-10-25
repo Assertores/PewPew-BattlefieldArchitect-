@@ -23,9 +23,5 @@ public class CreateInventoryItem
         AssetDatabase.Refresh();    // alle änderungen neuladen
         EditorUtility.FocusProjectWindow();     // den fokus auf den brwoser legen
         Selection.activeObject = asset;         // neue asset im projekt brwoser selektieren
-
     }
-
-
-
 }

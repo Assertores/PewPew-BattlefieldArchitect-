@@ -15,4 +15,8 @@ public class InventoryItem : ScriptableObject {
     public float ProtectionValue;
     public float HarvestIntensity;
     public float Radius;
+
+
+	[HideInInspector]
+	public int Team;
 }
