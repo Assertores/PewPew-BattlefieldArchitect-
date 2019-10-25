@@ -137,6 +137,18 @@ namespace Tests {
 
 			Debug.Log("after");
 			Debug.Log(target.ToString());
+
+			target.ClearRange(27, 32);
+			{
+				Assert.AreEqual(0, target[27]);
+				Assert.AreEqual(0, target[28]);
+				Assert.AreEqual(0, target[29]);
+				Assert.AreEqual(0, target[30]);
+				Assert.AreEqual(0, target[31]);
+				Assert.AreEqual(32, target[32]);
+
+				Assert.Catch(delegate () { target.ClearRange(27, 37); });
+			}
 		}
 	}
 }

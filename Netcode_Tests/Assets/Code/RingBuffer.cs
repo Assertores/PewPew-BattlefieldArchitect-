@@ -80,6 +80,9 @@ public class RingBuffer<T> {
 	/// <param name="start">includet</param>
 	/// <param name="end">excludet</param>
 	public void ClearRange(int start, int end) {
+		if (start < m_lowend || end > m_highend + 1)
+			throw new System.IndexOutOfRangeException();
+
 		start = index(start);
 		end = index(end);
 		if(start <= end) {
