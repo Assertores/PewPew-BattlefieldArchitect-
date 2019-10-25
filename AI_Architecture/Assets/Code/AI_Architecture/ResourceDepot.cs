@@ -8,19 +8,19 @@ public class ResourceDepot : MonoBehaviour
     [SerializeField] public int resources;
     [SerializeField] public int maxResources;
     [SerializeField] public float score;
-    
+
 
     // Start is called before the first frame update
     void Start()
     {
-        if(!JobCenter.resourceDepots[team].Contains(this))
-        JobCenter.resourceDepots[team].Add(this);
+        if (!JobCenter.resourceDepots[team].Contains(this))
+            JobCenter.resourceDepots[team].Add(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public float CalculateScore()
