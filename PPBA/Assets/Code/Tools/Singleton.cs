@@ -6,7 +6,6 @@ namespace PPBA
 {
 	public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 	{
-
 		private static T s_instanceBackingField = default;
 		public static T s_instance
 		{
