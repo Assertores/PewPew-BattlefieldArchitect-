@@ -16,18 +16,9 @@ namespace PPBA
 			return Lib.Mod((value - _lowend + _lowPos), _backingArray.Length);
 		}
 
-		public T this[int key]
+		public ref T this[int key]
 		{
-			get
-			{
-				if(key < _lowend || key > _highend)
-				{
-					throw new System.IndexOutOfRangeException();
-				}
-
-				return _backingArray[Index(key)];
-			}
-			set
+			get //for reference values getter will be called by setting the value
 			{
 				if(key < _lowend)
 				{
@@ -50,7 +41,7 @@ namespace PPBA
 					_lowPos = 0;
 				}
 
-				_backingArray[Index(key)] = value;
+				return ref _backingArray[Index(key)];
 			}
 		}
 
