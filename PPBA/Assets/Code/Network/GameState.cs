@@ -77,9 +77,9 @@ namespace PPBA
 		public int _refTick = -1;
 		public byte _messageCount;
 		public BitField2D _receivedMessages;
-		public bool m_isLerped;
-		public bool m_isDelta;
-		List<byte[]> m_messageHolder = null;
+		public bool _isLerped;
+		public bool _isDelta;
+		private List<byte[]> _messageHolder = null;
 
 		public List<GSC.type> _types = new List<GSC.type>();
 		public List<GSC.arg> _args = new List<GSC.arg>();
@@ -94,6 +94,9 @@ namespace PPBA
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
+			if(_messageHolder != null)
+				return _messageHolder;
+
 			throw new NotImplementedException();
 		}
 
