@@ -32,6 +32,7 @@ public abstract class Pawn : MonoBehaviour
     private SphereCollider sphereCollider;
 
     private object target;
+	private int resource;	//resources carried
 
     //target lists
     // pawns, covers, depots, bringjobs, buildjobs, deconstructjobs

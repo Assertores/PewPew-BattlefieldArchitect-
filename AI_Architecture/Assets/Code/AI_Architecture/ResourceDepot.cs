@@ -36,6 +36,37 @@ public class ResourceDepot : MonoBehaviour
         return Mathf.Clamp(score, 0f, 1f);
     }
 
+	public int TakeResources(int amount)
+	{
+		if (amount <= resources)//can take full wanted amount
+		{
+			resources -= amount;
+			return amount;
+		}
+		else//can only take a part of the wanted amount
+		{
+			int temp = resources;
+			resources = 0;
+			return temp;
+		}
+	}
+
+	public int GiveResources(int amount)
+	{
+		int spaceLeft = maxResources - resources;
+
+		if (amount <= spaceLeft)//enough space
+		{
+			resources += amount;
+			return amount;
+		}
+		else//not enough space
+		{
+			resources += spaceLeft;
+			return spaceLeft;
+		}
+	}
+
     private void OnEnable()
     {
         if (!JobCenter.resourceDepots[team].Contains(this))
