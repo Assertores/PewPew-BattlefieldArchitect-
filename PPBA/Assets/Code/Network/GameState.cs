@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public enum Behavior : byte {IDLE };
-
 	[System.Flags]
 	public enum Arguments : byte {
 		NON = 0,
