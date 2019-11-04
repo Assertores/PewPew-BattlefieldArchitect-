@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace PPBA
 {
@@ -73,6 +74,13 @@ namespace PPBA
 	}
 	public class GameState
 	{
+		public int _refTick = -1;
+		public byte _messageCount;
+		public BitField2D _receivedMessages;
+		public bool m_isLerped;
+		public bool m_isDelta;
+		List<byte[]> m_messageHolder = null;
+
 		public List<GSC.type> _types = new List<GSC.type>();
 		public List<GSC.arg> _args = new List<GSC.arg>();
 		public List<GSC.transform> _transforms = new List<GSC.transform>();
@@ -84,5 +92,63 @@ namespace PPBA
 		public List<GSC.map> _maps = new List<GSC.map>();
 		public List<int> _denyedInputIDs = new List<int>();
 
+		public List<byte[]> Encrypt(int maxPackageSize)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Decrypt(byte[] msg, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CreateDelta(RingBuffer<GameState> reference, int tick, int length)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool DismantleDelta(GameState reference, List<int> expactedInputs)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool Lerp(GameState start, GameState end, int t)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// packs the message into the next best package
+		/// </summary>
+		/// <param name="maxPackageSize">the maximum size of packages</param>
+		/// <param name="packages">the list of already existing packages</param>
+		/// <param name="additionalMessage">the message that should be inserted</param>
+		void HandlePackageSize(int maxPackageSize, List<byte[]> packages, byte[] additionalMessage)
+		{
+			int index = -1;
+			int remainder = int.MaxValue;
+
+			for(int i = 0; i < packages.Count; i++)
+			{
+				int currentRefmainter = maxPackageSize - (packages[i].Length + additionalMessage.Length);
+				if(currentRefmainter >= 0 && currentRefmainter < remainder)
+				{
+					remainder = currentRefmainter;
+					index = i;
+				}
+			}
+
+			if(index < 0)
+			{
+				packages.Add(additionalMessage);
+			}
+			else
+			{
+				byte[] tmp = new byte[packages[index].Length + additionalMessage.Length];
+				Buffer.BlockCopy(packages[index], 0, tmp, 0, packages[index].Length);
+				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
+				packages[index] = tmp;
+			}
+		}
 	}
 }
