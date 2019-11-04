@@ -6,8 +6,8 @@ public class JobCenter : MonoBehaviour
 {
     public static JobCenter instance;
 
-    public static List<Blueprint>[] blueprints = new List<Blueprint>[10];
-    public static List<ResourceDepot>[] resourceDepots = new List<ResourceDepot>[10];
+    public static List<Blueprint>[] s_blueprints = new List<Blueprint>[10];//can exchange 0 for number of players
+    public static List<ResourceDepot>[] s_resourceDepots = new List<ResourceDepot>[10];
 
     void Awake()
     {
@@ -19,12 +19,12 @@ public class JobCenter : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < blueprints.Length; i++)
+        for (int i = 0; i < s_blueprints.Length; i++)
         {
-            if (blueprints[i] == null)
-                blueprints[i] = new List<Blueprint>();
-            if (resourceDepots[i] == null)
-                resourceDepots[i] = new List<ResourceDepot>();
+            if (s_blueprints[i] == null)
+                s_blueprints[i] = new List<Blueprint>();
+            if (s_resourceDepots[i] == null)
+                s_resourceDepots[i] = new List<ResourceDepot>();
         }
     }
 

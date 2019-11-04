@@ -26,8 +26,8 @@ public class Blueprint : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!JobCenter.blueprints[team].Contains(this))
-            JobCenter.blueprints[team].Add(this);
+        if (!JobCenter.s_blueprints[team].Contains(this))
+            JobCenter.s_blueprints[team].Add(this);
     }
 
     // Update is called once per frame
@@ -49,18 +49,18 @@ public class Blueprint : MonoBehaviour
 
     private void WorkIsFinished()
     {
-
+		//exchange blueprint for building
     }
 
     private void OnEnable()
     {
-        if (!JobCenter.blueprints[team].Contains(this))
-            JobCenter.blueprints[team].Add(this);
+        if (!JobCenter.s_blueprints[team].Contains(this))
+            JobCenter.s_blueprints[team].Add(this);
     }
 
     private void OnDisable()
     {
-        if (JobCenter.blueprints[team].Contains(this))
-            JobCenter.blueprints[team].Remove(this);
+        if (JobCenter.s_blueprints[team].Contains(this))
+            JobCenter.s_blueprints[team].Remove(this);
     }
 }

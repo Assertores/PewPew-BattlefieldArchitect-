@@ -23,6 +23,12 @@ public abstract class Pawn : MonoBehaviour
     [SerializeField] public float health = 100;
     [SerializeField] public float maxHealth = 100;
 
+	[SerializeField] public float ammo = 100;
+    [SerializeField] public float maxAmmo = 100;
+
+	[SerializeField] public float morale = 100;
+    [SerializeField] public float maxMorale = 100;
+
     [SerializeField] public float attackDistance = 5f;
     [SerializeField] public float attackDamage = 2f;
 

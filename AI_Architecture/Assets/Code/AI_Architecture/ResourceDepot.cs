@@ -13,8 +13,8 @@ public class ResourceDepot : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!JobCenter.resourceDepots[team].Contains(this))
-            JobCenter.resourceDepots[team].Add(this);
+        if (!JobCenter.s_resourceDepots[team].Contains(this))
+            JobCenter.s_resourceDepots[team].Add(this);
     }
 
     // Update is called once per frame
@@ -28,7 +28,7 @@ public class ResourceDepot : MonoBehaviour
         score = 0;
 
         //determine proximity and weight of build jobs
-        foreach (Blueprint b in JobCenter.blueprints[team])
+        foreach (Blueprint b in JobCenter.s_blueprints[team])
         {
             score += b.resourcesNeeded / Vector3.Magnitude(b.transform.position - transform.position);
         }
@@ -69,13 +69,13 @@ public class ResourceDepot : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!JobCenter.resourceDepots[team].Contains(this))
-            JobCenter.resourceDepots[team].Add(this);
+        if (!JobCenter.s_resourceDepots[team].Contains(this))
+            JobCenter.s_resourceDepots[team].Add(this);
     }
 
     private void OnDisable()
     {
-        if (JobCenter.resourceDepots[team].Contains(this))
-            JobCenter.resourceDepots[team].Remove(this);
+        if (JobCenter.s_resourceDepots[team].Contains(this))
+            JobCenter.s_resourceDepots[team].Remove(this);
     }
 }

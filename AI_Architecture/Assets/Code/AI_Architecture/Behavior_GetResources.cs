@@ -36,7 +36,7 @@ public class Behavior_GetResources : Behavior
     {
         float _bestScore = 0;
 
-        foreach (ResourceDepot _depot in JobCenter.resourceDepots[pawn.team])
+        foreach (ResourceDepot _depot in JobCenter.s_resourceDepots[pawn.team])
         {
             float _tempScore = CalculateTargetScore(pawn, _depot);
 

@@ -1071,6 +1071,52 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+--- !u!1 &7515035436541505343 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7515035436285199966, guid: 6b952cb98fda6e64182062bcbbc8f34f,
+    type: 3}
+  m_PrefabInstance: {fileID: 7515035436541505342}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7515035436541505344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515035436541505343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2cab58879ba54246876a19ab09e1fef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pawn_axes:
+  - isEnabled: 1
+    name: FixedValue
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.099803925
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.099803925
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+  target_axes: []
 --- !u!1001 &7757147634864541864
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class Behavior_Shoot : Behavior
 {
-    public static Behavior_Shoot instance;
-    
-    public Dictionary<Pawn, Pawn> targetDictionary;
+    public static Behavior_Shoot instance;    
+    public static Dictionary<Pawn, Pawn> targetDictionary;
     
 
     void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
@@ -40,12 +39,32 @@ public class Behavior_Shoot : Behavior
     }
 
     protected override float PawnAxisInputs(Pawn pawn, string name)
-    {
-        throw new System.NotImplementedException();
-    }
+	{
+		switch (name)
+		{
+			case "Health":
+				return pawn.health / pawn.maxHealth;
+			case "Ammo":
+				return pawn.ammo / pawn.maxAmmo;
+			case "Cover":
+				return 0.5f;//return actual cover value
+			case "Morale":
+				return pawn.morale / pawn.maxMorale;
+			default:
+				Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+				return 1;
+		}
+	}
 
     protected float TargetAxisInputs(Pawn pawn, string name)
     {
-        return 1;
+		return 1;
     }
+
+	private bool CheckLos(Pawn pawn, Pawn target)
+	{
+		//check for wall with ray/linecast
+
+		return true;
+	}
 }
