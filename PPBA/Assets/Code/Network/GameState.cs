@@ -60,12 +60,12 @@ namespace PPBA
 		public class ammo : gsc
 		{
 			public int _bullets;
+			//public int _grenades;
 
 			public ammo(int _id, int bullets) : base(_id)
 			{
 				_bullets = bullets;
 			}
-			//public int _grenades;
 		}
 
 		public class resource : gsc
