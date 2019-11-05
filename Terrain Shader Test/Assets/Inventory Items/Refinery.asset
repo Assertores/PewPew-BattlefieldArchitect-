@@ -15,11 +15,13 @@ MonoBehaviour:
   itemName: Refinery
   sprite: {fileID: 21300000, guid: ebea763556f2f424d88a37f4928623b1, type: 3}
   ConstructSound: {fileID: 0}
-  prefab: {fileID: 7351922941053595226, guid: 5d3f9aee8db0b2b409bd08444b78e1c5, type: 3}
+  prefab: {fileID: 5669370850036541801, guid: 9f2842645da2ebd4a8cb3b467e4bd1a7, type: 3}
   costs: 0
   canConnect: 0
+  ConnectingObject: {fileID: 0}
   UnlockBuildings: []
-  IncreaseMoney: 0
-  IncreaseEnergy: 0
-  DecreaseMoney: 0
-  DecreaseEnergy: 0
+  SpeedBonus: 0
+  ProtectionValue: 0
+  HarvestIntensity: 0
+  Radius: 0
+  Team: 0

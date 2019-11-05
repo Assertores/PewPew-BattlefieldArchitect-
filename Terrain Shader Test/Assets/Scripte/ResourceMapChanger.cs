@@ -42,7 +42,7 @@ public class ResourceMapChanger : MonoBehaviour
 
     private void Start()
     {
-		ressourceManager = FindObjectOfType<RessourceManager>();
+		ressourceManager = GetComponent<RessourceManager>();
 
 		resourceTexture = Instantiate(texturRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
         values = new int[50];

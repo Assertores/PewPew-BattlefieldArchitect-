@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class RessourceManager : MonoBehaviour
 {
+	private List<RefineryScript> refinerys = new List<RefineryScript>();
 
-	RefineryScript[] allRefineries;
+	public void AddRefinery(RefineryScript refi)
+	{
+		refinerys.Add(refi);
+	}
+
 
 	public void AddRessourcesToRefineries(int[] ressources)
 	{
-		for (int i = 0; i < allRefineries.Length; i++)
+		for (int i = 0; i < refinerys.Count; i++)
 		{
 			if (i < ressources.Length)
 			{
-				allRefineries[i].RessourceStorage = ressources[i];
+				refinerys[i].RessourceStorage = ressources[i];
 			}
 		}
 	}

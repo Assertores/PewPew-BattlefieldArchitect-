@@ -58,6 +58,8 @@ public class BuildManager : MonoBehaviour
 		{
 			if (!curItem.canConnect)
 			{
+
+				GetComponent<RessourceManager>().AddRefinery(curItem.prefab.GetComponent<RefineryScript>());
 				// to do in constructBuild einfügen
 				ResourceMapChanger.instance.AddFabric(new Vector3(pixelUV.x, 0, pixelUV.y), intensity, radius);
 				currentPlaceableObject = null;
