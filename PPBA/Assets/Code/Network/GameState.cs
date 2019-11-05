@@ -16,6 +16,8 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, BEHAVIOUR, PATH, MAP, INPUTS };
+
 		public class gsc
 		{
 			public int _id;
@@ -55,7 +57,7 @@ namespace PPBA
 			public float _morale;
 		}
 
-		public class behavior
+		public class behavior : gsc
 		{
 			public Behavior _behavior;
 			public int _target;
@@ -69,7 +71,7 @@ namespace PPBA
 		public class map : gsc
 		{
 			public BitField2D _mask;
-			List<float> _values;
+			public List<float> _values;
 		}
 	}
 	public class GameState
