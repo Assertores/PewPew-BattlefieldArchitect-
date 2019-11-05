@@ -18,15 +18,13 @@ namespace PPBA
 			_parent = parent;
 			_stepSize = initialSize;
 
-			for(int i = 0; i < initialSize; i++)
-			{
-				GameObject tmp = GameObject.Instantiate(_prefab, _parent);
-				tmp.SetActive(false);
-			}
+			Resize().SetActive(false);
 		}
 
 		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform parent)
 		{
+			if(prefab == null)
+				return null;
 			if(s_objectPools.ContainsKey(prefab))
 				return s_objectPools[prefab];
 
@@ -39,21 +37,14 @@ namespace PPBA
 
 			for(int i = 0; i < _parent.childCount; i++)
 			{
-				if(_parent.GetChild(i).gameObject.activeSelf)
+				if(!_parent.GetChild(i).gameObject.activeSelf)
 				{
 					_parent.GetChild(i).gameObject.SetActive(true);
 					return _parent.GetChild(i).gameObject;
 				}
 			}
 
-			GameObject value = GameObject.Instantiate(_prefab, _parent);
-			for(int i = 1; i < _stepSize; i++)
-			{
-				GameObject tmp = GameObject.Instantiate(_prefab, _parent);
-				tmp.SetActive(false);
-			}
-
-			return value;
+			return Resize();
 		}
 
 		public void FreeObject(GameObject element)
@@ -66,6 +57,21 @@ namespace PPBA
 					return;
 				}
 			}
+		}
+
+		private GameObject Resize()
+		{
+			GameObject value = GameObject.Instantiate(_prefab, _parent);
+			value.name = _prefab.name + " (" + _parent.childCount + ")";
+
+			for(int i = 1; i < _stepSize; i++)
+			{
+				GameObject tmp = GameObject.Instantiate(_prefab, _parent);
+				tmp.SetActive(false);
+				tmp.name = _prefab.name + " (" + _parent.childCount + ")";
+			}
+
+			return value;
 		}
 	}
 }
