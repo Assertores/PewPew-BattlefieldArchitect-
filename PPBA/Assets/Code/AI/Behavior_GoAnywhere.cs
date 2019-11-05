@@ -34,7 +34,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn.navMeshAgent.SetDestination(bestTarget);
+			pawn._navMeshAgent.SetDestination(bestTarget);
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -42,7 +42,7 @@ namespace PPBA
 			switch(name)
 			{
 				case "Health":
-					return pawn.health / pawn.maxHealth;
+					return pawn._health / pawn._maxHealth;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -81,12 +81,12 @@ namespace PPBA
 				probe = Random.insideUnitCircle * 3f;
 				probePosition = new Vector3(transform.position.x + probe.x, transform.position.y, transform.position.z + probe.y);
 
-				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn.navMeshAgent.areaMask))
+				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn._navMeshAgent.areaMask))
 					return hit.position;
 				else
 				{   //checks the same point in the opposite direction
 					probePosition = new Vector3(-probePosition.x, probePosition.y, -probePosition.z);
-					if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn.navMeshAgent.areaMask))
+					if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn._navMeshAgent.areaMask))
 						return hit.position;
 				}
 			}

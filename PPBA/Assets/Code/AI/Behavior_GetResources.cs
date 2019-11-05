@@ -7,7 +7,9 @@ namespace PPBA
 	public class Behavior_GetResources : Behavior
 	{
 		public static Behavior_GetResources instance;
-		public static Dictionary<Pawn, ResourceDepot> targetDictionary;
+		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary;
+
+		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
 		private void Awake()
 		{
@@ -17,13 +19,11 @@ namespace PPBA
 				Destroy(gameObject);
 		}
 
-		// Start is called before the first frame update
 		void Start()
 		{
 
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 
@@ -31,20 +31,27 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn.navMeshAgent.SetDestination(targetDictionary[pawn].transform.position);
+			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
+			pawn._navMeshAgent.SetDestination(targetPosition);
+
+			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
+			{
+				//Takes an amount of resources from the depot no larger than (1) the space left at pawn (2) the res left at depot, and gives it to the pawn.
+				pawn._resources += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxResource - pawn._resources));
+			}
 		}
 
 		public override float FindBestTarget(Pawn pawn)
 		{
 			float _bestScore = 0;
 
-			foreach(ResourceDepot _depot in JobCenter.s_resourceDepots[pawn.team])
+			foreach(ResourceDepot _depot in JobCenter.s_resourceDepots[pawn._team])
 			{
 				float _tempScore = CalculateTargetScore(pawn, _depot);
 
 				if(_bestScore < _tempScore)
 				{
-					targetDictionary[pawn] = _depot;
+					s_targetDictionary[pawn] = _depot;
 					_bestScore = _tempScore;
 				}
 			}
@@ -57,7 +64,9 @@ namespace PPBA
 			switch(name)
 			{
 				case "Health":
-					return pawn.health / pawn.maxHealth;
+					return pawn._health / pawn._maxHealth;
+				case "Resources":
+					return pawn._resources / pawn._maxResource;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -71,9 +80,9 @@ namespace PPBA
 				case "Distance":
 					return Vector3.Distance(pawn.transform.position, depot.transform.position) / 60f;
 				case "Score":
-					return depot.score;
+					return depot._score;
 				case "Resources":
-					return depot.resources / depot.maxResources;
+					return depot._resources / depot._maxResources;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

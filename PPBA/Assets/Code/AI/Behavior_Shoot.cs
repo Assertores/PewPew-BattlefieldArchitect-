@@ -42,13 +42,13 @@ namespace PPBA
 			switch(name)
 			{
 				case "Health":
-					return pawn.health / pawn.maxHealth;
+					return pawn._health / pawn._maxHealth;
 				case "Ammo":
-					return pawn.ammo / pawn.maxAmmo;
+					return pawn._ammo / pawn._maxAmmo;
 				case "Cover":
 					return 0.5f;//return actual cover value
 				case "Morale":
-					return pawn.morale / pawn.maxMorale;
+					return pawn._morale / pawn._maxMorale;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

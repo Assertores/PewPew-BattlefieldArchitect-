@@ -108,15 +108,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4d316e11824e004386e14b267c14153, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  e_behaviors: 00000000
-  behavior_scores: []
-  team: 0
-  isAttacking: 0
-  health: 100
-  maxHealth: 100
-  attackDistance: 5
-  attackDamage: 2
-  navMeshAgent: {fileID: 5794997361048839341}
+  _team: 0
+  _health: 100
+  _maxHealth: 100
+  _ammo: 100
+  _maxAmmo: 100
+  _morale: 100
+  _maxMorale: 100
+  _attackDistance: 5
+  _attackDamage: 2
+  _resource: 0
+  _maxResource: 0
+  _isAttacking: 0
+  e_behaviors: 110a
+  _behaviorScores: []
+  _navMeshAgent: {fileID: 5794997361048839341}
+  _closePawns: []
+  _closeCover: []
 --- !u!195 &5794997361048839341
 NavMeshAgent:
   m_ObjectHideFlags: 0
