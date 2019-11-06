@@ -7,15 +7,15 @@ namespace PPBA
 {
 	public class Behavior_GoAnywhere : Behavior
 	{
-		public static Behavior_GoAnywhere instance;
+		public static Behavior_GoAnywhere s_instance;
 
 		[SerializeField] private float maxDistance = 30f;
 		private Vector3 bestTarget;
 
 		private void Awake()
 		{
-			if(instance == null)
-				instance = this;
+			if(s_instance == null)
+				s_instance = this;
 			else
 				Destroy(gameObject);
 		}

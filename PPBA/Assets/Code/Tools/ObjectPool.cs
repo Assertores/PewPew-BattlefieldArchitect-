@@ -7,6 +7,7 @@ namespace PPBA
 	public class ObjectPool
 	{
 		/// <summary>
+		/// CreatePool(PREFAB, SIZE, PARENT) 
 		/// s_objectPools[PREFAB].GetNextObject(); => Gives you an available object of the objectpool, and will turn it on. If no one is available, the object pool will resize.
 		/// FreeObject(ELEMENT) will return the element back to the pool, but the same is achieved by deactivating the gameobject
 		/// </summary>

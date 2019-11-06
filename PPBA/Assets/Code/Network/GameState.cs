@@ -54,7 +54,7 @@ namespace PPBA
 		public class health : gsc
 		{
 			public float _health;
-			public float _morale;
+			public float _morale;//used for _score by depots/blueprints
 		}
 
 		public class work : gsc
