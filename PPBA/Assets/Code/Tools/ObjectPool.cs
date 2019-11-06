@@ -25,14 +25,16 @@ namespace PPBA
 			Resize().SetActive(false);
 		}
 
-		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform parent)
+		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform grandParent)
 		{
 			if(prefab == null)
 				return null;
 			if(s_objectPools.ContainsKey(prefab))
 				return s_objectPools[prefab];
 
-			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, parent);
+			GameObject tmp = new GameObject(prefab.name);
+			tmp.transform.parent = grandParent;
+			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform);
 			return s_objectPools[prefab];
 		}
 
