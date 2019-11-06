@@ -233,6 +233,8 @@ namespace PPBA
 
 		public void WriteToGameState(int tick)
 		{
+			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
+
 			//TickHandler.s_interfaceGameState._types = new List<GSC.type>();
 			//TickHandler.s_interfaceGameState._args = new List<GSC.arg>();
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform(_id, transform.position, transform.eulerAngles.y));

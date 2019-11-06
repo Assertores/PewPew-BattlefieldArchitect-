@@ -106,31 +106,13 @@ namespace PPBA
 
 		public class behavior : gsc
 		{
-			public Behavior _behavior;
-
-			public behavior(int _id, PPBA.Behavior behavior) : base(_id)
-			{
-				_behavior = behavior;
-			}
-		}
-
-		public class behavior_id : behavior
-		{
+			public Behaviors _behavior;
 			public int _target;
 
-			public behavior_id(int _id, PPBA.Behavior _behavior, int target) : base(_id, _behavior)
+			public behavior(int _id, Behaviors behavior, int target) : base(_id)
 			{
+				_behavior = behavior;
 				_target = target;
-			}
-		}
-
-		public class behavior_vec : behavior
-		{
-			public Vector3 _targetVec;
-
-			public behavior_vec(int _id, PPBA.Behavior _behavior, Vector3 target) : base(_id, _behavior)
-			{
-				_targetVec = target;
 			}
 		}
 
@@ -292,8 +274,8 @@ namespace PPBA
 				foreach(var it in _paths)
 				{
 					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._path.Count));
-					for(int i = 0; i < it._path.Count; i++)
+					msg.AddRange(BitConverter.GetBytes(it._path.Length));
+					for(int i = 0; i < it._path.Length; i++)
 					{
 						msg.AddRange(BitConverter.GetBytes(it._path[i].x));
 						msg.AddRange(BitConverter.GetBytes(it._path[i].y));
@@ -354,7 +336,6 @@ namespace PPBA
 						for(int i = 0; i < count; i++)
 						{
 							GSC.type value = new GSC.type();
-
 							value._id = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
 
@@ -476,7 +457,7 @@ namespace PPBA
 							value._id = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
 
-							value._behavior = (Behavior)msg[offset];
+							value._behavior = (Behaviors)msg[offset];
 							offset++;
 
 							value._target = BitConverter.ToInt32(msg, offset);
@@ -499,10 +480,10 @@ namespace PPBA
 							int size = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
 
-							value._path = new List<Vector3>(size);
+							value._path = new Vector3[size];
 							for(int j = 0; j < size; j++)
 							{
-								value._path.Add(new Vector3(
+								value._path[j] = (new Vector3(
 															BitConverter.ToSingle(msg, offset),
 															BitConverter.ToSingle(msg, offset + sizeof(float)),
 															BitConverter.ToSingle(msg, offset + 2 * sizeof(float))
@@ -632,7 +613,7 @@ namespace PPBA
 			{
 				GSC.path element = _paths.Find(x => x._id == it._id);
 
-				if(it._path.Count != element._path.Count)
+				if(it._path.Length != element._path.Length)
 					continue;
 
 				/*
@@ -648,7 +629,7 @@ namespace PPBA
 				}
 				*/
 
-				for(int i = 0; i < it._path.Count; i++)
+				for(int i = 0; i < it._path.Length; i++)
 				{
 					if(it._path[i] != element._path[i])
 						goto Failed;
@@ -783,6 +764,7 @@ Jump:
 			foreach(var origin in start._resources)
 			{
 				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				
 				value._resources.Add(new GSC.resource
 				{
 					_id = origin._id,
