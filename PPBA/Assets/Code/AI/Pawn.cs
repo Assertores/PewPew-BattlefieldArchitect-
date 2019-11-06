@@ -46,8 +46,19 @@ namespace PPBA
 		private SphereCollider _sphereCollider;
 
 		//target lists
-		// pawns, covers
 		public List<Pawn> _closePawns;
+		public List<Pawn> _activePawns//this is an accessor to the _closePawns List, ensuring I don't have to write this every time I want to use the list.
+		{
+			get
+			{
+				foreach(var it in _closePawns)
+				{
+					if(!it.gameObject.activeSelf)
+						_closePawns.Remove(it);//inactive pawns are removed here, the other option would be to go through the lists of all pawns whenever a pawn is disabled to remove it from the lists
+				}
+				return _closePawns;
+			}
+		}
 		public List<Cover> _closeCover;
 
 		//private
@@ -82,7 +93,7 @@ namespace PPBA
 
 			if(_health <= 0)
 			{
-				Behavior_Die.instance.Execute(this);
+				Behavior_Die.s_instance.Execute(this);
 				return;
 			}
 
@@ -95,11 +106,18 @@ namespace PPBA
 				}
 			}
 
+			if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
+			{
+
+			}
+
 			_lastBehavior = _behaviors[bestBehavior];
 			_lastBehavior.Execute(this);
 		}
 
 		#region Initialisation
+		//public void InitialisePawn(PARAMETER)
+
 		protected void InitiateBehaviors()  //reads the behaviors from the enum-array
 		{
 			_behaviors = new Behavior[e_behaviors.Length];
@@ -118,7 +136,7 @@ namespace PPBA
 				case Behaviors.IDLE:
 					return Behavior_Idle.instance;
 				case Behaviors.SHOOT:
-					return Behavior_Shoot.instance;
+					return Behavior_Shoot.s_instance;
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
@@ -185,7 +203,7 @@ namespace PPBA
 			//set "i got hurt" flag to send to the client
 
 			if(_health <= 0)
-				Behavior_Die.instance.Execute(this);
+				Behavior_Die.s_instance.Execute(this);
 			else
 			{
 				foreach(Pawn p in _closePawns)

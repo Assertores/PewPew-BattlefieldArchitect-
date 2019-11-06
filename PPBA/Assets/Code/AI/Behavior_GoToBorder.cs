@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace PPBA
 {
-	public class Behavior_Die : Behavior
+	public class Behavior_GoToBorder : Behavior
 	{
-		public static Behavior_Die s_instance;
+		public static Behavior_GoToBorder s_instance;
+		public static Dictionary<Pawn, Vector3> s_targetDictionary;	
 
 		private void Awake()
 		{
@@ -28,22 +30,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._navMeshAgent.SetDestination(pawn.transform.position);
 
-			foreach(Pawn p in pawn._activePawns)
-			{
-				if(pawn._team == p._team)
-					p._morale += Moralizer.s_instance.PassJudgement(MoraleEvents.CLOSEPAWNDIED);
-				else
-					p._morale += Moralizer.s_instance.PassJudgement(MoraleEvents.ENEMYDIED);
-			}
-
-			//put pawn back into object pool
-		}
-
-		public override float FindBestTarget(Pawn pawn)
-		{
-			return 1;
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -58,13 +45,25 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name, ResourceDepot depot)
-		{
+		protected float TargetAxisInputs(Pawn pawn, string name)
+		{/*
+			switch(name)
+			{
+				case "Distance":
+				case "DistanceToTarget":
+					return Vector3.Distance(pawn.transform.position, bestTarget) / maxDistance;
+				default:
+					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+					return 1;
+			}
+			*/
 			return 1;
 		}
 
-		protected float CalculateTargetScore(Pawn pawn, ResourceDepot depot)
+		public override float FindBestTarget(Pawn pawn)
 		{
+			//use some awesome map to find closest border to the pawn
+			
 			return 1;
 		}
 	}

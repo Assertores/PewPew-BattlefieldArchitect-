@@ -9,21 +9,19 @@ namespace PPBA
 		[System.Serializable]
 		public class Axis
 		{
-			public bool isEnabled;
-			public string name;
-			public AnimationCurve curve;
+			public bool _isEnabled;
+			public string _name;
+			public AnimationCurve _curve;
 		}
 
-		[SerializeField] public Axis[] pawn_axes;
-		[SerializeField] public Axis[] target_axes;
+		[SerializeField] public Axis[] _pawnAxes;
+		[SerializeField] public Axis[] _targetAxes;
 
-		// Start is called before the first frame update
 		void Start()
 		{
 
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 
@@ -31,36 +29,37 @@ namespace PPBA
 
 		public float Calculate(Pawn pawn)
 		{
-			float _score = 1;
+			float score = 1f;
 
-			for(int i = 0; i < pawn_axes.Length; i++)//calculate pawn-score
+			for(int i = 0; i < _pawnAxes.Length; i++)//calculate pawn-score
 			{
-				if(pawn_axes[i].isEnabled)
-					_score *= Mathf.Clamp(pawn_axes[i].curve.Evaluate(PawnAxisInputs(pawn, pawn_axes[i].name)), 0f, 1f);
+				if(_pawnAxes[i]._isEnabled)
+					score *= Mathf.Clamp(_pawnAxes[i]._curve.Evaluate(PawnAxisInputs(pawn, _pawnAxes[i]._name)), 0f, 1f);
 			}
 
-			if(_score == 0f)//early skip
+			if(score == 0f)//early skip
 				return 0f;
 
-			return _score * FindBestTarget(pawn);
+			return score * FindBestTarget(pawn);
 		}
 
 		//abstract functions
 		public abstract void Execute(Pawn pawn);
 		protected abstract float PawnAxisInputs(Pawn pawn, string name);//switch returning value/maxValue of the axis-variable
-
-
+		
 		/// <summary>
-		/// - Finds and saves bestTarget, so that it can be read with TargetAxisInputs() and used in Execute().
+		/// - Finds and saves bestTarget, so that it can be read with TargetAxisInputs() and used in Execute().//but i'm using targetAxisInputs() for that calc? óÒ
 		/// - Uses CalculateTargetScore often.
 		/// - Adds the <Pawn,Target> Tuple to a targetDictionary.
 		/// </summary>
 		public abstract float FindBestTarget(Pawn pawn);
 
 		//also needs to implement:
-		//protected float TargetAxisInputs(Pawn pawn, string name);//switch returning value/maxValue of the axis-variable
+		//protected float TargetAxisInputs(Pawn pawn, string name, TARGET target);//switch returning value/maxValue of the axis-variable
 		//protected float CalculateTargetScore(Pawn pawn, TARGET target)
 		//
 		//as these cannot be defined here, as only the behavior itself knows the signature
+		//
+		//got to remove pawns from the TARGETDICTIONARIES when they change behavior
 	}
 }

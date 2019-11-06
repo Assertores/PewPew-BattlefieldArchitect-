@@ -6,15 +6,15 @@ namespace PPBA
 {
 	public class Behavior_GetResources : Behavior
 	{
-		public static Behavior_GetResources instance;
+		public static Behavior_GetResources s_instance;
 		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary;
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
 		private void Awake()
 		{
-			if(instance == null)
-				instance = this;
+			if(s_instance == null)
+				s_instance = this;
 			else
 				Destroy(gameObject);
 		}
@@ -43,20 +43,20 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
-			float _bestScore = 0;
+			float bestScore = 0;
 
 			foreach(ResourceDepot _depot in JobCenter.s_resourceDepots[pawn._team])
 			{
-				float _tempScore = CalculateTargetScore(pawn, _depot);
+				float tempScore = CalculateTargetScore(pawn, _depot);
 
-				if(_bestScore < _tempScore)
+				if(bestScore < tempScore)
 				{
 					s_targetDictionary[pawn] = _depot;
-					_bestScore = _tempScore;
+					bestScore = tempScore;
 				}
 			}
 
-			return _bestScore;
+			return bestScore;
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -93,10 +93,10 @@ namespace PPBA
 		{
 			float _score = 1;
 
-			for(int i = 0; i < target_axes.Length; i++)
+			for(int i = 0; i < _targetAxes.Length; i++)
 			{
-				if(target_axes[i].isEnabled)
-					_score *= Mathf.Clamp(target_axes[i].curve.Evaluate(TargetAxisInputs(pawn, target_axes[i].name, depot)), 0f, 1f);
+				if(_targetAxes[i]._isEnabled)
+					_score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, depot)), 0f, 1f);
 			}
 
 			return _score;
