@@ -38,7 +38,7 @@ namespace PPBA
 		public class transform : gsc
 		{
 			public Vector3 _position;
-			public float _angle;
+			public float _angle; //in degrees
 		}
 
 		public class ammo : gsc
@@ -654,9 +654,89 @@ Jump:
 			return true;
 		}
 
-		public bool Lerp(GameState start, GameState end, int t)
+		public static GameState Lerp(GameState start, GameState end, int lerpValue)
 		{
-			throw new NotImplementedException();
+			GameState value = new GameState();
+
+			foreach(var origin in start._types)
+			{
+				GSC.type target = end._types.Find(x => x._id == origin._id);
+				value._types.Add(new GSC.type
+				{
+					_id = origin._id,
+					_type = (lerpValue < 0.5f) ? origin._type : target._type,
+					_team = (lerpValue < 0.5f) ? origin._team : target._team,
+				});
+			}
+			foreach(var origin in start._args)
+			{
+				GSC.arg target = end._args.Find(x => x._id == origin._id);
+				value._args.Add(new GSC.arg
+				{
+					_id = origin._id,
+					_arguments = (lerpValue < 0.5f) ? origin._arguments : target._arguments,
+				});
+			}
+			foreach(var origin in start._transforms)
+			{
+				GSC.transform target = end._transforms.Find(x => x._id == origin._id);
+				value._transforms.Add(new GSC.transform
+				{
+					_id = origin._id,
+					_position = Vector3.Lerp(origin._position, target._position, lerpValue),
+					_angle = Mathf.LerpAngle(origin._angle, target._angle, lerpValue),
+				});
+			}
+			foreach(var origin in start._ammos)
+			{
+				GSC.ammo target = end._ammos.Find(x => x._id == origin._id);
+				value._ammos.Add(new GSC.ammo
+				{
+					_id = origin._id,
+					_bullets = (int)Mathf.Lerp(origin._bullets, target._bullets, lerpValue),
+					//_grenades = (int)Mathf.Lerp(origin._grenades, target._grenades, lerpValue),
+				});
+			}
+			foreach(var origin in start._resources)
+			{
+				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				value._resources.Add(new GSC.resource
+				{
+					_id = origin._id,
+					_resources = (int)Mathf.Lerp(origin._resources, target._resources, lerpValue),
+				});
+			}
+			foreach(var origin in start._healths)
+			{
+				GSC.health target = end._healths.Find(x => x._id == origin._id);
+				value._healths.Add(new GSC.health
+				{
+					_id = origin._id,
+					_health = Mathf.Lerp(origin._health, target._health, lerpValue),
+					_morale = Mathf.Lerp(origin._morale, target._morale, lerpValue),
+				});
+			}
+			foreach(var origin in start._behaviors)
+			{
+				GSC.behavior target = end._behaviors.Find(x => x._id == origin._id);
+				value._behaviors.Add(new GSC.behavior
+				{
+					_id = origin._id,
+					_behavior = (lerpValue < 0.5f) ? origin._behavior : target._behavior,
+					_target = (lerpValue < 0.5f) ? origin._target : target._target,
+				});
+			}
+			foreach(var origin in start._paths)
+			{
+				GSC.path target = end._paths.Find(x => x._id == origin._id);
+				value._paths.Add(new GSC.path
+				{
+					_id = origin._id,
+					_path = (lerpValue < 0.5f) ? origin._path : target._path,
+				});
+			}
+
+			return value;
 		}
 
 		/// <summary>
