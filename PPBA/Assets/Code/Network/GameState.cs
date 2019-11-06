@@ -77,11 +77,11 @@ namespace PPBA
 	}
 	public class GameState
 	{
-		public int _refTick = -1;
-		public byte _messageCount;
+		public int _refTick { get; private set; } = -1;
+		public bool _isLerped { get; private set; }
+		public bool _isDelta { get; private set; }
+		//public byte _messageCount;
 		public BitField2D _receivedMessages;
-		public bool _isLerped;
-		public bool _isDelta;
 		private List<byte[]> _messageHolder = null;
 
 		public List<GSC.type> _types = new List<GSC.type>();
@@ -468,8 +468,9 @@ namespace PPBA
 			}
 		}
 
-		public bool CreateDelta(RingBuffer<GameState> reference, int tick, int length)
+		public bool CreateDelta(GameState reference, int refTick)
 		{
+			_refTick = refTick;
 			throw new NotImplementedException();
 		}
 
