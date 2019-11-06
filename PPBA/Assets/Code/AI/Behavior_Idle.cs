@@ -42,8 +42,8 @@ namespace PPBA
 		{
 			switch(name)
 			{
-				case "FixedValue":
-					return 1;
+				case "Health":
+					return pawn._health / pawn._maxHealth;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

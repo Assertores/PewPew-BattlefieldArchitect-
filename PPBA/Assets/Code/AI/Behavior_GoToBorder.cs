@@ -39,13 +39,15 @@ namespace PPBA
 			{
 				case "Health":
 					return pawn._health / pawn._maxHealth;
+				case "Morale":
+					return pawn._morale / pawn._maxMorale;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name)
+		protected float TargetAxisInputs(Pawn pawn, string name)//add target
 		{/*
 			switch(name)
 			{
