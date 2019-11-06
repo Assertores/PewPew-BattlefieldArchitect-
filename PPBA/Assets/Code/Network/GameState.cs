@@ -471,7 +471,123 @@ namespace PPBA
 		public bool CreateDelta(GameState reference, int refTick)
 		{
 			_refTick = refTick;
-			throw new NotImplementedException();
+
+			foreach(var it in reference._types)
+			{
+				GSC.type element = _types.Find(x => x._id == it._id);
+
+				if(it._type != element._type)
+					continue;
+				if(it._team != element._team)
+					continue;
+
+				_types.Remove(element);
+			}
+			foreach(var it in reference._args)
+			{
+				GSC.arg element = _args.Find(x => x._id == it._id);
+
+				if(it._arguments != element._arguments)
+					continue;
+
+				_args.Remove(element);
+			}
+			foreach(var it in reference._transforms)
+			{
+				GSC.transform element = _transforms.Find(x => x._id == it._id);
+
+				if(it._position != element._position)
+					continue;
+				if(it._angle != element._angle)
+					continue;
+
+				_transforms.Remove(element);
+			}
+			foreach(var it in reference._ammos)
+			{
+				GSC.ammo element = _ammos.Find(x => x._id == it._id);
+
+				if(it._bullets != element._bullets)
+					continue;
+				/*if(it._grenades != element._grenades)
+					continue;*/
+
+				_ammos.Remove(element);
+			}
+			foreach(var it in reference._resources)
+			{
+				GSC.resource element = _resources.Find(x => x._id == it._id);
+
+				if(it._resources != element._resources)
+					continue;
+
+				_resources.Remove(element);
+			}
+			foreach(var it in reference._healths)
+			{
+				GSC.health element = _healths.Find(x => x._id == it._id);
+
+				if(it._health != element._health)
+					continue;
+				if(it._morale != element._morale)
+					continue;
+
+				_healths.Remove(element);
+			}
+			foreach(var it in reference._behaviors)
+			{
+				GSC.behavior element = _behaviors.Find(x => x._id == it._id);
+
+				if(it._behavior != element._behavior)
+					continue;
+				if(it._target != element._target)
+					continue;
+
+				_behaviors.Remove(element);
+			}
+			foreach(var it in reference._paths)
+			{
+				GSC.path element = _paths.Find(x => x._id == it._id);
+
+				if(it._path.Count != element._path.Count)
+					continue;
+
+				/*
+				{
+					int i = 0;
+					for(; i < it._path.Count; i++)
+					{
+						if(it._path[i] != element._path[i])
+							break;
+					}
+					if(i < it._path.Count)
+						continue;
+				}
+				*/
+
+				for(int i = 0; i < it._path.Count; i++)
+				{
+					if(it._path[i] != element._path[i])
+						goto Failed;
+				}
+				goto Jump;
+Failed:
+				continue;
+Jump:
+
+				_paths.Remove(element);
+			}
+			/*foreach(var it in reference._maps)
+			{
+				GSC.map element = _maps.Find(x => x._id == it._id);
+
+				if(it. != element._arguments)
+					continue;
+
+				_maps.Remove(element);
+			}*/
+
+			return true;
 		}
 
 		public bool DismantleDelta(GameState reference, List<int> expactedInputs)
