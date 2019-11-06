@@ -92,8 +92,8 @@ namespace PPBA
 		public List<GSC.health> _healths = new List<GSC.health>();
 		public List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		public List<GSC.path> _paths = new List<GSC.path>();
-		public List<GSC.map> _maps = new List<GSC.map>();
-		public List<int> _denyedInputIDs = new List<int>();
+		//public List<GSC.map> _maps = new List<GSC.map>();
+		//public List<int> _denyedInputIDs = new List<int>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -220,7 +220,7 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
-			if(_maps.Count > 0)
+			/*if(_maps.Count > 0)
 			{
 				foreach(var it in _maps)
 				{
@@ -235,8 +235,8 @@ namespace PPBA
 
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
-			}
-			if(_denyedInputIDs.Count > 0)
+			}*/
+			/*if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
 				msg.Add((byte)GSC.DataType.INPUTS);
@@ -247,7 +247,7 @@ namespace PPBA
 				}
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
-			}
+			}*/
 
 			_messageHolder = value;
 			return value;
@@ -431,7 +431,7 @@ namespace PPBA
 						}
 						break;
 					}
-					case GSC.DataType.MAP://TODO: Renes HeatMap
+					/*case GSC.DataType.MAP://TODO: Renes HeatMap
 					{
 						GSC.map value = new GSC.map();
 						value._id = count;//value overload
@@ -451,8 +451,8 @@ namespace PPBA
 
 						_maps.Add(value);
 						break;
-					}
-					case GSC.DataType.INPUTS:
+					}*/
+					/*case GSC.DataType.INPUTS:
 					{
 						_denyedInputIDs = new List<int>(count);
 						for(int i = 0; i < count; i++)
@@ -461,7 +461,7 @@ namespace PPBA
 							offset += sizeof(int);
 						}
 						break;
-					}
+					}*/
 					default:
 						throw new InvalidEnumArgumentException();
 				}
