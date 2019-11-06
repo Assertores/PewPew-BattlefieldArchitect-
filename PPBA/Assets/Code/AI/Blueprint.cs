@@ -84,12 +84,14 @@ namespace PPBA
 
 		public void WriteToGameState(int tick)
 		{
+			/*
 			//TickHandler.s_interfaceGameState._types = new List<GSC.type>();
 			//TickHandler.s_interfaceGameState._args = new List<GSC.arg>();
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform(_id, transform.position, transform.eulerAngles.y));
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource(_id, _resources));
 			//does not have health or score (score is calculated by ResourceDepots)
 			TickHandler.s_interfaceGameState._works.Add(new GSC.work(_id, _work));
+			*/
 		}
 		#endregion
 	}

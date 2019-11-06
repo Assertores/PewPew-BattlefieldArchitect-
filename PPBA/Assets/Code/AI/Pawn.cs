@@ -181,6 +181,62 @@ namespace PPBA
 			return Behavior_GoAnywhere.instance;
 		}
 
+		/// <summary>
+		/// Takes a typeof(Behavior) and returns the corresponding enum
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public Behaviors GetBehaviorsEnum(Behavior behavior)
+		{/*
+			switch(type)
+			{
+				case typeof(Behavior_Idle):
+					return Behaviors.IDLE;
+				case typeof(Behavior_Shoot):
+				return Behaviors.SHOOT;
+				case Behaviors.THROWGRENADE:
+					break;
+				case Behaviors.GOTOFLAG:
+					break;
+				case Behaviors.GOTOBORDER:
+					break;
+				case Behaviors.CONQUERBUILDING:
+					break;
+				case Behaviors.STAYINCOVER:
+					break;
+				case Behaviors.GOTOCOVER:
+					break;
+				case Behaviors.GOTOHEAL:
+					break;
+				case Behaviors.FLEE:
+					break;
+				case Behaviors.GETRESOURCES:
+					break;
+				case Behaviors.BRINGRESOURCES:
+					break;
+				case Behaviors.BUILD:
+					break;
+				case Behaviors.DECONSTRUCT:
+					break;
+				case Behaviors.GETAMMO:
+					break;
+				case Behaviors.MOUNT:
+					break;
+				case Behaviors.FOLLOW:
+					break;
+				case Behaviors.DIE:
+					break;
+				case Behaviors.WINCHEER:
+					break;
+				case Behaviors.GOANYWHERE:
+					break;
+				default:
+					break;
+			}
+			*/
+			return Behaviors.IDLE;
+		}
+
 		private void OnEnable()
 		{
 			TickHandler.s_AIEvaluate += Evaluate;
@@ -235,14 +291,12 @@ namespace PPBA
 		{
 			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
 
-			//TickHandler.s_interfaceGameState._types = new List<GSC.type>();
-			//TickHandler.s_interfaceGameState._args = new List<GSC.arg>();
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform(_id, transform.position, transform.eulerAngles.y));
-			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo(_id, _ammo));
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource(_id, _resources));
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health(_id, _health, _morale));
-			TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior(_id, _lastBehavior));//this doesn't give a taget yet
-			TickHandler.s_interfaceGameState._paths.Add(new GSC.path(_id, _navMeshAgent.path.corners));
+			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
+			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
+			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
+			TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+			TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshAgent.path.corners });
 		}
 
 		#region Physics

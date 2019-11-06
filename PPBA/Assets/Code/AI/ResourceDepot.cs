@@ -129,12 +129,14 @@ namespace PPBA
 
 		public void WriteToGameState(int tick)
 		{
+			/*
 			//TickHandler.s_interfaceGameState._types = new List<GSC.type>();
 			//TickHandler.s_interfaceGameState._args = new List<GSC.arg>();
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform(_id, transform.position, transform.eulerAngles.y));
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo(_id, _ammo));
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource(_id, _resources));
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health(_id, _health, _score));//the _score here should be morale. but this is a building
+			*/
 		}
 		#endregion
 	}

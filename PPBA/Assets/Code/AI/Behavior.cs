@@ -61,5 +61,7 @@ namespace PPBA
 		//as these cannot be defined here, as only the behavior itself knows the signature
 		//
 		//got to remove pawns from the TARGETDICTIONARIES when they change behavior
+
+		public abstract int GetTargetID(Pawn pawn);
 	}
 }

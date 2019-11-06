@@ -101,5 +101,13 @@ namespace PPBA
 
 			return _score;
 		}
+
+		public override int GetTargetID(Pawn pawn)
+		{
+			if(s_targetDictionary.ContainsKey(pawn))
+				return s_targetDictionary[pawn]._id;
+			else
+				return -1;
+		}
 	}
 }

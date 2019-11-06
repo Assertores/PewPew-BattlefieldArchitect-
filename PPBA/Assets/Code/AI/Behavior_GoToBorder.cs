@@ -68,5 +68,10 @@ namespace PPBA
 			
 			return 1;
 		}
+
+		public override int GetTargetID(Pawn pawn)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

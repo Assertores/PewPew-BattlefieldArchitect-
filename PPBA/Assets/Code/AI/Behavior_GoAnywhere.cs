@@ -93,5 +93,10 @@ namespace PPBA
 
 			return transform.position;
 		}
+
+		public override int GetTargetID(Pawn pawn)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

@@ -67,5 +67,10 @@ namespace PPBA
 		{
 			return 1;
 		}
+
+		public override int GetTargetID(Pawn pawn)
+		{
+			return pawn._id;
+		}
 	}
 }
