@@ -592,7 +592,66 @@ Jump:
 
 		public bool DismantleDelta(GameState reference, List<int> expactedInputs)
 		{
-			throw new NotImplementedException();
+			_messageHolder = null;
+
+			foreach(var it in reference._types)
+			{
+				if(_types.Exists(x => x._id == it._id))
+					continue;
+
+				_types.Add(it);
+			}
+			foreach(var it in reference._args)
+			{
+				if(_args.Exists(x => x._id == it._id))
+					continue;
+
+				_args.Add(it);
+			}
+			foreach(var it in reference._transforms)
+			{
+				if(_transforms.Exists(x => x._id == it._id))
+					continue;
+
+				_transforms.Add(it);
+			}
+			foreach(var it in reference._ammos)
+			{
+				if(_ammos.Exists(x => x._id == it._id))
+					continue;
+
+				_ammos.Add(it);
+			}
+			foreach(var it in reference._resources)
+			{
+				if(_resources.Exists(x => x._id == it._id))
+					continue;
+
+				_resources.Add(it);
+			}
+			foreach(var it in reference._healths)
+			{
+				if(_healths.Exists(x => x._id == it._id))
+					continue;
+
+				_healths.Add(it);
+			}
+			foreach(var it in reference._behaviors)
+			{
+				if(_behaviors.Exists(x => x._id == it._id))
+					continue;
+
+				_behaviors.Add(it);
+			}
+			foreach(var it in reference._paths)
+			{
+				if(_paths.Exists(x => x._id == it._id))
+					continue;
+
+				_paths.Add(it);
+			}
+
+			return true;
 		}
 
 		public bool Lerp(GameState start, GameState end, int t)
