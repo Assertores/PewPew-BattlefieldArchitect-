@@ -50,7 +50,7 @@ namespace PPBA
 			{
 				if(!_canConnect)
 				{
-					BuildHolder.s_instance.AddRefinery(_curItem.GetComponent<RefineryRefHolder>());
+					ResourceMapCalculate.AddRefinery(_curItem.GetComponent<RefineryRefHolder>());
 
 					float radius = _curItem.GetComponent<RefineryRefHolder>()._harvestRadius;
 					float intensity = _curItem.GetComponent<RefineryRefHolder>()._harvestIntensity;
