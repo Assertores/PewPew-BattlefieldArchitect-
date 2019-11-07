@@ -23,7 +23,6 @@ namespace PPBA
 		{
 			if(_currentPlaceableObject != null)
 			{
-				print("ewdvdevsdvvsd");
 				CancelBuilding();
 
 				if(_currentPrefabIndex == 0)
@@ -34,7 +33,6 @@ namespace PPBA
 				}
 				else if(_curItem != null && _canConnect)
 				{
-					print("ewdvdevsdbhbbfdbdbfdbfdbfdbdbdbdvvsd");
 					CreateSegment();
 				}
 
@@ -126,6 +124,8 @@ namespace PPBA
 		private void MoveCurrentObjectToMouse()
 		{
 			_currentPlaceableObject.transform.position = UserInputController.s_instance.GetWorldPoint();
+
+			print(""+ UserInputController.s_instance.GetWorldPoint());
 			//currentPlaceableObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
 
 		}
