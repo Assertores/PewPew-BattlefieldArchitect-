@@ -115,16 +115,16 @@ namespace PPBA
 			return new BitField2D(lhs._fieldWidth, (lhs._backingArray.Length * 8) / lhs._fieldWidth, tmp);
 		}
 
-		public Vector2[] GetActiveBits()
+		public Vector2Int[] GetActiveBits()
 		{
-			List<Vector2> value = new List<Vector2>();
+			List<Vector2Int> value = new List<Vector2Int>();
 
 			for(int y = 0; y < (_backingArray.Length * 8) / _fieldWidth; y++)
 			{
 				for(int x = 0; x < _fieldWidth; x++)
 				{
 					if(this[x, y])
-						value.Add(new Vector2(x, y));
+						value.Add(new Vector2Int(x, y));
 				}
 			}
 
