@@ -15,9 +15,10 @@ namespace PPBA
 		public static Action<int> s_GatherValues;
 
 		public static GameState s_interfaceGameState;
+		public static InputState s_interfaceInputState;
 
-		private int _currentTick;
-		private int _inputTick;
+		private int _currentTick = 0;
+		[SerializeField] private int _inputBuffer;
 
 		private void Start()
 		{
@@ -39,8 +40,8 @@ namespace PPBA
 			int min = int.MaxValue;
 			foreach(var it in GlobalVariables.s_clients)
 			{
-				if(it._isConnected /*&& it._inputBuffer.GetHighEnd() < min*/)//Game goes on if some clients disconnect
-					;//min = it._inputBuffer.GetHighEnd();
+				if(it._isConnected && it._inputStates.GetHighEnd() < min)//Game goes on if some clients disconnect
+					min = it._inputStates.GetHighEnd();
 			}
 
 			if(min == int.MaxValue)
@@ -48,9 +49,19 @@ namespace PPBA
 
 			for(; _currentTick < min; _currentTick++)
 			{
-				for(int i = 0; i < GlobalVariables.s_clients.Count; i++)
+				s_interfaceInputState = new InputState();
+				for(int i = 0; i < GlobalVariables.s_clients.Count; i++) //combines inputs from all clients
 				{
-					//combine Inputs
+					foreach(var it in GlobalVariables.s_clients[i]._inputStates[_currentTick]._objs)
+					{
+						it._client = GlobalVariables.s_clients[i]._id;
+						s_interfaceInputState._objs.Add(it);
+					}
+					foreach(var it in GlobalVariables.s_clients[i]._inputStates[_currentTick]._combinedObjs)
+					{
+						it._client = GlobalVariables.s_clients[i]._id;
+						s_interfaceInputState._combinedObjs.Add(it);
+					}
 				}
 
 #if UNITY_SERVER
@@ -85,7 +96,8 @@ namespace PPBA
 		{
 			client me = GlobalVariables.s_clients[0];
 
-			if(me._gameStates.GetHighEnd() < _currentTick || !me._gameStates[_currentTick]._receivedMessages.AreAllBytesActive())
+			if(me._gameStates.GetHighEnd() < _currentTick ||
+			  (me._gameStates.GetHighEnd() == _currentTick && !me._gameStates[_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
 				Debug.Log("Network Pause");
 				return;
@@ -111,19 +123,25 @@ namespace PPBA
 			}
 			else
 			{
-				nextState.DismantleDelta(me._gameStates[nextState._refTick], null/*me._inputBuffer[nextStateTick].GetInputIDs()*/);
+				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 			}
 
 			s_interfaceGameState = nextState;
+			s_interfaceInputState = me._inputStates[nextStateTick];
 
 			s_DoInput?.Invoke(_currentTick);
 			s_EarlyCalc?.Invoke(_currentTick);
 			s_LateCalc?.Invoke(_currentTick);
 			s_AIEvaluate?.Invoke(_currentTick);
 			s_DoTick?.Invoke(_currentTick);
-			//rest InterfaceInputState
-			s_GatherValues?.Invoke(_currentTick);
-			//me._inputBuffer.AddNewElement(InterfaceInputState);
+
+			s_interfaceInputState = new InputState();
+
+			s_GatherValues?.Invoke(_currentTick + _inputBuffer);
+
+			me._inputStates[_currentTick + _inputBuffer] = s_interfaceInputState;
+
+			_currentTick++;
 		}
 #endif
 	}

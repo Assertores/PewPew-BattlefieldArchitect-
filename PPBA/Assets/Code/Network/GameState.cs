@@ -595,7 +595,7 @@ Jump:
 			return true;
 		}
 
-		public bool DismantleDelta(GameState reference, List<int> expactedInputs)
+		public bool DismantleDelta(GameState reference)
 		{
 			_messageHolder = null;
 
