@@ -23,6 +23,7 @@ namespace PPBA
 		{
 			if(_currentPlaceableObject != null)
 			{
+				print("ewdvdevsdvvsd");
 				CancelBuilding();
 
 				if(_currentPrefabIndex == 0)
@@ -33,6 +34,7 @@ namespace PPBA
 				}
 				else if(_curItem != null && _canConnect)
 				{
+					print("ewdvdevsdbhbbfdbdbfdbfdbfdbdbdbdvvsd");
 					CreateSegment();
 				}
 
@@ -133,14 +135,14 @@ namespace PPBA
 			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.REFINERY)
 			{
 				_curItem = PrefabBuildingType;
-				_currentPlaceableObject = PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj;
+				_currentPlaceableObject = Instantiate(PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
 				_canConnect = false;
 			}
 
 			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.WALL)
 			{
 				_curItem = PrefabBuildingType;
-				_currentPlaceableObject = PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj;
+				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
 				_canConnect = true;
 			}
 		}
