@@ -536,6 +536,7 @@ GameObject:
   - component: {fileID: 1458595919}
   - component: {fileID: 1458595918}
   - component: {fileID: 1458595921}
+  - component: {fileID: 1458595922}
   m_Layer: 10
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -666,8 +667,29 @@ MonoBehaviour:
   m_ShowCustomSorter: 0
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
-  m_BeforeStackBundles: []
+  m_BeforeStackBundles:
+  - assemblyQualifiedName: PostProcessOutline, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   m_AfterStackBundles: []
+--- !u!114 &1458595922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458595917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba6205f7b08c6e54b9b5687af0e81760, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  replacementShader: {fileID: 4800000, guid: 5f2e3abb7dc58f74c94e71d1fec2fb82, type: 3}
+  renderTextureFormat: 0
+  filterMode: 0
+  renderTextureDepth: 24
+  cameraClearFlags: 2
+  background: {r: 0, g: 0, b: 0, a: 1}
+  targetTexture: _RenderTexture
 --- !u!1 &1790779103
 GameObject:
   m_ObjectHideFlags: 0
