@@ -74,7 +74,7 @@ namespace PPBA
 			public Vector3[] _path;
 		}
 
-		public class map : gsc
+		public class heatMap : gsc
 		{
 			public BitField2D _mask;
 			public List<float> _values;
@@ -98,8 +98,8 @@ namespace PPBA
 		public List<GSC.work> _works = new List<GSC.work>();
 		public List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		public List<GSC.path> _paths = new List<GSC.path>();
-		//public List<GSC.map> _maps = new List<GSC.map>();
-		//public List<int> _denyedInputIDs = new List<int>();
+		public List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
+		public List<int> _denyedInputIDs = new List<int>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
