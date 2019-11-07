@@ -6,7 +6,9 @@ namespace PPBA
 {
 	public class client
 	{
+		public int _id;
 		public bool _isConnected = false;
+		public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
 		public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
 	}
 
