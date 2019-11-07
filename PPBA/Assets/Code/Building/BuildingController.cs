@@ -5,12 +5,8 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class BuildingController : MonoBehaviour
+	public class BuildingController : Singleton<BuildingController>
 	{
-		public GameObject _RefineryPrefab;
-		public GameObject _WallPrefab;
-
-
 		private GameObject _currentPlaceableObject;
 		private GameObject _currentBetweenObject;
 		private GameObject _curItem;
@@ -50,7 +46,7 @@ namespace PPBA
 			{
 				if(!_canConnect)
 				{
-					ResourceMapCalculate.AddRefinery(_curItem.GetComponent<RefineryRefHolder>());
+			//		ResourceMapCalculate.AddRefinery(_curItem.GetComponent<RefineryRefHolder>());
 
 					float radius = _curItem.GetComponent<RefineryRefHolder>()._harvestRadius;
 					float intensity = _curItem.GetComponent<RefineryRefHolder>()._harvestIntensity;
@@ -132,19 +128,19 @@ namespace PPBA
 
 		}
 
-		public void HandleNewObject(BuildType PrefabBuildingType)
+		public void HandleNewObject(GameObject PrefabBuildingType)
 		{
-			if(PrefabBuildingType == BuildType.REFINERY)
+			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.REFINERY)
 			{
-				_curItem = _RefineryPrefab;
-				_currentPlaceableObject = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[0]].GetNextObject();
+				_curItem = PrefabBuildingType;
+				_currentPlaceableObject = PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj;
 				_canConnect = false;
 			}
 
-			if(PrefabBuildingType == BuildType.WALL)
+			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.WALL)
 			{
-				_curItem = _WallPrefab;
-				_currentPlaceableObject = Instantiate(_WallPrefab);
+				_curItem = PrefabBuildingType;
+				_currentPlaceableObject = PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj;
 				_canConnect = true;
 			}
 		}
