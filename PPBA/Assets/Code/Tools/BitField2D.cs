@@ -9,23 +9,27 @@ namespace PPBA
 	{
 		private byte[] _backingArray = null;
 		private int _fieldWidth = -1;
+		private int _fieldHight = -1;
 
 		public BitField2D(int width, int hight)
 		{
 			_backingArray = new byte[Mathf.CeilToInt((width * hight) / 8.0f)];
 			_fieldWidth = width;
+			_fieldHight = hight;
 		}
 
 		public BitField2D(int width, int hight, byte[] values)
 		{
 			_backingArray = new byte[Mathf.CeilToInt((width * hight) / 8.0f)];
 			_fieldWidth = width;
+			_fieldHight = hight;
 			Buffer.BlockCopy(values, 0, _backingArray, 0, Mathf.CeilToInt((width * hight) / 8.0f));
 		}
 
 		public BitField2D(BitField2D origin, bool doEmpty)
 		{
 			_fieldWidth = origin._fieldWidth;
+			_fieldHight = origin._fieldHight;
 			if(doEmpty)
 			{
 				_backingArray = new byte[origin._backingArray.Length];
@@ -41,7 +45,7 @@ namespace PPBA
 		{
 			get
 			{
-				if((x < 0 || x >= _fieldWidth) || (y < 0 || y >= (_backingArray.Length * 8) / _fieldWidth))
+				if((x < 0 || x >= _fieldWidth) || (y < 0 || y >= _fieldHight))
 					throw new IndexOutOfRangeException();
 
 				//--> in range <--
@@ -51,7 +55,7 @@ namespace PPBA
 			}
 			set
 			{
-				if((x < 0 || x >= _fieldWidth) || (y < 0 || y >= (_backingArray.Length * 8) / _fieldWidth))
+				if((x < 0 || x >= _fieldWidth) || (y < 0 || y >= _fieldHight))
 					throw new IndexOutOfRangeException();
 
 				//--> in range <--
@@ -85,7 +89,7 @@ namespace PPBA
 
 		public static BitField2D operator +(BitField2D lhs, BitField2D rhs)
 		{
-			if(lhs._fieldWidth != rhs._fieldWidth || lhs._backingArray.Length != rhs._backingArray.Length)
+			if(lhs._fieldWidth != rhs._fieldWidth || lhs._fieldHight != rhs._fieldHight)
 				throw new ArgumentException();
 
 			//--> same field structure <--
@@ -96,12 +100,12 @@ namespace PPBA
 				tmp[i] = (byte)(lhs._backingArray[i] | rhs._backingArray[i]);
 			}
 
-			return new BitField2D(lhs._fieldWidth, (lhs._backingArray.Length * 8) / lhs._fieldWidth, tmp);
+			return new BitField2D(lhs._fieldWidth, lhs._fieldHight, tmp);
 		}
 
 		public static BitField2D operator -(BitField2D lhs, BitField2D rhs)
 		{
-			if(lhs._fieldWidth != rhs._fieldWidth || lhs._backingArray.Length != rhs._backingArray.Length)
+			if(lhs._fieldWidth != rhs._fieldWidth || lhs._fieldHight != rhs._fieldHight)
 				throw new ArgumentException();
 
 			//--> same field structure <--
@@ -112,14 +116,14 @@ namespace PPBA
 				tmp[i] = (byte)(lhs._backingArray[i] & ~rhs._backingArray[i]);
 			}
 
-			return new BitField2D(lhs._fieldWidth, (lhs._backingArray.Length * 8) / lhs._fieldWidth, tmp);
+			return new BitField2D(lhs._fieldWidth, lhs._fieldHight, tmp);
 		}
 
 		public Vector2Int[] GetActiveBits()
 		{
 			List<Vector2Int> value = new List<Vector2Int>();
 
-			for(int y = 0; y < (_backingArray.Length * 8) / _fieldWidth; y++)
+			for(int y = 0; y < _fieldHight; y++)
 			{
 				for(int x = 0; x < _fieldWidth; x++)
 				{
@@ -135,7 +139,7 @@ namespace PPBA
 		{
 			List<Vector2> value = new List<Vector2>();
 
-			for(int y = 0; y < (_backingArray.Length * 8) / _fieldWidth; y++)
+			for(int y = 0; y < _fieldHight; y++)
 			{
 				for(int x = 0; x < _fieldWidth; x++)
 				{
@@ -149,9 +153,19 @@ namespace PPBA
 
 		public bool AreAllBytesActive()
 		{
-			foreach(var it in _backingArray)
+			int completeBytes = Mathf.FloorToInt((_fieldWidth * _fieldHight) / 8.0f);
+			for(int i = 0; i < completeBytes; i++)
 			{
-				if(it != byte.MaxValue)
+				if(_backingArray[i] != byte.MaxValue)
+					return false;
+			}
+			if(_backingArray.Length > completeBytes)
+			{
+				int overhang = (_fieldWidth * _fieldHight) % 8;
+				// (1 << overhang) == 2^overhang
+				// (1 << overhang) - 1 for overhang is 3 == bx00000111
+				// befor << (8 - overhang) for overhang is 3 == bx11100000
+				if(_backingArray[_backingArray.Length - 1] < ((1 << overhang) - 1) << (8 - overhang))
 					return false;
 			}
 
@@ -162,6 +176,7 @@ namespace PPBA
 		{
 			foreach(var it in _backingArray)
 			{
+				//requiers that overhang bits are zeroed
 				if(it != byte.MinValue)
 					return false;
 			}
