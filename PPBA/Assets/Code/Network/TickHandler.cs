@@ -69,6 +69,8 @@ namespace PPBA
 				while(Time.timeSinceLevelLoad < _currentTick * Time.fixedDeltaTime)
 					yield return null;
 				Time.timeScale = 0;
+#else
+				s_interfaceGameState = GlobalVariables.s_clients[0]._gameStates[_currentTick];
 #endif
 
 				s_DoInput?.Invoke(_currentTick);
@@ -83,6 +85,7 @@ namespace PPBA
 
 			foreach(var it in GlobalVariables.s_clients)
 			{
+				//TODO: split gamestate into only relevant data for client
 				it._gameStates[_currentTick] = s_interfaceGameState;
 			}
 #if UNITY_SERVER

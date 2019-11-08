@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 namespace PPBA
@@ -8,6 +9,7 @@ namespace PPBA
 	{
 		public int _id;
 		public bool _isConnected = false;
+		public IPEndPoint _ep;
 		public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
 		public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
 	}
