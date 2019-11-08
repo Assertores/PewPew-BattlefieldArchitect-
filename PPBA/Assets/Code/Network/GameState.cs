@@ -70,7 +70,6 @@ namespace PPBA
 
 		public class path : gsc
 		{
-			//public List<Vector3> _path;
 			public Vector3[] _path;
 		}
 
@@ -226,14 +225,15 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
-			/*if(_maps.Count > 0)
+			if(_heatMaps.Count > 0)
 			{
-				foreach(var it in _maps)
+				foreach(var it in _heatMaps)
 				{
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 					msg.AddRange(it._mask.ToArray());
+					msg.AddRange(BitConverter.GetBytes(it._values.Count));
 					for(int i = 0; i < it._values.Count; i++)
 					{
 						msg.AddRange(BitConverter.GetBytes(it._values[i]));
@@ -241,8 +241,8 @@ namespace PPBA
 
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
-			}*/
-			/*if(_denyedInputIDs.Count > 0)
+			}
+			if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
 				msg.Add((byte)GSC.DataType.INPUTS);
@@ -253,7 +253,7 @@ namespace PPBA
 				}
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
-			}*/
+			}
 
 			_messageHolder = value;
 			return value;
@@ -436,15 +436,20 @@ namespace PPBA
 						}
 						break;
 					}
-					/*case GSC.DataType.MAP://TODO: Renes HeatMap
+					case GSC.DataType.MAP:
 					{
-						GSC.map value = new GSC.map();
+						GSC.heatMap value = new GSC.heatMap();
 						value._id = count;//value overload
 
-						byte[] mask = new byte[0];//TODO: interface to Renes Compute Shader HeatMaps
+						Vector2Int space = HeatMapHandler.s_instance.GetHeatMapSize(value._id);
+						value._mask = new BitField2D(space.x, space.y);
+
+						byte[] mask = value._mask.ToArray();
 						Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
-						value._mask = new BitField2D(0, 0, mask);//TODO: interface to Renes Compute Shader HeatMaps
 						offset += mask.Length;
+
+						value._mask.FromArray(mask);
+
 
 						int size = value._mask.GetActiveBits().Length;
 						value._values = new List<float>(size);
@@ -454,10 +459,10 @@ namespace PPBA
 							offset += sizeof(float);
 						}
 
-						_maps.Add(value);
+						_heatMaps.Add(value);
 						break;
-					}*/
-					/*case GSC.DataType.INPUTS:
+					}
+					case GSC.DataType.INPUTS:
 					{
 						_denyedInputIDs = new List<int>(count);
 						for(int i = 0; i < count; i++)
@@ -466,15 +471,17 @@ namespace PPBA
 							offset += sizeof(int);
 						}
 						break;
-					}*/
+					}
 					default:
 						throw new InvalidEnumArgumentException();
 				}
 			}
 		}
 
-		public bool CreateDelta(GameState reference, int refTick)
+		public bool CreateDelta(RingBuffer<GameState> references, int refTick, int myTick)
 		{
+			GameState reference = references[refTick];
+
 			_refTick = refTick;
 
 			foreach(var it in reference._types)
@@ -558,17 +565,17 @@ namespace PPBA
 					continue;
 
 				/*
-				{
-					int i = 0;
-					for(; i < it._path.Count; i++)
-					{
-						if(it._path[i] != element._path[i])
-							break;
-					}
-					if(i < it._path.Count)
-						continue;
-				}
-				*/
+				 * {
+				 * 	int i = 0;
+				 * 	for(; i < it._path.Count; i++)
+				 * 	{
+				 * 		if(it._path[i] != element._path[i])
+				 * 			break;
+				 * 	}
+				 * 	if(i < it._path.Count)
+				 * 		continue;
+				 * }
+				 */
 
 				for(int i = 0; i < it._path.Length; i++)
 				{
@@ -582,15 +589,46 @@ Jump:
 
 				_paths.Remove(element);
 			}
-			/*foreach(var it in reference._maps)
+			foreach(var it in _heatMaps)
 			{
-				GSC.map element = _maps.Find(x => x._id == it._id);
+				for(int i = refTick + 1; i < myTick; i++)
+				{
+					it._mask += references[i]._heatMaps.Find(x => x._id == it._id)._mask;
+				}
 
-				if(it. != element._arguments)
-					continue;
+				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
+				Vector2Int[] refPos = refMap._mask.GetActiveBits();
+				Vector2Int[] positions = it._mask.GetActiveBits();
+				Texture2D heatMap = HeatMapHandler.s_instance.GetHeatMap(it._id);
+				it._values = new List<float>(positions.Length);
 
-				_maps.Remove(element);
-			}*/
+
+				for(int i = 0, j = 0; i < positions.Length; i++)
+				{
+					//finde gleiches element (hör auf zu suchen, wenn es größer ist)
+					for(; j < refPos.Length; j++)
+					{
+						if(refPos[j].y >= positions[i].y && refPos[j].x >= positions[i].x)
+							break;
+					}
+
+					//wenn gleiches element existiert
+					if(refPos[j] == positions[i])
+					{
+						float value = heatMap.GetPixel(positions[i].x, positions[i].y).r;
+
+						//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
+						if(refMap._values[j] == value)
+							it._mask[positions[i].x, positions[i].y] = false;
+						else
+							it._values.Add(value);
+					}
+				}
+			}
+			for(int i = refTick + 1; i < myTick; i++)
+			{
+				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
+			}
 
 			return true;
 		}
@@ -741,6 +779,11 @@ Jump:
 					_path = (lerpValue < 0.5f) ? origin._path : target._path,
 				});
 			}
+			foreach(var it in start._heatMaps)
+			{
+				value._heatMaps.Add((lerpValue < 0.5f) ? it : end._heatMaps.Find(x => x._id == it._id));
+			}
+			value._denyedInputIDs = end._denyedInputIDs;
 
 			return value;
 		}
