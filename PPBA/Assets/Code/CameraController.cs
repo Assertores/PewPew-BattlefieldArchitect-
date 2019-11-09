@@ -39,10 +39,10 @@ public class CameraController : MonoBehaviour
 		{
 			pos += _CameraSpeed * Vector3.left * Time.deltaTime;
 		}
-
-		pos.x = Mathf.Clamp(transform.position.x, -_panLimit.x, _panLimit.x);
-		pos.z = Mathf.Clamp(transform.position.z, -_panLimit.y, _panLimit.y);
 		transform.Translate(pos, Space.Self);
+
+		//pos.x = Mathf.Clamp(transform.position.x, -_panLimit.x, _panLimit.x);
+		//pos.z = Mathf.Clamp(transform.position.z, -_panLimit.y, _panLimit.y);
 
 	}
 
