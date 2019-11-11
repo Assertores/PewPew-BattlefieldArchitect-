@@ -8,13 +8,13 @@ namespace PPBA
 
 	public class Moralizer : Singleton<Moralizer>
 	{
-		[SerializeField] private float _idle;
-		[SerializeField] private float _getDamaged;
-		[SerializeField] private float _closePawnDied;
-		[SerializeField] private float _closePawnDamaged;
-		[SerializeField] private float _enemyDied;
-		[SerializeField] private float _enemyDamaged;
-		[SerializeField] private float _wonGame;
+		[SerializeField] private float _idle = 0f;
+		[SerializeField] private float _getDamaged = -10f;
+		[SerializeField] private float _closePawnDied = -10f;
+		[SerializeField] private float _closePawnDamaged = -5f;
+		[SerializeField] private float _enemyDied = 10f;
+		[SerializeField] private float _enemyDamaged = 5f;
+		[SerializeField] private float _wonGame = 100f;
 
 		void Start()
 		{

@@ -6,12 +6,12 @@ namespace PPBA
 {
 	public class Behavior_Idle : Behavior
 	{
-		public static Behavior_Idle instance;
+		public static Behavior_Idle s_instance;
 
 		private void Awake()
 		{
-			if(instance == null)
-				instance = this;
+			if(s_instance == null)
+				s_instance = this;
 			else
 				Destroy(gameObject);
 		}

@@ -134,7 +134,7 @@ namespace PPBA
 			switch(e_behaviors)
 			{
 				case Behaviors.IDLE:
-					return Behavior_Idle.instance;
+					return Behavior_Idle.s_instance;
 				case Behaviors.SHOOT:
 					return Behavior_Shoot.s_instance;
 				case Behaviors.THROWGRENADE:
@@ -150,7 +150,7 @@ namespace PPBA
 				case Behaviors.GOTOCOVER:
 					break;
 				case Behaviors.GOTOHEAL:
-					return Behavior_GoAnywhere.instance;
+					return Behavior_GoAnywhere.s_instance;
 				case Behaviors.FLEE:
 					break;
 				case Behaviors.GETRESOURCES:
@@ -172,13 +172,13 @@ namespace PPBA
 				case Behaviors.WINCHEER:
 					break;
 				case Behaviors.GOANYWHERE:
-					return Behavior_GoAnywhere.instance;
+					return Behavior_GoAnywhere.s_instance;
 				default:
 					Debug.LogWarning("GetBehavior switch defaulted. Couldn't get the desired behavior.");
-					return Behavior_GoAnywhere.instance;
+					return Behavior_GoAnywhere.s_instance;
 			}
 
-			return Behavior_GoAnywhere.instance;
+			return Behavior_GoAnywhere.s_instance;
 		}
 
 		/// <summary>
@@ -187,8 +187,9 @@ namespace PPBA
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public Behaviors GetBehaviorsEnum(Behavior behavior)
-		{/*
-			switch(type)
+		{
+			/*
+			switch(typeof(behavior))
 			{
 				case typeof(Behavior_Idle):
 					return Behaviors.IDLE;
