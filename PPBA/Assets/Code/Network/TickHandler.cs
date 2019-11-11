@@ -119,7 +119,7 @@ namespace PPBA
 
 			if(nextStateTick != _currentTick)
 			{
-				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (float)(_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
 			}
 			else
 			{

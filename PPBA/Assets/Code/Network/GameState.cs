@@ -697,7 +697,7 @@ Jump:
 			return true;
 		}
 
-		public static GameState Lerp(GameState start, GameState end, int lerpValue)
+		public static GameState Lerp(GameState start, GameState end, float lerpValue)
 		{
 			GameState value = new GameState();
 
