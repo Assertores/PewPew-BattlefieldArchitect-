@@ -1726,6 +1726,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4339546345999298240}
   - component: {fileID: 1899017067}
+  - component: {fileID: 1745640665}
   m_Layer: 9
   m_Name: Rafinerie_Test_Pitch_01
   m_TagString: Untagged
@@ -2031,6 +2032,19 @@ MonoBehaviour:
     type: 3}
   _harvestRadius: 0
   _harvestIntensity: 0
+--- !u!65 &1745640665
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748287687986191571}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.82, y: 1, z: 3.29}
+  m_Center: {x: -0.03, y: 0.36, z: 0.49}
 --- !u!1 &786632868624164989
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ namespace PPBA
 {
 	public class BuildingController : Singleton<BuildingController>
 	{
+
 		private GameObject _currentPlaceableObject;
 		private GameObject _currentBetweenObject;
 		private GameObject _curItem;
@@ -14,10 +15,11 @@ namespace PPBA
 		private float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 		private bool _canConnect = false;
+		public bool _canBuild= true;
 
 		Vector2 _pixelUV = Vector2.zero;
 
-		private GameObject lastPole;
+		private GameObject _lastPole;
 
 		private void Update()
 		{
@@ -42,7 +44,7 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(Input.GetMouseButtonDown(0))
+			if(Input.GetMouseButtonDown(0) && _canBuild)
 			{
 				if(!_canConnect)
 				{
@@ -65,10 +67,10 @@ namespace PPBA
 			}
 		}
 
-		public float angle = 0;
+		private float _angle = 0;
 		private void CreateSegment()
 		{
-			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - lastPole.transform.position);
+			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - _lastPole.transform.position);
 			float dis = dir.magnitude;
 
 			//if(dis < 1)
@@ -78,15 +80,14 @@ namespace PPBA
 
 			float length = _currentBetweenObject.GetComponent<MeshRenderer>().bounds.size.z;
 
-			Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPole.transform.position);
+			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole.transform.position);
 			v3Pos = Input.mousePosition - v3Pos;
-			angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-angle, Vector3.up) * (Vector3.back * length);
-			_currentPlaceableObject.transform.position = lastPole.transform.position + v3Pos;
+			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
+			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Vector3.back * length);
+			_currentPlaceableObject.transform.position = _lastPole.transform.position + v3Pos;
 
-
-			Vector3 dir2 = (_currentPlaceableObject.transform.position - lastPole.transform.position);
-			Vector3 pos = dir2 * 0.5f + lastPole.transform.position;
+			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole.transform.position);
+			Vector3 pos = dir2 * 0.5f + _lastPole.transform.position;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 			_currentBetweenObject.transform.position = pos;
 			_currentBetweenObject.transform.rotation = rotationObj;
@@ -100,15 +101,15 @@ namespace PPBA
 
 		private void ConstructBuild()
 		{
-			lastPole = _currentPlaceableObject;
+			_lastPole = _currentPlaceableObject;
 			_currentPlaceableObject = null;
 			_currentPlaceableObject = Instantiate(_curItem);
 		}
 
 		private void ConstructBetween()
 		{
-			Vector3 dir2 = (_currentPlaceableObject.transform.position - lastPole.transform.position);
-			Vector3 pos = dir2 * 0.5f + lastPole.transform.position;
+			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole.transform.position);
+			Vector3 pos = dir2 * 0.5f + _lastPole.transform.position;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
 			//	Instantiate(_curItem.ConnectingObject, pos, rotationObj);
@@ -125,7 +126,7 @@ namespace PPBA
 		{
 			_currentPlaceableObject.transform.position = UserInputController.s_instance.GetWorldPoint();
 
-			print(""+ UserInputController.s_instance.GetWorldPoint());
+			//print(""+ UserInputController.s_instance.GetWorldPoint());
 			//currentPlaceableObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
 
 		}

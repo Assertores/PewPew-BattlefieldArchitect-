@@ -103,8 +103,6 @@ namespace PPBA
 			}
 		}
 
-		public TextMeshPro Text;
-
 		void AddInventoryImage()
 		{
 			GameObject Tiles = (GameObject)Instantiate(inventoryTiles, new Vector3(0, 0, 0), Quaternion.identity);

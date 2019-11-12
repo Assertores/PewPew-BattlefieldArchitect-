@@ -16,7 +16,6 @@ public class CameraController : MonoBehaviour
 	{
 		if(Input.GetMouseButton(1))
 		{
-			//(new Vector3(0, Input.GetAxis("Mouse X") * _RotateSpeed, 0), Space.World);
 			transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * _RotateSpeed, 0), Space.World);
 		}
 
