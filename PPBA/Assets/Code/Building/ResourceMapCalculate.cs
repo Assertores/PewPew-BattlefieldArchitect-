@@ -11,7 +11,6 @@ namespace PPBA
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
-		private Texture2D _resourceTexture;
 
 		private int resourceCalcKernel;
 		private int resourceCalcKernel2;
@@ -22,19 +21,18 @@ namespace PPBA
 
 		void Start()
 		{
-			_resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
 			Texture2D resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
-
 			resourceCalcKernel = _computeShader.FindKernel("CSMain");
 			resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
-			_ResultTexture = new RenderTexture(resourceTexture.height, resourceTexture.width, 24)
+
+			_ResultTexture = new RenderTexture(512, 512, 24)
 			{
 				enableRandomWrite = true
 			};
 
 			_ResultTexture.Create();
-			Graphics.CopyTexture(resourceTexture, _ResultTexture);
+			Graphics.Blit(resourceTexture, _ResultTexture);
 
 		}
 
@@ -43,7 +41,7 @@ namespace PPBA
 			fabricCenter.Add(new Vector4(pos.x, pos.z, intensity, radius));
 		}
 
-		private void RefreshCalcRes()
+		public void RefreshCalcRes()
 		{
 			_buffer = new ComputeBuffer(50, sizeof(int));
 

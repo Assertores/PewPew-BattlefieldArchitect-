@@ -15,7 +15,7 @@ namespace PPBA
 		private float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 		private bool _canConnect = false;
-		public bool _canBuild= true;
+		[HideInInspector]public bool _canBuild= true;
 
 		Vector2 _pixelUV = Vector2.zero;
 
@@ -48,14 +48,12 @@ namespace PPBA
 			{
 				if(!_canConnect)
 				{
-			//		ResourceMapCalculate.AddRefinery(_curItem.GetComponent<RefineryRefHolder>());
-
 					float radius = _curItem.GetComponent<RefineryRefHolder>()._harvestRadius;
 					float intensity = _curItem.GetComponent<RefineryRefHolder>()._harvestIntensity;
 
-					//GetComponent<RessourceManager>().AddRefinery(curItem.prefab.GetComponent<RefineryScript>());
-					// to do in constructBuild einfügen
-		//			ResourceMapChanger.instance.AddFabric(new Vector3(_pixelUV.x, 0, _pixelUV.y), intensity, radius);
+					_pixelUV = UserInputController.s_instance.GetTexturePixelPoint();
+					ResourceMapCalculate.s_instance.AddFabric(new Vector3(_pixelUV.x, 0, _pixelUV.y), intensity, radius);
+
 					_currentPlaceableObject = null;
 					_curItem = null;
 					return;
