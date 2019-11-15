@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Wooden planks
-  m_Shader: {fileID: 4800000, guid: b7b56e1fd40af5b46a32a4cdea5f5d48, type: 3}
+  m_Shader: {fileID: 4800000, guid: 82dacd50b9249b54cbdf9b5981c95efd, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -74,12 +74,12 @@ Material:
     - _OutlineExtrusion: 0
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
-    - _SpecularFalloff: 0.438
+    - _SpecularFalloff: 0
     - _SpecularHighlights: 1
     - _SpecularSize: 0
     - _SrcBlend: 1
     - _StepAmount: 8
-    - _StepWidth: 0.258
+    - _StepWidth: 0.165
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
@@ -87,5 +87,5 @@ Material:
     - _Emission: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShadowTint: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
-    - _Specular: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowTint: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
+    - _Specular: {r: 0, g: 0, b: 0, a: 1}

@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Ground
   m_Shader: {fileID: 4800000, guid: 9f359a7a20a5a9841944d4cb5bb693cf, type: 3}
-  m_ShaderKeywords: MetalInt _NORMALMAP _PARALLAXMAP
+  m_ShaderKeywords: _NORMALMAP _PARALLAXMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -76,7 +76,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _HeightIntensity: 1
-    - _MetalResourcesInt: 1
+    - _MetalResourcesInt: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1

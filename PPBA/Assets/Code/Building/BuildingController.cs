@@ -48,14 +48,7 @@ namespace PPBA
 			{
 				if(!_canConnect)
 				{
-					float radius = _curItem.GetComponent<RefineryRefHolder>()._harvestRadius;
-					float intensity = _curItem.GetComponent<RefineryRefHolder>()._harvestIntensity;
-
-					_pixelUV = UserInputController.s_instance.GetTexturePixelPoint();
-					ResourceMapCalculate.s_instance.AddFabric(new Vector3(_pixelUV.x, 0, _pixelUV.y), intensity, radius);
-
-					_currentPlaceableObject = null;
-					_curItem = null;
+					PlaceRefineryPrefab();
 					return;
 				}
 				ConstructBuild();
@@ -63,6 +56,19 @@ namespace PPBA
 				_currentBetweenObject = Instantiate(_currentBetweenObject);
 
 			}
+		}
+
+		private void PlaceRefineryPrefab()
+		{
+			GameObject obj = Instantiate(_curItem, _currentPlaceableObject.transform.position, _currentPlaceableObject.transform.rotation);
+			RefineryRefHolder holder = obj.GetComponent<RefineryRefHolder>();
+			holder.RefineryPrefab.SetActive(false);
+
+			holder._Positions = UserInputController.s_instance.GetTexturePixelPoint();
+			ResourceMapCalculate.s_instance.AddFabric(holder);
+
+			_currentPlaceableObject = null;
+			_curItem = null;
 		}
 
 		private float _angle = 0;

@@ -6,24 +6,26 @@ namespace PPBA
 {
 	public class ResourceMapCalculate : Singleton<ResourceMapCalculate>
 	{
+
 		public ComputeShader _computeShader;
 		public Renderer _GroundRenderer;
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
-		private int resourceCalcKernel;
-		private int resourceCalcKernel2;
-		private List<Vector4> fabricCenter = new List<Vector4>();
+		private int _resourceCalcKernel;
+		private int _resourceCalcKernel2;
+		private List<RefineryRefHolder> _Refinerys = new List<RefineryRefHolder>();
+
 
 		[SerializeField]
-		private int[] CurrentValue;
+		private int[] _ResourceValues;
 
 		void Start()
 		{
 			Texture2D resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
-			resourceCalcKernel = _computeShader.FindKernel("CSMain");
-			resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
+			_resourceCalcKernel = _computeShader.FindKernel("CSMain");
+			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
 
 			_ResultTexture = new RenderTexture(512, 512, 24)
@@ -36,27 +38,29 @@ namespace PPBA
 
 		}
 
-		public void AddFabric(Vector3 pos, float intensity, float radius)
+		public void AddFabric(RefineryRefHolder refHolder)
 		{
-			fabricCenter.Add(new Vector4(pos.x, pos.z, intensity, radius));
+
+			_Refinerys.Add(refHolder);
 		}
 
 		public void RefreshCalcRes()
 		{
-			_buffer = new ComputeBuffer(50, sizeof(int));
+			_ResourceValues = new int[_Refinerys.Count];
+			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
 
-			_computeShader.SetInt("PointSize", fabricCenter.Count);
-			_computeShader.SetVectorArray("coords", fabricCenter.ToArray());
+			_computeShader.SetInt("PointSize", _Refinerys.Count);
+			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
-			_computeShader.SetBuffer(resourceCalcKernel2, "buffer", _buffer);
-			_computeShader.SetBuffer(resourceCalcKernel, "buffer", _buffer);
+			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
+			_computeShader.SetBuffer(_resourceCalcKernel, "buffer", _buffer);
 
-			_computeShader.SetTexture(resourceCalcKernel, "Result", _ResultTexture);
+			_computeShader.SetTexture(_resourceCalcKernel, "Result", _ResultTexture);
 
-			_computeShader.Dispatch(resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
-			_computeShader.Dispatch(resourceCalcKernel, 512 / 8, 512 / 8, 1);
+			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
+			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
-			_buffer.GetData(CurrentValue);
+			_buffer.GetData(_ResourceValues);
 			_buffer.Release();
 			_buffer = null;
 			_GroundRenderer.material.SetTexture("_NoiseMap", _ResultTexture);
@@ -79,7 +83,18 @@ namespace PPBA
 			_GroundRenderer.material.SetFloat("_MetalResourcesInt", t);
 		}
 
-	}
 
+		private Vector4[] RefineriesProperties()
+		{
+			Vector4[] refsprop = new Vector4[_Refinerys.Count];
+
+			for(int i = 0; i < _Refinerys.Count; i++)
+			{
+				refsprop[i] = _Refinerys[i].GetShaderProperties();
+			}
+			return refsprop;
+		}
+	}
+		
 }
 
