@@ -17,7 +17,6 @@
 
 		// _ResourceMap("ResourceMap (RGB)", 2D) = "white" {}
 		_NoiseMap("Noise (RGB)", 2D) = "white" {}
-		_Position("World Position",Vector) = (0,0,0,0)
 		_Softness("Sphere Softness", Range(0,100)) = 0
 		_ColorResource("ColorResource", Color) = (1,1,1,1)
 	}
@@ -60,6 +59,7 @@
 			int _MetalResourcesInt;
 			half _HeightIntensity;
 			float _Parallax;
+
 			// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 			// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
 			// #pragma instancing_options assumeuniformscaling
@@ -83,12 +83,9 @@
 				fixed3 normal = UnpackNormal (tex2D (_BumpMap, IN.uv_MainTex));
 				fixed4 Occ = tex2D(_OcclusionMap, IN.uv_OcclusionMap);   
 
-
 				int i = step(_MetalResourcesInt,0);
 
-
 				fixed4 t = lerp(mainTex, _ColorResource, noise.r);
-
 
 				fixed4 endCol = lerp(mainTex, t,i);
 				o.Albedo = endCol.rgb * Occ.rgb;

@@ -13,35 +13,38 @@ Texture2D<float4> InputTexture;
 [numthreads(1, 1, 1)] // was bedeuetet das wirklich
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-    for (int i = 0; i < 50; i++)
-    {
-       buffer[i] = 0;
-    }
-    
+	for (int i = 0; i < 50; i++)
+	{
+		buffer[i] = 0;
+	}
+
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-   for (int i = 0; i < PointSize; i++)
-   {
-       float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
+	for (int i = 0; i < PointSize; i++)
+	{
+		float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-		  if (dis > coords[i].w)
-      {
-			  continue;
-		  } 
+		if (dis > coords[i].w)
+		{
+			continue;
+		}
 
-    //   float t = smoothstep(dis, dis * 2 , coords[i].w); 
-       float t = step(dis, coords[i].w);
-		    float erg = t * coords[i].z;
-        float3 curCol = float3(Result[id.xy].r, Result[id.xy].g, Result[id.xy].b);
-		    float minValue = float(min(curCol.x , erg));
-       float3 newCol = curCol - minValue;
+		//   float t = smoothstep(dis, dis * 2 , coords[i].w); 
+	//	float t = step(dis, coords[i].w);
+	//	float erg = t * coords[i].z;
+		float4 curCol = InputTexture[id.xy].rgba;
 
-       float3 col = lerp(curCol, newCol, t);
-       col = clamp(col, 0.0, 1.0);
-       InterlockedAdd(buffer[i], newCol.x * 100); 
-       Result[id.xy] = float4(col, 1.0);
-   }
+		//	float minValue = float(min(curCol.x, erg));
+		//float newCol = curCol.r - coords[i].z;
+		float newCol = curCol.r - coords[i].z;
+	
+		//	float3 col = lerp(curCol.rgb, newCol, t);
+
+	//	newCol = saturate(newCol);
+		InterlockedAdd(buffer[i], newCol.r * 100.0);
+		Result[id.xy] = float4(newCol.rrr, curCol.a);
+	}
 }

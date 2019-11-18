@@ -11,12 +11,10 @@ public class UnitScreenSelection : MonoBehaviour
 	
 	void OnMouseDown()
 	{
-		TextMeshProUGUI test1 = new TextMeshProUGUI();
-		TextMeshProUGUI test2 = new TextMeshProUGUI();
-		test1.text = "Resources " + GetComponent<RefineryRefHolder>()._CurrentResources.ToString();
-		test2.text = "Live " + GetComponent<RefineryRefHolder>()._LivePoints.ToString();
+		string test1 = "Resources " + GetComponent<RefineryRefHolder>()._CurrentResources.ToString();
+		string test2 = "Live " + GetComponent<RefineryRefHolder>()._LivePoints.ToString();
 
-		UnitScreenController.s_instance.AddUnitInfoPanel(gameObject.transform, test1.text , test2.text, ref _UnitDetails);
+		UnitScreenController.s_instance.AddUnitInfoPanel(gameObject.transform, test1 , test2, ref _UnitDetails);
 		UnitScreenUpdate(true);
 	}
 

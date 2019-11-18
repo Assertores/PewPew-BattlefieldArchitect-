@@ -68,6 +68,14 @@ namespace PPBA
 
 		private void CreateDetail(string[] details, ref TextMeshProUGUI[] TMProText)
 		{
+			if(_currentUnitDetails != null)
+			{
+				foreach(var item in _currentUnitDetails)
+				{
+					Destroy(item.gameObject);
+				}
+			}
+
 			_currentUnitDetails = new TextMeshProUGUI[details.Length];
 			for(int i = 0; i < details.Length; i++)
 			{
@@ -82,7 +90,7 @@ namespace PPBA
 
 		public void SetCamera(Transform TargetPosition)
 		{
-			_UnitCamera.position += TargetPosition.position + new Vector3(20, 10, 0);
+			_UnitCamera.position = TargetPosition.position + new Vector3(20, 10, 0);
 			_UnitCamera.LookAt(TargetPosition);
 		}
 

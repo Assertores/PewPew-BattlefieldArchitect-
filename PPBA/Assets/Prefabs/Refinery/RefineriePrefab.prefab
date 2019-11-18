@@ -10277,7 +10277,7 @@ GameObject:
   - component: {fileID: 1045317909828317640}
   - component: {fileID: 1646919483722797084}
   - component: {fileID: 7708209275559992215}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RefineriePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10331,7 +10331,7 @@ MonoBehaviour:
     type: 3}
   RefineryPrefab: {fileID: 3587535553330315037}
   _HarvestRadius: 100
-  _HarvestIntensity: 0.1
+  _HarvestIntensity: 0.005
   _Positions: {x: 0, y: 0}
   _BuildingTime: 5
   _BuildingCosts: 50

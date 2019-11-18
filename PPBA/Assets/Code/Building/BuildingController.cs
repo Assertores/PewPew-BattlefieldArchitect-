@@ -66,8 +66,8 @@ namespace PPBA
 			holder._Positions = UserInputController.s_instance.GetTexturePixelPoint();
 			holder.GetComponent<BuildingProcess>().Startbuilding();
 
-			_currentPlaceableObject = null;
 			Destroy(_currentPlaceableObject);
+			_currentPlaceableObject = null;
 			_curItem = null;
 		}
 
@@ -115,15 +115,12 @@ namespace PPBA
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole.transform.position);
 			Vector3 pos = dir2 * 0.5f + _lastPole.transform.position;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
-
-			//	Instantiate(_curItem.ConnectingObject, pos, rotationObj);
-
 		}
 
 		private void RotateFromMouseWheel()
 		{
-			_mouseWheelRotation += Input.mouseScrollDelta.y;
-			_currentPlaceableObject.transform.Rotate(Vector3.up, _mouseWheelRotation * 10);
+			_mouseWheelRotation = Input.mouseScrollDelta.y;
+			_currentPlaceableObject.transform.Rotate(Vector3.up, _mouseWheelRotation*10);
 		}
 
 		private void MoveCurrentObjectToMouse()
@@ -147,7 +144,7 @@ namespace PPBA
 			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.WALL)
 			{
 				_curItem = PrefabBuildingType;
-				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
+				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<WallRefHolder>().WallMiddlePrefab);
 				_canConnect = true;
 			}
 		}

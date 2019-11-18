@@ -14,7 +14,7 @@ public class TestCalc : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		if(Input.GetKeyDown(KeyCode.Y))
+		if(Input.GetKey(KeyCode.Y))
 		{
 			ResourceMapCalculate.s_instance.RefreshCalcRes();
 		}

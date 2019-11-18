@@ -9,6 +9,7 @@ namespace PPBA
 
 		public ComputeShader _computeShader;
 		public Renderer _GroundRenderer;
+		public RenderTexture _currentTexture;
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
@@ -20,21 +21,26 @@ namespace PPBA
 
 		[SerializeField]
 		private int[] _ResourceValues;
-
+		
 		void Start()
 		{
 			Texture2D resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
 			_resourceCalcKernel = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
+			_currentTexture = new RenderTexture(512, 512, 0, RenderTextureFormat.R8)
+			{
+				enableRandomWrite = true
+			};
 
-			_ResultTexture = new RenderTexture(512, 512, 24)
+			_ResultTexture = new RenderTexture(512, 512, 0, RenderTextureFormat.R8)
 			{
 				enableRandomWrite = true
 			};
 
 			_ResultTexture.Create();
 			Graphics.Blit(resourceTexture, _ResultTexture);
+			Graphics.Blit(resourceTexture, _currentTexture);
 
 		}
 
@@ -46,6 +52,7 @@ namespace PPBA
 
 		public void RefreshCalcRes()
 		{
+
 			_ResourceValues = new int[_Refinerys.Count];
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
 
@@ -55,6 +62,7 @@ namespace PPBA
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
 			_computeShader.SetBuffer(_resourceCalcKernel, "buffer", _buffer);
 
+			_computeShader.SetTexture(_resourceCalcKernel, "InputTexture", _currentTexture);
 			_computeShader.SetTexture(_resourceCalcKernel, "Result", _ResultTexture);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
@@ -63,6 +71,9 @@ namespace PPBA
 			_buffer.GetData(_ResourceValues);
 			_buffer.Release();
 			_buffer = null;
+
+			Graphics.Blit(_ResultTexture, _currentTexture);
+
 			_GroundRenderer.material.SetTexture("_NoiseMap", _ResultTexture);
 			SendToTickManager();
 
@@ -86,13 +97,13 @@ namespace PPBA
 
 		private Vector4[] RefineriesProperties()
 		{
-			Vector4[] refsprop = new Vector4[_Refinerys.Count];
+			Vector4[] refsProp = new Vector4[_Refinerys.Count];
 
 			for(int i = 0; i < _Refinerys.Count; i++)
 			{
-				refsprop[i] = _Refinerys[i].GetShaderProperties();
+				refsProp[i] = _Refinerys[i].GetShaderProperties();
 			}
-			return refsprop;
+			return refsProp;
 		}
 	}
 		
