@@ -10,7 +10,7 @@ namespace PPBA
 {
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
 
-	public class GameNetcode : MonoBehaviour
+	public class GameNetcode : Singleton<GameNetcode>
 	{
 		UdpClient socket;
 		public int m_serverPort = 11000;

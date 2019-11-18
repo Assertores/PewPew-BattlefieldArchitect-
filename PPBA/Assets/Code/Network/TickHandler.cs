@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+//#define UNITY_SERVER
 namespace PPBA
 {
 	public class TickHandler : Singleton<TickHandler>
@@ -66,7 +67,7 @@ namespace PPBA
 
 #if UNITY_SERVER
 				Time.timeScale = 8;
-				while(Time.timeSinceLevelLoad < _currentTick * Time.fixedDeltaTime)
+				while(Time.timeSinceLevelLoad < s_currentTick * Time.fixedDeltaTime)
 					yield return null;
 				Time.timeScale = 0;
 #else
@@ -89,7 +90,7 @@ namespace PPBA
 				it._gameStates[s_currentTick] = s_interfaceGameState;
 			}
 #if UNITY_SERVER
-			//TODO: Netcode stard sending Gamestates to Clients
+			GameNetcode.s_instance.Send(s_currentTick);
 #endif
 			h_SimulationIsRunning = false;
 		}
