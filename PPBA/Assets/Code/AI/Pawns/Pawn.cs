@@ -116,7 +116,7 @@ namespace PPBA
 				Behavior_Die.s_instance.Execute(this);
 				return;
 			}
-			
+
 			if(0 < _behaviors.Length)
 			{
 				for(int i = 0; i < _behaviorScores.Length; i++)//determines best behavior
@@ -330,12 +330,12 @@ namespace PPBA
 				if(!RecalculateNavPath())//skip if no valid or partial path has been found
 					return;
 			}
-			else if(_navMeshPath.status != NavMeshPathStatus.PathComplete && _navMeshPath.corners[1] - _navMeshPath.corners[0] == Vector3.forward)
+			else if(_navMeshPath.status != NavMeshPathStatus.PathComplete && _navMeshPath.corners[1] - _navMeshPath.corners[0] == Vector3.forward)//Unity sets this default path (Vector3.forward) sometimes when the target destination is not on the NavMesh or close to it.
 			{
 				return;
 			}
 
-			float maxDistance = _moveSpeed * Time.fixedDeltaTime;
+			float maxDistance = _moveSpeed * Time.fixedDeltaTime / GetNavAreaCost();
 			float walkedDistance = 0f;
 			float nextCornerDistance;
 
@@ -343,8 +343,12 @@ namespace PPBA
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
-				transform.position = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], Mathf.Min(nextCornerDistance, maxDistance - walkedDistance));
-				walkedDistance += nextCornerDistance;
+				Vector3 moveVec;
+				float tempDistance;
+				tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
+				moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
+				transform.position = moveVec;
+				walkedDistance += tempDistance;
 			}
 
 			if(2 < i)//<=> pawn has moved over a corner
@@ -352,7 +356,8 @@ namespace PPBA
 				RecalculateNavPath();//could be solved more elegantly performancewise, but not without copying the _navMeshPath.corners array and doing admin myself
 			}
 
-			transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, _navMeshPath.corners[i - 1].y, transform.position.z));
+			if(i - 1 < _navMeshPath.corners.Length)
+				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
 		}
 
 		public void SetMoveTarget(Vector3 newTarget)//call this from the behaviors
@@ -366,7 +371,7 @@ namespace PPBA
 
 		private bool RecalculateNavPath()
 		{
-			if(!NavMesh.CalculatePath(transform.position, _moveTarget, NavMesh.AllAreas, _navMeshPath))//TODO: get a proper mask
+			if(!NavMesh.CalculatePath(transform.position, _moveTarget, 1, _navMeshPath))//TODO: get a proper mask 8)
 			{
 				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
 				return false;
@@ -380,6 +385,42 @@ namespace PPBA
 			_lineRenderer.positionCount = _navMeshPath.corners.Length;
 			_lineRenderer.SetPositions(_navMeshPath.corners);
 		}
+
+		private float GetNavAreaCost()
+		{
+			NavMeshHit navMeshHit = new NavMeshHit();
+
+			if(NavMesh.SamplePosition(transform.position, out navMeshHit, 0.2f, NavMesh.AllAreas))
+			{
+				/*
+				//Debug version
+				int index = IndexFromMask(navMeshHit.mask);
+				string debugString = "Area: " + index;
+				float areaCost = NavMesh.GetAreaCost(index);
+				debugString += " AreaCost: " + areaCost;
+				Debug.Log(debugString);
+				return areaCost;
+				*/
+				//Short version
+				return NavMesh.GetAreaCost(IndexFromMask(navMeshHit.mask));
+			}
+			else
+			{
+				Debug.LogWarning("Pawn " + _id + " could not sample NavAreaCost. Defaulting to 1.");
+				return 1f;
+			}
+		}
+
+		private int IndexFromMask(int mask)
+		{
+			for(int i = 0; i < 32; ++i)
+			{
+				if((1 << i) == mask)
+					return i;
+			}
+			return -1;
+		}
+
 		#endregion
 
 		public void WriteToGameState(int tick)
