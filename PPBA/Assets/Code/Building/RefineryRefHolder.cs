@@ -19,7 +19,13 @@ namespace PPBA
 		public float _HarvestRadius;
 		public float _HarvestIntensity;
 		public Vector2 _Positions;
+
+		public float _BuildingTime;
+		public float _BuildingCosts;
+		public float _CurrentResources;
 		
+		public float _LivePoints;
+		public float _MaxLivePoints;
 
 		[HideInInspector] public Sprite _Image { get => _ImageUI; }
 		[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
@@ -31,6 +37,9 @@ namespace PPBA
 			return new Vector4(_Positions.x , _Positions.y , _HarvestIntensity , _HarvestRadius);
 		}
  
+
+
+
  }
 }
 

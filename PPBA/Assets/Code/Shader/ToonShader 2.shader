@@ -1,10 +1,12 @@
 ﻿Shader "Custom/ToonShader 2"
 {
 	//show values to edit in inspector
-	Properties{
+	Properties
+	{
 		[Header(Base Parameters)]
 		_Color("Tint", Color) = (1, 1, 1, 1)
 		_MainTex("Texture", 2D) = "white" {}
+		_DissolveTex("Texture", 2D) = "white" {}
 		_Specular("Specular Color", Color) = (1,1,1,1)
 		[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
 
@@ -14,8 +16,14 @@
 		_StepWidth("Step Size", Range(0, 1)) = 0.25
 		_SpecularSize("Specular Size", Range(0, 1)) = 0.1
 		_SpecularFalloff("Specular Falloff", Range(0, 2)) = 1
+
+		_OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
+		_OutlineWidth("Outline Width", Range(0, 10)) = 0.03
+
 	}
-		SubShader{
+
+		SubShader
+		{
 			//the material is completely non-transparent and is rendered at the same time as the other opaque geometry
 			Tags{ "RenderType" = "Opaque" "Queue" = "Geometry"}
 
@@ -28,6 +36,7 @@
 			#pragma target 3.0
 
 			sampler2D _MainTex;
+			sampler2D _DissolveTex;
 			fixed4 _Color;
 			half3 _Emission;
 			fixed4 _Specular;
@@ -38,7 +47,8 @@
 			float _SpecularSize;
 			float _SpecularFalloff;
 
-			struct ToonSurfaceOutput {
+			struct ToonSurfaceOutput
+			{
 				fixed3 Albedo;
 				half3 Emission;
 				fixed3 Specular;
@@ -47,7 +57,8 @@
 			};
 
 			//our lighting function. Will be called once per light
-			float4 LightingStepped(ToonSurfaceOutput s, float3 lightDir, half3 viewDir, float shadowAttenuation) {
+			float4 LightingStepped(ToonSurfaceOutput s, float3 lightDir, half3 viewDir, float shadowAttenuation)
+			{
 				//how much does the normal point towards the light?
 				float towardsLight = dot(s.Normal, lightDir);
 
@@ -105,14 +116,22 @@
 
 
 			//input struct which is automatically filled by unity
-			struct Input {
+			struct Input
+			{
 				float2 uv_MainTex;
 			};
 
 			//the surface shader function which sets parameters the lighting function then uses
-			void surf(Input i, inout ToonSurfaceOutput o) {
+			void surf(Input i, inout ToonSurfaceOutput o)
+			{
 				//sample and tint albedo texture
 				fixed4 col = tex2D(_MainTex, i.uv_MainTex);
+				fixed4 dis = tex2D(_DissolveTex, i.uv_MainTex);
+
+				//Convert dissolve progression to -1 to 1 scale.
+				//half dBase = -2.0f * _DissolveScale + 1.0f;
+				//half dTextRead = dis.r + dBase;
+
 				col *= _Color;
 				o.Albedo = col.rgb;
 
@@ -120,8 +139,13 @@
 
 				float3 shadowColor = col.rgb * _ShadowTint;
 				o.Emission = _Emission + shadowColor;
+
+				//half alpha = clamp(dTexRead, 0.0f, 1.0f);
+
 			}
 			ENDCG
+
 		}
 			FallBack "Standard"
 }
+

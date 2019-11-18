@@ -63,11 +63,11 @@ namespace PPBA
 			GameObject obj = Instantiate(_curItem, _currentPlaceableObject.transform.position, _currentPlaceableObject.transform.rotation);
 			RefineryRefHolder holder = obj.GetComponent<RefineryRefHolder>();
 			holder.RefineryPrefab.SetActive(false);
-
 			holder._Positions = UserInputController.s_instance.GetTexturePixelPoint();
-			ResourceMapCalculate.s_instance.AddFabric(holder);
+			holder.GetComponent<BuildingProcess>().Startbuilding();
 
 			_currentPlaceableObject = null;
+			Destroy(_currentPlaceableObject);
 			_curItem = null;
 		}
 
