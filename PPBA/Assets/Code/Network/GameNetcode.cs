@@ -176,7 +176,6 @@ namespace PPBA
 			client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
 		}
 #else
-		/*
 		void Start()
 		{
 			socket = new UdpClient();
@@ -192,7 +191,7 @@ namespace PPBA
 		{
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.DISCONNECT;
-			Buffer.BlockCopy(BitConverter.GetBytes(GlobalValues.s_singelton.m_clients[0].m_ID), 0, msg, 1, sizeof(int));
+			Buffer.BlockCopy(BitConverter.GetBytes(GlobalVariables.s_clients[0]._id), 0, msg, 1, sizeof(int));
 			socket.Send(msg, msg.Length);
 
 			socket.Close();
@@ -233,17 +232,18 @@ namespace PPBA
 		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
 		void HandleNON(byte[] data)
 		{
-			int tick = BitConverter.ToInt32(data, 3);
+			/*int tick = BitConverter.ToInt32(data, 3);
 
 
-			GameState element = GlobalValues.s_singelton.m_clients[0].m_gameStates[tick];
+			GameState element = GlobalVariables.s_clients[0]._gameStates[tick];
 
 			if(element == default)
 			{
 				element = new GameState();
+				if(GlobalVariables.s_clients[0]._gameStates[tick] == default || GlobalVariables.s_clients[0]._gameStates[tick]._isDelta
 				TickHandler.s_singelton.AddGameState(element, tick);
-				element.m_messageCount = data[2];
-				element.m_receivedMessages = new BitField2D(data[2], 1);
+				element._messageCount = data[2];
+				element._receivedMessages = new BitField2D(data[2], 1);
 			}
 
 			Debug.Log("[Client] server State message: \n" + element.ToString());
@@ -254,12 +254,12 @@ namespace PPBA
 				element.m_receivedMessages[data[1], 0] = true;
 			}
 
-			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);
+			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);*/
 		}
 
 		void HandleNewID(byte[] data)
 		{
-			GlobalValues.s_singelton.m_clients[0].m_ID = BitConverter.ToInt32(data, 1);
+			GlobalVariables.s_clients[0]._id = BitConverter.ToInt32(data, 1);
 		}
 
 		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
@@ -267,11 +267,11 @@ namespace PPBA
 		{
 			List<byte> msg = new List<byte>();
 			msg.Add((byte)MessageType.NON);
-			msg.AddRange(BitConverter.GetBytes(GlobalValues.s_singelton.m_clients[0].m_ID));
+			msg.AddRange(BitConverter.GetBytes(GlobalVariables.s_clients[0]._id));
 
-			InputBuffer ib = GlobalValues.s_singelton.m_clients[0].m_inputBuffer;
+			RingBuffer<InputState> ib = GlobalVariables.s_clients[0]._inputStates;
 
-			byte[] field = GlobalValues.s_singelton.m_clients[0].m_gameStates[ib.GetLowEnd()].m_receivedMessages.ToArray();
+			byte[] field = GlobalVariables.s_clients[0]._gameStates[ib.GetLowEnd()]._receivedMessages.ToArray();
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
@@ -287,7 +287,6 @@ namespace PPBA
 
 			socket.Send(msg.ToArray(), msg.Count);
 		}
-		*/
 #endif
 	}
 }
