@@ -20,73 +20,75 @@ namespace PPBA
 
 		public class gsc
 		{
-			public int _id;
+			public int _id = 0;
 		}
 
 		public class type : gsc
 		{
-			public byte _type;
-			public byte _team;
+			public byte _type = 0;
+			public byte _team = 0;
 		}
 
 		public class arg : gsc
 		{
-			public Arguments _arguments;
+			public Arguments _arguments = Arguments.NON;
 		}
 
 		public class transform : gsc
 		{
-			public Vector3 _position;
-			public float _angle; //in degrees
+			public Vector3 _position = Vector3.zero;
+			public float _angle = 0; //in degrees
 		}
 
 		public class ammo : gsc
 		{
-			public int _bullets;
+			public int _bullets = 0;
 			//public int _grenades;
 		}
 
 		public class resource : gsc
 		{
-			public int _resources;
+			public int _resources = 0;
 		}
 
 		public class health : gsc
 		{
-			public float _health;
-			public float _morale;//used for _score by depots/blueprints
+			public float _health = 0;
+			public float _morale = 0;//used for _score by depots/blueprints
 		}
 
 		public class work : gsc
 		{
-			public int _work;
+			public int _work = 0;
 		}
 
 		public class behavior : gsc
 		{
-			public Behaviors _behavior;
-			public int _target;
+			public Behaviors _behavior = Behaviors.IDLE;
+			public int _target = 0;
 		}
 
 		public class path : gsc
 		{
-			public Vector3[] _path;
+			public Vector3[] _path = new Vector3[0];
 		}
 
 		public class heatMap : gsc
 		{
-			public BitField2D _mask;
-			public List<float> _values;
+			public BitField2D _mask = new BitField2D(0,0);
+			public List<float> _values = new List<float>();
 		}
 	}
 	public class GameState
 	{
-		public int _refTick { get; private set; } = -1;
-		public bool _isLerped { get; private set; }
-		public bool _isDelta { get; private set; }
+		public int _refTick { get; private set; } = 0;
+		public bool _isLerped { get; private set; } = false;
+		public bool _isDelta { get; private set; } = false;
+		public bool _isEncrypted { get; private set; } = false;
 		//public byte _messageCount;
-		public BitField2D _receivedMessages;
+		public BitField2D _receivedMessages = new BitField2D(0,0);
 		private List<byte[]> _messageHolder = null;
+		int _hash = 0;
 
 		public List<GSC.type> _types = new List<GSC.type>();
 		public List<GSC.arg> _args = new List<GSC.arg>();
@@ -107,6 +109,8 @@ namespace PPBA
 
 			List<byte[]> value = new List<byte[]>();
 			List<byte> msg = new List<byte>();
+
+			HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
 
 			if(_types.Count > 0)
 			{
@@ -256,15 +260,44 @@ namespace PPBA
 			}
 
 			_messageHolder = value;
+			{
+				_types.Clear();
+				_args.Clear();
+				_transforms.Clear();
+				_ammos.Clear();
+				_resources.Clear();
+				_healths.Clear();
+				_works.Clear();
+				_behaviors.Clear();
+				_paths.Clear();
+				_heatMaps.Clear();
+				_denyedInputIDs.Clear();
+			}
+			_receivedMessages = new BitField2D(value.Count, 1);
+			_isEncrypted = true;
 			return value;
 		}
 
-		public void Decrypt(byte[] msg, int offset)
+		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
 		{
+			Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
+			if(_receivedMessages.GetSize() == Vector2Int.zero)
+			{
+				Debug.Log("[GameState] creating an bitfield ");
+				_receivedMessages = new BitField2D(packageCount, 1);
+			}
+			if(_receivedMessages[packageNumber, 0])
+				return;
+
+			_receivedMessages[packageNumber, 0] = true;
+
+
+			_hash = BitConverter.ToInt32(msg, offset);
+			offset += sizeof(int);
+
 			int count;
 			while(offset < msg.Length)
 			{
-				count = 0;
 				count = BitConverter.ToInt32(msg, offset + 1);
 				offset += sizeof(int) + 1;
 				switch((GSC.DataType)msg[offset - 1 - sizeof(int)])
@@ -476,11 +509,18 @@ namespace PPBA
 						throw new InvalidEnumArgumentException();
 				}
 			}
+
+			if(_receivedMessages.AreAllBytesActive())
+				_isEncrypted = false;
 		}
 
 		public bool CreateDelta(RingBuffer<GameState> references, int refTick, int myTick)
 		{
+			_hash = GetHash();
+
 			GameState reference = references[refTick];
+
+			Debug.Log("[GameState] reference is: " + reference);
 
 			_refTick = refTick;
 
@@ -591,10 +631,13 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
+				Debug.Log("[GameState] creating heat map delta");
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					it._mask += references[i]._heatMaps.Find(x => x._id == it._id)._mask;
+					Debug.Log("[GameState] adding heat map of tick" + i);
+					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
 				}
+				Debug.Log("[GameState] finished aditive heat map backing");
 
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
@@ -624,11 +667,25 @@ Jump:
 							it._values.Add(value);
 					}
 				}
+
+				Debug.Log("[GameState] finished creating heat map delta");
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
+				Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
+				GameState nextState = references[i];
+				if(nextState == default)
+				{
+					Debug.Log("[GameState] tick was not calculated");
+					continue;
+				}
+
+				Debug.Log("[GameState] adding denyed inputs");
 				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
 			}
+			Debug.Log("[GameState] finished denyed input backing");
+
+			_isDelta = true;
 
 			return true;
 		}
@@ -693,6 +750,13 @@ Jump:
 
 				_paths.Add(it);
 			}
+
+			if(_hash != GetHash())
+			{
+				Debug.LogError("hashes are unequal: " + _hash + " <-> " + GetHash());
+			}
+
+			_isDelta = false;
 
 			return true;
 		}
@@ -785,6 +849,10 @@ Jump:
 			}
 			value._denyedInputIDs = end._denyedInputIDs;
 
+			value._isEncrypted = false;
+			value._isDelta = false;
+			value._isLerped = true;
+
 			return value;
 		}
 
@@ -820,6 +888,106 @@ Jump:
 				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
 				packages[index] = tmp;
 			}
+		}
+
+		int GetHash()
+		{
+			int hash = 0;
+
+			for(int i = 0; i < _types.Count; i++)
+			{
+				hash += _types[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _types[i]._team;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _types[i]._type;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _args.Count; i++)
+			{
+				hash += _args[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += (byte)_args[i]._arguments;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _transforms.Count; i++)
+			{
+				hash += _transforms[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_transforms[i]._position.x), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_transforms[i]._position.y), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_transforms[i]._position.z), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_transforms[i]._angle), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _ammos.Count; i++)
+			{
+				hash += _ammos[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _ammos[i]._bullets;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _resources.Count; i++)
+			{
+				hash += _resources[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _resources[i]._resources;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _healths.Count; i++)
+			{
+				hash += _healths[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_healths[i]._health), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += BitConverter.ToInt32(BitConverter.GetBytes(_healths[i]._morale), 0);
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _works.Count; i++)
+			{
+				hash += _works[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _works[i]._work;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+			for(int i = 0; i < _behaviors.Count; i++)
+			{
+				hash += _behaviors[i]._id;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += (byte)_behaviors[i]._behavior;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+				hash += _behaviors[i]._target;
+				hash += (hash << 2);
+				hash ^= (hash >> 6);
+			}
+
+			Debug.Log("Hash: " + hash);
+
+			return hash;
 		}
 	}
 }
