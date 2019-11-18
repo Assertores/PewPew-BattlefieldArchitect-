@@ -68,6 +68,11 @@ namespace PPBA
 			}
 		}
 
+		public Vector2Int GetSize()
+		{
+			return new Vector2Int(_fieldWidth, _fieldHight);
+		}
+
 		public byte[] ToArray()
 		{
 			return _backingArray;

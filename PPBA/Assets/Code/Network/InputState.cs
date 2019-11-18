@@ -28,7 +28,7 @@ namespace PPBA
 		}
 	}
 
-	public class InputState : MonoBehaviour
+	public class InputState
 	{
 		private static int _currentID = 0;
 

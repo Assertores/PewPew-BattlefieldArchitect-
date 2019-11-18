@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace PPBA
@@ -34,9 +35,17 @@ namespace PPBA
 				{
 					T[] tmp = new T[Mathf.NextPowerOfTwo(_highend - _lowend + 1)];
 					int firstBlock = _backingArray.Length - _lowPos;
-					int elementSize = System.Buffer.ByteLength(_backingArray) / _backingArray.Length;
-					System.Buffer.BlockCopy(_backingArray, _lowPos * elementSize, tmp, 0, firstBlock * elementSize);
-					System.Buffer.BlockCopy(_backingArray, 0, tmp, firstBlock * elementSize, _lowPos * elementSize);
+					//int elementSize = Marshal.SizeOf(typeof(T));//sizeof(tmp[0]);//System.Buffer.ByteLength(_backingArray) / _backingArray.Length;
+					//System.Buffer.BlockCopy(_backingArray, _lowPos * elementSize, tmp, 0, firstBlock * elementSize);
+					for(int i = 0; i < firstBlock; i++)
+					{
+						tmp[i] = _backingArray[_lowPos + i];
+					}
+					//System.Buffer.BlockCopy(_backingArray, 0, tmp, firstBlock * elementSize, _lowPos * elementSize);
+					for(int i = 0; i < _lowPos; i++)
+					{
+						tmp[firstBlock + i] = _backingArray[i];
+					}
 					_backingArray = tmp;
 					_lowPos = 0;
 				}
@@ -111,13 +120,15 @@ namespace PPBA
 			sb.AppendLine("===== ===== Logic Array ===== =====");
 			for(int i = _lowend; i <= _highend; i++)
 			{
-				sb.AppendLine(i + ": " + _backingArray[Index(i)].ToString());
+				T element = _backingArray[Index(i)];
+				sb.AppendLine(i + ": " + (element == null ? "NULL" : element.ToString()));
 			}
 
 			sb.AppendLine("===== ===== Memory Array ===== =====");
 			for(int i = 0; i < _backingArray.Length; i++)
 			{
-				sb.AppendLine(i + ": " + _backingArray[i].ToString());
+				T element = _backingArray[i];
+				sb.AppendLine(i + ": " + (element == null ? "NULL" : element.ToString()));
 			}
 
 			return sb.ToString();

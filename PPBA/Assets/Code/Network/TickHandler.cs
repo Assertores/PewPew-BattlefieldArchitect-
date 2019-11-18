@@ -19,12 +19,18 @@ namespace PPBA
 		public static InputState s_interfaceInputState;
 
 		public static int s_currentTick { get; private set; } = 0;
-		[SerializeField] private int _inputBuffer;
+		[SerializeField] private int _inputBuffer = 6;
 
 		private void Start()
 		{
 #if UNITY_SERVER
 			Time.timeScale = 0;
+#else
+			for(int i = 0; i < _inputBuffer; i++)
+			{
+				GlobalVariables.s_instance._clients[0]._inputStates[i] = new InputState();
+				print(GlobalVariables.s_instance._clients[0]._inputStates.GetHighEnd());
+			}
 #endif
 		}
 
@@ -38,32 +44,47 @@ namespace PPBA
 		IEnumerator IESimulate()
 		{
 			h_SimulationIsRunning = true;
+
+			Debug.Log("[Server] Simulating");
+
 			int min = int.MaxValue;
-			foreach(var it in GlobalVariables.s_clients)
+			foreach(var it in GlobalVariables.s_instance._clients)
 			{
 				if(it._isConnected && it._inputStates.GetHighEnd() < min)//Game goes on if some clients disconnect
 					min = it._inputStates.GetHighEnd();
 			}
 
-			if(min == int.MaxValue)
-				yield break;
+			Debug.Log("[Server] min value: " + min);
 
-			for(; s_currentTick < min; s_currentTick++)
+			if(min == int.MaxValue)
 			{
+				h_SimulationIsRunning = false;
+				yield break;
+			}
+			if(s_currentTick >= min)
+			{
+				h_SimulationIsRunning = false;
+				yield break;
+			}
+
+			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
+			{
+				Debug.Log("[Server] Simulating tick: " + s_currentTick);
 				s_interfaceInputState = new InputState();
-				for(int i = 0; i < GlobalVariables.s_clients.Count; i++) //combines inputs from all clients
+				for(int i = 0; i < GlobalVariables.s_instance._clients.Count; i++) //combines inputs from all clients
 				{
-					foreach(var it in GlobalVariables.s_clients[i]._inputStates[s_currentTick]._objs)
+					foreach(var it in GlobalVariables.s_instance._clients[i]._inputStates[s_currentTick]._objs)
 					{
-						it._client = GlobalVariables.s_clients[i]._id;
+						it._client = GlobalVariables.s_instance._clients[i]._id;
 						s_interfaceInputState._objs.Add(it);
 					}
-					foreach(var it in GlobalVariables.s_clients[i]._inputStates[s_currentTick]._combinedObjs)
+					foreach(var it in GlobalVariables.s_instance._clients[i]._inputStates[s_currentTick]._combinedObjs)
 					{
-						it._client = GlobalVariables.s_clients[i]._id;
+						it._client = GlobalVariables.s_instance._clients[i]._id;
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
 				}
+				Debug.Log("[Server] combined inputs");
 
 #if UNITY_SERVER
 				Time.timeScale = 8;
@@ -71,7 +92,7 @@ namespace PPBA
 					yield return null;
 				Time.timeScale = 0;
 #else
-				s_interfaceGameState = GlobalVariables.s_clients[0]._gameStates[s_currentTick];
+				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
 #endif
 
 				s_DoInput?.Invoke(s_currentTick);
@@ -80,16 +101,21 @@ namespace PPBA
 				s_AIEvaluate?.Invoke(s_currentTick);
 				s_DoTick?.Invoke(s_currentTick);
 			}
+			s_currentTick--;
+
+			Debug.Log("[Server] Finished simulating");
 
 			s_interfaceGameState = new GameState();
 			s_GatherValues?.Invoke(s_currentTick);
 
-			foreach(var it in GlobalVariables.s_clients)
+			foreach(var it in GlobalVariables.s_instance._clients)
 			{
+				Debug.Log("[Server] Seperating Gamestate");
 				//TODO: split gamestate into only relevant data for client
 				it._gameStates[s_currentTick] = s_interfaceGameState;
 			}
 #if UNITY_SERVER
+			Debug.Log("[Server] Sending gameState for tick: " + s_currentTick);
 			GameNetcode.s_instance.Send(s_currentTick);
 #endif
 			h_SimulationIsRunning = false;
@@ -98,7 +124,7 @@ namespace PPBA
 #if !UNITY_SERVER
 		private void FixedUpdate()
 		{
-			client me = GlobalVariables.s_clients[0];
+			client me = GlobalVariables.s_instance._clients[0];
 
 			if(me._gameStates.GetHighEnd() < s_currentTick ||
 			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
