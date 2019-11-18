@@ -232,29 +232,21 @@ namespace PPBA
 		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
 		void HandleNON(byte[] data)
 		{
-			/*int tick = BitConverter.ToInt32(data, 3);
+			int tick = BitConverter.ToInt32(data, 3);
 
+			if(TickHandler.s_currentTick > tick) //no work for the past
+				return;
 
 			GameState element = GlobalVariables.s_clients[0]._gameStates[tick];
-
-			if(element == default)
+			if(element == default) //create new Gamestate if not already existing
 			{
 				element = new GameState();
-				if(GlobalVariables.s_clients[0]._gameStates[tick] == default || GlobalVariables.s_clients[0]._gameStates[tick]._isDelta
-				TickHandler.s_singelton.AddGameState(element, tick);
-				element._messageCount = data[2];
-				element._receivedMessages = new BitField2D(data[2], 1);
+				GlobalVariables.s_clients[0]._gameStates[tick] = element;
 			}
 
-			Debug.Log("[Client] server State message: \n" + element.ToString());
+			element.Decrypt(data, 3 + sizeof(int), data[1], data[2]);
 
-			if(!element.m_receivedMessages[data[1], 0])
-			{
-				element.Decrypt(data, 3 + sizeof(int));
-				element.m_receivedMessages[data[1], 0] = true;
-			}
-
-			GlobalValues.s_singelton.m_clients[0].m_inputBuffer.FreeUpTo(tick);*/
+			GlobalVariables.s_clients[0]._inputStates.FreeUpTo(tick);
 		}
 
 		void HandleNewID(byte[] data)

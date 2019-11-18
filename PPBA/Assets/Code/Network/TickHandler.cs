@@ -17,7 +17,7 @@ namespace PPBA
 		public static GameState s_interfaceGameState;
 		public static InputState s_interfaceInputState;
 
-		private int _currentTick = 0;
+		public static int s_currentTick { get; private set; } = 0;
 		[SerializeField] private int _inputBuffer;
 
 		private void Start()
@@ -47,17 +47,17 @@ namespace PPBA
 			if(min == int.MaxValue)
 				yield break;
 
-			for(; _currentTick < min; _currentTick++)
+			for(; s_currentTick < min; s_currentTick++)
 			{
 				s_interfaceInputState = new InputState();
 				for(int i = 0; i < GlobalVariables.s_clients.Count; i++) //combines inputs from all clients
 				{
-					foreach(var it in GlobalVariables.s_clients[i]._inputStates[_currentTick]._objs)
+					foreach(var it in GlobalVariables.s_clients[i]._inputStates[s_currentTick]._objs)
 					{
 						it._client = GlobalVariables.s_clients[i]._id;
 						s_interfaceInputState._objs.Add(it);
 					}
-					foreach(var it in GlobalVariables.s_clients[i]._inputStates[_currentTick]._combinedObjs)
+					foreach(var it in GlobalVariables.s_clients[i]._inputStates[s_currentTick]._combinedObjs)
 					{
 						it._client = GlobalVariables.s_clients[i]._id;
 						s_interfaceInputState._combinedObjs.Add(it);
@@ -70,23 +70,23 @@ namespace PPBA
 					yield return null;
 				Time.timeScale = 0;
 #else
-				s_interfaceGameState = GlobalVariables.s_clients[0]._gameStates[_currentTick];
+				s_interfaceGameState = GlobalVariables.s_clients[0]._gameStates[s_currentTick];
 #endif
 
-				s_DoInput?.Invoke(_currentTick);
-				s_EarlyCalc?.Invoke(_currentTick);
-				s_LateCalc?.Invoke(_currentTick);
-				s_AIEvaluate?.Invoke(_currentTick);
-				s_DoTick?.Invoke(_currentTick);
+				s_DoInput?.Invoke(s_currentTick);
+				s_EarlyCalc?.Invoke(s_currentTick);
+				s_LateCalc?.Invoke(s_currentTick);
+				s_AIEvaluate?.Invoke(s_currentTick);
+				s_DoTick?.Invoke(s_currentTick);
 			}
 
 			s_interfaceGameState = new GameState();
-			s_GatherValues?.Invoke(_currentTick);
+			s_GatherValues?.Invoke(s_currentTick);
 
 			foreach(var it in GlobalVariables.s_clients)
 			{
 				//TODO: split gamestate into only relevant data for client
-				it._gameStates[_currentTick] = s_interfaceGameState;
+				it._gameStates[s_currentTick] = s_interfaceGameState;
 			}
 #if UNITY_SERVER
 			//TODO: Netcode stard sending Gamestates to Clients
@@ -99,15 +99,15 @@ namespace PPBA
 		{
 			client me = GlobalVariables.s_clients[0];
 
-			if(me._gameStates.GetHighEnd() < _currentTick ||
-			  (me._gameStates.GetHighEnd() == _currentTick && !me._gameStates[_currentTick]._receivedMessages.AreAllBytesActive()))
+			if(me._gameStates.GetHighEnd() < s_currentTick ||
+			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
 				Debug.Log("Network Pause");
 				return;
 			}
 
 			GameState nextState = default;
-			int nextStateTick = _currentTick;
+			int nextStateTick = s_currentTick;
 			for(; nextState == default; nextStateTick++)
 			{
 				nextState = me._gameStates[nextStateTick];
@@ -120,9 +120,9 @@ namespace PPBA
 				return;//no idea how to fix this
 			}
 
-			if(nextStateTick != _currentTick)
+			if(nextStateTick != s_currentTick)
 			{
-				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
 			}
 			else
 			{
@@ -132,19 +132,19 @@ namespace PPBA
 			s_interfaceGameState = nextState;
 			s_interfaceInputState = me._inputStates[nextStateTick];
 
-			s_DoInput?.Invoke(_currentTick);
-			s_EarlyCalc?.Invoke(_currentTick);
-			s_LateCalc?.Invoke(_currentTick);
-			s_AIEvaluate?.Invoke(_currentTick);
-			s_DoTick?.Invoke(_currentTick);
+			s_DoInput?.Invoke(s_currentTick);
+			s_EarlyCalc?.Invoke(s_currentTick);
+			s_LateCalc?.Invoke(s_currentTick);
+			s_AIEvaluate?.Invoke(s_currentTick);
+			s_DoTick?.Invoke(s_currentTick);
 
 			s_interfaceInputState = new InputState();
 
-			s_GatherValues?.Invoke(_currentTick + _inputBuffer);
+			s_GatherValues?.Invoke(s_currentTick + _inputBuffer);
 
-			me._inputStates[_currentTick + _inputBuffer] = s_interfaceInputState;
+			me._inputStates[s_currentTick + _inputBuffer] = s_interfaceInputState;
 
-			_currentTick++;
+			s_currentTick++;
 		}
 #endif
 	}
