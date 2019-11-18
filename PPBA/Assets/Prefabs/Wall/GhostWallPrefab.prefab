@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6700687026126483421}
   - component: {fileID: 5047472029515429779}
   - component: {fileID: 5412640622253621805}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3850693688127147683}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GhostWallPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8073508614999185331}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Stonewall_Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

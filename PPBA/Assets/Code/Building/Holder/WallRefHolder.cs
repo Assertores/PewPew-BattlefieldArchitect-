@@ -4,15 +4,17 @@ using UnityEngine;
 using TMPro;
 using PPBA;
 
-public class WallRefHolder : MonoBehaviour
+
+public class WallRefHolder : MonoBehaviour, IUIElement
 {
 	public AudioClip _BuildingSound;
 	[SerializeField] private Sprite _ImageUI;
 	[SerializeField] private TextMeshProUGUI _TextField;
 	[SerializeField] private ObjectType _ObjectType;
-	public GameObject _GhostEndPrefab;
-	public GameObject _GhostWallMiddlePrefab;
+	[SerializeField] private GameObject _GhostPrefab;
 
+
+	public GameObject GhostWallMiddlePrefab;
 	public GameObject WallEndPrefab;
 	public GameObject WallMiddlePrefab;
 
@@ -25,5 +27,8 @@ public class WallRefHolder : MonoBehaviour
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
+	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
 
 }
+
+

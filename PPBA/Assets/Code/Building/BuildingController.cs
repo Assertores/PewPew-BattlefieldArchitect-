@@ -82,8 +82,8 @@ namespace PPBA
 			//	return;
 			//}
 
-			float length = _currentBetweenObject.GetComponent<MeshRenderer>().bounds.size.z;
-
+			float length = _currentBetweenObject.GetComponent<BoxCollider>().bounds.size.z;
+			print(" lenght "+ length);
 			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole.transform.position);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
@@ -144,7 +144,8 @@ namespace PPBA
 			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.WALL)
 			{
 				_curItem = PrefabBuildingType;
-				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<WallRefHolder>().WallMiddlePrefab);
+				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
+				_currentBetweenObject = Instantiate(PrefabBuildingType.GetComponent<WallRefHolder>().GhostWallMiddlePrefab);
 				_canConnect = true;
 			}
 		}
