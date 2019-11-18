@@ -9,8 +9,8 @@ namespace PPBA
 	{
 		public static Behavior_GoAnywhere s_instance;
 
-		[SerializeField] private float maxDistance = 30f;
-		private Vector3 bestTarget;
+		[SerializeField] private float _maxDistance = 30f;
+		private Vector3 _bestTarget;
 
 		private void Awake()
 		{
@@ -20,13 +20,11 @@ namespace PPBA
 				Destroy(gameObject);
 		}
 
-		// Start is called before the first frame update
 		void Start()
 		{
 
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 
@@ -34,7 +32,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._navMeshAgent.SetDestination(bestTarget);
+			pawn.SetMoveTarget(_bestTarget);
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -55,7 +53,7 @@ namespace PPBA
 			{
 				case "Distance":
 				case "DistanceToTarget":
-					return Vector3.Distance(pawn.transform.position, bestTarget) / maxDistance;
+					return Vector3.Distance(pawn.transform.position, _bestTarget) / _maxDistance;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -64,8 +62,8 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
-			bestTarget = GetRandomPoint(pawn);
-			bestTarget = pawn.transform.position + Vector3.forward;
+			_bestTarget = GetRandomPoint(pawn);
+			_bestTarget = pawn.transform.position + Vector3.forward;
 			return 1;
 		}
 
@@ -80,13 +78,13 @@ namespace PPBA
 			{
 				probe = Random.insideUnitCircle * 3f;
 				probePosition = new Vector3(transform.position.x + probe.x, transform.position.y, transform.position.z + probe.y);
-
-				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn._navMeshAgent.areaMask))
+				
+				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, NavMesh.AllAreas))
 					return hit.position;
 				else
 				{   //checks the same point in the opposite direction
 					probePosition = new Vector3(-probePosition.x, probePosition.y, -probePosition.z);
-					if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, pawn._navMeshAgent.areaMask))
+					if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, NavMesh.AllAreas))
 						return hit.position;
 				}
 			}

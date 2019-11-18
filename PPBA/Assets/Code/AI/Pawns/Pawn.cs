@@ -8,9 +8,9 @@ namespace PPBA
 {
 	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETRESOURCES, BRINGRESOURCES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
 
-	[RequireComponent(typeof(NavMeshAgent))]
 	[RequireComponent(typeof(SphereCollider))]
-	public abstract class Pawn : MonoBehaviour
+	[RequireComponent(typeof(LineRenderer))]
+	public abstract class Pawn : MonoBehaviour, IPanelInfo
 	{
 		//public
 		[SerializeField] public int _id = 0;
@@ -33,6 +33,7 @@ namespace PPBA
 
 		//protected
 		[SerializeField] protected bool _isAttacking = false;
+		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 
 		//Behaviors
 		//protected enum Behavior { GoAnywhere, Shoot, Heal };
@@ -42,10 +43,12 @@ namespace PPBA
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 
 		//Components
-		public NavMeshAgent _navMeshAgent;
+		public NavMeshPath _navMeshPath;
 		private SphereCollider _sphereCollider;
+		private LineRenderer _lineRenderer;
+		[SerializeField] private GameObject _objectToFollow;//to test navAgent
 
-		//target lists
+		//targets and target lists
 		public List<Pawn> _closePawns;
 		public List<Pawn> _activePawns//this is an accessor to the _closePawns List, ensuring I don't have to write this every time I want to use the list.
 		{
@@ -60,22 +63,39 @@ namespace PPBA
 			}
 		}
 		public List<Cover> _closeCover;
+		public Vector3 _moveTarget;//let the behaviors set this
 
 		//private
 		private float _moraleBackingField = 100;
 
 		public void Start()
 		{
-			InitiateBehaviors();
-			_navMeshAgent = GetComponent<NavMeshAgent>();
+			//Get references
+			_navMeshPath = new NavMeshPath();
 			_sphereCollider = GetComponent<SphereCollider>();
+			_lineRenderer = GetComponent<LineRenderer>();
+
+			//Initialisation
+			InitiateBehaviors();
 
 			StartCoroutine(DoTick());//fake tick
 		}
 
 		public void Update()
 		{
+			//if(_objectToFollow != null && _navMeshAgent != null)
+			//{
+			//	//NavMesh.CalculatePath(transform.position, _objectToFollow.transform.position, _navMeshAgent.areaMask, _navMeshAgent.path);
+			//	_navMeshAgent.SetDestination(_objectToFollow.transform.position);
+			//}
 
+			ShowNavPath();
+			SetMoveTarget(_objectToFollow.transform.position);
+		}
+
+		private void FixedUpdate()
+		{
+			NavTick();
 		}
 
 		protected void Evaluate(int tick = 0)   //uses behavior-scores to evaluate behaviors
@@ -96,23 +116,28 @@ namespace PPBA
 				Behavior_Die.s_instance.Execute(this);
 				return;
 			}
-
-			for(int i = 0; i < _behaviorScores.Length; i++)//determines best behavior
+			
+			if(0 < _behaviors.Length)
 			{
-				if(bestScore < _behaviorScores[i])
+				for(int i = 0; i < _behaviorScores.Length; i++)//determines best behavior
 				{
-					bestBehavior = i;
-					bestScore = _behaviorScores[i];
+					if(bestScore < _behaviorScores[i])
+					{
+						bestBehavior = i;
+						bestScore = _behaviorScores[i];
+					}
 				}
+
+				if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
+				{
+
+				}
+
+				_lastBehavior = _behaviors[bestBehavior];
+				_lastBehavior.Execute(this);
 			}
 
-			if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
-			{
-
-			}
-
-			_lastBehavior = _behaviors[bestBehavior];
-			_lastBehavior.Execute(this);
+			NavTick();
 		}
 
 		#region Initialisation
@@ -288,6 +313,75 @@ namespace PPBA
 		}
 		#endregion
 
+		#region Navigation
+		public void NavTick(int tick = 0)//called during DoTick by Execute()
+		{
+			if(_moveTarget == null)//early skips
+			{
+				_moveTarget = transform.position;
+				return;
+			}
+			else if(_moveTarget == transform.position)
+			{
+				return;
+			}
+			else if(_navMeshPath == null || _navMeshPath.corners.Length < 2)
+			{
+				if(!RecalculateNavPath())//skip if no valid or partial path has been found
+					return;
+			}
+			else if(_navMeshPath.status != NavMeshPathStatus.PathComplete && _navMeshPath.corners[1] - _navMeshPath.corners[0] == Vector3.forward)
+			{
+				return;
+			}
+
+			float maxDistance = _moveSpeed * Time.fixedDeltaTime;
+			float walkedDistance = 0f;
+			float nextCornerDistance;
+
+			int i = 1;
+			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
+			{
+				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
+				transform.position = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], Mathf.Min(nextCornerDistance, maxDistance - walkedDistance));
+				walkedDistance += nextCornerDistance;
+			}
+
+			if(2 < i)//<=> pawn has moved over a corner
+			{
+				RecalculateNavPath();//could be solved more elegantly performancewise, but not without copying the _navMeshPath.corners array and doing admin myself
+			}
+
+			transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, _navMeshPath.corners[i - 1].y, transform.position.z));
+		}
+
+		public void SetMoveTarget(Vector3 newTarget)//call this from the behaviors
+		{
+			if(_moveTarget != newTarget)
+			{
+				_moveTarget = newTarget;
+				RecalculateNavPath();
+			}
+		}
+
+		private bool RecalculateNavPath()
+		{
+			if(!NavMesh.CalculatePath(transform.position, _moveTarget, NavMesh.AllAreas, _navMeshPath))//TODO: get a proper mask
+			{
+				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
+				return false;
+			}
+			else
+				return true;
+		}
+
+		public void ShowNavPath()
+		{
+			_lineRenderer.positionCount = _navMeshPath.corners.Length;
+			_lineRenderer.SetPositions(_navMeshPath.corners);
+		}
+		#endregion
+
 		public void WriteToGameState(int tick)
 		{
 			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
@@ -297,7 +391,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
 			TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
-			TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshAgent.path.corners });
+			TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
 
 		#region Physics
@@ -338,12 +432,20 @@ namespace PPBA
 		}
 		#endregion
 
+		#region Interfaces
+		void IPanelInfo.GetPanelInfo()
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
+
 		#region Gizmos
 		private void OnDrawGizmos()
 		{
-			Gizmos.color = Color.blue;
-			Gizmos.DrawLine(transform.position, _navMeshAgent.destination);
+			//Gizmos.color = Color.blue;
+			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 		}
 		#endregion
+
 	}
 }

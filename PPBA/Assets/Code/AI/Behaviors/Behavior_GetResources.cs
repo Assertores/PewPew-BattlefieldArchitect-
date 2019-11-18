@@ -32,7 +32,7 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-			pawn._navMeshAgent.SetDestination(targetPosition);
+			pawn.SetMoveTarget(targetPosition);
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{

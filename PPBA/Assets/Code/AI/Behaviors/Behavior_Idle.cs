@@ -30,7 +30,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._navMeshAgent.SetDestination(pawn.transform.position);
+			pawn.SetMoveTarget(pawn.transform.position);
 		}
 
 		public override float FindBestTarget(Pawn pawn)
