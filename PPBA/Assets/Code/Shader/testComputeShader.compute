@@ -32,19 +32,20 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 			continue;
 		}
 
-		//   float t = smoothstep(dis, dis * 2 , coords[i].w); 
-	//	float t = step(dis, coords[i].w);
-	//	float erg = t * coords[i].z;
-		float4 curCol = InputTexture[id.xy].rgba;
+		float maxDis = coords[i].w;
+		float distfactor = 1 - (dis / maxDis);
+		distfactor = sqrt(distfactor * 2);
+		float harvestFac = distfactor * coords[i].z;
 
-		//	float minValue = float(min(curCol.x, erg));
-		//float newCol = curCol.r - coords[i].z;
-		float newCol = curCol.r - coords[i].z;
+		float4 curCol = InputTexture[id.xy].rgba;
+		
+		float newCol = curCol.r - harvestFac;
+		float minValue = float(min(curCol.r, harvestFac));
 	
 		//	float3 col = lerp(curCol.rgb, newCol, t);
+		newCol = saturate(newCol);
 
-	//	newCol = saturate(newCol);
-		InterlockedAdd(buffer[i], newCol.r * 100.0);
+		InterlockedAdd(buffer[i], minValue * 1000000.0);
 		Result[id.xy] = float4(newCol.rrr, curCol.a);
 	}
 }
