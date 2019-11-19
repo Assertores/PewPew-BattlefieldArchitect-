@@ -782,7 +782,7 @@ Jump:
 				{
 					_id = origin._id,
 					_arguments = (lerpValue < 0.5f) ? origin._arguments : target._arguments,
-				});
+				});//Flags könnten verlohren gene, vorallem wenn meherere ticks auf einmal geschickt werden.
 			}
 			foreach(var origin in start._transforms)
 			{

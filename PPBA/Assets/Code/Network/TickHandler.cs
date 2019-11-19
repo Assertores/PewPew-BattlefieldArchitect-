@@ -19,6 +19,7 @@ namespace PPBA
 		public static InputState s_interfaceInputState;
 
 		public static int s_currentTick { get; private set; } = 0;
+		public static float s_currentTickTime = 0.0f; //referenced to Time.time
 		[SerializeField] private int _inputBuffer = 6;
 
 		private void Start()
@@ -158,6 +159,8 @@ namespace PPBA
 
 			s_interfaceGameState = nextState;
 			s_interfaceInputState = me._inputStates[nextStateTick];
+
+			s_currentTickTime = Time.time;
 
 			s_DoInput?.Invoke(s_currentTick);
 			s_EarlyCalc?.Invoke(s_currentTick);
