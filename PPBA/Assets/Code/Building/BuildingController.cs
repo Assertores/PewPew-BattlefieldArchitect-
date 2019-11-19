@@ -15,7 +15,7 @@ namespace PPBA
 		private float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 		private bool _canConnect = false;
-		[HideInInspector]public bool _canBuild= true;
+		[HideInInspector] public bool _canBuild = true;
 
 		Vector2 _pixelUV = Vector2.zero;
 
@@ -82,12 +82,13 @@ namespace PPBA
 			//	return;
 			//}
 
-			float length = _currentBetweenObject.GetComponent<BoxCollider>().bounds.size.z;
-			print(" lenght "+ length);
+			float length = _currentBetweenObject.GetComponent<BoxCollider>().size.z;
+
 			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole.transform.position);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Vector3.back * length);
+			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right  * length);
+
 			_currentPlaceableObject.transform.position = _lastPole.transform.position + v3Pos;
 
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole.transform.position);
@@ -107,7 +108,7 @@ namespace PPBA
 		{
 			_lastPole = _currentPlaceableObject;
 			_currentPlaceableObject = null;
-			_currentPlaceableObject = Instantiate(_curItem);
+			_currentPlaceableObject = Instantiate(_curItem.GetComponent<IUIElement>()._GhostPrefabObj);
 		}
 
 		private void ConstructBetween()
@@ -115,12 +116,13 @@ namespace PPBA
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole.transform.position);
 			Vector3 pos = dir2 * 0.5f + _lastPole.transform.position;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+			_currentBetweenObject = Instantiate(_currentBetweenObject);
 		}
 
 		private void RotateFromMouseWheel()
 		{
 			_mouseWheelRotation = Input.mouseScrollDelta.y;
-			_currentPlaceableObject.transform.Rotate(Vector3.up, _mouseWheelRotation*10);
+			_currentPlaceableObject.transform.Rotate(Vector3.up, _mouseWheelRotation * 10);
 		}
 
 		private void MoveCurrentObjectToMouse()
@@ -144,8 +146,8 @@ namespace PPBA
 			if(PrefabBuildingType.GetComponent<IUIElement>()._Type == ObjectType.WALL)
 			{
 				_curItem = PrefabBuildingType;
-				_currentPlaceableObject = Instantiate( PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
-				_currentBetweenObject = Instantiate(PrefabBuildingType.GetComponent<WallRefHolder>().GhostWallMiddlePrefab);
+				_currentPlaceableObject = Instantiate(PrefabBuildingType.GetComponent<IUIElement>()._GhostPrefabObj);
+				_currentBetweenObject = PrefabBuildingType.GetComponent<WallRefHolder>().GhostWallMiddlePrefab;
 				_canConnect = true;
 			}
 		}
