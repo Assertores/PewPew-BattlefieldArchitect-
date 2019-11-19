@@ -110,7 +110,7 @@ namespace PPBA
 			List<byte[]> value = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
-			HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
+			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
 
 			if(_types.Count > 0)
 			{
@@ -292,8 +292,8 @@ namespace PPBA
 			_receivedMessages[packageNumber, 0] = true;
 
 
-			_hash = BitConverter.ToInt32(msg, offset);
-			offset += sizeof(int);
+			//_hash = BitConverter.ToInt32(msg, offset);
+			//offset += sizeof(int);
 
 			int count;
 			while(offset < msg.Length)
