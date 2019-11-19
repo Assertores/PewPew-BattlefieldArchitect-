@@ -25,7 +25,10 @@ namespace PPBA
 		{
 			if(_currentPlaceableObject != null)
 			{
-				CancelBuilding();
+				if(Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
+				{
+					CancelBuilding();
+				}
 
 				if(_currentPrefabIndex == 0)
 				{
@@ -38,24 +41,29 @@ namespace PPBA
 					CreateSegment();
 				}
 
-				ReleaseIfClicked();
+				if(Input.GetMouseButtonDown(0) && _canBuild)
+				{
+					ReleaseIfClicked();
+				}
 			}
 		}
 
 		private void ReleaseIfClicked()
 		{
-			if(Input.GetMouseButtonDown(0) && _canBuild)
+			if(!_canConnect)
 			{
-				if(!_canConnect)
-				{
-					PlaceRefineryPrefab();
-					return;
-				}
-				ConstructBuild();
-				_currentPrefabIndex++;
-				_currentBetweenObject = Instantiate(_currentBetweenObject);
-
+				PlaceRefineryPrefab();
+				return;
 			}
+
+			if(_currentPrefabIndex > 0)
+			{
+				CancelBuilding();
+				return;
+			}
+			ConstructBuild();
+			_currentPrefabIndex++;
+			_currentBetweenObject = Instantiate(_currentBetweenObject);
 		}
 
 		private void PlaceRefineryPrefab()
@@ -87,7 +95,7 @@ namespace PPBA
 			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole.transform.position);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right  * length);
+			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * length);
 
 			_currentPlaceableObject.transform.position = _lastPole.transform.position + v3Pos;
 
@@ -154,13 +162,9 @@ namespace PPBA
 
 		public void CancelBuilding()
 		{
-			if(Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
-			{
-				_curItem = null;
-				Destroy(_currentPlaceableObject);
-				_currentPrefabIndex = 0;
-
-			}
+			_curItem = null;
+			Destroy(_currentPlaceableObject);
+			_currentPrefabIndex = 0;
 		}
 	}
 }

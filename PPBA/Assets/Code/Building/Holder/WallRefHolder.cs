@@ -20,6 +20,7 @@ public class WallRefHolder : MonoBehaviour, IUIElement
 
 	public float _BuildingTime;
 	public float _BuildingCosts;
+	public float _BuildingResourceStock;
 
 	public float _LivePoints;
 	public float _MaxLivePoints;
