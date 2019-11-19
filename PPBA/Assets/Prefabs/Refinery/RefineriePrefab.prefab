@@ -10331,7 +10331,7 @@ MonoBehaviour:
     type: 3}
   RefineryPrefab: {fileID: 3587535553330315037}
   _HarvestRadius: 200
-  _HarvestIntensity: 0.005
+  _HarvestIntensity: 0.3
   _Positions: {x: 0, y: 0}
   _BuildingTime: 5
   _BuildingCosts: 50

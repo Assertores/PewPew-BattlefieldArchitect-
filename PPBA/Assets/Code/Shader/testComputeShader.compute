@@ -33,14 +33,15 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 		}
 
 		float maxDis = coords[i].w;
-		float distfactor = 1 - (dis / maxDis);
-		distfactor = sqrt(distfactor * 2);
-		float harvestFac = distfactor * coords[i].z;
+		//float distfactor = 1 - (dis / maxDis);
+		//distfactor = sqrt(distfactor * 2);
+		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z;// distfactor * coords[i].z;
+
 
 		float4 curCol = InputTexture[id.xy].rgba;
 		
-		float newCol = curCol.r - harvestFac;
 		float minValue = float(min(curCol.r, harvestFac));
+		float newCol = curCol.r - minValue;
 	
 		//	float3 col = lerp(curCol.rgb, newCol, t);
 		newCol = saturate(newCol);
