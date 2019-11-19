@@ -5,14 +5,15 @@ using UnityEngine.AI;
 
 public class NavSurfaceBaker : MonoBehaviour
 {
-    [SerializeField] NavMeshSurface[] navMeshSurfaces;
+	[HideInInspector] public const int _navMask = 127;
+	public List<NavMeshSurface> _navMeshSurfaces = new List<NavMeshSurface>();
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < navMeshSurfaces.Length; i++)
-        {
-            navMeshSurfaces[i].BuildNavMesh();
+		foreach(NavMeshSurface surface in _navMeshSurfaces)
+		{
+            surface.BuildNavMesh();
         }
     }
 

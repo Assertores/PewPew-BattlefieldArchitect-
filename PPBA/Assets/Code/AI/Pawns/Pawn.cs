@@ -335,7 +335,7 @@ namespace PPBA
 				return;
 			}
 
-			float maxDistance = _moveSpeed * Time.fixedDeltaTime / GetNavAreaCost();
+			float maxDistance = _moveSpeed * Time.fixedDeltaTime * 2f / GetNavAreaCost();//Why the (* 2f): NavAreaCosts below 1 give a warning, hence I double the costs in inspector and half them here.
 			float walkedDistance = 0f;
 			float nextCornerDistance;
 
@@ -371,7 +371,7 @@ namespace PPBA
 
 		private bool RecalculateNavPath()
 		{
-			if(!NavMesh.CalculatePath(transform.position, _moveTarget, 1, _navMeshPath))//TODO: get a proper mask 8)
+			if(!NavMesh.CalculatePath(transform.position, _moveTarget, NavSurfaceBaker._navMask, _navMeshPath))
 			{
 				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
 				return false;
@@ -390,9 +390,9 @@ namespace PPBA
 		{
 			NavMeshHit navMeshHit = new NavMeshHit();
 
-			if(NavMesh.SamplePosition(transform.position, out navMeshHit, 0.2f, NavMesh.AllAreas))
+			if(NavMesh.SamplePosition(transform.position, out navMeshHit, 0.2f, NavSurfaceBaker._navMask))
 			{
-				/*
+				
 				//Debug version
 				int index = IndexFromMask(navMeshHit.mask);
 				string debugString = "Area: " + index;
@@ -400,9 +400,9 @@ namespace PPBA
 				debugString += " AreaCost: " + areaCost;
 				Debug.Log(debugString);
 				return areaCost;
-				*/
+				
 				//Short version
-				return NavMesh.GetAreaCost(IndexFromMask(navMeshHit.mask));
+				//return NavMesh.GetAreaCost(IndexFromMask(navMeshHit.mask));
 			}
 			else
 			{
