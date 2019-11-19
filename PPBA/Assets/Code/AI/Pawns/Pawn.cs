@@ -12,6 +12,7 @@ namespace PPBA
 	[RequireComponent(typeof(LineRenderer))]
 	public abstract class Pawn : MonoBehaviour, IPanelInfo
 	{
+		#region Variables
 		//public
 		[SerializeField] public int _id = 0;
 		[SerializeField] public int _team = 0;
@@ -31,10 +32,17 @@ namespace PPBA
 		[SerializeField] public int _resources;//resources carried
 		[SerializeField] public int _maxResource = 10;
 
+		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
+
 		//protected
 		[SerializeField] protected bool _isAttacking = false;
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
+		
+		//private
+		private float _moraleBackingField = 100;
+		#endregion
 
+		#region References
 		//Behaviors
 		//protected enum Behavior { GoAnywhere, Shoot, Heal };
 		[SerializeField] protected Behaviors[] e_behaviors;
@@ -64,9 +72,7 @@ namespace PPBA
 		}
 		public List<Cover> _closeCover;
 		public Vector3 _moveTarget;//let the behaviors set this
-
-		//private
-		private float _moraleBackingField = 100;
+		#endregion
 
 		public void Start()
 		{
@@ -325,7 +331,7 @@ namespace PPBA
 			{
 				return;
 			}
-			else if(_navMeshPath == null || _navMeshPath.corners.Length < 2)
+			else if(_navMeshPath == null || _navMeshPath.corners.Length < 2 || _isNavPathDirty || NavSurfaceBaker._isPathsDirty)//dirty flags are resolved here, they can be set by (1) behaviors or (2) the rebaking of the navMesh
 			{
 				if(!RecalculateNavPath())//skip if no valid or partial path has been found
 					return;
@@ -365,19 +371,23 @@ namespace PPBA
 			if(_moveTarget != newTarget)
 			{
 				_moveTarget = newTarget;
-				RecalculateNavPath();
+				_isNavPathDirty = true;
+				//RecalculateNavPath();
 			}
 		}
 
 		private bool RecalculateNavPath()
 		{
-			if(!NavMesh.CalculatePath(transform.position, _moveTarget, NavSurfaceBaker._navMask, _navMeshPath))
+			if(NavMesh.CalculatePath(transform.position, _moveTarget, NavSurfaceBaker._navMask, _navMeshPath))
+			{
+				_isNavPathDirty = false;
+				return true;
+			}
+			else
 			{
 				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
 				return false;
 			}
-			else
-				return true;
 		}
 
 		public void ShowNavPath()
@@ -392,7 +402,7 @@ namespace PPBA
 
 			if(NavMesh.SamplePosition(transform.position, out navMeshHit, 0.2f, NavSurfaceBaker._navMask))
 			{
-				
+				/*
 				//Debug version
 				int index = IndexFromMask(navMeshHit.mask);
 				string debugString = "Area: " + index;
@@ -400,9 +410,9 @@ namespace PPBA
 				debugString += " AreaCost: " + areaCost;
 				Debug.Log(debugString);
 				return areaCost;
-				
+				*/
 				//Short version
-				//return NavMesh.GetAreaCost(IndexFromMask(navMeshHit.mask));
+				return NavMesh.GetAreaCost(IndexFromMask(navMeshHit.mask));
 			}
 			else
 			{
@@ -420,7 +430,6 @@ namespace PPBA
 			}
 			return -1;
 		}
-
 		#endregion
 
 		public void WriteToGameState(int tick)
