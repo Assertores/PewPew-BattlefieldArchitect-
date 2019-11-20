@@ -30,7 +30,7 @@ namespace PPBA
 			for(int i = 0; i < _inputBuffer; i++)
 			{
 				GlobalVariables.s_instance._clients[0]._inputStates[i] = new InputState();
-				print(GlobalVariables.s_instance._clients[0]._inputStates.GetHighEnd());
+				//print(GlobalVariables.s_instance._clients[0]._inputStates.GetHighEnd());
 			}
 #endif
 		}

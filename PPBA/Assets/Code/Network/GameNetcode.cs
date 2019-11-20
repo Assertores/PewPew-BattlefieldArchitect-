@@ -301,7 +301,7 @@ namespace PPBA
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
-			print(ib.GetLowEnd() + " | " + ib.GetHighEnd());
+		//	print(ib.GetLowEnd() + " | " + ib.GetHighEnd());
 
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++)
 			{
