@@ -82,6 +82,8 @@ namespace PPBA
 			}
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
+		public MountSlot _mountSlot = null;
+		public bool _isMounting => _mountSlot == null;
 		#endregion
 
 		public void Start()

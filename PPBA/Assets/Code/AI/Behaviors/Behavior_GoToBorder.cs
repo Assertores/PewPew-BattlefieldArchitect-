@@ -9,6 +9,7 @@ namespace PPBA
 	{
 		public static Behavior_GoToBorder s_instance;
 		public static Dictionary<Pawn, Vector3> s_targetDictionary;
+		protected const float _maxDistance = 100f;
 
 		private void Awake()
 		{
@@ -39,6 +40,8 @@ namespace PPBA
 			{
 				case "Health":
 					return pawn._health / pawn._maxHealth;
+				case "Ammo":
+					return pawn._ammo / pawn._maxAmmo;
 				case "Morale":
 					return pawn._morale / pawn._maxMorale;
 				default:
@@ -47,19 +50,17 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name)//add target
-		{/*
+		protected float TargetAxisInputs(Pawn pawn, Vector3 target, string name)//add target
+		{
 			switch(name)
 			{
 				case "Distance":
 				case "DistanceToTarget":
-					return Vector3.Distance(pawn.transform.position, bestTarget) / maxDistance;
+					return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
-			*/
-			return 1;
 		}
 
 		public override float FindBestTarget(Pawn pawn)
