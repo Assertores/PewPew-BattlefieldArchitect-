@@ -103,7 +103,6 @@ namespace PPBA
 			_currentPlaceableObject = null;
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
-			print("1^11111111111111111111111111");
 			_PlacedBuilt.Clear();
 
 		}
@@ -124,8 +123,16 @@ namespace PPBA
 
 		private void RotateCurrentObjectWithMouseWheel()
 		{
-			_MouseWheelRotation = Input.mouseScrollDelta.y;
-			_currentPlaceableObject.transform.Rotate(Vector3.up, _MouseWheelRotation * 10);
+			if(Input.GetKey(KeyCode.R))
+			{
+				//_MouseWheelRotation = Input.mouseScrollDelta.y;
+				_currentPlaceableObject.transform.Rotate(Vector3.up, _MouseWheelRotation * Time.deltaTime );
+			}
+			if(Input.GetKey(KeyCode.T))
+			{
+				//_MouseWheelRotation = Input.mouseScrollDelta.y;
+				_currentPlaceableObject.transform.Rotate(Vector3.up, -_MouseWheelRotation * Time.deltaTime);
+			}
 		}
 
 		private void MoveCurrentObjectToMouse()
@@ -180,14 +187,12 @@ namespace PPBA
 
 		private void ConstructWall()
 		{
-			print("3333333333333333333333333333333");
 			if(_currentPlaceableObject == null)
 			{
 				_lastPole = UserInputController.s_instance.GetWorldPoint();
 			}
 			else
 			{
-				print("4444444444444444444444444444444444444444444");
 				_lastPole = _currentPlaceableObject.transform.position;
 			}
 
