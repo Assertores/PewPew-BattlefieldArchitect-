@@ -20,6 +20,8 @@ namespace PPBA
 
 		public int m_maxPackageSize = 1470;
 
+		int _currentID = 0;
+
 #if UNITY_SERVER
 
 		int _nextID = 0;
@@ -319,5 +321,17 @@ namespace PPBA
 			socket.Send(msg.ToArray(), msg.Count);
 		}
 #endif
+
+		/// <summary>
+		/// reserves a range of consecutive ids
+		/// </summary>
+		/// <param name="range">the count of id you nead</param>
+		/// <returns>the first id of the reserved id range </returns>
+		public int GetNewIDRange(int range = 1)
+		{
+			int id = _currentID;
+			_currentID += range;
+			return id;
+		}
 	}
 }
