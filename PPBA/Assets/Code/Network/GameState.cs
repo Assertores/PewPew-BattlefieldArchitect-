@@ -259,6 +259,11 @@ namespace PPBA
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
 
+			if(value.Count == 0)
+			{
+				value.Add(new byte[0]);
+			}
+
 			_messageHolder = value;
 			{
 				_types.Clear();
