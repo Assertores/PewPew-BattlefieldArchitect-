@@ -28,12 +28,6 @@ namespace PPBA
 #endif
 		}
 
-
-		void Update()
-		{
-	//		 int _id = TickHandler.s_interfaceInputState.AddObj();
-		}
-
 		void ServerInputHandling(int tick)
 		{
 			Debug.Log("server executes inputs from clients");
@@ -57,6 +51,11 @@ namespace PPBA
 		void ClientInputGather(int tick)
 		{
 			Debug.Log("client writes all inputs since last tick into inputstate");
+		}
+
+		public void SendBuilding(int id )
+		{
+
 		}
 
 	}

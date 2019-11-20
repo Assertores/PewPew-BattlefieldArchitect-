@@ -151,17 +151,17 @@ namespace PPBA
 
 			Vector3 forward = _lastPole;
 
-			float dotProd = Vector3.Dot(forward, dir);
-			//print("dot " + dotProd);
+			//float dotProd = Vector3.Dot(forward, dir);
+			////print("dot " + dotProd);
 
-			if(dotProd < 0)
-			{
-				lastPos = new Vector3(lastPos.x + (length * 0.5f), lastPos.y, lastPos.z);
-			}
-			else
-			{
-				lastPos = new Vector3(lastPos.x - (length * 0.5f), lastPos.y, lastPos.z);
-			}
+			//if(dotProd < 0)
+			//{
+			//	lastPos = new Vector3(lastPos.x + (length * 0.5f), lastPos.y, lastPos.z);
+			//}
+			//else
+			//{
+			//	lastPos = new Vector3(lastPos.x - (length * 0.5f), lastPos.y, lastPos.z);
+			//}
 
 			//if(dis < 1)
 			//{
