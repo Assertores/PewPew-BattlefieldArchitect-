@@ -5,8 +5,6 @@ using System;
 
 namespace PPBA
 {
-	public enum ObjectType : byte { NON, REFINARY, WALL, SIZE}
-
 	namespace ISC //Input State Component
 	{
 		public class isc

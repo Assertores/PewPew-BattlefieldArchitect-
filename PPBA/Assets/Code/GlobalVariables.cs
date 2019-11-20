@@ -6,6 +6,8 @@ using System.Text;
 
 namespace PPBA
 {
+	public enum ObjectType { REFINERY, WALL, SIZE };
+
 	public class client
 	{
 		public int _id;
