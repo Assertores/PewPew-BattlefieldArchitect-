@@ -88,7 +88,7 @@ namespace PPBA
 		//public byte _messageCount;
 		public BitField2D _receivedMessages = new BitField2D(0,0);
 		private List<byte[]> _messageHolder = null;
-		int _hash = 0;
+		//int _hash = 0;
 
 		public List<GSC.type> _types = new List<GSC.type>();
 		public List<GSC.arg> _args = new List<GSC.arg>();
@@ -516,7 +516,7 @@ namespace PPBA
 
 		public bool CreateDelta(RingBuffer<GameState> references, int refTick, int myTick)
 		{
-			_hash = GetHash();
+			//_hash = GetHash();
 
 			GameState reference = references[refTick];
 
@@ -751,10 +751,10 @@ Jump:
 				_paths.Add(it);
 			}
 
-			if(_hash != GetHash())
+			/*if(_hash != GetHash())
 			{
 				Debug.LogError("hashes are unequal: " + _hash + " <-> " + GetHash());
-			}
+			}*/
 
 			_isDelta = false;
 
