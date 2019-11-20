@@ -14,34 +14,54 @@ namespace PPBA
 		public static Dictionary<GameObject, ObjectPool> s_objectPools { get; private set; } = new Dictionary<GameObject, ObjectPool>();
 
 		private GameObject _prefab;
+		private List<MonoBehaviour> _elements;
+		private System.Type _type;
 		private Transform _parent;
 		private int _stepSize;
 		private bool _doTrack;
 
-		ObjectPool(GameObject prefab, int initialSize, Transform parent, bool doTrack)
+		ObjectPool(GameObject prefab, int initialSize, Transform parent, System.Type type, bool doTrack)
 		{
 			_prefab = prefab;
 			_parent = parent;
 			_stepSize = initialSize;
 			_doTrack = doTrack;
+			_type = type;
 
-			Resize().SetActive(false);
+			Resize().gameObject.SetActive(false);
 		}
 
-		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform grandParent, bool doTrackInNetwork = false)
+		/// <summary>
+		/// creates an objectPool with an prefab as key
+		/// </summary>
+		/// <typeparam name="T">the type as MonoBehaviour, the prefab hast to have as component on the top level</typeparam>
+		/// <param name="prefab">the prefab, that should be used for the object pool</param>
+		/// <param name="initialSize">the size of the object pool</param>
+		/// <param name="grandParent">the parent object in witch the objectpool will initialice in objectholder in witch the objects will be instanciated into</param>
+		/// <param name="doTrackInNetwork">if true every object in the objectpool will get a unique id witch will be wrote into every INetElement script in the instanciated prefab</param>
+		/// <returns>the objectpool of the prefab type. null if prefab is null, prefab has not T component at the top level, or the prefab has no INetElement on any level if it is flaged as doTrackInNetwork</returns>
+		public static ObjectPool CreatePool<T>(GameObject prefab, int initialSize, Transform grandParent, bool doTrackInNetwork = false) where T : MonoBehaviour
 		{
 			if(prefab == null)
 				return null;
 			if(s_objectPools.ContainsKey(prefab))
 				return s_objectPools[prefab];
+			if(!prefab.GetComponent(typeof(T)))
+				return null;
+			if(doTrackInNetwork && prefab.GetComponentsInChildren<INetElement>().Length == 0)
+				return null;
 
 			GameObject tmp = new GameObject(prefab.name);
 			tmp.transform.parent = grandParent;
-			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, doTrackInNetwork);
+			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, typeof(T), doTrackInNetwork);
 			return s_objectPools[prefab];
 		}
 
-		public GameObject GetNextObject()
+		/// <summary>
+		/// use this to get a free element in the object pool whitch will be automaticly already be set active.
+		/// </summary>
+		/// <returns>the reference to the type as MonoBehaviour</returns>
+		public MonoBehaviour GetNextObject()
 		{
 
 			for(int i = 0; i < _parent.childCount; i++)
@@ -49,11 +69,20 @@ namespace PPBA
 				if(!_parent.GetChild(i).gameObject.activeSelf)
 				{
 					_parent.GetChild(i).gameObject.SetActive(true);
-					return _parent.GetChild(i).gameObject;
+					return _elements[i];
 				}
 			}
 
 			return Resize();
+		}
+
+		/// <summary>
+		/// use this to safly cast the MonoBehaviour if you don't know the corect type;
+		/// </summary>
+		/// <returns>the type into with the MonoBehaviour can be casted</returns>
+		public System.Type GetReferenceType()
+		{
+			return _type;
 		}
 
 		public void FreeObject(GameObject element)
@@ -68,7 +97,7 @@ namespace PPBA
 			}
 		}
 
-		private GameObject Resize()
+		private MonoBehaviour Resize()
 		{
 			int idRange = 0;
 			if(_doTrack)
@@ -76,17 +105,19 @@ namespace PPBA
 				idRange = GameNetcode.s_instance.GetNewIDRange(_stepSize);
 			}
 
-			GameObject value = GameObject.Instantiate(_prefab, _parent);
-			value.name = _prefab.name + " (" + _parent.childCount + ")";
+			GameObject firstElement = GameObject.Instantiate(_prefab, _parent);
+			firstElement.name = _prefab.name + " (" + _parent.childCount + ")";
 
 			if(_doTrack)
 			{
-				foreach(var it in value.GetComponentsInChildren<INetElement>())
+				foreach(var it in firstElement.GetComponentsInChildren<INetElement>())
 				{
 					it._id = idRange;
 				}
 				idRange++;
 			}
+			MonoBehaviour value = firstElement.GetComponent(_type) as MonoBehaviour;
+			_elements.Add(value);
 
 			for(int i = 1; i < _stepSize; i++)
 			{
