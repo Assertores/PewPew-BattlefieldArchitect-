@@ -4926,7 +4926,6 @@ GameObject:
   - component: {fileID: 1070161622806822463}
   - component: {fileID: 5898918719489348344}
   - component: {fileID: 4366753791730574353}
-  - component: {fileID: -4375855670482525507}
   m_Layer: 9
   m_Name: GhostRefinery
   m_TagString: Untagged
@@ -5255,20 +5254,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-4375855670482525507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2196524662138505386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a18a34393a678bc4592b8dcc6fc6426e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _FaultBuildingLayer: 9
-  GhostMaterial: {fileID: 2100000, guid: 149d00fb9c99ceb4393359cd2f883a0d, type: 2}
 --- !u!1 &2226002622066761753
 GameObject:
   m_ObjectHideFlags: 0
