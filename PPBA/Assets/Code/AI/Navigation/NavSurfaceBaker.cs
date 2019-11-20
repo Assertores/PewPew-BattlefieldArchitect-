@@ -10,7 +10,7 @@ namespace PPBA
 		[HideInInspector] public const int _navMask = 127;
 		public static List<NavMeshSurface> _surfaces = new List<NavMeshSurface>();
 		public static bool _isSurfacesDirty = false;//let spawning obstacles set this to true
-		public static bool _isPathsDirty = false;//global variable to let pawns know the NavMesh has changed
+		public static bool _isPathsDirty = false;//global variable to let pawns know the NavMesh has changed, they will recalculate before moving
 
 		// Start is called before the first frame update
 		void Start()
@@ -51,13 +51,13 @@ namespace PPBA
 		#region Initialisation
 		private void OnEnable()
 		{
-			TickHandler.s_DoInput += ReadyPathsFlag;//this is not input related, but has to happen before EarlyCalc and after DoTick
+			//TickHandler.s_Setup += ReadyPathsFlag;//this has to happen before DoInput and after DoTick
 			TickHandler.s_EarlyCalc += ReadyNavMesh;
 		}
 
 		private void OnDisable()
 		{
-			TickHandler.s_DoInput -= ReadyPathsFlag;
+			//TickHandler.s_Setup -= ReadyPathsFlag;
 			TickHandler.s_EarlyCalc -= ReadyNavMesh;
 		}
 		#endregion

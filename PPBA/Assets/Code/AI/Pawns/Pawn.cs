@@ -10,7 +10,7 @@ namespace PPBA
 
 	[RequireComponent(typeof(SphereCollider))]
 	[RequireComponent(typeof(LineRenderer))]
-	public abstract class Pawn : MonoBehaviour, IPanelInfo
+	public abstract class Pawn : MonoBehaviour, IPanelInfo//TODO: inherit from INetElement
 	{
 		#region Variables
 		//public
@@ -37,9 +37,7 @@ namespace PPBA
 		//protected
 		[SerializeField] protected bool _isAttacking = false;
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
-		
-		//private
-		private float _moraleBackingField = 100;
+		protected float _moraleBackingField = 100;
 		#endregion
 
 		#region References
@@ -71,6 +69,18 @@ namespace PPBA
 			}
 		}
 		public List<Cover> _closeCover;
+		public List<Cover> _activeCover
+		{
+			get
+			{
+				foreach(var it in _closeCover)
+				{
+					if(!it.gameObject.activeSelf)
+						_closeCover.Remove(it);//inactive covers are removed here
+				}
+				return _closeCover;
+			}
+		}
 		public Vector3 _moveTarget;//let the behaviors set this
 		#endregion
 
@@ -136,7 +146,7 @@ namespace PPBA
 
 				if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
 				{
-
+					//change animation
 				}
 
 				_lastBehavior = _behaviors[bestBehavior];
@@ -331,7 +341,7 @@ namespace PPBA
 			{
 				return;
 			}
-			else if(_navMeshPath == null || _navMeshPath.corners.Length < 2 || _isNavPathDirty || NavSurfaceBaker._isPathsDirty)//dirty flags are resolved here, they can be set by (1) behaviors or (2) the rebaking of the navMesh
+			else if(_navMeshPath == null || _navMeshPath.corners.Length < 2 || _isNavPathDirty || NavSurfaceBaker._isPathsDirty)//dirty flags are resolved here, they can be set by (1) behaviors, (2) the rebaking of the navMesh, (3) turning a corner on the path
 			{
 				if(!RecalculateNavPath())//skip if no valid or partial path has been found
 					return;
@@ -359,7 +369,8 @@ namespace PPBA
 
 			if(2 < i)//<=> pawn has moved over a corner
 			{
-				RecalculateNavPath();//could be solved more elegantly performancewise, but not without copying the _navMeshPath.corners array and doing admin myself
+				_isNavPathDirty = true;
+				//RecalculateNavPath();//could be solved more elegantly performancewise, but not without copying the _navMeshPath.corners array and doing admin myself
 			}
 
 			if(i - 1 < _navMeshPath.corners.Length)
