@@ -20,7 +20,13 @@ namespace PPBA
 
 		private void OnDisable()
 		{
-			
+#if UNITY_SERVER
+			TickHandler.s_DoInput -= ServerInputHandling;
+			TickHandler.s_GatherValues -= ServerInputGather;
+#else
+			TickHandler.s_DoInput -= ClientInputHandling;
+			TickHandler.s_GatherValues -= ClientInputGather;
+#endif
 		}
 
 		void ServerInputHandling(int tick)
