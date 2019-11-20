@@ -16,17 +16,19 @@ namespace PPBA
 		private GameObject _prefab;
 		private Transform _parent;
 		private int _stepSize;
+		private bool _doTrack;
 
-		ObjectPool(GameObject prefab, int initialSize, Transform parent)
+		ObjectPool(GameObject prefab, int initialSize, Transform parent, bool doTrack)
 		{
 			_prefab = prefab;
 			_parent = parent;
 			_stepSize = initialSize;
+			_doTrack = doTrack;
 
 			Resize().SetActive(false);
 		}
 
-		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform grandParent)
+		public static ObjectPool CreatePool(GameObject prefab, int initialSize, Transform grandParent, bool doTrackInNetwork = false)
 		{
 			if(prefab == null)
 				return null;
@@ -35,7 +37,7 @@ namespace PPBA
 
 			GameObject tmp = new GameObject(prefab.name);
 			tmp.transform.parent = grandParent;
-			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform);
+			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, doTrackInNetwork);
 			return s_objectPools[prefab];
 		}
 
@@ -68,14 +70,38 @@ namespace PPBA
 
 		private GameObject Resize()
 		{
+			int idRange = 0;
+			if(_doTrack)
+			{
+				idRange = GameNetcode.s_instance.GetNewIDRange(_stepSize);
+			}
+
 			GameObject value = GameObject.Instantiate(_prefab, _parent);
 			value.name = _prefab.name + " (" + _parent.childCount + ")";
+
+			if(_doTrack)
+			{
+				foreach(var it in value.GetComponentsInChildren<INetElement>())
+				{
+					it._id = idRange;
+				}
+				idRange++;
+			}
 
 			for(int i = 1; i < _stepSize; i++)
 			{
 				GameObject tmp = GameObject.Instantiate(_prefab, _parent);
 				tmp.SetActive(false);
 				tmp.name = _prefab.name + " (" + _parent.childCount + ")";
+
+				if(_doTrack)
+				{
+					foreach(var it in tmp.GetComponentsInChildren<INetElement>())
+					{
+						it._id = idRange;
+					}
+					idRange++;
+				}
 			}
 
 			return value;
