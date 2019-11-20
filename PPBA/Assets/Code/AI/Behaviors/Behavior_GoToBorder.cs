@@ -74,5 +74,11 @@ namespace PPBA
 		{
 			throw new System.NotImplementedException();
 		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			if(s_targetDictionary.ContainsKey(pawn))
+				s_targetDictionary.Remove(pawn);
+		}
 	}
 }

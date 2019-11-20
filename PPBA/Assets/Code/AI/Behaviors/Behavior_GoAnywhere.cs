@@ -94,7 +94,13 @@ namespace PPBA
 
 		public override int GetTargetID(Pawn pawn)
 		{
-			throw new System.NotImplementedException();
+			//empty because no target dictionary
+			return -1;
+		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			//empty because no target dictionary
 		}
 	}
 }

@@ -73,5 +73,10 @@ namespace PPBA
 		{
 			return pawn._id;
 		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			//empty because no target dictionary
+		}
 	}
 }

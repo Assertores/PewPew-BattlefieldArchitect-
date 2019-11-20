@@ -64,5 +64,10 @@ namespace PPBA
 		{
 			throw new System.NotImplementedException();
 		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			//empty because no target dictionary
+		}
 	}
 }

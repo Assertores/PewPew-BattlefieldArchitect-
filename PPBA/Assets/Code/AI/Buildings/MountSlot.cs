@@ -7,12 +7,14 @@ namespace PPBA
 	[RequireComponent(typeof(Collider))]
 	public abstract class MountSlot : MonoBehaviour
 	{
-		//Fields
-		[SerializeField] public Pawn _mountingPawn = null;
+		//public
+		[SerializeField] public int _id = 0;
+		[SerializeField] public int _team = 0;
 		[SerializeField] [Tooltip("How fit is the MountSlot right now?")] public float _score = 0;
 		[SerializeField] [Tooltip("How much cover does the MountSlot offer a pawn?")] public float _coverScore = 0f;
-		public List<Pawn> _closePawns = new List<Pawn>();
-		public List<Pawn> _activePawns//this is an accessor to the _closePawns List, ensuring I don't have to write this every time I want to use the list.
+		public bool _isMounted => _mountingPawn != null;
+		[SerializeField] public Pawn _mountingPawn = null;
+		public List<Pawn> _activePawns//accessor to _closePawns
 		{
 			get
 			{
@@ -24,9 +26,7 @@ namespace PPBA
 				return _closePawns;
 			}
 		}
-
-		//Parameters
-		public bool _isMounted => _mountingPawn == null;
+		public List<Pawn> _closePawns = new List<Pawn>();
 
 		public bool GetIn(Pawn pawn)
 		{
@@ -35,6 +35,7 @@ namespace PPBA
 			else
 			{
 				_mountingPawn = pawn;
+				pawn._mountSlot = this;
 				return true;
 			}
 		}
@@ -44,6 +45,7 @@ namespace PPBA
 			if(_mountingPawn == pawn)
 			{
 				_mountingPawn = null;
+				pawn._mountSlot = null;
 				return true;
 			}
 			else
@@ -73,6 +75,27 @@ namespace PPBA
 				if(temp && _closePawns.Contains(temp))
 					_closePawns.Remove(temp);
 			}
+		}
+
+		private void OnEnable()
+		{
+			if(!JobCenter.s_mountSlots[_team].Contains(this))
+				JobCenter.s_mountSlots[_team].Add(this);
+
+			TickHandler.s_LateCalc += CalculateScore;
+			//TickHandler.s_GatherValues += WriteToGameState;
+		}
+
+		private void OnDisable()
+		{
+			if(JobCenter.s_mountSlots[_team].Contains(this))
+				JobCenter.s_mountSlots[_team].Remove(this);
+
+			if(_isMounted)
+				Behavior_Mount.s_instance.RemoveFromTargetDict(_mountingPawn);
+
+			TickHandler.s_LateCalc -= CalculateScore;
+			//TickHandler.s_GatherValues -= WriteToGameState;
 		}
 	}
 }

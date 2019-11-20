@@ -10,6 +10,7 @@ namespace PPBA
 
 		public static List<Blueprint>[] s_blueprints = new List<Blueprint>[10];//can exchange 10 for number of players
 		public static List<ResourceDepot>[] s_resourceDepots = new List<ResourceDepot>[10];
+		public static List<MountSlot>[] s_mountSlots = new List<MountSlot>[10];
 
 		void Awake()
 		{
@@ -27,6 +28,8 @@ namespace PPBA
 					s_blueprints[i] = new List<Blueprint>();
 				if(s_resourceDepots[i] == null)
 					s_resourceDepots[i] = new List<ResourceDepot>();
+				if(s_mountSlots[i] == null)
+					s_mountSlots[i] = new List<MountSlot>();
 			}
 		}
 
