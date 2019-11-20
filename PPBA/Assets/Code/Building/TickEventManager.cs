@@ -7,14 +7,11 @@ namespace PPBA
 	public class TickEventManager : Singleton<TickEventManager>
 	{
 
+		void Update()
+		{
+	//		 int _id = TickHandler.s_interfaceInputState.AddObj();
+		}
 
-		//public void SendToServer() // 
-		//{
-		//	if(SendToTick != null)
-		//	{
-		//		SendToTick();
-		//	}
-		//}
 
 
 	}
