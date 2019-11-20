@@ -15,9 +15,8 @@ namespace PPBA
 		private float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 		private bool _canConnect = false;
-		[HideInInspector] public bool _canBuild = true;
-
-		Vector2 _pixelUV = Vector2.zero;
+		//[HideInInspector] public bool _canBuild = true;
+		public bool _canBuild = true;
 
 		private GameObject _lastPole;
 
@@ -72,7 +71,7 @@ namespace PPBA
 			RefineryRefHolder holder = obj.GetComponent<RefineryRefHolder>();
 			holder.RefineryPrefab.SetActive(false);
 			holder._Positions = UserInputController.s_instance.GetTexturePixelPoint();
-			holder.GetComponent<BuildingProcess>().Startbuilding();
+			//holder.GetComponent<BuildingProcess>().Startbuilding();
 
 			Destroy(_currentPlaceableObject);
 			_currentPlaceableObject = null;

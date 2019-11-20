@@ -14,7 +14,12 @@ public class BuildingProcess : MonoBehaviour
 		_holder = GetComponent<RefineryRefHolder>();
 	}
 
-	public void Startbuilding()
+	private void OnEnable()
+	{
+		Startbuilding();
+	}
+
+	private  void Startbuilding()
 	{
 		StartCoroutine(StartBuilding());
 	}
