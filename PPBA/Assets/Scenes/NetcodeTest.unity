@@ -428,6 +428,7 @@ MonoBehaviour:
   m_serverPort: 11000
   m_iP: 127.0.0.1
   m_maxPackageSize: 1470
+  _myID: -1
 --- !u!4 &1502263530
 Transform:
   m_ObjectHideFlags: 0

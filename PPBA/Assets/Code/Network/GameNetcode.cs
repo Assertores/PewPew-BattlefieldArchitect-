@@ -206,7 +206,7 @@ namespace PPBA
 		}
 #else
 
-		int _myID;
+		[SerializeField] int _myID = -1;
 
 		void Start()
 		{
@@ -214,10 +214,19 @@ namespace PPBA
 			ep = new IPEndPoint(IPAddress.Parse(m_iP), m_serverPort); // endpoint where server is listening
 			socket.Connect(ep);
 			socket.DontFragment = true;
-
-			byte[] msg = new byte[1];
-			msg[0] = (byte)MessageType.CONNECT;
-			socket.Send(msg, msg.Length);
+			
+			if(_myID < 0)
+			{
+				byte[] msg = new byte[1];
+				msg[0] = (byte)MessageType.CONNECT;
+				socket.Send(msg, msg.Length);
+			}
+			else
+			{
+				byte[] msg = new byte[1 + sizeof(int)];
+				msg[0] = (byte)MessageType.RECONNECT;
+				Buffer.BlockCopy(BitConverter.GetBytes(_myID),0,msg,1,sizeof(int));
+			}
 		}
 		private void OnDestroy()
 		{
