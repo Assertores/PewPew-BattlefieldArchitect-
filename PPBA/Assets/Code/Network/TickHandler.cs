@@ -107,6 +107,8 @@ namespace PPBA
 			Debug.Log("[Server] Finished simulating");
 
 			s_interfaceGameState = new GameState();
+			s_interfaceInputState = new InputState();
+
 			s_GatherValues?.Invoke(s_currentTick);
 
 			Debug.Log("[Server] Seperating Gamestate");
@@ -173,6 +175,7 @@ namespace PPBA
 			s_DoTick?.Invoke(s_currentTick);
 
 			s_interfaceInputState = new InputState();
+			s_interfaceGameState = new GameState();
 
 			s_GatherValues?.Invoke(s_currentTick + _inputBuffer);
 
