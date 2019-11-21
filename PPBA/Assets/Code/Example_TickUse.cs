@@ -44,7 +44,7 @@ namespace PPBA
 		{
 			if(tick == _tick)
 			{
-				if(TickHandler.s_interfaceGameState._denyedInputIDs.Exists(x => x == _id))
+				if(TickHandler.s_interfaceGameState._denyedInputIDs.Exists(x => x._id == _id))
 				{
 					Debug.Log("input was denyed");
 				}
