@@ -11,11 +11,12 @@ namespace PPBA
 
 	[RequireComponent(typeof(SphereCollider))]
 	[RequireComponent(typeof(LineRenderer))]
-	public abstract class Pawn : MonoBehaviour, IPanelInfo//TODO: inherit from INetElement
+	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
 	{
 		#region Variables
 		//public
-		[SerializeField] public int _id = 0;
+
+		[SerializeField] public int _id { get; set; } = 0;
 		[SerializeField] public int _team = 0;
 
 		[SerializeField] public float _health = 100;
@@ -85,6 +86,8 @@ namespace PPBA
 		public Vector3 _moveTarget;//let the behaviors set this
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null;
+
+		int INetElement._id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		#endregion
 
 		public void Start()
@@ -162,7 +165,10 @@ namespace PPBA
 		}
 
 		#region Initialisation
-		//public void InitialisePawn(PARAMETER)
+		public void InitialisePawn()
+		{
+			//TODO: REFRESH VALUES TO DEFAULT
+		}
 
 		protected void InitiateBehaviors()  //reads the behaviors from the enum-array
 		{
@@ -305,6 +311,11 @@ namespace PPBA
 			}
 
 			_morale -= amount;
+		}
+
+		public void Heal(int amount)
+		{
+			_health = Mathf.Min(_health + amount, _maxHealth);
 		}
 		#endregion
 
