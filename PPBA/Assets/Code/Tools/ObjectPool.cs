@@ -60,6 +60,8 @@ namespace PPBA
 				return null;
 
 			GameObject prefab = GlobalVariables.s_instance._prefabs[(int)type];
+			if(prefab == null)
+				return null;
 			if(s_objectPools.ContainsKey(prefab))
 				return s_objectPools[prefab];
 			if(!prefab.GetComponent(typeof(T)))
