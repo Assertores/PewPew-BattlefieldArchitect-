@@ -6,6 +6,8 @@ using System.Text;
 
 namespace PPBA
 {
+	//alle combined typen: cornername und between name müssen direkt hintereinander stehen in dieser reihenfolge
+	//e.g. ..., WALL, WALL_BETWEEN, ...
 	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, SIZE };
 
 	public class client
