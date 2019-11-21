@@ -14,8 +14,8 @@ namespace PPBA
 		private GameObject _CurrentBetweenObject;
 		private Vector3 _lastPole;
 		private bool _isBuilt = false;
-		private List<GameObject> _PlacedBuilt = new List<GameObject>();
 
+		private Dictionary<GameObject, ObjectType> _PlayedBuilts = new Dictionary<GameObject, ObjectType>();
 		public bool _canBuild = true;
 
 		public float _MouseWheelRotation;
@@ -54,18 +54,22 @@ namespace PPBA
 				{
 					if(!_canBuild)
 					{	// for the last one with this we can go on building
-						for(int i = 0; i < _PlacedBuilt.Count; i++)
+
+						foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 						{
-							if(i == _PlacedBuilt.Count-1)
-							{
-								continue;
-							}
-							Destroy(_PlacedBuilt[i]);
+							//if(build == _PlayedBuilts.Count - 1)
+							//{
+							//	continue;
+							//}
+							Destroy(build.Key);
 						}
+
 					}
+
+
 					_currentPrefabIndex = 0;
 					_isBuilt = false;
-					_PlacedBuilt.Clear();
+					_PlayedBuilts.Clear();
 
 				}
 			}
@@ -105,7 +109,7 @@ namespace PPBA
 			_currentPlaceableObject = null;
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
-			_PlacedBuilt.Clear();
+			_PlayedBuilts.Clear();
 
 		}
 
@@ -116,11 +120,11 @@ namespace PPBA
 			_isBuilt = false;
 			_canBuild = true;
 
-			for(int i = 0; i < _PlacedBuilt.Count; i++)
+			foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 			{
-				Destroy(_PlacedBuilt[i]);
+				Destroy(build.Key);
 			}
-			_PlacedBuilt.Clear();
+			_PlayedBuilts.Clear();
 		}
 
 		private void RotateCurrentObjectWithMouseWheel()
@@ -211,8 +215,8 @@ namespace PPBA
 			Vector3 pos = dir2 * 0.5f + _lastPole;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
-			Instantiate(GhostWallBetween, pos, rotationObj);
-
+			GameObject Obj = Instantiate(GhostWallBetween, pos, rotationObj);
+			_PlayedBuilts.Add(Obj, ObjectType.WALLBETWEEN);
 		}
 
 		private void ConstructWall()
@@ -230,7 +234,7 @@ namespace PPBA
 			_currentPlaceableObject = null;
 			_currentPlaceableObject = Instantiate(GhostWall, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 			_currentPrefabIndex++;
-			_PlacedBuilt.Add(_currentPlaceableObject);
+			_PlayedBuilts.Add(_currentPlaceableObject, ObjectType.WALL);
 		}
 
 
