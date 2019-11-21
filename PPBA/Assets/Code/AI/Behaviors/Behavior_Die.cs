@@ -28,7 +28,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._navMeshAgent.SetDestination(pawn.transform.position);
+			pawn.SetMoveTarget(pawn.transform.position);
 
 			foreach(Pawn p in pawn._activePawns)
 			{
@@ -39,6 +39,7 @@ namespace PPBA
 			}
 
 			//put pawn back into object pool
+			pawn.gameObject.SetActive(false);
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -71,6 +72,11 @@ namespace PPBA
 		public override int GetTargetID(Pawn pawn)
 		{
 			return pawn._id;
+		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			//empty because no target dictionary
 		}
 	}
 }

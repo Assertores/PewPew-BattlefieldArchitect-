@@ -63,5 +63,6 @@ namespace PPBA
 		//got to remove pawns from the TARGETDICTIONARIES when they change behavior
 
 		public abstract int GetTargetID(Pawn pawn);
+		public abstract void RemoveFromTargetDict(Pawn pawn);
 	}
 }

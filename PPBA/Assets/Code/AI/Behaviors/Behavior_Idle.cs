@@ -30,7 +30,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._navMeshAgent.SetDestination(pawn.transform.position);
+			pawn.SetMoveTarget(pawn.transform.position);
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -63,6 +63,11 @@ namespace PPBA
 		public override int GetTargetID(Pawn pawn)
 		{
 			throw new System.NotImplementedException();
+		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			//empty because no target dictionary
 		}
 	}
 }

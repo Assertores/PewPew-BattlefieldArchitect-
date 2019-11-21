@@ -10,11 +10,12 @@ namespace PPBA
 		[SerializeField] public int _team = 0;
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
-		[SerializeField] public int _resources = 50;
+		[SerializeField] public int _resources = 0;
 		[SerializeField] public int _maxResources = 1000;
-		[SerializeField] public int _ammo = 50;
+		[SerializeField] public int _ammo = 0;
 		[SerializeField] public int _maxAmmo = 1000;
 		[SerializeField] public float _score = 0;
+		[SerializeField] public float _maxScore = 0;
 		[SerializeField] [Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
 

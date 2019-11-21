@@ -32,7 +32,7 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-			pawn._navMeshAgent.SetDestination(targetPosition);
+			pawn.SetMoveTarget(targetPosition);
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{
@@ -43,15 +43,15 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
-			float bestScore = 0;
+			float bestScore = 0f;
 
-			foreach(ResourceDepot _depot in JobCenter.s_resourceDepots[pawn._team])
+			foreach(ResourceDepot depot in JobCenter.s_resourceDepots[pawn._team])
 			{
-				float tempScore = CalculateTargetScore(pawn, _depot);
+				float tempScore = CalculateTargetScore(pawn, depot);
 
 				if(bestScore < tempScore)
 				{
-					s_targetDictionary[pawn] = _depot;
+					s_targetDictionary[pawn] = depot;
 					bestScore = tempScore;
 				}
 			}
@@ -108,6 +108,12 @@ namespace PPBA
 				return s_targetDictionary[pawn]._id;
 			else
 				return -1;
+		}
+
+		public override void RemoveFromTargetDict(Pawn pawn)
+		{
+			if(s_targetDictionary.ContainsKey(pawn))
+				s_targetDictionary.Remove(pawn);
 		}
 	}
 }
