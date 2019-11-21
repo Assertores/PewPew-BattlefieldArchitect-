@@ -86,6 +86,37 @@ namespace PPBA
 	}
 	public class GameState
 	{
+		public GameState()
+		{
+
+		}
+
+		/// <summary>
+		/// copy GameState
+		/// </summary>
+		/// <param name="original">GameState to make copy from</param>
+		public GameState(GameState original)
+		{
+			_refTick = original._refTick;
+			_isLerped = original._isLerped;
+			_isDelta = original._isDelta;
+			_isEncrypted = original._isEncrypted;
+			_receivedMessages = original._receivedMessages;
+			_messageHolder = original._messageHolder;
+
+			_types.AddRange(original._types.ToArray());
+			_args.AddRange(original._args.ToArray());
+			_transforms.AddRange(original._transforms.ToArray());
+			_ammos.AddRange(original._ammos.ToArray());
+			_resources.AddRange(original._resources.ToArray());
+			_healths.AddRange(original._healths.ToArray());
+			_works.AddRange(original._works.ToArray());
+			_behaviors.AddRange(original._behaviors.ToArray());
+			_paths.AddRange(original._paths.ToArray());
+			_heatMaps.AddRange(original._heatMaps.ToArray());
+			_denyedInputIDs.AddRange(original._denyedInputIDs.ToArray());
+		}
+
 		public int _refTick { get; private set; } = 0;
 		public bool _isLerped { get; private set; } = false;
 		public bool _isDelta { get; private set; } = false;
@@ -251,18 +282,18 @@ namespace PPBA
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
 			}
-			/*if(_denyedInputIDs.Count > 0)
+			if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
 				msg.Add((byte)GSC.DataType.INPUTS);
 				msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
 				foreach(var it in _denyedInputIDs)
 				{
-					msg.AddRange(BitConverter.GetBytes(it));
+					msg.AddRange(BitConverter.GetBytes(it._id));
 				}
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
-			}*/
+			}
 
 			if(value.Count == 0)
 			{
@@ -505,16 +536,16 @@ namespace PPBA
 						_heatMaps.Add(value);
 						break;
 					}
-					/*case GSC.DataType.INPUTS:
+					case GSC.DataType.INPUTS:
 					{
-						_denyedInputIDs = new List<int>(count);
+						_denyedInputIDs = new List<GSC.input>(count);
 						for(int i = 0; i < count; i++)
 						{
-							_denyedInputIDs.Add(BitConverter.ToInt32(msg, offset));
+							_denyedInputIDs.Add(new GSC.input { _id = BitConverter.ToInt32(msg, offset) });
 							offset += sizeof(int);
 						}
 						break;
-					}*/
+					}
 					default:
 						throw new InvalidEnumArgumentException();
 				}

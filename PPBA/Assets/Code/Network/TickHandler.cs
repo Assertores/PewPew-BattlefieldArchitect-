@@ -107,13 +107,19 @@ namespace PPBA
 			Debug.Log("[Server] Finished simulating");
 
 			s_interfaceGameState = new GameState();
+			s_interfaceInputState = new InputState();
+
 			s_GatherValues?.Invoke(s_currentTick);
 
+			Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
-				Debug.Log("[Server] Seperating Gamestate");
-				//TODO: split gamestate into only relevant data for client
-				it._gameStates[s_currentTick] = s_interfaceGameState;
+				Debug.Log("[Server] for client: " + it._id);
+				GameState element = new GameState(s_interfaceGameState);
+
+				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
+
+				it._gameStates[s_currentTick] = element;
 			}
 #if UNITY_SERVER
 			Debug.Log("[Server] Sending gameState for tick: " + s_currentTick);
@@ -169,6 +175,7 @@ namespace PPBA
 			s_DoTick?.Invoke(s_currentTick);
 
 			s_interfaceInputState = new InputState();
+			s_interfaceGameState = new GameState();
 
 			s_GatherValues?.Invoke(s_currentTick + _inputBuffer);
 
