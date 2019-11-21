@@ -16,7 +16,7 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, BEHAVIOUR, PATH, MAP, INPUTS };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, BEHAVIOUR, PATH, MAP, INPUTS, RANGE };
 
 		public class gsc
 		{
@@ -83,6 +83,12 @@ namespace PPBA
 		{
 			public int _client;
 		}
+
+		public class newIDRange : gsc
+		{
+			public int _range;
+			public ObjectType _type;
+		}
 	}
 	public class GameState
 	{
@@ -115,6 +121,7 @@ namespace PPBA
 			_paths.AddRange(original._paths.ToArray());
 			_heatMaps.AddRange(original._heatMaps.ToArray());
 			_denyedInputIDs.AddRange(original._denyedInputIDs.ToArray());
+			_newIDRanges.AddRange(original._newIDRanges.ToArray());
 		}
 
 		public int _refTick { get; private set; } = 0;
@@ -137,6 +144,7 @@ namespace PPBA
 		public List<GSC.path> _paths = new List<GSC.path>();
 		public List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
 		public List<GSC.input> _denyedInputIDs = new List<GSC.input>();
+		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -294,6 +302,20 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
 			}
+			if(_newIDRanges.Count > 0)
+			{
+				msg.Clear();
+				msg.Add((byte)GSC.DataType.RANGE);
+				msg.AddRange(BitConverter.GetBytes(_newIDRanges.Count));
+				foreach(var it in _newIDRanges)
+				{
+					msg.AddRange(BitConverter.GetBytes(it._id));
+					msg.AddRange(BitConverter.GetBytes(it._range));
+					msg.Add((byte)it._type);
+				}
+
+				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+			}
 
 			if(value.Count == 0)
 			{
@@ -313,6 +335,7 @@ namespace PPBA
 				_paths.Clear();
 				_heatMaps.Clear();
 				_denyedInputIDs.Clear();
+				_newIDRanges.Clear();
 			}
 			_receivedMessages = new BitField2D(value.Count, 1);
 			_isEncrypted = true;
@@ -546,6 +569,24 @@ namespace PPBA
 						}
 						break;
 					}
+					case GSC.DataType.RANGE:
+					{
+						_newIDRanges = new List<GSC.newIDRange>(count);
+						for(int i = 0; i < count; i++)
+						{
+							GSC.newIDRange value = new GSC.newIDRange();
+
+							value._id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._range = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._type = (ObjectType)msg[offset];
+							offset++;
+						}
+						break;
+					}
 					default:
 						throw new InvalidEnumArgumentException();
 				}
@@ -725,6 +766,16 @@ Jump:
 				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
 			}
 			Debug.Log("[GameState] finished denyed input backing");
+			for(int i = refTick + 1; i < myTick; i++)
+			{
+				GameState nextState = references[i];
+				if(nextState == default)
+				{
+					continue;
+				}
+
+				_newIDRanges.AddRange(references[i]._newIDRanges);
+			}
 
 			_isDelta = true;
 
@@ -889,6 +940,7 @@ Jump:
 				value._heatMaps.Add((lerpValue < 0.5f) ? it : end._heatMaps.Find(x => x._id == it._id));
 			}
 			value._denyedInputIDs = end._denyedInputIDs;
+			value._newIDRanges = end._newIDRanges;
 
 			value._isEncrypted = false;
 			value._isDelta = false;

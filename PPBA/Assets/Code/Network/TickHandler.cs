@@ -163,6 +163,29 @@ namespace PPBA
 				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 			}
 
+			foreach(var it in nextState._newIDRanges)
+			{
+				bool exists = false;
+				for(int i = nextState._refTick; i < nextStateTick; i++)
+				{
+					foreach(var jt in GlobalVariables.s_instance._clients[0]._gameStates[i]._newIDRanges)
+					{
+						if(jt == default)
+							continue;
+						if(jt._id == it._id)
+						{
+							exists = true;
+							break;
+						}
+					}
+					if(exists)
+						break;
+				}
+
+				if(!exists)
+					ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+			}
+
 			s_interfaceGameState = nextState;
 			s_interfaceInputState = me._inputStates[nextStateTick];
 

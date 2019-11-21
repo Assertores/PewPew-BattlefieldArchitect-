@@ -31,8 +31,12 @@ namespace PPBA
 			socket = new UdpClient(11000);
 			Debug.Log("[Server] server is ready and lisents");
 			socket.DontFragment = true;
+
+			TickHandler.s_GatherValues += AddNewIDsToGameState;
 		}
 		private void OnDestroy() {
+			TickHandler.s_GatherValues -= AddNewIDsToGameState;
+
 			socket.Close();
 		}
 
@@ -334,6 +338,7 @@ namespace PPBA
 		}
 #endif
 
+		private List<GSC.newIDRange> h_newIDs = new List<GSC.newIDRange>();
 		/// <summary>
 		/// reserves a range of consecutive ids
 		/// </summary>
@@ -344,8 +349,15 @@ namespace PPBA
 		{
 			int id = _currentID;
 			_currentID += range;
-			//TODO write to GameState to add range to Objectpool of type
+
+			h_newIDs.Add(new GSC.newIDRange { _id = id, _range = range, _type = type });
+
 			return id;
+		}
+
+		void AddNewIDsToGameState(int tick)
+		{
+			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 		}
 	}
 }

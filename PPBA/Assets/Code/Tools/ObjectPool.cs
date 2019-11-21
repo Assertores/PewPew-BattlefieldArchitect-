@@ -115,12 +115,11 @@ namespace PPBA
 			}
 		}
 
-		private MonoBehaviour Resize()
+		public MonoBehaviour Resize(int range = -1, int startID = -1)
 		{
-			int idRange = 0;
-			if(_oType != ObjectType.SIZE)
+			if(_oType != ObjectType.SIZE && startID < 0)
 			{
-				idRange = GameNetcode.s_instance.GetNewIDRange(_oType, _stepSize);
+				startID = GameNetcode.s_instance.GetNewIDRange(_oType, _stepSize);
 			}
 
 			GameObject firstElement = GameObject.Instantiate(_prefab, _parent);
@@ -130,12 +129,15 @@ namespace PPBA
 			{
 				foreach(var it in firstElement.GetComponentsInChildren<INetElement>())
 				{
-					it._id = idRange;
+					it._id = startID;
 				}
-				idRange++;
+				startID++;
 			}
 			MonoBehaviour value = firstElement.GetComponent(_type) as MonoBehaviour;
 			_elements.Add(value);
+
+			if(range > 0)
+				_stepSize = range;
 
 			for(int i = 1; i < _stepSize; i++)
 			{
@@ -147,9 +149,9 @@ namespace PPBA
 				{
 					foreach(var it in tmp.GetComponentsInChildren<INetElement>())
 					{
-						it._id = idRange;
+						it._id = startID;
 					}
-					idRange++;
+					startID++;
 				}
 			}
 
