@@ -876,7 +876,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1039321480}
-  m_LocalRotation: {x: 0.3264776, y: -0.00000018138762, z: 0.000000483678, w: 0.94520503}
+  m_LocalRotation: {x: 0.3264776, y: -0.0000001488605, z: 0.000000472443, w: 0.94520503}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1110,7 +1110,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GhostRefinery: {fileID: 2196524662138505386, guid: 6b958e2d9daf2a64bb864547d7b7a65a,
     type: 3}
-  GhostWall: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
+  GhostWall: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
+    type: 3}
+  GhostWallBetween: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
     type: 3}
   _canBuild: 1
   _MouseWheelRotation: 100

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace PPBA
@@ -8,9 +7,11 @@ namespace PPBA
 	{
 		public GameObject GhostRefinery;
 		public GameObject GhostWall;
+		public GameObject GhostWallBetween;
 
 		private ObjectType _CurrentObjectType;
 		private GameObject _currentPlaceableObject;
+		private GameObject _CurrentBetweenObject;
 		private Vector3 _lastPole;
 		private bool _isBuilt = false;
 		private List<GameObject> _PlacedBuilt = new List<GameObject>();
@@ -46,7 +47,7 @@ namespace PPBA
 
 				if(Input.GetMouseButton(0) && _currentPrefabIndex > 0)
 				{
-					CreateSegment();
+					WallBuildingRoutine();
 				}
 
 				if(Input.GetMouseButtonUp(0) && _isBuilt)
@@ -72,7 +73,7 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(_CurrentObjectType == ObjectType.REFINERY /*|| anderes single object*/)
+			if(_CurrentObjectType == ObjectType.REFINERY /*|| other single object*/)
 			{
 				PlaceRefineryPrefab();
 			}
@@ -80,6 +81,7 @@ namespace PPBA
 			if(_CurrentObjectType == ObjectType.WALL)
 			{
 				ConstructWall();
+				_CurrentBetweenObject = Instantiate(GhostWallBetween, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 			}
 		}
 
@@ -140,49 +142,77 @@ namespace PPBA
 			_currentPlaceableObject.transform.position = UserInputController.s_instance.GetWorldPoint();
 		}
 
-		private void CreateSegment()
+		private void WallBuildingRoutine()
 		{
-			float _angle = 0;
-			float length = _currentPlaceableObject.GetComponent<BoxCollider>().size.z;
-			Vector3 lastPos = _lastPole;
+			if(_CurrentBetweenObject == null)
+			{
+				ConstructBetween();
+			}
 
-			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - lastPos);
+			float _angle = 0;
+			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - _lastPole);
 			float dis = dir.magnitude;
 
-			Vector3 forward = _lastPole;
-
-			//float dotProd = Vector3.Dot(forward, dir);
-			////print("dot " + dotProd);
-
-			//if(dotProd < 0)
-			//{
-			//	lastPos = new Vector3(lastPos.x + (length * 0.5f), lastPos.y, lastPos.z);
-			//}
-			//else
-			//{
-			//	lastPos = new Vector3(lastPos.x - (length * 0.5f), lastPos.y, lastPos.z);
-			//}
-
-			//if(dis < 1)
+			//if (dis < 1)
 			//{
 			//	return;
 			//}
+			float length = GhostWallBetween.GetComponent<BoxCollider>().size.z;
 
-			Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPos);
+			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
 			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * length);
+			_currentPlaceableObject.transform.position = _lastPole + v3Pos;
 
-			Vector3 dir2 = (_currentPlaceableObject.transform.position - lastPos).normalized;
+
+			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
+			Vector3 pos = dir2 * 0.5f + _lastPole;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
-			_currentPlaceableObject.transform.rotation = rotationObj;
+			_CurrentBetweenObject.transform.position = pos;
+			_CurrentBetweenObject.transform.rotation = rotationObj;
 
-			_currentPlaceableObject.transform.position = lastPos + v3Pos;
-
+			// todo länge des meshes einfügen
 			if(dis > length)
 			{
+				ConstructBetween();
 				ConstructWall();
 			}
+
+			//float _angle = 0;
+			//float length = _currentPlaceableObject.GetComponent<BoxCollider>().size.z;
+			//Vector3 lastPos = _lastPole;
+
+			//Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - lastPos);
+			//float dis = dir.magnitude;
+
+			//Vector3 forward = _lastPole;
+
+			//Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPos);
+			//v3Pos = Input.mousePosition - v3Pos;
+			//_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
+			//v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * length);
+
+			//Vector3 dir2 = (_currentPlaceableObject.transform.position - lastPos).normalized;
+			//Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+			//_currentPlaceableObject.transform.rotation = rotationObj;
+
+			//_currentPlaceableObject.transform.position = lastPos + v3Pos;
+
+			//if(dis > length)
+			//{
+			//	ConstructWall();
+			//}
+		}
+
+		private void ConstructBetween()
+		{
+			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
+			Vector3 pos = dir2 * 0.5f + _lastPole;
+			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+
+			Instantiate(GhostWallBetween, pos, rotationObj);
+
 		}
 
 		private void ConstructWall()
@@ -202,6 +232,8 @@ namespace PPBA
 			_currentPrefabIndex++;
 			_PlacedBuilt.Add(_currentPlaceableObject);
 		}
+
+
 
 
 		private void PlaceRefineryPrefab()
