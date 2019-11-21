@@ -34,6 +34,8 @@ namespace PPBA
 			Debug.Log("server executes inputs from clients");
 		}
 
+
+		// bestätigung ob die übergebenen ip funktioniert hat aus s_interfaceGameState
 		void ClientInputHandling(int tick)
 		{
 			Debug.Log("client executes or denyes inputs");
@@ -44,6 +46,8 @@ namespace PPBA
 			Debug.Log("server gathers all denyed inputs");
 		}
 
+
+		// hier schreiben in den s_interfaceInputState und bekommst id zurück
 		void ClientInputGather(int tick)
 		{
 			Debug.Log("client writes all inputs since last tick into inputstate");

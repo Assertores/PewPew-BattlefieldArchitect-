@@ -1,0 +1,52 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSInit
+#pragma kernel CSMain
+
+int PointSize;
+float4 coords[50];
+
+RWStructuredBuffer<int> buffer;
+RWTexture2D<float4> Result;
+Texture2D<float4> InputTexture;
+
+
+[numthreads(1, 1, 1)] // was bedeuetet das wirklich
+void CSInit(uint3 id : SV_DispatchThreadID)
+{
+	for (int i = 0; i < 50; i++)
+	{
+		buffer[i] = 0;
+	}
+
+}
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	for (int i = 0; i < PointSize; i++)
+	{
+		float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
+
+		if (dis > coords[i].w)
+		{
+			continue;
+		}
+
+		float maxDis = coords[i].w;
+		//float distfactor = 1 - (dis / maxDis);
+		//distfactor = sqrt(distfactor * 2);
+		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z;// distfactor * coords[i].z;
+
+
+		float4 curCol = InputTexture[id.xy].rgba;
+		
+		float minValue = float(min(curCol.r, harvestFac));
+		float newCol = curCol.r - minValue;
+	
+		//	float3 col = lerp(curCol.rgb, newCol, t);
+		newCol = saturate(newCol);
+
+		InterlockedAdd(buffer[i], minValue * 1000000.0);
+		Result[id.xy] = float4(newCol.rrr, curCol.a);
+	}
+}
