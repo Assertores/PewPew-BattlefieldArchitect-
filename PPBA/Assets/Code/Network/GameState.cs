@@ -251,18 +251,18 @@ namespace PPBA
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
 			}
-			/*if(_denyedInputIDs.Count > 0)
+			if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
 				msg.Add((byte)GSC.DataType.INPUTS);
 				msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
 				foreach(var it in _denyedInputIDs)
 				{
-					msg.AddRange(BitConverter.GetBytes(it));
+					msg.AddRange(BitConverter.GetBytes(it._id));
 				}
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
-			}*/
+			}
 
 			if(value.Count == 0)
 			{
@@ -505,16 +505,16 @@ namespace PPBA
 						_heatMaps.Add(value);
 						break;
 					}
-					/*case GSC.DataType.INPUTS:
+					case GSC.DataType.INPUTS:
 					{
-						_denyedInputIDs = new List<int>(count);
+						_denyedInputIDs = new List<GSC.input>(count);
 						for(int i = 0; i < count; i++)
 						{
-							_denyedInputIDs.Add(BitConverter.ToInt32(msg, offset));
+							_denyedInputIDs.Add(new GSC.input { _id = BitConverter.ToInt32(msg, offset) });
 							offset += sizeof(int);
 						}
 						break;
-					}*/
+					}
 					default:
 						throw new InvalidEnumArgumentException();
 				}
