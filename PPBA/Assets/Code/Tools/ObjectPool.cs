@@ -18,14 +18,14 @@ namespace PPBA
 		private System.Type _type;
 		private Transform _parent;
 		private int _stepSize;
-		private bool _doTrack;
+		private ObjectType _oType = ObjectType.SIZE;
 
-		ObjectPool(GameObject prefab, int initialSize, Transform parent, System.Type type, bool doTrack)
+		ObjectPool(GameObject prefab, int initialSize, Transform parent, System.Type type, ObjectType objectType)
 		{
 			_prefab = prefab;
 			_parent = parent;
 			_stepSize = initialSize;
-			_doTrack = doTrack;
+			_oType = objectType;
 			_type = type;
 
 			Resize().gameObject.SetActive(false);
@@ -38,9 +38,8 @@ namespace PPBA
 		/// <param name="prefab">the prefab, that should be used for the object pool</param>
 		/// <param name="initialSize">the size of the object pool</param>
 		/// <param name="grandParent">the parent object in witch the objectpool will initialice in objectholder in witch the objects will be instanciated into</param>
-		/// <param name="doTrackInNetwork">if true every object in the objectpool will get a unique id witch will be wrote into every INetElement script in the instanciated prefab</param>
 		/// <returns>the objectpool of the prefab type. null if prefab is null, prefab has not T component at the top level, or the prefab has no INetElement on any level if it is flaged as doTrackInNetwork</returns>
-		public static ObjectPool CreatePool<T>(GameObject prefab, int initialSize, Transform grandParent, bool doTrackInNetwork = false) where T : MonoBehaviour
+		public static ObjectPool CreatePool<T>(GameObject prefab, int initialSize, Transform grandParent) where T : MonoBehaviour
 		{
 			if(prefab == null)
 				return null;
@@ -48,12 +47,29 @@ namespace PPBA
 				return s_objectPools[prefab];
 			if(!prefab.GetComponent(typeof(T)))
 				return null;
-			if(doTrackInNetwork && prefab.GetComponentsInChildren<INetElement>().Length == 0)
+
+			GameObject tmp = new GameObject(prefab.name);
+			tmp.transform.parent = grandParent;
+			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, typeof(T), ObjectType.SIZE);
+			return s_objectPools[prefab];
+		}
+
+		public static ObjectPool CreatePool<T>(ObjectType type, int initialSize, Transform grandParent) where T : MonoBehaviour
+		{
+			if(type == ObjectType.SIZE)
+				return null;
+
+			GameObject prefab = GlobalVariables.s_instance._prefabs[(int)type];
+			if(s_objectPools.ContainsKey(prefab))
+				return s_objectPools[prefab];
+			if(!prefab.GetComponent(typeof(T)))
+				return null;
+			if(prefab.GetComponentsInChildren<INetElement>().Length <= 0)
 				return null;
 
 			GameObject tmp = new GameObject(prefab.name);
 			tmp.transform.parent = grandParent;
-			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, typeof(T), doTrackInNetwork);
+			s_objectPools[prefab] = new ObjectPool(prefab, initialSize, tmp.transform, typeof(T), type);
 			return s_objectPools[prefab];
 		}
 
@@ -100,15 +116,15 @@ namespace PPBA
 		private MonoBehaviour Resize()
 		{
 			int idRange = 0;
-			if(_doTrack)
+			if(_oType != ObjectType.SIZE)
 			{
-				idRange = GameNetcode.s_instance.GetNewIDRange(_stepSize);
+				idRange = GameNetcode.s_instance.GetNewIDRange(_oType, _stepSize);
 			}
 
 			GameObject firstElement = GameObject.Instantiate(_prefab, _parent);
 			firstElement.name = _prefab.name + " (" + _parent.childCount + ")";
 
-			if(_doTrack)
+			if(_oType != ObjectType.SIZE)
 			{
 				foreach(var it in firstElement.GetComponentsInChildren<INetElement>())
 				{
@@ -125,7 +141,7 @@ namespace PPBA
 				tmp.SetActive(false);
 				tmp.name = _prefab.name + " (" + _parent.childCount + ")";
 
-				if(_doTrack)
+				if(_oType != ObjectType.SIZE)
 				{
 					foreach(var it in tmp.GetComponentsInChildren<INetElement>())
 					{

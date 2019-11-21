@@ -338,11 +338,13 @@ namespace PPBA
 		/// reserves a range of consecutive ids
 		/// </summary>
 		/// <param name="range">the count of id you nead</param>
+		/// <param name="type">the type of prefab object pool that should be tracked</param>
 		/// <returns>the first id of the reserved id range </returns>
-		public int GetNewIDRange(int range = 1)
+		public int GetNewIDRange(ObjectType type, int range = 1)
 		{
 			int id = _currentID;
 			_currentID += range;
+			//TODO write to GameState to add range to Objectpool of type
 			return id;
 		}
 	}
