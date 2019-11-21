@@ -46,23 +46,19 @@ namespace PPBA
 		//abstract functions
 		public abstract void Execute(Pawn pawn);
 		protected abstract float PawnAxisInputs(Pawn pawn, string name);//switch returning value/maxValue of the axis-variable
-		
+
 		/// <summary>
-		/// - Finds and saves bestTarget, so that it can be read with TargetAxisInputs() and used in Execute().//but i'm using targetAxisInputs() for that calc? óÒ
-		/// - Uses CalculateTargetScore often.
-		/// - Adds the <Pawn,Target> Tuple to a targetDictionary.
+		/// - Adds the <Pawn,Target> Tuple to a targetDictionary, so that it can be used in Execute().
+		/// - Uses CalculateTargetScore() often, which uses TargetAxisInputs().
 		/// </summary>
 		public abstract float FindBestTarget(Pawn pawn);
+		public abstract int GetTargetID(Pawn pawn);
+		public abstract void RemoveFromTargetDict(Pawn pawn);
 
 		//also needs to implement:
 		//protected float TargetAxisInputs(Pawn pawn, string name, TARGET target);//switch returning value/maxValue of the axis-variable
 		//protected float CalculateTargetScore(Pawn pawn, TARGET target)
 		//
 		//as these cannot be defined here, as only the behavior itself knows the signature
-		//
-		//got to remove pawns from the TARGETDICTIONARIES when they change behavior
-
-		public abstract int GetTargetID(Pawn pawn);
-		public abstract void RemoveFromTargetDict(Pawn pawn);
 	}
 }

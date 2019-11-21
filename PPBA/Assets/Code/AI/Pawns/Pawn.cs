@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using TMPro;
 
 namespace PPBA
 {
@@ -282,20 +283,6 @@ namespace PPBA
 			*/
 			return Behaviors.IDLE;
 		}
-
-		private void OnEnable()
-		{
-			TickHandler.s_AIEvaluate += Evaluate;
-			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
-		}
-
-		private void OnDisable()
-		{
-			TickHandler.s_AIEvaluate -= Evaluate;
-			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
-		}
 		#endregion
 
 		#region Member Admin
@@ -497,10 +484,37 @@ namespace PPBA
 		}
 		#endregion
 
-		#region Interfaces
-		void IPanelInfo.GetPanelInfo()
+		#region Enable/Disable
+		private void OnEnable()
 		{
-			throw new NotImplementedException();
+			TickHandler.s_AIEvaluate += Evaluate;
+			TickHandler.s_DoTick += Execute;
+			TickHandler.s_GatherValues += WriteToGameState;
+		}
+
+		private void OnDisable()
+		{
+			TickHandler.s_AIEvaluate -= Evaluate;
+			TickHandler.s_DoTick -= Execute;
+			TickHandler.s_GatherValues -= WriteToGameState;
+		}
+		#endregion
+
+		#region Interfaces
+		private TextMeshProUGUI[] _panelDetails;
+		public void InitialiseUnitPanel()
+		{
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, "Morale: " + _morale, ref _panelDetails);
+		}
+
+		public void UpdateUnitPanelInfo()
+		{
+			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			{
+				_panelDetails[0].text = "Team: " + _team;
+				_panelDetails[1].text = "Health: " + _health;
+				_panelDetails[2].text = "Morale: " + _morale;
+			}
 		}
 		#endregion
 
@@ -511,6 +525,5 @@ namespace PPBA
 			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 		}
 		#endregion
-
 	}
 }

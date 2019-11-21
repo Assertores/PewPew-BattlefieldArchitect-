@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace PPBA
 {
-	public interface IPanelInfo
+	public interface IPanelInfo//let all clickable objects implement this interface.
 	{
-		void GetPanelInfo();//TODO: Adjust return type to Rene's PanelViewer and let all clickable objects implement this interface.
+		void InitialiseUnitPanel();//Calls UnitScreenController.AddUnitInfoPanel for each value shown.
+		void UpdateUnitPanelInfo();//Use the refs provided by AddUnitInfoPanel to refresh the values in the panel.
 	}
 }
