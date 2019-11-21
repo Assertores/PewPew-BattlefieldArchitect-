@@ -29,6 +29,10 @@ namespace PPBA
 #endif
 		}
 
+		public ObjectType _type;
+		int _id;
+		int _tick;
+
 		void ServerInputHandling(int tick)
 		{
 			Debug.Log("server executes inputs from clients");
@@ -38,7 +42,18 @@ namespace PPBA
 		// bestätigung ob die übergebenen ip funktioniert hat aus s_interfaceGameState
 		void ClientInputHandling(int tick)
 		{
-			Debug.Log("client executes or denyes inputs");
+			if(tick == _tick)
+			{
+				if(TickHandler.s_interfaceGameState._denyedInputIDs.Exists(x => x == _id))
+				{
+					Debug.Log("input was denyed");
+				}
+				else
+				{
+					Debug.Log("input was sucsessfull");
+				}
+				Destroy(this.gameObject);
+			}
 		}
 
 		void ServerInputGather(int tick)
@@ -50,7 +65,10 @@ namespace PPBA
 		// hier schreiben in den s_interfaceInputState und bekommst id zurück
 		void ClientInputGather(int tick)
 		{
+
 			Debug.Log("client writes all inputs since last tick into inputstate");
+			_tick = tick;
+			_id = TickHandler.s_interfaceInputState.AddObj(_type, transform.position, transform.rotation.eulerAngles.y);
 		}
 	}
 }
