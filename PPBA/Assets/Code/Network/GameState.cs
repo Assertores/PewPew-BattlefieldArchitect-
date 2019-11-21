@@ -78,6 +78,11 @@ namespace PPBA
 			public BitField2D _mask = new BitField2D(0,0);
 			public List<float> _values = new List<float>();
 		}
+
+		public class input : gsc
+		{
+			public int _client;
+		}
 	}
 	public class GameState
 	{
@@ -100,7 +105,7 @@ namespace PPBA
 		public List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		public List<GSC.path> _paths = new List<GSC.path>();
 		public List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
-		public List<int> _denyedInputIDs = new List<int>();
+		public List<GSC.input> _denyedInputIDs = new List<GSC.input>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -246,7 +251,7 @@ namespace PPBA
 					HandlePackageSize(maxPackageSize, value, msg.ToArray());
 				}
 			}
-			if(_denyedInputIDs.Count > 0)
+			/*if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
 				msg.Add((byte)GSC.DataType.INPUTS);
@@ -257,7 +262,7 @@ namespace PPBA
 				}
 
 				HandlePackageSize(maxPackageSize, value, msg.ToArray());
-			}
+			}*/
 
 			if(value.Count == 0)
 			{
@@ -500,7 +505,7 @@ namespace PPBA
 						_heatMaps.Add(value);
 						break;
 					}
-					case GSC.DataType.INPUTS:
+					/*case GSC.DataType.INPUTS:
 					{
 						_denyedInputIDs = new List<int>(count);
 						for(int i = 0; i < count; i++)
@@ -509,7 +514,7 @@ namespace PPBA
 							offset += sizeof(int);
 						}
 						break;
-					}
+					}*/
 					default:
 						throw new InvalidEnumArgumentException();
 				}
