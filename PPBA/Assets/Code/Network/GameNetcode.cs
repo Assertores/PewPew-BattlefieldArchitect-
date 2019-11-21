@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-#define UNITY_SERVER
+//#define UNITY_SERVER
 namespace PPBA
 {
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
