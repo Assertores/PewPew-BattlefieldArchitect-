@@ -6,58 +6,62 @@ namespace PPBA
 {
 	public class TickEventManager : Singleton<TickEventManager>
 	{
-		private void OnEnable()
+		List<GSC.input> _denyedInputs = new List<GSC.input>();
+
+		private void Start()
 		{
 #if UNITY_SERVER
-			TickHandler.s_DoInput += ServerInputHandling;
-			TickHandler.s_GatherValues += ServerInputGather;
-#else
-			TickHandler.s_DoInput += ClientInputHandling;
-			TickHandler.s_GatherValues += ClientInputGather;
+			TickHandler.s_DoInput += TranslateInputToGame;
+			TickHandler.s_GatherValues += ReturnDenyedInputs;
+#endif
+		}
+		private void OnDestroy()
+		{
+#if UNITY_SERVER
+			TickHandler.s_DoInput -= TranslateInputToGame;
+			TickHandler.s_GatherValues -= ReturnDenyedInputs;
 #endif
 		}
 
-		private void OnDisable()
+		void TranslateInputToGame(int tick)
 		{
-#if UNITY_SERVER
-			TickHandler.s_DoInput -= ServerInputHandling;
-			TickHandler.s_GatherValues -= ServerInputGather;
-#else
-			TickHandler.s_DoInput -= ClientInputHandling;
-			TickHandler.s_GatherValues -= ClientInputGather;
-#endif
+			foreach(var it in TickHandler.s_interfaceInputState._objs)
+			{
+				if(false)//TODO: prüfen ob es an der stelle gesetzt werden darf
+				{
+					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
+				}
+				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
+				element.transform.position = it._pos;
+				element.transform.rotation = Quaternion.Euler(0, it._angle, 0);
+			}
+			foreach(var it in TickHandler.s_interfaceInputState._combinedObjs)
+			{
+				if(false)//TODO: prüfen ob es an der stelle gesetzt werden darf
+				{
+					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
+				}
+
+				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
+				element.transform.position = it._corners[0];
+				for(int i = 1; i < it._corners.Length; i++)
+				{
+					//----- ----- corner ----- -----
+					element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
+					element.transform.position = it._corners[i];
+					//----- ----- between ----- -----
+					element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type + 1]].GetNextObject();
+					element.transform.position = (it._corners[i-1] + it._corners[i])/2;
+					element.transform.rotation = Quaternion.LookRotation(it._corners[i - 1] - it._corners[i], Vector3.up);
+				}
+			}
 		}
 
-		void ServerInputHandling(int tick)
+		void ReturnDenyedInputs(int tick)
 		{
-			Debug.Log("server executes inputs from clients");
+			TickHandler.s_interfaceGameState._denyedInputIDs.AddRange(_denyedInputs);
+			_denyedInputs.Clear();
 		}
-
-
-		// bestätigung ob die übergebenen ip funktioniert hat aus s_interfaceGameState
-		void ClientInputHandling(int tick)
-		{
-			Debug.Log("client executes or denyes inputs");
-			// wenn hier nicht denyed zurück kommt mmit der ip hat es funktioniert
-		}
-
-		void ServerInputGather(int tick)
-		{
-			Debug.Log("server gathers all denyed inputs");
-		}
-
-
-		// hier schreiben in den s_interfaceInputState und bekommst id zurück
-		void ClientInputGather(int tick)
-		{
-			Debug.Log("client writes all inputs since last tick into inputstate");
-		}
-
-		public void SendBuilding(int id )
-		{
-
-		}
-
 	}
 }
 
