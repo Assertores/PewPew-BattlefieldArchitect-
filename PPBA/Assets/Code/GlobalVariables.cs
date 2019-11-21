@@ -83,8 +83,11 @@ namespace PPBA
 				_prefabs[(int)it._type] = it._prefab;
 			}
 
-			ObjectPool.CreatePool(_prefabs[(int)ObjectType.REFINERY], 100, transform);
+			ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
 
+			//ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_WARRIOR, 100, transform); //über netzwerk getracked
+
+			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
 		}
 
 		#endregion
