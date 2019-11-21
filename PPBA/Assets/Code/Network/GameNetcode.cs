@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-//#define UNITY_SERVER
+#define UNITY_SERVER
 namespace PPBA
 {
 	enum MessageType : byte { NON, CONNECT, DISCONNECT, RECONNECT, NEWID }
@@ -25,6 +25,7 @@ namespace PPBA
 #if UNITY_SERVER
 
 		int _nextID = 0;
+		[SerializeField] int _playerCount = 1;
 
 		void Start() {
 			socket = new UdpClient(11000);
@@ -37,6 +38,8 @@ namespace PPBA
 
 		private void Update() {
 			if (!Listen())
+				return;
+			if(GlobalVariables.s_instance._clients.FindAll(x => x._isConnected == true).Count < _playerCount)
 				return;
 
 			TickHandler.s_instance.Simulate();
