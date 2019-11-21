@@ -10,7 +10,7 @@ namespace PPBA
 
 		private void Start()
 		{
-			int id = TickHandler.s_interfaceInputState.AddObj(_type,transform.position,transform.rotation.y);
+			int id = TickHandler.s_interfaceInputState.AddObj(_type,transform.position,transform.eulerAngles.y);
 			TickEventManager.s_instance.SendBuilding(id);
 		}
 

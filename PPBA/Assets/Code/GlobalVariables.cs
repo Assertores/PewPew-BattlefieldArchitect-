@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PPBA
 {
-	public enum ObjectType { REFINERY, WALL, WALLBETWEEN, SIZE };
+	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, SIZE };
 
 	public class client
 	{
@@ -54,7 +54,7 @@ namespace PPBA
 		[SerializeField] private BuildAssignment[] _prefabInput;
 
 
-		public GameObject[] _prefabs;
+		[HideInInspector] public GameObject[] _prefabs;
 
 		#endregion
 		#region MonoBehaviour

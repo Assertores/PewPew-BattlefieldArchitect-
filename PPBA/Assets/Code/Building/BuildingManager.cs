@@ -216,7 +216,7 @@ namespace PPBA
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
 			GameObject Obj = Instantiate(GhostWallBetween, pos, rotationObj);
-			_PlayedBuilts.Add(Obj, ObjectType.WALLBETWEEN);
+			_PlayedBuilts.Add(Obj, ObjectType.WALL_BETWEEN);
 		}
 
 		private void ConstructWall()
