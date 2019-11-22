@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using TMPro;
 
 namespace PPBA
 {
@@ -10,11 +11,12 @@ namespace PPBA
 
 	[RequireComponent(typeof(SphereCollider))]
 	[RequireComponent(typeof(LineRenderer))]
-	public abstract class Pawn : MonoBehaviour, IPanelInfo//TODO: inherit from INetElement
+	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
 	{
 		#region Variables
 		//public
-		[SerializeField] public int _id = 0;
+
+		[SerializeField] public int _id { get; set; } = 0;
 		[SerializeField] public int _team = 0;
 
 		[SerializeField] public float _health = 100;
@@ -84,6 +86,8 @@ namespace PPBA
 		public Vector3 _moveTarget;//let the behaviors set this
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null;
+
+		int INetElement._id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		#endregion
 
 		public void Start()
@@ -161,7 +165,10 @@ namespace PPBA
 		}
 
 		#region Initialisation
-		//public void InitialisePawn(PARAMETER)
+		public void InitialisePawn()
+		{
+			//TODO: REFRESH VALUES TO DEFAULT
+		}
 
 		protected void InitiateBehaviors()  //reads the behaviors from the enum-array
 		{
@@ -282,20 +289,6 @@ namespace PPBA
 			*/
 			return Behaviors.IDLE;
 		}
-
-		private void OnEnable()
-		{
-			TickHandler.s_AIEvaluate += Evaluate;
-			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
-		}
-
-		private void OnDisable()
-		{
-			TickHandler.s_AIEvaluate -= Evaluate;
-			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
-		}
 		#endregion
 
 		#region Member Admin
@@ -318,6 +311,11 @@ namespace PPBA
 			}
 
 			_morale -= amount;
+		}
+
+		public void Heal(int amount)
+		{
+			_health = Mathf.Min(_health + amount, _maxHealth);
 		}
 		#endregion
 
@@ -497,10 +495,37 @@ namespace PPBA
 		}
 		#endregion
 
-		#region Interfaces
-		void IPanelInfo.GetPanelInfo()
+		#region Enable/Disable
+		private void OnEnable()
 		{
-			throw new NotImplementedException();
+			TickHandler.s_AIEvaluate += Evaluate;
+			TickHandler.s_DoTick += Execute;
+			TickHandler.s_GatherValues += WriteToGameState;
+		}
+
+		private void OnDisable()
+		{
+			TickHandler.s_AIEvaluate -= Evaluate;
+			TickHandler.s_DoTick -= Execute;
+			TickHandler.s_GatherValues -= WriteToGameState;
+		}
+		#endregion
+
+		#region Interfaces
+		private TextMeshProUGUI[] _panelDetails;
+		public void InitialiseUnitPanel()
+		{
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, "Morale: " + _morale, ref _panelDetails);
+		}
+
+		public void UpdateUnitPanelInfo()
+		{
+			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			{
+				_panelDetails[0].text = "Team: " + _team;
+				_panelDetails[1].text = "Health: " + _health;
+				_panelDetails[2].text = "Morale: " + _morale;
+			}
 		}
 		#endregion
 
@@ -511,6 +536,5 @@ namespace PPBA
 			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 		}
 		#endregion
-
 	}
 }
