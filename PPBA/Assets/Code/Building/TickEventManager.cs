@@ -7,7 +7,7 @@ namespace PPBA
 	public class TickEventManager : Singleton<TickEventManager>
 	{
 		List<GSC.input> _denyedInputs = new List<GSC.input>();
-
+		
 		private void Start()
 		{
 #if UNITY_SERVER

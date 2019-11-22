@@ -16,7 +16,9 @@ namespace PPBA
 		#region Variables
 		//public
 
-		[SerializeField] public int _id { get; set; } = 0;
+		public int _id { get; set; }
+		//int INetElement._id {  get => _idField; set => _idField = value; }
+		//private int _idField = 0;
 		[SerializeField] public int _team = 0;
 
 		[SerializeField] public float _health = 100;
@@ -44,10 +46,9 @@ namespace PPBA
 
 		#region References
 		//Behaviors
-		//protected enum Behavior { GoAnywhere, Shoot, Heal };
 		[SerializeField] protected Behaviors[] e_behaviors;
 		protected Behavior[] _behaviors;
-		protected Behavior _lastBehavior;
+		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 
 		//Components
@@ -86,8 +87,6 @@ namespace PPBA
 		public Vector3 _moveTarget;//let the behaviors set this
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null;
-
-		int INetElement._id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		#endregion
 
 		public void Start()
@@ -453,8 +452,10 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
-			TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
-			TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+			if(_lastBehavior != null)
+				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+			if(_navMeshPath != null)
+				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
 
 		#region Physics
@@ -536,5 +537,30 @@ namespace PPBA
 			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 		}
 		#endregion
+
+		/// <summary>
+		/// Resets a pawn to factory setting.
+		/// </summary>
+		/// <param name="pawn">The pawn to be reset.</param>
+		/// <param name="team"></param>
+		static void ResetToDefault(Pawn pawn, int team)
+		{
+			pawn._team = team;//not needed if object pools are per player
+			pawn._health = pawn._maxHealth;
+			pawn._ammo = pawn._maxAmmo;
+			pawn._morale = pawn._maxMorale;
+			pawn._resources = 0;
+			pawn._isNavPathDirty = true;
+			pawn._isAttacking = false;
+			//pawn._moveSpeed = 3.6111111f;
+			pawn._navMeshPath = null;
+			pawn._morale = pawn._maxMorale;
+
+			pawn._closePawns.Clear();
+			pawn._closeCover.Clear();
+
+			//pawn._moveTarget = Vector3.forward;
+			pawn._mountSlot = null;
+		}
 	}
 }

@@ -170,7 +170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d981c42a95650a43a95c587423d9b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 0
   _team: 0
   _health: 100
   _maxHealth: 100
@@ -201,7 +200,7 @@ PrefabInstance:
     - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
         type: 3}
       propertyPath: m_Name
-      value: DumbPawn
+      value: PawnModel
       objectReference: {fileID: 0}
     - target: {fileID: 3257966617531606111, guid: 08524a5835aaf214e8193ae63b0d15da,
         type: 3}

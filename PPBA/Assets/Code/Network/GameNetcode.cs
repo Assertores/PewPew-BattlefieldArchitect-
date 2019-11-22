@@ -50,7 +50,7 @@ namespace PPBA
 		}
 
 		bool Listen() {
-			if (socket.Available <= 0)
+			if (null == socket || socket.Available <= 0)
 				return false;
 
 			Debug.Log("[Server] reseaved package");
