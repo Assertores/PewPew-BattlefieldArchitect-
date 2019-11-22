@@ -14,7 +14,7 @@ namespace PPBA
 		public static Dictionary<GameObject, ObjectPool> s_objectPools { get; private set; } = new Dictionary<GameObject, ObjectPool>();
 
 		private GameObject _prefab;
-		private List<MonoBehaviour> _elements;
+		private List<MonoBehaviour> _elements = new List<MonoBehaviour>();
 		private System.Type _type;
 		private Transform _parent;
 		private int _stepSize;
