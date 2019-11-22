@@ -10,6 +10,9 @@ namespace PPBA
 		//public
 		[SerializeField] public int _id = 0;
 		[SerializeField] public int _team = 0;
+		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
+		[SerializeField] public float _maxHealth = 100;
+
 		[SerializeField] [Tooltip("How fit is the MountSlot right now?")] public float _score = 0;
 		[SerializeField] [Tooltip("How much cover does the MountSlot offer a pawn?")] public float _coverScore = 0f;
 		public bool _isMounted => _mountingPawn != null;
@@ -28,6 +31,9 @@ namespace PPBA
 		}
 		public List<Pawn> _closePawns = new List<Pawn>();
 
+		//protected
+		protected float _healthBackingField = 100;
+		
 		public bool GetIn(Pawn pawn)
 		{
 			if(_isMounted)
@@ -54,6 +60,17 @@ namespace PPBA
 
 		public abstract void Execute();
 		public abstract void CalculateScore(int tick = 0);//add to action: s_LateCalc (attention: can't use cover scores as they are calculated at the same time. maybe move those to EarlyCalc)
+
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				//die
+			}
+		}
 
 		public void OnTriggerEnter(Collider other)
 		{

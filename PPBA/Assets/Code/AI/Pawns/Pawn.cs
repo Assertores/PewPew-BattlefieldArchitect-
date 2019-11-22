@@ -32,7 +32,10 @@ namespace PPBA
 		[SerializeField] public float _maxMorale = 100;
 
 		[SerializeField] public float _attackDistance = 5f;
-		[SerializeField] public float _attackDamage = 2f;
+		[SerializeField][Tooltip("0: Never hits.\n 1: Always hits.")][Range(0f, 1f)] public float _attackChance = 0.5f;
+		[SerializeField] public float _minAttackDamage = 25f;
+		[SerializeField] public float _maxAttackDamage = 75f;
+		[SerializeField][Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
 		[SerializeField] public int _resources;//resources carried
 		[SerializeField] public int _maxResource = 10;

@@ -29,7 +29,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			throw new System.NotImplementedException();
+
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -128,5 +128,28 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
 		}
+
+		public void Shoot(Pawn pawn, Pawn target)
+		{
+			if(0 < pawn._ammo)//skip if no ammo
+				pawn._ammo--;
+			else
+				return;
+
+			if(Random.Range(0f, 1f) < pawn._attackChance)//roll to hit anything
+			{
+				if(target._isMounting)
+				{
+					if(Random.Range(0f, 1f) < target._mountSlot._coverScore)//roll to hit cover
+					{
+						return;
+					}
+				}
+
+				target.TakeDamage(RollDamage(pawn));//target hit succesfully
+			}
+		}
+
+		private int RollDamage(Pawn pawn) => (int)Mathf.Lerp(pawn._minAttackDamage, pawn._maxAttackDamage, Mathf.Clamp(pawn._attackDamageCurve.Evaluate(Random.Range(0f, 1f)), 0f, 1f));
 	}
 }
