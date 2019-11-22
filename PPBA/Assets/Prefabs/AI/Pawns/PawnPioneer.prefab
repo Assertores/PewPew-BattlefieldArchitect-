@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6919956575199279599}
   - component: {fileID: 7740825525163679362}
   - component: {fileID: -6775620331208041567}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PawnPioneer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,9 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _team: 0
-  _health: 100
   _maxHealth: 100
-  _ammo: 100
   _maxAmmo: 100
   _maxMorale: 100
   _attackDistance: 5
@@ -183,6 +181,8 @@ MonoBehaviour:
   _isNavPathDirty: 1
   _isAttacking: 0
   _moveSpeed: 3.611111
+  _healthRegen: 1
+  _moraleRegen: 1
   e_behaviors: 
   _behaviorScores: []
   _objectToFollow: {fileID: 8532531223116004335}
@@ -190,6 +190,9 @@ MonoBehaviour:
   _closeCover: []
   _moveTarget: {x: 0, y: 0, z: 0}
   _mountSlot: {fileID: 0}
+  _overlapSphereLayerMask:
+    serializedVersion: 2
+    m_Bits: 2560
 --- !u!1001 &8582627025483372878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201,6 +204,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PawnModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3257966617531606111, guid: 08524a5835aaf214e8193ae63b0d15da,
         type: 3}
@@ -256,6 +264,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676420409812695421, guid: 08524a5835aaf214e8193ae63b0d15da,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2010986225, guid: 08524a5835aaf214e8193ae63b0d15da, type: 3}

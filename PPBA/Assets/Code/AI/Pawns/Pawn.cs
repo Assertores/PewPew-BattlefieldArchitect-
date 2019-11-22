@@ -473,11 +473,12 @@ namespace PPBA
 		#endregion
 
 		#region Physics
+		[SerializeField][Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
 		private void CheckOverlapSphere()
 		{
 			ClearLists();
 
-			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f);
+			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f);//TODO: adjust sphere radius
 			
 			foreach(Collider c in colliders)
 			{
