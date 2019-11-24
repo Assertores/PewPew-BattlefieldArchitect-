@@ -19,6 +19,7 @@ namespace PPBA
 
 		void RegisterInput(int tick)
 		{
+			print("register input ");
 			TickHandler.s_GatherValues -= RegisterInput;
 			TickHandler.s_DoInput += ReactOnInput;
 
@@ -28,6 +29,7 @@ namespace PPBA
 
 		void ReactOnInput(int tick)
 		{
+			print("reeaction on input ");
 			if(tick == _tick)
 			{
 				TickHandler.s_DoInput -= ReactOnInput;
@@ -38,6 +40,7 @@ namespace PPBA
 				}
 				else
 				{
+					//TickHandler.s_currentTick.
 					//TODO: eingabe war valide
 				}
 
