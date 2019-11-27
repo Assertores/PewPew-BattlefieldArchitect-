@@ -619,6 +619,23 @@ namespace PPBA
 			newPawn._moveTarget = spawnPoint;
 		}
 
+		public static ObjectType RandomPawnType()
+		{
+			int randomNumber = UnityEngine.Random.Range(0, 3);
+
+			switch(randomNumber)
+			{
+				case 0:
+					return ObjectType.PAWN_HEALER;
+				case 1:
+					return ObjectType.PAWN_PIONEER;
+				case 2:
+					return ObjectType.PAWN_WARRIOR;
+				default:
+					return ObjectType.PAWN_WARRIOR;
+			}
+		}
+
 		private void OnEnable()
 		{
 			TickHandler.s_AIEvaluate += Evaluate;

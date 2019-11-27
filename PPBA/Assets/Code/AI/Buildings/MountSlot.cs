@@ -102,7 +102,7 @@ namespace PPBA
 
 		private void OnEnable()
 		{
-			if(null != JobCenter.s_mountSlots && !JobCenter.s_mountSlots[_team].Contains(this))
+			if(null != JobCenter.s_mountSlots && _team < JobCenter.s_mountSlots.Length && !JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
