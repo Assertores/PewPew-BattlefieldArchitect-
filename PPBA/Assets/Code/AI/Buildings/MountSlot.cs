@@ -111,7 +111,7 @@ namespace PPBA
 
 		private void OnDisable()
 		{
-			if(null != JobCenter.s_mountSlot && JobCenter.s_mountSlots[_team].Contains(this))
+			if(null != JobCenter.s_mountSlots && JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Remove(this);
 
 			if(_isMounted)
