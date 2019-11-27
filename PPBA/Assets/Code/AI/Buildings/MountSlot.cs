@@ -10,8 +10,6 @@ namespace PPBA
 		//public
 		[SerializeField] public int _id = 0;
 		[SerializeField] public int _team = 0;
-		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
-		[SerializeField] public float _maxHealth = 100;
 
 		[SerializeField] [Tooltip("How fit is the MountSlot right now?")] public float _score = 0;
 		[SerializeField] [Tooltip("How much cover does the MountSlot offer a pawn?")] public float _coverScore = 0f;
@@ -31,9 +29,7 @@ namespace PPBA
 		}
 		public List<Pawn> _closePawns = new List<Pawn>();
 
-		//protected
-		protected float _healthBackingField = 100;
-		
+		#region Pawn Interaction
 		public bool GetIn(Pawn pawn)
 		{
 			if(_isMounted)
@@ -58,19 +54,29 @@ namespace PPBA
 				return false;
 		}
 
+		public virtual void GetHit(int amount)
+		{
+			Debug.Log("Hitting MountSlot " + gameObject.name + " did not apply damage anywhere.");
+		}
+		#endregion
+
+		#region Tick
 		public abstract void Execute();
 		public abstract void CalculateScore(int tick = 0);//add to action: s_LateCalc (attention: can't use cover scores as they are calculated at the same time. maybe move those to EarlyCalc)
 
-		public void TakeDamage(int amount)
+		public virtual float GetCoverScore(Vector3 shooterPosition)
 		{
-			_health -= amount;
-			//set "i got hurt" flag to send to the client
-
-			if(_health <= 0)
-			{
-				//die
-			}
+			return _coverScore;
 		}
+
+		public virtual void WriteToGameState(int tick)
+		{
+			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
+			//IDictionary team health trans mounting pawn
+
+			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+		}
+		#endregion
 
 		public void OnTriggerEnter(Collider other)
 		{
@@ -96,7 +102,7 @@ namespace PPBA
 
 		private void OnEnable()
 		{
-			if(!JobCenter.s_mountSlots[_team].Contains(this))
+			if(null != JobCenter.s_mountSlots && !JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
@@ -105,7 +111,7 @@ namespace PPBA
 
 		private void OnDisable()
 		{
-			if(JobCenter.s_mountSlots[_team].Contains(this))
+			if(null != JobCenter.s_mountSlot && JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Remove(this);
 
 			if(_isMounted)

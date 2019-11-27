@@ -15,7 +15,6 @@ namespace PPBA
 	{
 		#region Variables
 		//public
-
 		public int _id { get; set; }
 		//int INetElement._id {  get => _idField; set => _idField = value; }
 		//private int _idField = 0;
@@ -32,10 +31,10 @@ namespace PPBA
 		[SerializeField] public float _maxMorale = 100;
 
 		[SerializeField] public float _attackDistance = 5f;
-		[SerializeField][Tooltip("0: Never hits.\n 1: Always hits.")][Range(0f, 1f)] public float _attackChance = 0.5f;
+		[SerializeField] [Tooltip("0: Never hits.\n 1: Always hits.")] [Range(0f, 1f)] public float _attackChance = 0.5f;
 		[SerializeField] public float _minAttackDamage = 25f;
 		[SerializeField] public float _maxAttackDamage = 75f;
-		[SerializeField][Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
+		[SerializeField] [Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
 		[SerializeField] public int _resources;//resources carried
 		[SerializeField] public int _maxResource = 10;
@@ -80,17 +79,17 @@ namespace PPBA
 				return _closePawns;
 			}
 		}
-		public List<Cover> _closeCover;
-		public List<Cover> _activeCover
+		public List<CoverSlot> _closeCoverSlots;
+		public List<CoverSlot> _activeCoverSlots
 		{
 			get
 			{
-				foreach(var it in _closeCover)
+				foreach(var it in _closeCoverSlots)
 				{
 					if(!it.gameObject.activeSelf)
-						_closeCover.Remove(it);//inactive covers are removed here
+						_closeCoverSlots.Remove(it);//inactive covers are removed here
 				}
-				return _closeCover;
+				return _closeCoverSlots;
 			}
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
@@ -476,13 +475,13 @@ namespace PPBA
 		#endregion
 
 		#region Physics
-		[SerializeField][Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
+		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
 		private void CheckOverlapSphere()
 		{
 			ClearLists();
 
-			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f);//TODO: adjust sphere radius
-			
+			Collider[] colliders = Physics.OverlapSphere(transform.position, 10f);//TODO: adjust sphere radius
+
 			foreach(Collider c in colliders)
 			{
 				switch(c.tag)
@@ -495,7 +494,12 @@ namespace PPBA
 					case "Cover":
 						Cover cover = c.GetComponent<Cover>();
 						if(cover)
-							_closeCover.Add(cover);
+						{
+							foreach(CoverSlot slot in cover._coverSlots)
+							{
+								_closeCoverSlots.Add(slot);
+							}
+						}
 						continue;
 					default:
 						continue;
@@ -517,7 +521,12 @@ namespace PPBA
 			{
 				Cover temp = other.gameObject.GetComponent<Cover>();
 				if(temp)
-					_closeCover.Add(temp);
+				{
+					foreach(CoverSlot slot in temp._coverSlots)
+					{
+						_closeCoverSlots.Add(slot);
+					}
+				}
 			}
 		}
 
@@ -534,8 +543,13 @@ namespace PPBA
 			if(other.tag == "Cover")
 			{
 				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp && _closeCover.Contains(temp))
-					_closeCover.Remove(temp);
+				if(temp)
+				{
+					foreach(CoverSlot slot in temp._coverSlots)
+					{
+						_closeCoverSlots.Add(slot);
+					}
+				}
 			}
 		}
 		#endregion
@@ -570,7 +584,7 @@ namespace PPBA
 		private void ClearLists()
 		{
 			_closePawns.Clear();
-			_closeCover.Clear();
+			_closeCoverSlots.Clear();
 		}
 
 		/// <summary>
@@ -617,6 +631,9 @@ namespace PPBA
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
 			TickHandler.s_GatherValues -= WriteToGameState;
+
+			if(_isMounting)
+				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
 		}
 		#endregion
 	}

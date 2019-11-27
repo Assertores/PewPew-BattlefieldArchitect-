@@ -59,7 +59,10 @@ namespace PPBA
 				case "Ammo":
 					return pawn._ammo / pawn._maxAmmo;
 				case "Cover":
-					return 0.5f;//return actual cover value
+					if(pawn._isMounting)
+						return pawn._mountSlot.GetCoverScore(pawn.transform.position);
+					else
+						return 0f;
 				case "Morale":
 					return pawn._morale / pawn._maxMorale;
 				default:
@@ -77,10 +80,10 @@ namespace PPBA
 				case "Health":
 					return target._health / target._maxHealth;
 				case "Cover":
-					return 1;//got to implement a cover system
+					return 0.5f;//got to implement a cover system
 				case "DistanceToMyBase":
 					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
-					return 1;
+					return 0.5f;
 				case "ShotOnMe":
 					return s_targetDictionary[target] == pawn ? 1f : 0f;
 				default:
@@ -92,7 +95,7 @@ namespace PPBA
 
 		protected float CalculateTargetScore(Pawn pawn, Pawn target)
 		{
-			if(!CheckLos(pawn, target))//early skip when LOS is blocked
+			if(!CheckLos(pawn, target))//early skip when LOS is blocked by something other then cover
 				return 0;
 
 			float score = 1f;
@@ -140,8 +143,9 @@ namespace PPBA
 			{
 				if(target._isMounting)
 				{
-					if(Random.Range(0f, 1f) < target._mountSlot._coverScore)//roll to hit cover
+					if(Random.Range(0f, 1f) < target._mountSlot.GetCoverScore(pawn.transform.position))//roll to hit cover
 					{
+						target._mountSlot.GetHit(RollDamage(pawn));
 						return;
 					}
 				}

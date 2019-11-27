@@ -132,7 +132,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
+        time: 0.49996948
         value: 1
         inSlope: 0
         outSlope: 0
@@ -762,3 +762,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
   _maxDistance: 70
+  _mountDistance: 2
