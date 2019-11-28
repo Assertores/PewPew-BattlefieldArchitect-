@@ -190,6 +190,11 @@ namespace PPBA
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
+
+		public static void ExtractFromGameState(int tick)
+		{
+
+		}
 		#endregion
 
 		#region Initialisation

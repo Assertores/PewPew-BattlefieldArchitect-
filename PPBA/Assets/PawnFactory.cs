@@ -21,12 +21,14 @@ namespace PPBA
 
 		private void FixedUpdate()
 		{
+#if UNITY_SERVER
 			if(_ticker < _maxPawns)
 			{
 				SpawnPawn();
 				_ticker++;
 				//Debug.Log(_ticker);
 			}
+#endif
 		}
 
 		private void SpawnPawn()
