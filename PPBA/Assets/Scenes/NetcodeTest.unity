@@ -187,6 +187,55 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[3]._type
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[3]._prefab
+      value: 
+      objectReference: {fileID: 8532531223116004335, guid: bebc45b5713d3b84fb79fe916035f666,
+        type: 3}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[4]._type
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[4]._prefab
+      value: 
+      objectReference: {fileID: 8532531223116004335, guid: 0e173e7acd5c10d4583d3cb60d7e29e8,
+        type: 3}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[5]._type
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[5]._prefab
+      value: 
+      objectReference: {fileID: 8532531223116004335, guid: b9e858bd6ac9c014e8ef3a26c16d8a98,
+        type: 3}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[6]._type
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[6]._prefab
+      value: 
+      objectReference: {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
 --- !u!1 &487238861

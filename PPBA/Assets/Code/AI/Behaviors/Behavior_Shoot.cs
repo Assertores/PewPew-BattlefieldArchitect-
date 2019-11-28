@@ -29,7 +29,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			throw new System.NotImplementedException();
+
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -59,7 +59,10 @@ namespace PPBA
 				case "Ammo":
 					return pawn._ammo / pawn._maxAmmo;
 				case "Cover":
-					return 0.5f;//return actual cover value
+					if(pawn._isMounting)
+						return pawn._mountSlot.GetCoverScore(pawn.transform.position);
+					else
+						return 0f;
 				case "Morale":
 					return pawn._morale / pawn._maxMorale;
 				default:
@@ -77,10 +80,10 @@ namespace PPBA
 				case "Health":
 					return target._health / target._maxHealth;
 				case "Cover":
-					return 1;//got to implement a cover system
+					return 0.5f;//got to implement a cover system
 				case "DistanceToMyBase":
 					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
-					return 1;
+					return 0.5f;
 				case "ShotOnMe":
 					return s_targetDictionary[target] == pawn ? 1f : 0f;
 				default:
@@ -92,7 +95,7 @@ namespace PPBA
 
 		protected float CalculateTargetScore(Pawn pawn, Pawn target)
 		{
-			if(!CheckLos(pawn, target))//early skip when LOS is blocked
+			if(!CheckLos(pawn, target))//early skip when LOS is blocked by something other then cover
 				return 0;
 
 			float score = 1f;
@@ -128,5 +131,29 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
 		}
+
+		public void Shoot(Pawn pawn, Pawn target)
+		{
+			if(0 < pawn._ammo)//skip if no ammo
+				pawn._ammo--;
+			else
+				return;
+
+			if(Random.Range(0f, 1f) < pawn._attackChance)//roll to hit anything
+			{
+				if(target._isMounting)
+				{
+					if(Random.Range(0f, 1f) < target._mountSlot.GetCoverScore(pawn.transform.position))//roll to hit cover
+					{
+						target._mountSlot.GetHit(RollDamage(pawn));
+						return;
+					}
+				}
+
+				target.TakeDamage(RollDamage(pawn));//target hit succesfully
+			}
+		}
+
+		private int RollDamage(Pawn pawn) => (int)Mathf.Lerp(pawn._minAttackDamage, pawn._maxAttackDamage, Mathf.Clamp(pawn._attackDamageCurve.Evaluate(Random.Range(0f, 1f)), 0f, 1f));
 	}
 }

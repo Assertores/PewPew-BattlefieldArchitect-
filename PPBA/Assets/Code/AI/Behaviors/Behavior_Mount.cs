@@ -22,6 +22,9 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
+			if(!s_targetDictionary.ContainsKey(pawn))//early skip if no target
+				return;
+
 			if(pawn._isMounting)
 			{
 				pawn._mountSlot.Execute();
@@ -112,7 +115,7 @@ namespace PPBA
 				s_targetDictionary.Remove(pawn);
 			}
 
-			pawn._mountSlot.GetOut(pawn);
+			pawn._mountSlot?.GetOut(pawn);
 		}
 	}
 }

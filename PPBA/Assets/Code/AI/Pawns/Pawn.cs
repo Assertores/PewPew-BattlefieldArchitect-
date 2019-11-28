@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using TMPro;
 
 namespace PPBA
 {
@@ -10,24 +11,30 @@ namespace PPBA
 
 	[RequireComponent(typeof(SphereCollider))]
 	[RequireComponent(typeof(LineRenderer))]
-	public abstract class Pawn : MonoBehaviour, IPanelInfo//TODO: inherit from INetElement
+	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
 	{
 		#region Variables
 		//public
-		[SerializeField] public int _id = 0;
+		public int _id { get; set; }
+		//int INetElement._id {  get => _idField; set => _idField = value; }
+		//private int _idField = 0;
 		[SerializeField] public int _team = 0;
 
-		[SerializeField] public float _health = 100;
+		//[SerializeField] public float _health = 100;
+		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
 		[SerializeField] public float _maxHealth = 100;
 
-		[SerializeField] public int _ammo = 100;
+		[SerializeField] public int _ammo { get => _ammoBackingField; set => _ammoBackingField = Mathf.Clamp(value, 0, _maxAmmo); }
 		[SerializeField] public int _maxAmmo = 100;
 
-		[SerializeField] public float _morale { get => _moraleBackingField; set => Mathf.Clamp(value, 0, _maxMorale); }
+		[SerializeField] public float _morale { get => _moraleBackingField; set => _moraleBackingField = Mathf.Clamp(value, 0, _maxMorale); }
 		[SerializeField] public float _maxMorale = 100;
 
 		[SerializeField] public float _attackDistance = 5f;
-		[SerializeField] public float _attackDamage = 2f;
+		[SerializeField] [Tooltip("0: Never hits.\n 1: Always hits.")] [Range(0f, 1f)] public float _attackChance = 0.5f;
+		[SerializeField] public float _minAttackDamage = 25f;
+		[SerializeField] public float _maxAttackDamage = 75f;
+		[SerializeField] [Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
 		[SerializeField] public int _resources;//resources carried
 		[SerializeField] public int _maxResource = 10;
@@ -38,14 +45,18 @@ namespace PPBA
 		[SerializeField] protected bool _isAttacking = false;
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 		protected float _moraleBackingField = 100;
+		protected float _healthBackingField = 100;
+		protected int _ammoBackingField = 100;
+		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
+		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
+
 		#endregion
 
 		#region References
 		//Behaviors
-		//protected enum Behavior { GoAnywhere, Shoot, Heal };
 		[SerializeField] protected Behaviors[] e_behaviors;
 		protected Behavior[] _behaviors;
-		protected Behavior _lastBehavior;
+		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 
 		//Components
@@ -68,17 +79,17 @@ namespace PPBA
 				return _closePawns;
 			}
 		}
-		public List<Cover> _closeCover;
-		public List<Cover> _activeCover
+		public List<CoverSlot> _closeCoverSlots;
+		public List<CoverSlot> _activeCoverSlots
 		{
 			get
 			{
-				foreach(var it in _closeCover)
+				foreach(var it in _closeCoverSlots)
 				{
 					if(!it.gameObject.activeSelf)
-						_closeCover.Remove(it);//inactive covers are removed here
+						_closeCoverSlots.Remove(it);//inactive covers are removed here
 				}
-				return _closeCover;
+				return _closeCoverSlots;
 			}
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
@@ -86,6 +97,7 @@ namespace PPBA
 		public bool _isMounting => _mountSlot != null;
 		#endregion
 
+		#region MonoBehaviour
 		public void Start()
 		{
 			//Get references
@@ -115,9 +127,13 @@ namespace PPBA
 		{
 			NavTick();
 		}
+		#endregion
 
+		#region Tick
 		protected void Evaluate(int tick = 0)   //uses behavior-scores to evaluate behaviors
 		{
+			CheckOverlapSphere();
+
 			for(int i = 0; i < _behaviors.Length; i++)
 			{
 				_behaviorScores[i] = _behaviors[i].Calculate(this);
@@ -158,11 +174,30 @@ namespace PPBA
 			}
 
 			NavTick();
+			Regenerate();
 		}
 
-		#region Initialisation
-		//public void InitialisePawn(PARAMETER)
+		public void WriteToGameState(int tick)
+		{
+			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
 
+			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
+			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
+			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
+			if(_lastBehavior != null)
+				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+			if(_navMeshPath != null)
+				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+		}
+
+		public static void ExtractFromGameState(int tick)
+		{
+
+		}
+		#endregion
+
+		#region Initialisation
 		protected void InitiateBehaviors()  //reads the behaviors from the enum-array
 		{
 			_behaviors = new Behavior[e_behaviors.Length];
@@ -282,20 +317,6 @@ namespace PPBA
 			*/
 			return Behaviors.IDLE;
 		}
-
-		private void OnEnable()
-		{
-			TickHandler.s_AIEvaluate += Evaluate;
-			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
-		}
-
-		private void OnDisable()
-		{
-			TickHandler.s_AIEvaluate -= Evaluate;
-			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
-		}
 		#endregion
 
 		#region Member Admin
@@ -318,6 +339,17 @@ namespace PPBA
 			}
 
 			_morale -= amount;
+		}
+
+		public void Heal(int amount)
+		{
+			_health = Mathf.Min(_health + amount, _maxHealth);
+		}
+
+		public void Regenerate()
+		{
+			_health += _healthRegen;
+			_morale += _moraleRegen;
 		}
 		#endregion
 
@@ -447,19 +479,39 @@ namespace PPBA
 		}
 		#endregion
 
-		public void WriteToGameState(int tick)
+		#region Physics
+		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
+		private void CheckOverlapSphere()
 		{
-			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
+			ClearLists();
 
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
-			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
-			TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
-			TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+			Collider[] colliders = Physics.OverlapSphere(transform.position, 10f);//TODO: adjust sphere radius
+
+			foreach(Collider c in colliders)
+			{
+				switch(c.tag)
+				{
+					case "Pawn":
+						Pawn pawn = c.GetComponent<Pawn>();
+						if(pawn)
+							_closePawns.Add(pawn);
+						continue;
+					case "Cover":
+						Cover cover = c.GetComponent<Cover>();
+						if(cover)
+						{
+							foreach(CoverSlot slot in cover._coverSlots)
+							{
+								_closeCoverSlots.Add(slot);
+							}
+						}
+						continue;
+					default:
+						continue;
+				}
+			}
 		}
 
-		#region Physics
 		private void OnTriggerEnter(Collider other)
 		{
 			//Add relevant objects to closeLists
@@ -474,7 +526,12 @@ namespace PPBA
 			{
 				Cover temp = other.gameObject.GetComponent<Cover>();
 				if(temp)
-					_closeCover.Add(temp);
+				{
+					foreach(CoverSlot slot in temp._coverSlots)
+					{
+						_closeCoverSlots.Add(slot);
+					}
+				}
 			}
 		}
 
@@ -491,16 +548,32 @@ namespace PPBA
 			if(other.tag == "Cover")
 			{
 				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp && _closeCover.Contains(temp))
-					_closeCover.Remove(temp);
+				if(temp)
+				{
+					foreach(CoverSlot slot in temp._coverSlots)
+					{
+						_closeCoverSlots.Add(slot);
+					}
+				}
 			}
 		}
 		#endregion
 
 		#region Interfaces
-		void IPanelInfo.GetPanelInfo()
+		private TextMeshProUGUI[] _panelDetails;
+		public void InitialiseUnitPanel()
 		{
-			throw new NotImplementedException();
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, "Morale: " + _morale, ref _panelDetails);
+		}
+
+		public void UpdateUnitPanelInfo()
+		{
+			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			{
+				_panelDetails[0].text = "Team: " + _team;
+				_panelDetails[1].text = "Health: " + _health;
+				_panelDetails[2].text = "Morale: " + _morale;
+			}
 		}
 		#endregion
 
@@ -512,5 +585,78 @@ namespace PPBA
 		}
 		#endregion
 
+		#region Spawning/Despawning
+		private void ClearLists()
+		{
+			_closePawns.Clear();
+			_closeCoverSlots.Clear();
+		}
+
+		/// <summary>
+		/// Resets a pawn to factory setting.
+		/// </summary>
+		/// <param name="pawn">The pawn to be reset.</param>
+		/// <param name="team"></param>
+		private static void ResetToDefault(Pawn pawn, int team)
+		{
+			pawn._team = team;//not needed if object pools are per player
+			pawn._health = pawn._maxHealth;
+			pawn._ammo = pawn._maxAmmo;
+			pawn._morale = pawn._maxMorale;
+			pawn._resources = 0;
+			pawn._isNavPathDirty = true;
+			pawn._isAttacking = false;
+			//pawn._moveSpeed = 3.6111111f;
+			pawn._navMeshPath = null;
+			pawn._morale = pawn._maxMorale;
+
+			pawn.ClearLists();
+
+			//pawn._moveTarget = Vector3.forward;
+			pawn._mountSlot = null;
+		}
+
+		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
+		{
+			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject();
+			ResetToDefault(newPawn, team);
+			newPawn.transform.position = spawnPoint;
+			newPawn._moveTarget = spawnPoint;
+		}
+
+		public static ObjectType RandomPawnType()
+		{
+			int randomNumber = UnityEngine.Random.Range(0, 3);
+
+			switch(randomNumber)
+			{
+				case 0:
+					return ObjectType.PAWN_HEALER;
+				case 1:
+					return ObjectType.PAWN_PIONEER;
+				case 2:
+					return ObjectType.PAWN_WARRIOR;
+				default:
+					return ObjectType.PAWN_WARRIOR;
+			}
+		}
+
+		private void OnEnable()
+		{
+			TickHandler.s_AIEvaluate += Evaluate;
+			TickHandler.s_DoTick += Execute;
+			TickHandler.s_GatherValues += WriteToGameState;
+		}
+
+		private void OnDisable()
+		{
+			TickHandler.s_AIEvaluate -= Evaluate;
+			TickHandler.s_DoTick -= Execute;
+			TickHandler.s_GatherValues -= WriteToGameState;
+
+			if(_isMounting)
+				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
+		}
+		#endregion
 	}
 }
