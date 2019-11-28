@@ -9,5 +9,8 @@ namespace PPBA
 	{
 		void InitialiseUnitPanel();//Calls UnitScreenController.AddUnitInfoPanel for each value shown.
 		void UpdateUnitPanelInfo();//Use the refs provided by AddUnitInfoPanel to refresh the values in the panel.
+		
+		//ALSO ADD:
+		//private TextMeshProUGUI[] _panelDetails;
 	}
 }

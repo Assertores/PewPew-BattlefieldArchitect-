@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace PPBA
@@ -59,16 +60,22 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
 		}
 
+		#region Interfaces
+		private TextMeshProUGUI[] _panelDetails;
 		public void InitialiseUnitPanel()
 		{
-			throw new System.NotImplementedException();
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, ref _panelDetails);
 		}
 
 		public void UpdateUnitPanelInfo()
 		{
-			throw new System.NotImplementedException();
+			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			{
+				_panelDetails[0].text = "Team: " + _team;
+				_panelDetails[1].text = "Health: " + _health;
+			}
 		}
-
+		#endregion
 
 		/// <summary>
 		/// Resets a pawn to factory setting.
