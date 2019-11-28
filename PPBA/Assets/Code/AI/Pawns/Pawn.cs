@@ -16,8 +16,6 @@ namespace PPBA
 		#region Variables
 		//public
 		public int _id { get; set; }
-		//int INetElement._id {  get => _idField; set => _idField = value; }
-		//private int _idField = 0;
 		[SerializeField] public int _team = 0;
 
 		//[SerializeField] public float _health = 100;
@@ -193,8 +191,34 @@ namespace PPBA
 
 		public static void ExtractFromGameState(int tick)
 		{
-
+			GameState myGS = new GameState();
 		}
+
+		/*
+		void HandleGameStateEnableEvents(int tick)
+		{
+			Arguments args = TickHandler.s_interfaceGameState._args.Find(x => x._id == _id)._arguments;
+			if(args.HasFlag(Arguments.ENABLED))
+			{
+				if(!this.gameObject.activeSelf)
+				{
+					_holder.gameObject.SetActive(true);
+
+					GSC.transform newTransform = TickHandler.s_interfaceGameState._transforms.Find(x => x._id == _id);
+
+					_holder.transform.position = newTransform._position;
+					_holder.transform.rotation = Quaternion.Euler(0, newTransform._angle, 0);
+				}
+			}
+			else
+			{
+				if(this.gameObject.activeSelf)
+				{
+					_holder.gameObject.SetActive(false);
+				}
+			}
+		}
+		*/
 		#endregion
 
 		#region Initialisation
@@ -468,6 +492,8 @@ namespace PPBA
 			}
 		}
 
+		private void SetNavPathClean(int tick) => _isNavPathDirty = false;
+
 		private int IndexFromMask(int mask)
 		{
 			for(int i = 0; i < 32; ++i)
@@ -643,6 +669,7 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+			TickHandler.s_SetUp += SetNavPathClean;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 			TickHandler.s_GatherValues += WriteToGameState;
@@ -650,6 +677,7 @@ namespace PPBA
 
 		private void OnDisable()
 		{
+			TickHandler.s_SetUp -= SetNavPathClean;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
 			TickHandler.s_GatherValues -= WriteToGameState;

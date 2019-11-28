@@ -8,6 +8,7 @@ namespace PPBA
 {
 	public class TickHandler : Singleton<TickHandler>
 	{
+		public static Action<int> s_SetUp;
 		public static Action<int> s_DoInput;
 		public static Action<int> s_EarlyCalc;
 		public static Action<int> s_LateCalc;
@@ -96,6 +97,7 @@ namespace PPBA
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
 #endif
 
+				s_SetUp?.Invoke(s_currentTick);
 				s_DoInput?.Invoke(s_currentTick);
 				s_EarlyCalc?.Invoke(s_currentTick);
 				s_LateCalc?.Invoke(s_currentTick);
