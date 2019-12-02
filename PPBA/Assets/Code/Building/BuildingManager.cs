@@ -247,7 +247,7 @@ namespace PPBA
 			//holder.RefineryPrefab.SetActive(false);
 			//holder._Positions = UserInputController.s_instance.GetTexturePixelPoint();
 			//holder.GetComponent<BuildingProcess>().Startbuilding();
-
+			_currentPlaceableObject.GetComponent<TickBuildEmitter>().AddToGatherValue();
 			_isBuilt = false;
 			EndBuilding();
 		}
