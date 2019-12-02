@@ -30,8 +30,9 @@ namespace PPBA
 
 		private void OnDisable()
 		{
-			if(JobCenter.s_flagPoles[_team].Contains(this))
-				JobCenter.s_flagPoles[_team].Remove(this);
+			if(null != JobCenter.s_flagPoles[_team])
+				if(JobCenter.s_flagPoles[_team].Contains(this))
+					JobCenter.s_flagPoles[_team].Remove(this);
 		}
 	}
 }

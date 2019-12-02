@@ -24,18 +24,29 @@ namespace PPBA
 #if UNITY_SERVER
 			if(_ticker < _maxPawns)
 			{
-				SpawnPawn();
-				_ticker++;
+				//SpawnPawn();
+				//_ticker++;
 				//Debug.Log(_ticker);
 			}
 #endif
 		}
 
-		private void SpawnPawn()
+		private void SpawnPawn(int tick = 0)
 		{
-			ObjectType pawnType = Pawn.RandomPawnType();
-			int team = Random.Range(0, 2);
-			Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker, team);
+			if(_ticker < _maxPawns)
+			{
+				ObjectType pawnType = Pawn.RandomPawnType();
+				int team = Random.Range(0, 2);
+				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker, team);
+				_ticker++;
+			}
+		}
+
+		private void OnEnable()
+		{
+#if UNITY_SERVER
+			TickHandler.s_DoTick += SpawnPawn;
+#endif
 		}
 	}
 }
