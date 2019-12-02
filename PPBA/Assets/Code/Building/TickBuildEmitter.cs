@@ -43,8 +43,7 @@ namespace PPBA
 					//TickHandler.s_currentTick.
 					//TODO: eingabe war valide
 				}
-
-				Destroy(this);
+				Destroy(this.gameObject);
 			}
 		}
 	}
