@@ -115,7 +115,7 @@ namespace PPBA
 				s_targetDictionary.Remove(pawn);
 			}
 
-			pawn._mountSlot.GetOut(pawn);
+			pawn._mountSlot?.GetOut(pawn);
 		}
 	}
 }

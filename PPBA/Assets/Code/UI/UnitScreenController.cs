@@ -119,6 +119,15 @@ namespace PPBA
 				SetCamera(TargetUnitCamera);
 			}
 		}
+		
+		public void AddUnitInfoPanel(Transform targetUnitCamera, string[] textForUnitPanelArray, ref TextMeshProUGUI[] TMProTExt)
+		{
+			if(_currentUnitDetails != TMProTExt)
+			{
+				CreateDetail(textForUnitPanelArray, ref TMProTExt);
+				SetCamera(targetUnitCamera);
+			}
+		}
 
 		private void CreateDetail(string[] details, ref TextMeshProUGUI[] TMProText)
 		{

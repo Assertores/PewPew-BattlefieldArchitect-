@@ -16,27 +16,19 @@ namespace PPBA
 				Destroy(gameObject);
 		}
 
-		// Start is called before the first frame update
 		void Start()
 		{
 
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 
 		}
 
-		public override void Execute(Pawn pawn)
-		{
-			pawn.SetMoveTarget(pawn.transform.position);
-		}
+		public override void Execute(Pawn pawn) => pawn.SetMoveTarget(pawn.transform.position);
 
-		public override float FindBestTarget(Pawn pawn)
-		{
-			return 1;
-		}
+		public override float FindBestTarget(Pawn pawn) => 1f;
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
 		{
@@ -46,24 +38,15 @@ namespace PPBA
 					return pawn._health / pawn._maxHealth;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
-					return 1;
+					return 1f;
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name, ResourceDepot depot)
-		{
-			return 1;
-		}
+		protected float TargetAxisInputs(Pawn pawn, string name) => 1f;
 
-		protected float CalculateTargetScore(Pawn pawn, ResourceDepot depot)
-		{
-			return 1;
-		}
+		protected float CalculateTargetScore(Pawn pawn) => 1f;
 
-		public override int GetTargetID(Pawn pawn)
-		{
-			throw new System.NotImplementedException();
-		}
+		public override int GetTargetID(Pawn pawn) => pawn._id;
 
 		public override void RemoveFromTargetDict(Pawn pawn)
 		{
