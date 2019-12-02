@@ -168,6 +168,8 @@ namespace PPBA
 					}
 					startID++;
 				}
+				MonoBehaviour script = tmp.GetComponent(_type) as MonoBehaviour;
+				_elements.Add(script);
 			}
 
 			return value;
