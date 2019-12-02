@@ -949,6 +949,23 @@ Jump:
 			return value;
 		}
 
+		#region Helper Funktion
+
+		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
+		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
+		public GSC.transform GetTransform(int id) => _transforms.Find(x => x._id == id);
+		public GSC.ammo GetAmmo(int id) => _ammos.Find(x => x._id == id);
+		public GSC.resource GetResource(int id) => _resources.Find(x => x._id == id);
+		public GSC.health GetHealth(int id) => _healths.Find(x => x._id == id);
+		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
+		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
+		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
+		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
+		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
+		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
+
+		#endregion
+
 		/// <summary>
 		/// packs the message into the next best package
 		/// </summary>
