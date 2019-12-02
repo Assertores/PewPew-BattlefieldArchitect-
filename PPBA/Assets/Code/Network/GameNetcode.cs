@@ -249,6 +249,7 @@ namespace PPBA
 				byte[] msg = new byte[1 + sizeof(int)];
 				msg[0] = (byte)MessageType.RECONNECT;
 				Buffer.BlockCopy(BitConverter.GetBytes(_myID),0,msg,1,sizeof(int));
+				socket.Send(msg, msg.Length);
 			}
 		}
 		private void OnDestroy()
