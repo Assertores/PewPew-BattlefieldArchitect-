@@ -10,12 +10,14 @@ namespace PPBA
 		private int _tick;
 		private int _id;
 
-		private void OnEnable()
+		public void AddToGatherValue()
 		{
 #if !UNITY_SERVER
 			TickHandler.s_GatherValues += RegisterInput;
 #endif
+
 		}
+
 
 		void RegisterInput(int tick)
 		{
