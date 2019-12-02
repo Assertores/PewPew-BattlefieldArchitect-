@@ -88,7 +88,7 @@ namespace PPBA
 				GSC.arg element = new GSC.arg();
 				element._id = _id;
 				if(_holder.gameObject.activeSelf) 
-					element._arguments &= Arguments.ENABLED;
+					element._arguments |= Arguments.ENABLED;
 
 				text.text = index + element._arguments.ToString();
 				index++;
