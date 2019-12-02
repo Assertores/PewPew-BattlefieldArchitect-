@@ -193,6 +193,7 @@ namespace PPBA
 
 			s_currentTickTime = Time.time;
 
+			s_SetUp?.Invoke(s_currentTick);
 			s_DoInput?.Invoke(s_currentTick);
 			s_EarlyCalc?.Invoke(s_currentTick);
 			s_LateCalc?.Invoke(s_currentTick);
