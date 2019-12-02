@@ -13,6 +13,18 @@ namespace PPBA
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
 	{
+		protected class State
+		{
+			public Vector3 position;
+			public float _angle; //in degrees
+			public float _health;
+			public float _ammo;
+			public float _morale;
+			public int _resources;
+			public Vector3[] _navPathCorners;
+			public Behaviors _behavior;
+		}
+
 		#region Variables
 		//public
 		public int _id { get; set; }
@@ -51,14 +63,19 @@ namespace PPBA
 		#endregion
 
 		#region References
+		//GameStates
+		protected State _lastState;
+		protected State _nextState;
 		//Behaviors
 		[SerializeField] protected Behaviors[] e_behaviors;
 		protected Behavior[] _behaviors;
 		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
+		public Behaviors _clientBehavior = Behaviors.IDLE;
 
 		//Components
 		public NavMeshPath _navMeshPath;
+		public Vector3[] _clientNavPathCorners;
 		private SphereCollider _sphereCollider;
 		private LineRenderer _lineRenderer;
 		[SerializeField] private GameObject _objectToFollow;//to test navAgent
@@ -96,7 +113,14 @@ namespace PPBA
 		#endregion
 
 		#region MonoBehaviour
-		public void Start()
+		private void Awake()
+		{
+#if !UNITY_SERVER
+			TickHandler.s_DoInput += ExtractFromGameState;
+#endif
+		}
+
+		private void Start()
 		{
 			//Get references
 			_navMeshPath = new NavMeshPath();
@@ -105,25 +129,15 @@ namespace PPBA
 
 			//Initialisation
 			InitiateBehaviors();
-
-			StartCoroutine(DoTick());//fake tick
 		}
 
-		public void Update()
+		private void Update()
 		{
-			//if(_objectToFollow != null && _navMeshAgent != null)
-			//{
-			//	//NavMesh.CalculatePath(transform.position, _objectToFollow.transform.position, _navMeshAgent.areaMask, _navMeshAgent.path);
-			//	_navMeshAgent.SetDestination(_objectToFollow.transform.position);
-			//}
+#if !UNITY_SERVER
+			VisualizeLerpedStates();
+#endif
 
 			ShowNavPath();
-			SetMoveTarget(_objectToFollow.transform.position);
-		}
-
-		private void FixedUpdate()
-		{
-			NavTick();
 		}
 		#endregion
 
@@ -175,23 +189,137 @@ namespace PPBA
 			Regenerate();
 		}
 
-		public void WriteToGameState(int tick)
+		public void WriteToGameState(int tick)//SERVER
 		{
-			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
+			{
+				Arguments temp = new Arguments();
 
+				if(isActiveAndEnabled)
+					temp |= Arguments.ENABLED;
+
+				if(false)
+					temp |= Arguments.TRIGGERBEHAVIOUR;
+
+				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+			}
+
+			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
 			if(_lastBehavior != null)
 				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
 
-		public static void ExtractFromGameState(int tick)
+		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
-			GameState myGS = new GameState();
+			if(null != _nextState)
+				_lastState = _nextState;
+
+			#region Writing into _nextState from s_interfaceGameState
+			{
+				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
+
+				if(null == temp || !temp._arguments.HasFlag(Arguments.ENABLED))
+				{
+					if(gameObject.activeSelf)
+						gameObject.SetActive(false);
+					return;
+				}
+				else
+				{
+					if(!gameObject.activeSelf)
+					{
+						gameObject.SetActive(true);
+						ResetToDefault(this, 0);
+					}
+				}
+
+				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				{
+					// do trigger stuff
+				}
+			}
+
+			{
+				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
+
+				if(null != temp)
+				{
+					_nextState.position = temp._position;
+					_nextState._angle = temp._angle;
+				}
+			}
+			{
+				GSC.health temp = TickHandler.s_interfaceGameState.GetHealth(_id);
+				if(null != temp)
+				{
+					_nextState._health = temp._health;
+					_nextState._morale = temp._morale;
+				}
+			}
+			{
+				GSC.ammo temp = TickHandler.s_interfaceGameState.GetAmmo(_id);
+
+				if(null != temp)
+				{
+					_nextState._ammo = temp._bullets;
+				}
+			}
+			{
+				GSC.resource temp = TickHandler.s_interfaceGameState.GetResource(_id);
+
+				if(null != temp)
+				{
+					_nextState._resources = temp._resources;
+				}
+			}
+			{
+				GSC.behavior temp = TickHandler.s_interfaceGameState.GetBehavior(_id);
+
+				if(null != temp)
+				{
+					_nextState._behavior = temp._behavior;
+				}
+			}
+			{
+				GSC.path temp = TickHandler.s_interfaceGameState.GetPath(_id);
+
+				if(null != temp)
+				{
+					_nextState._navPathCorners = temp._path;
+				}
+			}
+			#endregion
+		}
+
+		protected void VisualizeLerpedStates()
+		{
+			float lerpFactor;
+
+			if(null == _lastState || null == _nextState)
+			{
+				if(null != _nextState)
+					lerpFactor = 1f;
+				else if(null != _lastState)
+					lerpFactor = 0f;
+				else
+					return;
+			}
+			else
+				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
+
+			transform.position = Vector3.Lerp(_lastState.position, _nextState.position, lerpFactor);
+			transform.eulerAngles = new Vector3(0f, Mathf.Lerp(_lastState._angle, _nextState._angle, lerpFactor), 0f);
+			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
+			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
+			_morale = Mathf.Lerp(_lastState._morale, _nextState._morale, lerpFactor);
+			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._morale, lerpFactor);
+			_clientNavPathCorners = _nextState._navPathCorners;
+			_clientBehavior = _nextState._behavior;
 		}
 
 		/*
@@ -293,12 +421,12 @@ namespace PPBA
 		public Behaviors GetBehaviorsEnum(Behavior behavior)
 		{
 			/*
-			switch(typeof(behavior))
+			switch(Behaviors)
 			{
-				case typeof(Behavior_Idle):
-					return Behaviors.IDLE;
-				case typeof(Behavior_Shoot):
-				return Behaviors.SHOOT;
+				case Behaviors.IDLE:
+					break;
+				case Behaviors.SHOOT:
+					break;
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
@@ -339,6 +467,7 @@ namespace PPBA
 					break;
 			}
 			*/
+
 			return Behaviors.IDLE;
 		}
 		#endregion
@@ -372,19 +501,10 @@ namespace PPBA
 
 		public void Regenerate()
 		{
-			_health += _healthRegen;
-			_morale += _moraleRegen;
-		}
-		#endregion
-
-		#region FakeTick
-		protected IEnumerator DoTick()
-		{
-			while(enabled)
+			if(0f < _health)
 			{
-				yield return new WaitForSeconds(0.2f);
-				Evaluate();
-				Execute();
+				_health += _healthRegen;
+				_morale += _moraleRegen;
 			}
 		}
 		#endregion
@@ -463,8 +583,13 @@ namespace PPBA
 
 		public void ShowNavPath()
 		{
+#if UNITY_SERVER
 			_lineRenderer.positionCount = _navMeshPath.corners.Length;
 			_lineRenderer.SetPositions(_navMeshPath.corners);
+#else
+			_lineRenderer.positionCount = _clientNavPathCorners.Length;
+			_lineRenderer.SetPositions(_clientNavPathCorners);
+#endif
 		}
 
 		private float GetNavAreaCost()
@@ -640,6 +765,9 @@ namespace PPBA
 
 			//pawn._moveTarget = Vector3.forward;
 			pawn._mountSlot = null;
+
+			pawn._lastState = new State();
+			pawn._nextState = new State();
 		}
 
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
@@ -669,14 +797,17 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+#if UNITY_SERVER
 			TickHandler.s_SetUp += SetNavPathClean;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 			TickHandler.s_GatherValues += WriteToGameState;
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			TickHandler.s_SetUp -= SetNavPathClean;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
@@ -684,6 +815,7 @@ namespace PPBA
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
+#endif
 		}
 		#endregion
 	}
