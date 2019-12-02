@@ -57,17 +57,32 @@ namespace PPBA
 		public static ObjectPool CreatePool<T>(ObjectType type, int initialSize, Transform grandParent) where T : MonoBehaviour
 		{
 			if(type == ObjectType.SIZE)
+			{
+				Debug.LogError("type is invalide");
 				return null;
+			}
 
 			GameObject prefab = GlobalVariables.s_instance._prefabs[(int)type];
 			if(prefab == null)
+			{
+				Debug.LogError("prefab not found");
 				return null;
+			}
 			if(s_objectPools.ContainsKey(prefab))
+			{
+				Debug.LogError("object pool already exists");
 				return s_objectPools[prefab];
+			}
 			if(!prefab.GetComponent(typeof(T)))
+			{
+				Debug.LogError("skript is not on the gameobject");
 				return null;
+			}
 			if(prefab.GetComponentsInChildren<INetElement>().Length <= 0)
+			{
+				Debug.LogError("prefab has no INetElement Components");
 				return null;
+			}
 
 			GameObject tmp = new GameObject(prefab.name);
 			tmp.transform.parent = grandParent;
