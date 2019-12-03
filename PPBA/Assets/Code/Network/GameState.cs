@@ -358,10 +358,10 @@ namespace PPBA
 
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
 		{
-			Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
+			//Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
 			if(_receivedMessages.GetSize() == Vector2Int.zero)
 			{
-				Debug.Log("[GameState] creating an bitfield ");
+				//Debug.Log("[GameState] creating an bitfield ");
 				_receivedMessages = new BitField2D(packageCount, 1);
 			}
 			if(_receivedMessages[packageNumber, 0])
