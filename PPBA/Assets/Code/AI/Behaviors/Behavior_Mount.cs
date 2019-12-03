@@ -7,7 +7,7 @@ namespace PPBA
 	public class Behavior_Mount : Behavior
 	{
 		public static Behavior_Mount s_instance;
-		public static Dictionary<Pawn, MountSlot> s_targetDictionary;
+		public static Dictionary<Pawn, MountSlot> s_targetDictionary = new Dictionary<Pawn, MountSlot>();
 
 		[SerializeField] private float _maxDistance = 70f;
 		[SerializeField][Tooltip("How close does a pawn have to be to allow mounting?")] private float _mountDistance = 2f;

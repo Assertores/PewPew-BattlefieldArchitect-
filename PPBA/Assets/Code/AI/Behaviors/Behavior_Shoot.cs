@@ -7,7 +7,7 @@ namespace PPBA
 	public class Behavior_Shoot : Behavior
 	{
 		public static Behavior_Shoot s_instance;
-		public static Dictionary<Pawn, Pawn> s_targetDictionary;
+		public static Dictionary<Pawn, Pawn> s_targetDictionary = new Dictionary<Pawn, Pawn>();
 
 		void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
 		{

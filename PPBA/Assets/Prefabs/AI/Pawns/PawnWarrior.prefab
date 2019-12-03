@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -6775620331208041567}
   m_Layer: 11
   m_Name: PawnWarrior
-  m_TagString: Untagged
+  m_TagString: Pawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
