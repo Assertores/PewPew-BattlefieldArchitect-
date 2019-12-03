@@ -209,5 +209,10 @@ namespace PPBA
 			s_currentTick++;
 		}
 #endif
+		public void DoReset()
+		{
+			s_currentTick = 0;
+			s_currentTickTime = 0;
+		}
 	}
 }
