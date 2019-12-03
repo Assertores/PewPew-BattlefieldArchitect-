@@ -1,12 +1,12 @@
-﻿Shader "Custom/ToonShader 2"
+﻿Shader "Custom/ToonShader"
 {
 	//show values to edit in inspector
 	Properties
 	{
 		[Header(Base Parameters)]
 		_Color("Tint", Color) = (1, 1, 1, 1)
+		_InsideColor("InsideColor", Color) = (1,1,1,1)
 		_MainTex("Texture", 2D) = "white" {}
-		_DissolveTex("Texture", 2D) = "white" {}
 		_Specular("Specular Color", Color) = (1,1,1,1)
 		[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
 
@@ -16,13 +16,24 @@
 		_StepWidth("Step Size", Range(0, 1)) = 0.25
 		_SpecularSize("Specular Size", Range(0, 1)) = 0.1
 		_SpecularFalloff("Specular Falloff", Range(0, 2)) = 1
+
+		[Header(Noise Parameters)]
+		_Amplitude("Amplitude", Vector) = (0,0,0,0)
+		_Frequency("Frequency", Vector) = (0,0,0,0)
+		_Phase("Phase", Vector) = (0,0,0,0)
+
+		_Clip("Clip Height", Float) = 0.5
+		_Noise("Noise", Float) = 0.0
+		_NoiseScale("Noise Scale", Float) = 1.0
+
 	}
 
 		SubShader
 		{
 			//the material is completely non-transparent and is rendered at the same time as the other opaque geometry
 			Tags{ "RenderType" = "Opaque" "Queue" = "Geometry"}
-
+			Cull Off
+			LOD 200
 			CGPROGRAM
 
 			//the shader is a surface shader, meaning that it will be extended by unity in the background to have fancy lighting and other features
@@ -30,9 +41,9 @@
 			//fullforwardshadows makes sure unity adds the shadow passes the shader might need
 			#pragma surface surf Stepped fullforwardshadows
 			#pragma target 3.0
+			#include "Includes/SimplexNoise3D.cginc"
 
 			sampler2D _MainTex;
-			sampler2D _DissolveTex;
 			fixed4 _Color;
 			half3 _Emission;
 			fixed4 _Specular;
@@ -42,6 +53,15 @@
 			float _StepAmount;
 			float _SpecularSize;
 			float _SpecularFalloff;
+
+			// Noise
+			fixed4 _InsideColor;
+			float3 _Amplitude;
+			float3 _Frequency;
+			float3 _Phase;
+			float _Clip;
+			float _Noise;
+			float _NoiseScale;
 
 			struct ToonSurfaceOutput
 			{
@@ -114,30 +134,38 @@
 			//input struct which is automatically filled by unity
 			struct Input
 			{
+				float3 worldPos;
 				float2 uv_MainTex;
+				half frontFace : VFACE;
 			};
 
 			//the surface shader function which sets parameters the lighting function then uses
 			void surf(Input i, inout ToonSurfaceOutput o)
 			{
+				float3 p = i.worldPos;
+				float3 s = _NoiseScale * p;
+				float noise = snoise(s);
+				noise *= _Noise;
+				float3 n = sin((noise + p.xyz) * _Frequency.xyz + _Phase.xyz + noise) * _Amplitude.xyz;
+				float d = p.y + length(n);
+				noise = d;
+
+				if (step(d, _Clip) <= 0.0)
+				{
+					discard;
+				}
+
+				float4 color = lerp(_InsideColor, _Color, i.frontFace);
+
 				//sample and tint albedo texture
 				fixed4 col = tex2D(_MainTex, i.uv_MainTex);
-				fixed4 dis = tex2D(_DissolveTex, i.uv_MainTex);
-
-				//Convert dissolve progression to -1 to 1 scale.
-				//half dBase = -2.0f * _DissolveScale + 1.0f;
-				//half dTextRead = dis.r + dBase;
 
 				col *= _Color;
-				o.Albedo = col.rgb;
-
+				o.Albedo = col.rgb * color;
 				o.Specular = _Specular;
-
 				float3 shadowColor = col.rgb * _ShadowTint;
 				o.Emission = _Emission + shadowColor;
-
 				//half alpha = clamp(dTexRead, 0.0f, 1.0f);
-
 			}
 			ENDCG
 
