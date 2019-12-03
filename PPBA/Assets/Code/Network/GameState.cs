@@ -616,9 +616,12 @@ namespace PPBA
 
 			GameState reference = references[refTick];
 			if(reference == null)
+			{
+				Debug.Log("reference not found. Tick: " + myTick + " | ref: " + refTick);
 				return false;
+			}
 
-			Debug.Log("[GameState] reference is: " + reference);
+			//Debug.Log("[GameState] reference is: " + reference);
 
 			_refTick = refTick;
 
@@ -729,13 +732,13 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
-				Debug.Log("[GameState] creating heat map delta");
+				//Debug.Log("[GameState] creating heat map delta");
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					Debug.Log("[GameState] adding heat map of tick" + i);
+					//Debug.Log("[GameState] adding heat map of tick" + i);
 					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
 				}
-				Debug.Log("[GameState] finished aditive heat map backing");
+				//Debug.Log("[GameState] finished aditive heat map backing");
 
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
@@ -766,22 +769,22 @@ Jump:
 					}
 				}
 
-				Debug.Log("[GameState] finished creating heat map delta");
+				//Debug.Log("[GameState] finished creating heat map delta");
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
-				Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
+				//Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
 				GameState nextState = references[i];
 				if(nextState == default)
 				{
-					Debug.Log("[GameState] tick was not calculated");
+					//Debug.Log("[GameState] tick was not calculated");
 					continue;
 				}
 
-				Debug.Log("[GameState] adding denyed inputs");
+				//Debug.Log("[GameState] adding denyed inputs");
 				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
 			}
-			Debug.Log("[GameState] finished denyed input backing");
+			//Debug.Log("[GameState] finished denyed input backing");
 			for(int i = refTick + 1; i < myTick; i++)
 			{
 				GameState nextState = references[i];

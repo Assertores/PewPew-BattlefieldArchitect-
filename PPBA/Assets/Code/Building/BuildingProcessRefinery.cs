@@ -94,7 +94,7 @@ namespace PPBA
 				index++;
 
 
-				Debug.Log(element._arguments.ToString() +" <---args!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//Debug.Log(element._arguments.ToString() +" <---args!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 				TickHandler.s_interfaceGameState._args.Add(element);
 			}

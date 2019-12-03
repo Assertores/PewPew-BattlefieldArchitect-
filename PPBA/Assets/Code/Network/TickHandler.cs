@@ -38,7 +38,7 @@ namespace PPBA
 
 		public int Simulate()
 		{
-			Debug.Log("[Server] Simulating");
+			//Debug.Log("[Server] Simulating");
 
 			int min = int.MaxValue;
 			foreach(var it in GlobalVariables.s_instance._clients)
@@ -47,7 +47,7 @@ namespace PPBA
 					min = it._inputStates.GetHighEnd();
 			}
 
-			Debug.Log("[Server] min value: " + min);
+			//Debug.Log("[Server] min value: " + min);
 
 			if(min == int.MaxValue)
 			{
@@ -60,7 +60,7 @@ namespace PPBA
 
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
 			{
-				Debug.Log("[Server] Simulating tick: " + s_currentTick);
+				//Debug.Log("[Server] Simulating tick: " + s_currentTick);
 				s_interfaceInputState = new InputState();
 				for(int i = 0; i < GlobalVariables.s_instance._clients.Count; i++) //combines inputs from all clients
 				{
@@ -75,7 +75,7 @@ namespace PPBA
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
 				}
-				Debug.Log("[Server] combined inputs");
+				//Debug.Log("[Server] combined inputs");
 
 #if !UNITY_SERVER
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
@@ -90,17 +90,17 @@ namespace PPBA
 			}
 			s_currentTick--;
 
-			Debug.Log("[Server] Finished simulating");
+			//Debug.Log("[Server] Finished simulating");
 
 			s_interfaceGameState = new GameState();
 			s_interfaceInputState = new InputState();
 
 			s_GatherValues?.Invoke(s_currentTick);
 
-			Debug.Log("[Server] Seperating Gamestate");
+			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
-				Debug.Log("[Server] for client: " + it._id);
+				//Debug.Log("[Server] for client: " + it._id);
 				GameState element = new GameState(s_interfaceGameState);
 
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
