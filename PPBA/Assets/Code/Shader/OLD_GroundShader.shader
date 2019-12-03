@@ -69,7 +69,6 @@
 
 			void surf(Input IN, inout SurfaceOutputStandard o)
 			{
-
 				half h = tex2D (_ParallaxMap, IN.uv_BumpMap).w;
      			float2 offset = ParallaxOffset (h, _Parallax, IN.viewDir);
 

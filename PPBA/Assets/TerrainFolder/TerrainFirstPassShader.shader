@@ -1,19 +1,30 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Custom/Terrain/Standard" {
-    Properties {
+Shader "Custom/Terrain/Standard" 
+{
+    Properties 
+    {
         // used in fallback on old cards & base map
         [HideInInspector] _MainTex ("BaseMap (RGB)", 2D) = "white" {}
         [HideInInspector] _Color ("Main Color", Color) = (1,1,1,1)
         _ColorResource("ColorResource", Color) = (1,1,1,1)
         _NoiseMap("Noise (RGB)", 2D) = "white" {}
+        _TerritorriumMap("Territorium (RGB)", 2D) = "white" {}
 
-        [Toggle(MetalInt)]
-		_MetalResourcesInt("MetalInt", Int) = 1.0
+        [Toggle(RessourceSwitch)]
+		_MetalResourcesInt("RessourceSwitch", Int) = 1.0
+
+		[Toggle(TerrittorriumMapSwitch)]
+		_TerrriitorumMapInt("TerritoriumSwitch", Int) = 0.0
+
+        _MapChange("MapChange", Int) = 0.0
+
     }
 
-    SubShader {
-        Tags {
+    SubShader 
+    {
+        Tags 
+        {
             "Queue" = "Geometry-100"
             "RenderType" = "Opaque"
         }
@@ -37,8 +48,12 @@ Shader "Custom/Terrain/Standard" {
 	
         fixed4 _ColorResource;
 		int _MetalResourcesInt;
-		
+		int _TerrriitorumMapInt;
+        int _MapChange;
+
 		sampler2D _NoiseMap;
+		sampler2D _TerritorriumMap;
+
 
         half _Metallic0;
         half _Metallic1;
@@ -52,7 +67,8 @@ Shader "Custom/Terrain/Standard" {
 
         void surf (Input IN, inout SurfaceOutputStandard o) 
 		{
-			fixed4 noise = tex2D(_NoiseMap, IN.tc.xy);
+			fixed4 noiseMap = tex2D(_NoiseMap, IN.tc.xy);
+			fixed4 territoriumMap = tex2D(_TerritorriumMap, IN.tc.xy);
 
             half4 splat_control;
             half weight;
@@ -60,12 +76,19 @@ Shader "Custom/Terrain/Standard" {
             half4 defaultSmoothness = half4(_Smoothness0, _Smoothness1, _Smoothness2, _Smoothness3);
             SplatmapMix(IN, defaultSmoothness, splat_control, weight, mixedDiffuse, o.Normal);
 
-			int i = step(_MetalResourcesInt, 0);
+		//	int resourceInt = step(_MetalResourcesInt, 0.0);
+        //    int TerritourriumInt = step(_TerrriitorumMapInt, 0.0);
+        //    int maxValue = max(resourceInt, TerritourriumInt);
 
-			fixed4 t = lerp(mixedDiffuse.rgba, _ColorResource, noise.r);
+			int resourceInt = step(0.0 , _MapChange);
+        //  	int resourceInt = 0;
+            int TerritourriumInt = step(1.0 , _MapChange);
+          //  int TerritourriumInt = 1;
 
-			fixed4 endCol = lerp(mixedDiffuse.rgba, t, i);
+			fixed4 t = lerp(mixedDiffuse.rgba, _ColorResource, noiseMap.r);
+            fixed4 finalMap = lerp(t, territoriumMap, TerritourriumInt);
 
+			fixed4 endCol = lerp(mixedDiffuse.rgba, finalMap, resourceInt);
 
             o.Albedo = endCol.rgb;
             o.Alpha = weight;
