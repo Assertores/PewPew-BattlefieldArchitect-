@@ -94,7 +94,7 @@ namespace PPBA
 				index++;
 
 
-				Debug.Log(element._arguments.ToString() +" <---args!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//Debug.Log(element._arguments.ToString() +" <---args!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 				TickHandler.s_interfaceGameState._args.Add(element);
 			}
@@ -103,12 +103,12 @@ namespace PPBA
 		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus
 		void HandleGameStateEnableEvents(int tick)
 		{
-			print("HandleGameStateEnableEvents --- tick: " + tick);
+			//print("HandleGameStateEnableEvents --- tick: " + tick);
 			GSC.arg args = TickHandler.s_interfaceGameState._args.Find(x => x._id == _id);
 
 			if(args != null)
 			{
-				Debug.Log(args._arguments.ToString());
+				//Debug.Log(args._arguments.ToString());
 
 			}
 

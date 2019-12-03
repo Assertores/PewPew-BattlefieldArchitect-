@@ -36,18 +36,9 @@ namespace PPBA
 #endif
 		}
 
-		public void Simulate()
+		public int Simulate()
 		{
-			if(!h_SimulationIsRunning)
-				StartCoroutine(IESimulate());
-		}
-
-		bool h_SimulationIsRunning = false;
-		IEnumerator IESimulate()
-		{
-			h_SimulationIsRunning = true;
-
-			Debug.Log("[Server] Simulating");
+			//Debug.Log("[Server] Simulating");
 
 			int min = int.MaxValue;
 			foreach(var it in GlobalVariables.s_instance._clients)
@@ -56,22 +47,20 @@ namespace PPBA
 					min = it._inputStates.GetHighEnd();
 			}
 
-			Debug.Log("[Server] min value: " + min);
+			//Debug.Log("[Server] min value: " + min);
 
 			if(min == int.MaxValue)
 			{
-				h_SimulationIsRunning = false;
-				yield break;
+				return -1;
 			}
 			if(s_currentTick >= min)
 			{
-				h_SimulationIsRunning = false;
-				yield break;
+				return -2;
 			}
 
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
 			{
-				Debug.Log("[Server] Simulating tick: " + s_currentTick);
+				//Debug.Log("[Server] Simulating tick: " + s_currentTick);
 				s_interfaceInputState = new InputState();
 				for(int i = 0; i < GlobalVariables.s_instance._clients.Count; i++) //combines inputs from all clients
 				{
@@ -86,14 +75,9 @@ namespace PPBA
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
 				}
-				Debug.Log("[Server] combined inputs");
+				//Debug.Log("[Server] combined inputs");
 
-#if UNITY_SERVER
-				Time.timeScale = 8;
-				while(Time.timeSinceLevelLoad < s_currentTick * Time.fixedDeltaTime)
-					yield return null;
-				Time.timeScale = 0;
-#else
+#if !UNITY_SERVER
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
 #endif
 
@@ -106,28 +90,27 @@ namespace PPBA
 			}
 			s_currentTick--;
 
-			Debug.Log("[Server] Finished simulating");
+			//Debug.Log("[Server] Finished simulating");
 
 			s_interfaceGameState = new GameState();
 			s_interfaceInputState = new InputState();
 
 			s_GatherValues?.Invoke(s_currentTick);
 
-			Debug.Log("[Server] Seperating Gamestate");
+			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
-				Debug.Log("[Server] for client: " + it._id);
+				//Debug.Log("[Server] for client: " + it._id);
 				GameState element = new GameState(s_interfaceGameState);
 
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
 
 				it._gameStates[s_currentTick] = element;
+
+				it._inputStates.FreeUpTo(s_currentTick);
 			}
-#if UNITY_SERVER
-			Debug.Log("[Server] Sending gameState for tick: " + s_currentTick);
-			GameNetcode.s_instance.Send(s_currentTick);
-#endif
-			h_SimulationIsRunning = false;
+
+			return s_currentTick;
 		}
 
 #if !UNITY_SERVER
@@ -150,19 +133,26 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
-			{
-				Debug.LogError("Reference Tick not Found");
-				return;//no idea how to fix this
-			}
+			Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 
-			if(nextStateTick != s_currentTick)
+			if(nextState._refTick != 0)
 			{
-				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
-			}
-			else
-			{
-				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
+				if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
+				{
+					Debug.LogError("Reference Tick not Found");
+					return;//no idea how to fix this
+				}
+
+				if(nextStateTick != s_currentTick)
+				{
+					nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				}
+				else
+				{
+					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
+				}
+
+				me._gameStates.FreeUpTo(nextState._refTick - 1);
 			}
 
 			foreach(var it in nextState._newIDRanges)

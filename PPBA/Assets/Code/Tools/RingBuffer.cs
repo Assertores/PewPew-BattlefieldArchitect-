@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PPBA
 {
+	[System.Serializable]
 	public class RingBuffer<T>
 	{
-		private T[] _backingArray = new T[4];//backing array of elements
-		private int _lowPos = 0;//position of the element with the lowest index in the backing array
-		private int _lowend = 0;//the lowest index valide
-		private int _highend = 0;//the highest index valide
+		[SerializeField] private T[] _backingArray = new T[4];//backing array of elements
+		[SerializeField] private int _lowPos = 0;//position of the element with the lowest index in the backing array
+		[SerializeField] private int _lowend = 0;//the lowest index valide
+		[SerializeField] private int _highend = 0;//the highest index valide
 
 		int Index(int value)
 		{
@@ -134,4 +132,10 @@ namespace PPBA
 			return sb.ToString();
 		}
 	}
+
+	[System.Serializable]
+	public class RingBuffer_GameState : RingBuffer<GameState> { }
+
+	[System.Serializable]
+	public class RingBuffer_InputState : RingBuffer<InputState> { }
 }

@@ -14,18 +14,21 @@ namespace PPBA
 			public ObjectType _type;
 		}
 
+		[System.Serializable]
 		public class obj : isc
 		{
 			public Vector3 _pos;
 			public float _angle; //in degrees
 		}
 
+		[System.Serializable]
 		public class combinedObj : isc
 		{
 			public Vector3[] _corners;
 		}
 	}
 
+	[System.Serializable]
 	public class InputState
 	{
 		private static int _currentID = 0;

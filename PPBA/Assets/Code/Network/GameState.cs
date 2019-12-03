@@ -23,73 +23,87 @@ namespace PPBA
 			public int _id = 0;
 		}
 
+		[System.Serializable]
 		public class type : gsc
 		{
 			public byte _type = 0;
 			public byte _team = 0;
 		}
 
+		[System.Serializable]
 		public class arg : gsc
 		{
 			public Arguments _arguments = Arguments.NON;
 		}
 
+		[System.Serializable]
 		public class transform : gsc
 		{
 			public Vector3 _position = Vector3.zero;
 			public float _angle = 0; //in degrees
 		}
 
+		[System.Serializable]
 		public class ammo : gsc
 		{
 			public int _bullets = 0;
 			//public int _grenades;
 		}
 
+		[System.Serializable]
 		public class resource : gsc
 		{
 			public int _resources = 0;
 		}
 
+		[System.Serializable]
 		public class health : gsc
 		{
 			public float _health = 0;
 			public float _morale = 0;//used for _score by depots/blueprints
 		}
 
+		[System.Serializable]
 		public class work : gsc
 		{
 			public int _work = 0;
 		}
 
+		[System.Serializable]
 		public class behavior : gsc
 		{
 			public Behaviors _behavior = Behaviors.IDLE;
 			public int _target = 0;
 		}
 
+		[System.Serializable]
 		public class path : gsc
 		{
 			public Vector3[] _path = new Vector3[0];
 		}
 
+		[System.Serializable]
 		public class heatMap : gsc
 		{
 			public BitField2D _mask = new BitField2D(0,0);
 			public List<float> _values = new List<float>();
 		}
 
+		[System.Serializable]
 		public class input : gsc
 		{
 			public int _client;
 		}
 
+		[System.Serializable]
 		public class newIDRange : gsc
 		{
 			public int _range;
 			public ObjectType _type;
 		}
 	}
+
+	[System.Serializable]
 	public class GameState
 	{
 		public GameState()
@@ -124,7 +138,7 @@ namespace PPBA
 			_newIDRanges.AddRange(original._newIDRanges.ToArray());
 		}
 
-		public int _refTick { get; private set; } = 0;
+		public int _refTick { get; set; } = 0;
 		public bool _isLerped { get; private set; } = false;
 		public bool _isDelta { get; private set; } = false;
 		public bool _isEncrypted { get; private set; } = false;
@@ -344,10 +358,10 @@ namespace PPBA
 
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
 		{
-			Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
+			//Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
 			if(_receivedMessages.GetSize() == Vector2Int.zero)
 			{
-				Debug.Log("[GameState] creating an bitfield ");
+				//Debug.Log("[GameState] creating an bitfield ");
 				_receivedMessages = new BitField2D(packageCount, 1);
 			}
 			if(_receivedMessages[packageNumber, 0])
@@ -601,8 +615,13 @@ namespace PPBA
 			//_hash = GetHash();
 
 			GameState reference = references[refTick];
+			if(reference == null)
+			{
+				Debug.Log("reference not found. Tick: " + myTick + " | ref: " + refTick);
+				return false;
+			}
 
-			Debug.Log("[GameState] reference is: " + reference);
+			//Debug.Log("[GameState] reference is: " + reference);
 
 			_refTick = refTick;
 
@@ -713,13 +732,13 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
-				Debug.Log("[GameState] creating heat map delta");
+				//Debug.Log("[GameState] creating heat map delta");
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					Debug.Log("[GameState] adding heat map of tick" + i);
+					//Debug.Log("[GameState] adding heat map of tick" + i);
 					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
 				}
-				Debug.Log("[GameState] finished aditive heat map backing");
+				//Debug.Log("[GameState] finished aditive heat map backing");
 
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
@@ -750,22 +769,22 @@ Jump:
 					}
 				}
 
-				Debug.Log("[GameState] finished creating heat map delta");
+				//Debug.Log("[GameState] finished creating heat map delta");
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
-				Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
+				//Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
 				GameState nextState = references[i];
 				if(nextState == default)
 				{
-					Debug.Log("[GameState] tick was not calculated");
+					//Debug.Log("[GameState] tick was not calculated");
 					continue;
 				}
 
-				Debug.Log("[GameState] adding denyed inputs");
+				//Debug.Log("[GameState] adding denyed inputs");
 				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
 			}
-			Debug.Log("[GameState] finished denyed input backing");
+			//Debug.Log("[GameState] finished denyed input backing");
 			for(int i = refTick + 1; i < myTick; i++)
 			{
 				GameState nextState = references[i];
@@ -784,6 +803,9 @@ Jump:
 
 		public bool DismantleDelta(GameState reference)
 		{
+			if(reference == default)
+				return false;
+
 			_messageHolder = null;
 
 			foreach(var it in reference._types)
@@ -942,6 +964,7 @@ Jump:
 			value._denyedInputIDs = end._denyedInputIDs;
 			value._newIDRanges = end._newIDRanges;
 
+			value._refTick = start._refTick;
 			value._isEncrypted = false;
 			value._isDelta = false;
 			value._isLerped = true;
