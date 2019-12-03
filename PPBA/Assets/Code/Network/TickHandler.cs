@@ -147,7 +147,10 @@ namespace PPBA
 			{
 				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 			}
+			print("LowEnd befor Free: " + me._gameStates.GetLowEnd());
+			print("Freeing gameStates: " + (nextState._refTick - 1));
 			me._gameStates.FreeUpTo(nextState._refTick - 1);
+			print("LowEnd after Free: " + me._gameStates.GetLowEnd());
 
 			foreach(var it in nextState._newIDRanges)
 			{

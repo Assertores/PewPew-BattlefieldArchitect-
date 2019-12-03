@@ -193,7 +193,7 @@ namespace PPBA
 			Debug.Log("[Server] client " + RemoteID + " reconnected");
 		}
 
-		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
+		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, int RefTick, Gamestate[] states
 		public void Send(int tick)
 		{
 			Debug.Log("[Server] sinding gamestates for tick: " + tick);
@@ -225,6 +225,7 @@ namespace PPBA
 				msg.Add(i);
 				msg.Add((byte)state.Count);
 				msg.AddRange(BitConverter.GetBytes(tick));
+				msg.AddRange(BitConverter.GetBytes(client._gameStates[tick]._refTick));
 				msg.AddRange(state[i]);
 
 				Debug.Log("[Server] sending message: " + i + "of: " + state.Count);
@@ -300,7 +301,7 @@ namespace PPBA
 			}
 		}
 
-		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, Gamestate[] states(with reftick)
+		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, int RefTick, Gamestate[] states
 		void HandleNON(byte[] data)
 		{
 			int tick = BitConverter.ToInt32(data, 3);
@@ -315,7 +316,8 @@ namespace PPBA
 				GlobalVariables.s_instance._clients[0]._gameStates[tick] = element;
 			}
 
-			element.Decrypt(data, 3 + sizeof(int), data[1], data[2]);
+			element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
+			element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
 
 			GlobalVariables.s_instance._clients[0]._inputStates.FreeUpTo(tick);
 		}

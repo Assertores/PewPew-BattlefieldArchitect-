@@ -138,7 +138,7 @@ namespace PPBA
 			_newIDRanges.AddRange(original._newIDRanges.ToArray());
 		}
 
-		public int _refTick { get; private set; } = 0;
+		public int _refTick { get; set; } = 0;
 		public bool _isLerped { get; private set; } = false;
 		public bool _isDelta { get; private set; } = false;
 		public bool _isEncrypted { get; private set; } = false;
