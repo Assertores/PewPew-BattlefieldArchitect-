@@ -23,73 +23,87 @@ namespace PPBA
 			public int _id = 0;
 		}
 
+		[System.Serializable]
 		public class type : gsc
 		{
 			public byte _type = 0;
 			public byte _team = 0;
 		}
 
+		[System.Serializable]
 		public class arg : gsc
 		{
 			public Arguments _arguments = Arguments.NON;
 		}
 
+		[System.Serializable]
 		public class transform : gsc
 		{
 			public Vector3 _position = Vector3.zero;
 			public float _angle = 0; //in degrees
 		}
 
+		[System.Serializable]
 		public class ammo : gsc
 		{
 			public int _bullets = 0;
 			//public int _grenades;
 		}
 
+		[System.Serializable]
 		public class resource : gsc
 		{
 			public int _resources = 0;
 		}
 
+		[System.Serializable]
 		public class health : gsc
 		{
 			public float _health = 0;
 			public float _morale = 0;//used for _score by depots/blueprints
 		}
 
+		[System.Serializable]
 		public class work : gsc
 		{
 			public int _work = 0;
 		}
 
+		[System.Serializable]
 		public class behavior : gsc
 		{
 			public Behaviors _behavior = Behaviors.IDLE;
 			public int _target = 0;
 		}
 
+		[System.Serializable]
 		public class path : gsc
 		{
 			public Vector3[] _path = new Vector3[0];
 		}
 
+		[System.Serializable]
 		public class heatMap : gsc
 		{
 			public BitField2D _mask = new BitField2D(0,0);
 			public List<float> _values = new List<float>();
 		}
 
+		[System.Serializable]
 		public class input : gsc
 		{
 			public int _client;
 		}
 
+		[System.Serializable]
 		public class newIDRange : gsc
 		{
 			public int _range;
 			public ObjectType _type;
 		}
 	}
+
+	[System.Serializable]
 	public class GameState
 	{
 		public GameState()

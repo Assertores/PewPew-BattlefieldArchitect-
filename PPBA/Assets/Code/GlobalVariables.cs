@@ -10,13 +10,14 @@ namespace PPBA
 	//e.g. ..., WALL, WALL_BETWEEN, ...
 	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, COVER, FLAGPOLE, SIZE };
 
+	[System.Serializable]
 	public class client
 	{
 		public int _id;
 		public bool _isConnected = false;
 		public IPEndPoint _ep;
-		public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
-		public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
+		public RingBuffer_InputState _inputStates = new RingBuffer_InputState(); //public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
+		public RingBuffer_GameState _gameStates = new RingBuffer_GameState(); //public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
 
 		public client()
 		{
