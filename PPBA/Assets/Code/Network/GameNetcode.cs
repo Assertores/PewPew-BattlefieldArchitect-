@@ -322,6 +322,7 @@ namespace PPBA
 				GlobalVariables.s_instance._clients[0]._gameStates[tick] = element;
 			}
 
+			Debug.Log("Decrypt package: " + data[1] + " of " + data[2]);
 			element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
 			element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
 			Debug.Log("Decrypt: " + tick + " | ref: " + element._refTick);
