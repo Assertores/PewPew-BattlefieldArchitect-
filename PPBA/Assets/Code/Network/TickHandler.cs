@@ -106,6 +106,8 @@ namespace PPBA
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
 
 				it._gameStates[s_currentTick] = element;
+
+				it._inputStates.FreeUpTo(s_currentTick);
 			}
 
 			return s_currentTick;
@@ -145,6 +147,7 @@ namespace PPBA
 			{
 				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 			}
+			me._gameStates.FreeUpTo(nextState._refTick - 1);
 
 			foreach(var it in nextState._newIDRanges)
 			{

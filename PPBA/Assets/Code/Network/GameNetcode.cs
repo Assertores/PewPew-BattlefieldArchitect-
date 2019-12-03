@@ -139,6 +139,8 @@ namespace PPBA
 				Debug.Log("[Server] adding inputstate to client inputStateBuffer");
 				client._inputStates[tick] = tmp;
 			}
+
+			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(fieldTick - 2);
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)

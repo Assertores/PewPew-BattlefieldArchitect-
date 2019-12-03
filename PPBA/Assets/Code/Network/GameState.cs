@@ -942,6 +942,7 @@ Jump:
 			value._denyedInputIDs = end._denyedInputIDs;
 			value._newIDRanges = end._newIDRanges;
 
+			value._refTick = start._refTick;
 			value._isEncrypted = false;
 			value._isDelta = false;
 			value._isLerped = true;
