@@ -108,7 +108,7 @@ namespace PPBA
 
 			if(args != null)
 			{
-				Debug.Log(args._arguments.ToString());
+				//Debug.Log(args._arguments.ToString());
 
 			}
 

@@ -219,6 +219,8 @@ namespace PPBA
 			if(null != _nextState)
 				_lastState = _nextState;
 
+			_nextState = new State();
+
 			#region Writing into _nextState from s_interfaceGameState
 			{
 				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
@@ -587,8 +589,11 @@ namespace PPBA
 			_lineRenderer.positionCount = _navMeshPath.corners.Length;
 			_lineRenderer.SetPositions(_navMeshPath.corners);
 #else
-			_lineRenderer.positionCount = _clientNavPathCorners.Length;
-			_lineRenderer.SetPositions(_clientNavPathCorners);
+			if(null != _clientNavPathCorners)
+			{
+				_lineRenderer.positionCount = _clientNavPathCorners.Length;
+				_lineRenderer.SetPositions(_clientNavPathCorners);
+			}
 #endif
 		}
 

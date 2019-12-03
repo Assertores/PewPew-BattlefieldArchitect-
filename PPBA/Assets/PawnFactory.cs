@@ -35,9 +35,10 @@ namespace PPBA
 		{
 			if(_ticker < _maxPawns)
 			{
-				ObjectType pawnType = Pawn.RandomPawnType();
+				//ObjectType pawnType = Pawn.RandomPawnType();
+				ObjectType pawnType = ObjectType.PAWN_WARRIOR;
 				int team = Random.Range(0, 2);
-				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker, team);
+				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker * 2f, team);
 				_ticker++;
 			}
 		}
