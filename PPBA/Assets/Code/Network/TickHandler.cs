@@ -36,7 +36,7 @@ namespace PPBA
 #endif
 		}
 
-		public bool Simulate()
+		public int Simulate()
 		{
 			Debug.Log("[Server] Simulating");
 
@@ -51,11 +51,11 @@ namespace PPBA
 
 			if(min == int.MaxValue)
 			{
-				return false;
+				return -1;
 			}
 			if(s_currentTick >= min)
 			{
-				return false;
+				return -2;
 			}
 
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
@@ -108,7 +108,7 @@ namespace PPBA
 				it._gameStates[s_currentTick] = element;
 			}
 
-			return true;
+			return s_currentTick;
 		}
 
 #if !UNITY_SERVER
