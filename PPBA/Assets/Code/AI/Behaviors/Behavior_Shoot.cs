@@ -6,8 +6,13 @@ namespace PPBA
 {
 	public class Behavior_Shoot : Behavior
 	{
+		//public
 		public static Behavior_Shoot s_instance;
 		public static Dictionary<Pawn, Pawn> s_targetDictionary = new Dictionary<Pawn, Pawn>();
+		public static Dictionary<Pawn, int> s_timerDictionary = new Dictionary<Pawn, int>();
+
+		//private
+		[SerializeField] [Tooltip("How long from starting the attack to shooting in ticks?")] private int _attackBuildUpTime = 8;
 
 		void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
 		{
@@ -27,9 +32,30 @@ namespace PPBA
 
 		}
 
+		#region Behavior
 		public override void Execute(Pawn pawn)
 		{
+			pawn.SetMoveTarget(pawn.transform.position);
 
+			if(s_timerDictionary.ContainsKey(pawn))
+				s_timerDictionary[pawn]++;
+			else
+			{
+				s_timerDictionary[pawn] = 0;
+				return;
+			}
+
+			if(_attackBuildUpTime <= s_timerDictionary[pawn])
+			{
+				if(s_targetDictionary.ContainsKey(pawn))
+				{
+					Pawn target = s_targetDictionary[pawn];
+					if(null != target)
+						Shoot(pawn, target);
+				}
+
+				s_timerDictionary[pawn] = 0;
+			}
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -85,7 +111,10 @@ namespace PPBA
 					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
 					return 0.5f;
 				case "ShotOnMe":
-					return s_targetDictionary[target] == pawn ? 1f : 0f;
+					if(s_targetDictionary.ContainsKey(target))
+						return s_targetDictionary[target] == pawn ? 1f : 0f;
+					else
+						return 0f;
 				default:
 					break;
 			}
@@ -111,13 +140,6 @@ namespace PPBA
 			return score;
 		}
 
-		private bool CheckLos(Pawn pawn, Pawn target)
-		{
-			//check for wall with ray/linecast (+layerMask)
-
-			return true;
-		}
-
 		public override int GetTargetID(Pawn pawn)
 		{
 			if(s_targetDictionary.ContainsKey(pawn))
@@ -131,12 +153,28 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
 		}
+		#endregion
+
+		private bool CheckLos(Pawn pawn, Pawn target)
+		{
+			//check for wall with ray/linecast (+layerMask)
+
+			return true;
+		}
 
 		public void Shoot(Pawn pawn, Pawn target)
 		{
 			if(0 < pawn._ammo)//skip if no ammo
 				pawn._ammo--;
 			else
+				return;
+
+			//set shot trigger
+			pawn._arguments |= Arguments.TRIGGERBEHAVIOUR;
+			//(get shot trigger to do particle goodness)
+			Debug.Log(pawn.gameObject.name + " shot on " + target.gameObject.name);
+
+			if(!CheckLos(pawn, target))
 				return;
 
 			if(Random.Range(0f, 1f) < pawn._attackChance)//roll to hit anything
@@ -155,5 +193,7 @@ namespace PPBA
 		}
 
 		private int RollDamage(Pawn pawn) => (int)Mathf.Lerp(pawn._minAttackDamage, pawn._maxAttackDamage, Mathf.Clamp(pawn._attackDamageCurve.Evaluate(Random.Range(0f, 1f)), 0f, 1f));
+
+		//public void ResetTimer(Pawn pawn) => s_timerDictionary[pawn] = 0;
 	}
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8960741173932209555}
   - component: {fileID: 443042304425257965}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cover
   m_TagString: Cover
   m_Icon: {fileID: 0}
@@ -63,7 +63,7 @@ GameObject:
   - component: {fileID: 1097116678950338891}
   - component: {fileID: 752839032140296557}
   - component: {fileID: 2976991599487880686}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 9000762322731175148}
   - component: {fileID: 6867463472577955290}
   - component: {fileID: 2570203676158108117}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CoverSlot_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 138820995298495179}
   - component: {fileID: 4639859403565362422}
   - component: {fileID: 6039824074512972266}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CoverSlot_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
