@@ -615,6 +615,8 @@ namespace PPBA
 			//_hash = GetHash();
 
 			GameState reference = references[refTick];
+			if(reference == null)
+				return false;
 
 			Debug.Log("[GameState] reference is: " + reference);
 
@@ -798,6 +800,9 @@ Jump:
 
 		public bool DismantleDelta(GameState reference)
 		{
+			if(reference == default)
+				return false;
+
 			_messageHolder = null;
 
 			foreach(var it in reference._types)

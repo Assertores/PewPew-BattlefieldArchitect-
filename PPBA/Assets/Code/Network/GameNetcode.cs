@@ -118,6 +118,9 @@ namespace PPBA
 			Debug.Log("[Server] fieldTick: " + fieldTick);
 
 			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0)
+
+			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0 &&
+				client._gameStates[fieldTick]._receivedMessages.GetSize().x == field.Length)
 			{
 				client._gameStates[fieldTick]._receivedMessages.FromArray(field);
 
