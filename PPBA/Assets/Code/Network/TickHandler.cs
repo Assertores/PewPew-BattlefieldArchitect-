@@ -133,24 +133,27 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
-			{
-				Debug.LogError("Reference Tick not Found");
-				return;//no idea how to fix this
-			}
+			Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 
-			if(nextStateTick != s_currentTick)
+			if(nextState._refTick != 0)
 			{
-				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
+				{
+					Debug.LogError("Reference Tick not Found");
+					return;//no idea how to fix this
+				}
+
+				if(nextStateTick != s_currentTick)
+				{
+					nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				}
+				else
+				{
+					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
+				}
+
+				me._gameStates.FreeUpTo(nextState._refTick - 1);
 			}
-			else
-			{
-				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
-			}
-			print("LowEnd befor Free: " + me._gameStates.GetLowEnd());
-			print("Freeing gameStates: " + (nextState._refTick - 1));
-			me._gameStates.FreeUpTo(nextState._refTick - 1);
-			print("LowEnd after Free: " + me._gameStates.GetLowEnd());
 
 			foreach(var it in nextState._newIDRanges)
 			{
