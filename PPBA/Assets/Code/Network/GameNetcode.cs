@@ -50,7 +50,10 @@ namespace PPBA
 			if(GlobalVariables.s_instance._clients.FindAll(x => x._isConnected == true).Count < _playerCount)
 				return;
 
-			TickHandler.s_instance.Simulate();
+			if(!TickHandler.s_instance.Simulate())
+				return;
+
+			Send(TickHandler.s_currentTick);
 		}
 
 		bool Listen()

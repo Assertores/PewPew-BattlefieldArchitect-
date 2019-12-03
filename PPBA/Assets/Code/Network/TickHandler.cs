@@ -36,17 +36,8 @@ namespace PPBA
 #endif
 		}
 
-		public void Simulate()
+		public bool Simulate()
 		{
-			if(!h_SimulationIsRunning)
-				StartCoroutine(IESimulate());
-		}
-
-		bool h_SimulationIsRunning = false;
-		IEnumerator IESimulate()
-		{
-			h_SimulationIsRunning = true;
-
 			Debug.Log("[Server] Simulating");
 
 			int min = int.MaxValue;
@@ -60,13 +51,11 @@ namespace PPBA
 
 			if(min == int.MaxValue)
 			{
-				h_SimulationIsRunning = false;
-				yield break;
+				return false;
 			}
 			if(s_currentTick >= min)
 			{
-				h_SimulationIsRunning = false;
-				yield break;
+				return false;
 			}
 
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
@@ -88,12 +77,7 @@ namespace PPBA
 				}
 				Debug.Log("[Server] combined inputs");
 
-#if UNITY_SERVER
-				Time.timeScale = 8;
-				while(Time.timeSinceLevelLoad < s_currentTick * Time.fixedDeltaTime)
-					yield return null;
-				Time.timeScale = 0;
-#else
+#if !UNITY_SERVER
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
 #endif
 
@@ -123,11 +107,8 @@ namespace PPBA
 
 				it._gameStates[s_currentTick] = element;
 			}
-#if UNITY_SERVER
-			Debug.Log("[Server] Sending gameState for tick: " + s_currentTick);
-			GameNetcode.s_instance.Send(s_currentTick);
-#endif
-			h_SimulationIsRunning = false;
+
+			return true;
 		}
 
 #if !UNITY_SERVER
