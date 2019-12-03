@@ -1,42 +1,17 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 namespace PPBA
 {
-	public class BuildingProcessRefinery : MonoBehaviour, INetElement
+	public class BuildingProcessRefinery : MonoBehaviour
 	{
-		public int index = 0;
-		public TextMeshProUGUI text;
-
-		private RefineryRefHolder _holder;
-		private bool EnoughResources;
-
-		public int _id { get; set; }
-
-		private void Awake()
-		{
-			_holder = GetComponent<RefineryRefHolder>();
-#if !UNITY_SERVER
-			TickHandler.s_DoInput += HandleGameStateEnableEvents;
-#else
-			TickHandler.s_GatherValues += ServerGatherValue;
-#endif
-		}
-		private void OnDestroy()
-		{
-#if !UNITY_SERVER
-			TickHandler.s_DoInput -= HandleGameStateEnableEvents;
-#else
-			TickHandler.s_GatherValues -= ServerGatherValue;
-#endif
-		}
+		private IUIElement element;
+		private bool _EnoughResources;
 
 		private void OnEnable()
 		{
 #if !UNITY_SERVER
+			element = GetComponent<IUIElement>();
 			Startbuilding();
 #endif
 		}
@@ -48,21 +23,50 @@ namespace PPBA
 
 		IEnumerator StartBuilding()
 		{
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.01f);
 
-			while(!EnoughResources)
+			while(!_EnoughResources)
 			{
-				if(_holder._CurrentResources >= _holder._BuildingCosts)
+				if(element.GetBuildingCurrentResources() >= element.GetBuildingCost())
 				{
-					EnoughResources = true;
+					_EnoughResources = true;
 				}
 				yield return new WaitForSeconds(1);
 			}
 
 			yield return StartCoroutine(BuildingRoutine());
 
-			ResourceMapCalculate.s_instance.AddFabric(GetComponent<RefineryRefHolder>());
-			_holder.RefineryPrefab.SetActive(true);
+
+			// build is fished
+			switch(element.GetObjectType())
+			{
+				case ObjectType.REFINERY:
+					ResourceMapCalculate.s_instance.AddFabric(GetComponent<RefineryRefHolder>());
+					break;
+				case ObjectType.DEPOT:
+					break;
+				case ObjectType.GUN_TURRET:
+					break;
+				case ObjectType.WALL:
+					break;
+				case ObjectType.WALL_BETWEEN:
+					break;
+				case ObjectType.PAWN_WARRIOR:
+					break;
+				case ObjectType.PAWN_HEALER:
+					break;
+				case ObjectType.PAWN_PIONEER:
+					break;
+				case ObjectType.COVER:
+					break;
+				case ObjectType.FLAGPOLE:
+					break;
+				case ObjectType.SIZE:
+					break;
+				default:
+					break;
+			}
+
 
 			yield return null;
 		}
@@ -75,66 +79,5 @@ namespace PPBA
 
 		}
 
-		void ServerGatherValue(int tick)
-		{
-			{
-				GSC.transform element = new GSC.transform();
-				element._id = _id;
-				element._position = transform.position;
-				element._angle = transform.rotation.eulerAngles.y;
-				TickHandler.s_interfaceGameState._transforms.Add(element);
-			}
-			{
-				GSC.arg element = new GSC.arg();
-				element._id = _id;
-				if(_holder.gameObject.activeSelf) 
-					element._arguments |= Arguments.ENABLED;
-
-				text.text = index + element._arguments.ToString();
-				index++;
-
-
-				Debug.Log(element._arguments.ToString() +" <---args!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-				TickHandler.s_interfaceGameState._args.Add(element);
-			}
-		}
-
-		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus
-		void HandleGameStateEnableEvents(int tick)
-		{
-			print("HandleGameStateEnableEvents --- tick: " + tick);
-			GSC.arg args = TickHandler.s_interfaceGameState._args.Find(x => x._id == _id);
-
-			if(args != null)
-			{
-				Debug.Log(args._arguments.ToString());
-
-			}
-
-			if(args != null && args._arguments.HasFlag(Arguments.ENABLED))
-			{
-	//			print("11111111111111111111tick: " + tick + " wir machen mich jetzt an");
-				if(!this.gameObject.activeSelf)
-				{
-			//		print("tick: " + tick + " wir machen mich jetzt an");
-					_holder.gameObject.SetActive(true);
-
-					GSC.transform newTransform = TickHandler.s_interfaceGameState._transforms.Find(x => x._id == _id);
-					if(newTransform != null)
-					{
-						_holder.transform.position = newTransform._position;
-						_holder.transform.rotation = Quaternion.Euler(0, newTransform._angle, 0);
-					}
-				}
-			}
-			else
-			{
-				if(this.gameObject.activeSelf)
-				{
-					_holder.gameObject.SetActive(false);
-				}
-			}
-		}
 	}
 }

@@ -29,7 +29,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8303485101423768739}
+  - {fileID: 8303485101423768793}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,15 +51,9 @@ MonoBehaviour:
   _ObjectType: 3
   _GhostPrefab: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
     type: 3}
-  GhostWallMiddlePrefab: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
-    type: 3}
-  WallEndPrefab: {fileID: 4101390062667216111, guid: 8f4308316695df54482f68707a7ca78e,
-    type: 3}
-  WallMiddlePrefab: {fileID: 4608242534838623985, guid: 6da75379fa8fe344181facfee6292131,
-    type: 3}
   _BuildingTime: 1
   _BuildingCosts: 50
-  _BuildingResourceStock: 0
+  _CurrentResources: 50
   _LivePoints: 50
   _MaxLivePoints: 100
 --- !u!114 &-8357493990160151788
@@ -143,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f4308316695df54482f68707a7ca78e, type: 3}
---- !u!4 &8303485101423768739 stripped
+--- !u!4 &8303485101423768793 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1058426523684325116, guid: 8f4308316695df54482f68707a7ca78e,
     type: 3}

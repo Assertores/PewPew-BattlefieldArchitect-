@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 695979811854626018}
   - component: {fileID: 8410890997195253141}
+  - component: {fileID: -1804715878192648609}
   m_Layer: 9
   m_Name: Stonewall_Middle
   m_TagString: Untagged
@@ -47,6 +48,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.38, y: 1, z: 1.2}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &-1804715878192648609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4608242534838623985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 745ed11174820074487e8d4d854dc10f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _BuildingSound: {fileID: 0}
+  _ImageUI: {fileID: 0}
+  _TextField: {fileID: 0}
+  _ObjectType: 4
+  _GhostPrefab: {fileID: 0}
+  GhostWallMiddlePrefab: {fileID: 0}
+  WallEndPrefab: {fileID: 0}
+  WallMiddlePrefab: {fileID: 0}
+  _BuildingTime: 0
+  _BuildingCosts: 10
+  _CurrentResources: 10
+  _LivePoints: 100
+  _MaxLivePoints: 100
 --- !u!1 &5452028132601388777
 GameObject:
   m_ObjectHideFlags: 0

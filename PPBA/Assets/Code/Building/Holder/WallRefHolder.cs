@@ -13,14 +13,9 @@ public class WallRefHolder : MonoBehaviour, IUIElement
 	[SerializeField] private ObjectType _ObjectType;
 	[SerializeField] private GameObject _GhostPrefab;
 
-
-	public GameObject GhostWallMiddlePrefab;
-	public GameObject WallEndPrefab;
-	public GameObject WallMiddlePrefab;
-
 	public float _BuildingTime;
 	public float _BuildingCosts;
-	public float _BuildingResourceStock;
+	public float _CurrentResources;
 
 	public float _LivePoints;
 	public float _MaxLivePoints;
@@ -29,6 +24,26 @@ public class WallRefHolder : MonoBehaviour, IUIElement
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
+
+	public float GetBuildingCost()
+	{
+		return _BuildingCosts;
+	}
+
+	public float GetBuildingCurrentResources()
+	{
+		return _CurrentResources;
+	}
+
+	public float GetBuildingTime()
+	{
+		return _BuildingTime;
+	}
+
+	public ObjectType GetObjectType()
+	{
+		return _ObjectType;
+	}
 
 }
 

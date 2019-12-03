@@ -53,7 +53,7 @@ namespace PPBA
 				if(Input.GetMouseButtonUp(0) && _isBuilt)
 				{
 					if(!_canBuild)
-					{	// for the last one with this we can go on building
+					{   // for the last one with this we can go on building
 
 						foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 						{
@@ -63,12 +63,15 @@ namespace PPBA
 							//}
 							Destroy(build.Key);
 						}
-
 					}
-
-
 					_currentPrefabIndex = 0;
 					_isBuilt = false;
+
+					foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
+					{
+						build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
+					}
+
 					_PlayedBuilts.Clear();
 
 				}
@@ -132,7 +135,7 @@ namespace PPBA
 			if(Input.GetKey(KeyCode.R))
 			{
 				//_MouseWheelRotation = Input.mouseScrollDelta.y;
-				_currentPlaceableObject.transform.Rotate(Vector3.up, _MouseWheelRotation * Time.deltaTime );
+				_currentPlaceableObject.transform.Rotate(Vector3.up, _MouseWheelRotation * Time.deltaTime);
 			}
 			if(Input.GetKey(KeyCode.T))
 			{
