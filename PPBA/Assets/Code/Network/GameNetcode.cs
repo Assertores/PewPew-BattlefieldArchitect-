@@ -29,7 +29,7 @@ namespace PPBA
 
 		void Start()
 		{
-			socket = new UdpClient(11000);
+			socket = new UdpClient(m_serverPort);
 			//Debug.Log("[Server] server is ready and lisents");
 			socket.DontFragment = true;
 
@@ -64,7 +64,7 @@ namespace PPBA
 
 			//Debug.Log("[Server] reseaved package");
 
-			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 11000);
+			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, m_serverPort);
 			byte[] data = socket.Receive(ref remoteEP);
 
 			//Debug.Log("[Server] retreaved package");
@@ -179,6 +179,20 @@ namespace PPBA
 			target._isConnected = false;
 			target._ep = ep;
 
+			bool allDisconnected = true;
+			foreach(var it in GlobalVariables.s_instance._clients)
+			{
+				if(it._isConnected)
+				{
+					allDisconnected = false;
+					break;
+				}
+			}
+			if(allDisconnected)
+			{
+				DoServerRestart();
+			}
+
 			//Debug.Log("[Server] client " + RemoteID + " disconnected");
 		}
 
@@ -239,6 +253,12 @@ namespace PPBA
 			}
 
 			client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
+		}
+
+		void DoServerRestart()
+		{
+			TickHandler.s_instance.DoReset();
+			GlobalVariables.s_instance._clients = new List<client>();
 		}
 #else
 
