@@ -26,7 +26,7 @@ namespace PPBA
 		private void Start()
 		{
 #if UNITY_SERVER
-			Time.timeScale = 0;
+			//Time.timeScale = 0;
 #else
 			for(int i = 0; i < _inputBuffer; i++)
 			{

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PPBA
 {
+	[DefaultExecutionOrder(-10)]
 	public abstract class Behavior : MonoBehaviour
 	{
 		[System.Serializable]

@@ -37,7 +37,7 @@ namespace PPBA
 			{
 				//ObjectType pawnType = Pawn.RandomPawnType();
 				ObjectType pawnType = ObjectType.PAWN_WARRIOR;
-				int team = Random.Range(0, 2);
+				int team = _ticker % 2 == 0 ? 0 : 1;
 				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker * 2f, team);
 				_ticker++;
 			}

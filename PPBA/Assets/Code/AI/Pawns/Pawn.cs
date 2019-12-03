@@ -9,7 +9,6 @@ namespace PPBA
 {
 	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETRESOURCES, BRINGRESOURCES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
 
-	[RequireComponent(typeof(SphereCollider))]
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
 	{
@@ -27,7 +26,10 @@ namespace PPBA
 
 		#region Variables
 		//public
+		public static List<Pawn> _pawns = new List<Pawn>();
+
 		public int _id { get; set; }
+		public Arguments _arguments = new Arguments();
 		[SerializeField] public int _team = 0;
 
 		//[SerializeField] public float _health = 100;
@@ -68,6 +70,7 @@ namespace PPBA
 		protected State _nextState;
 		//Behaviors
 		[SerializeField] protected Behaviors[] e_behaviors;
+		[SerializeField] protected float[] _behaviorMultipliers;
 		protected Behavior[] _behaviors;
 		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
@@ -76,7 +79,6 @@ namespace PPBA
 		//Components
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
-		private SphereCollider _sphereCollider;
 		private LineRenderer _lineRenderer;
 		[SerializeField] private GameObject _objectToFollow;//to test navAgent
 
@@ -115,6 +117,31 @@ namespace PPBA
 		#region MonoBehaviour
 		private void Awake()
 		{
+			//Get references
+			_navMeshPath = new NavMeshPath();
+			_lineRenderer = GetComponent<LineRenderer>();
+
+			//Initialisation
+			InitiateBehaviors();
+
+			if(_behaviorMultipliers.Length < e_behaviors.Length)
+			{
+				float[] arr = new float[e_behaviors.Length];
+
+				int i = 0;
+				for(; i < _behaviorMultipliers.Length; i++)
+				{
+					arr[i] = _behaviorMultipliers[i];
+				}
+
+				for(; i < e_behaviors.Length; i++)
+				{
+					arr[i] = 1f;
+				}
+
+				_behaviorMultipliers = arr;
+			}
+
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #endif
@@ -122,13 +149,7 @@ namespace PPBA
 
 		private void Start()
 		{
-			//Get references
-			_navMeshPath = new NavMeshPath();
-			_sphereCollider = GetComponent<SphereCollider>();
-			_lineRenderer = GetComponent<LineRenderer>();
 
-			//Initialisation
-			InitiateBehaviors();
 		}
 
 		private void Update()
@@ -136,7 +157,6 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
-
 			ShowNavPath();
 		}
 		#endregion
@@ -146,9 +166,15 @@ namespace PPBA
 		{
 			CheckOverlapSphere();
 
-			for(int i = 0; i < _behaviors.Length; i++)
+			if(null != _behaviors)
 			{
-				_behaviorScores[i] = _behaviors[i].Calculate(this);
+				for(int i = 0; i < _behaviors.Length; i++)
+				{
+					_behaviorScores[i] = _behaviors[i].Calculate(this);
+
+					if(i < _behaviorMultipliers.Length)
+						_behaviorScores[i] *= _behaviorMultipliers[i];
+				}
 			}
 		}
 
@@ -245,7 +271,6 @@ namespace PPBA
 					// do trigger stuff
 				}
 			}
-
 			{
 				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
 
@@ -315,7 +340,7 @@ namespace PPBA
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
 			transform.position = Vector3.Lerp(_lastState.position, _nextState.position, lerpFactor);
-			transform.eulerAngles = new Vector3(0f, Mathf.Lerp(_lastState._angle, _nextState._angle, lerpFactor), 0f);
+			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
 			_morale = Mathf.Lerp(_lastState._morale, _nextState._morale, lerpFactor);
@@ -374,9 +399,9 @@ namespace PPBA
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
-					break;
+					return Behavior_GoToFlag.s_instance;
 				case Behaviors.GOTOBORDER:
-					break;
+					return Behavior_GoToBorder.s_instance;
 				case Behaviors.CONQUERBUILDING:
 					break;
 				case Behaviors.STAYINCOVER:
@@ -388,7 +413,7 @@ namespace PPBA
 				case Behaviors.FLEE:
 					break;
 				case Behaviors.GETRESOURCES:
-					break;
+					return Behavior_GetResources.s_instance;
 				case Behaviors.BRINGRESOURCES:
 					break;
 				case Behaviors.BUILD:
@@ -398,11 +423,11 @@ namespace PPBA
 				case Behaviors.GETAMMO:
 					break;
 				case Behaviors.MOUNT:
-					break;
+					return Behavior_Mount.s_instance;
 				case Behaviors.FOLLOW:
 					break;
 				case Behaviors.DIE:
-					break;
+					return Behavior_Die.s_instance;
 				case Behaviors.WINCHEER:
 					break;
 				case Behaviors.GOANYWHERE:
@@ -514,6 +539,9 @@ namespace PPBA
 		#region Navigation
 		public void NavTick(int tick = 0)//called during DoTick by Execute()
 		{
+			if(null == _navMeshPath)
+				_navMeshPath = new NavMeshPath();
+
 			if(_moveTarget == null)//early skips
 			{
 				_moveTarget = transform.position;
@@ -571,6 +599,12 @@ namespace PPBA
 
 		private bool RecalculateNavPath()
 		{
+			if(null == _moveTarget || null == _navMeshPath)
+			{
+				Debug.LogWarning("Pawn is missing a _moveTarget or a _navMeshPath");
+				return false;
+			}
+
 			if(NavMesh.CalculatePath(transform.position, _moveTarget, NavSurfaceBaker._navMask, _navMeshPath))
 			{
 				_isNavPathDirty = false;
@@ -586,8 +620,11 @@ namespace PPBA
 		public void ShowNavPath()
 		{
 #if UNITY_SERVER
-			_lineRenderer.positionCount = _navMeshPath.corners.Length;
-			_lineRenderer.SetPositions(_navMeshPath.corners);
+			if(null != _navMeshPath?.corners)
+			{
+				_lineRenderer.positionCount = _navMeshPath.corners.Length;
+				_lineRenderer.SetPositions(_navMeshPath.corners);
+			}
 #else
 			if(null != _clientNavPathCorners)
 			{
@@ -622,7 +659,12 @@ namespace PPBA
 			}
 		}
 
-		private void SetNavPathClean(int tick) => _isNavPathDirty = false;
+		private void SetNavPathClean(int tick = 0) => _isNavPathDirty = false;
+		private void CleanFlags(int tick = 0)
+		{
+			SetNavPathClean();
+			_arguments = new Arguments();
+		}
 
 		private int IndexFromMask(int mask)
 		{
@@ -641,16 +683,23 @@ namespace PPBA
 		{
 			ClearLists();
 
-			Collider[] colliders = Physics.OverlapSphere(transform.position, 10f);//TODO: adjust sphere radius
+			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f, _overlapSphereLayerMask);//TODO: adjust sphere radius
+
+			Debug.Log("I found " + colliders.Length.ToString() + " colliders.");
 
 			foreach(Collider c in colliders)
 			{
+				Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
+				
 				switch(c.tag)
 				{
 					case "Pawn":
+						Debug.Log("hello i'm here");
 						Pawn pawn = c.GetComponent<Pawn>();
-						if(pawn)
+						if(null != pawn && this != pawn)
 							_closePawns.Add(pawn);
+						else
+							Debug.Log("but i didnt find a friend");
 						continue;
 					case "Cover":
 						Cover cover = c.GetComponent<Cover>();
@@ -663,6 +712,7 @@ namespace PPBA
 						}
 						continue;
 					default:
+						Debug.Log("it's a sad default: " + c.tag);
 						continue;
 				}
 			}
@@ -755,6 +805,7 @@ namespace PPBA
 		/// <param name="team"></param>
 		private static void ResetToDefault(Pawn pawn, int team)
 		{
+			pawn._arguments = new Arguments();
 			pawn._team = team;//not needed if object pools are per player
 			pawn._health = pawn._maxHealth;
 			pawn._ammo = pawn._maxAmmo;
@@ -763,7 +814,7 @@ namespace PPBA
 			pawn._isNavPathDirty = true;
 			pawn._isAttacking = false;
 			//pawn._moveSpeed = 3.6111111f;
-			pawn._navMeshPath = null;
+			pawn._navMeshPath = new NavMeshPath();
 			pawn._morale = pawn._maxMorale;
 
 			pawn.ClearLists();
@@ -803,23 +854,29 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp += SetNavPathClean;
+			TickHandler.s_SetUp += CleanFlags;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 			TickHandler.s_GatherValues += WriteToGameState;
+
+			if(!_pawns.Contains(this))
+			_pawns.Add(this);
 #endif
 		}
 
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp -= SetNavPathClean;
+			TickHandler.s_SetUp -= CleanFlags;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
 			TickHandler.s_GatherValues -= WriteToGameState;
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
+			
+			if(_pawns.Contains(this))
+				_pawns.Remove(this);
 #endif
 		}
 		#endregion
