@@ -115,13 +115,6 @@ namespace PPBA
 		#region MonoBehaviour
 		private void Awake()
 		{
-#if !UNITY_SERVER
-			TickHandler.s_DoInput += ExtractFromGameState;
-#endif
-		}
-
-		private void Start()
-		{
 			//Get references
 			_navMeshPath = new NavMeshPath();
 			_sphereCollider = GetComponent<SphereCollider>();
@@ -129,6 +122,15 @@ namespace PPBA
 
 			//Initialisation
 			InitiateBehaviors();
+
+#if !UNITY_SERVER
+			TickHandler.s_DoInput += ExtractFromGameState;
+#endif
+		}
+
+		private void Start()
+		{
+
 		}
 
 		private void Update()
@@ -136,7 +138,6 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
-
 			ShowNavPath();
 		}
 		#endregion
@@ -146,9 +147,12 @@ namespace PPBA
 		{
 			CheckOverlapSphere();
 
-			for(int i = 0; i < _behaviors.Length; i++)
+			if(null != _behaviors)
 			{
-				_behaviorScores[i] = _behaviors[i].Calculate(this);
+				for(int i = 0; i < _behaviors.Length; i++)
+				{
+					_behaviorScores[i] = _behaviors[i].Calculate(this);
+				}
 			}
 		}
 
@@ -245,7 +249,6 @@ namespace PPBA
 					// do trigger stuff
 				}
 			}
-
 			{
 				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
 
@@ -374,9 +377,9 @@ namespace PPBA
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
-					break;
+					return Behavior_GoToFlag.s_instance;
 				case Behaviors.GOTOBORDER:
-					break;
+					return Behavior_GoToBorder.s_instance;
 				case Behaviors.CONQUERBUILDING:
 					break;
 				case Behaviors.STAYINCOVER:
@@ -388,7 +391,7 @@ namespace PPBA
 				case Behaviors.FLEE:
 					break;
 				case Behaviors.GETRESOURCES:
-					break;
+					return Behavior_GetResources.s_instance;
 				case Behaviors.BRINGRESOURCES:
 					break;
 				case Behaviors.BUILD:
@@ -398,11 +401,11 @@ namespace PPBA
 				case Behaviors.GETAMMO:
 					break;
 				case Behaviors.MOUNT:
-					break;
+					return Behavior_Mount.s_instance;
 				case Behaviors.FOLLOW:
 					break;
 				case Behaviors.DIE:
-					break;
+					return Behavior_Die.s_instance;
 				case Behaviors.WINCHEER:
 					break;
 				case Behaviors.GOANYWHERE:
@@ -514,6 +517,9 @@ namespace PPBA
 		#region Navigation
 		public void NavTick(int tick = 0)//called during DoTick by Execute()
 		{
+			if(null == _navMeshPath)
+				_navMeshPath = new NavMeshPath();
+
 			if(_moveTarget == null)//early skips
 			{
 				_moveTarget = transform.position;
@@ -571,6 +577,12 @@ namespace PPBA
 
 		private bool RecalculateNavPath()
 		{
+			if(null == _moveTarget || null == _navMeshPath)
+			{
+				Debug.LogWarning("Pawn is missing a _moveTarget or a _navMeshPath");
+				return false;
+			}
+
 			if(NavMesh.CalculatePath(transform.position, _moveTarget, NavSurfaceBaker._navMask, _navMeshPath))
 			{
 				_isNavPathDirty = false;
@@ -586,8 +598,11 @@ namespace PPBA
 		public void ShowNavPath()
 		{
 #if UNITY_SERVER
-			_lineRenderer.positionCount = _navMeshPath.corners.Length;
-			_lineRenderer.SetPositions(_navMeshPath.corners);
+			if(null != _navMeshPath?.corners)
+			{
+				_lineRenderer.positionCount = _navMeshPath.corners.Length;
+				_lineRenderer.SetPositions(_navMeshPath.corners);
+			}
 #else
 			if(null != _clientNavPathCorners)
 			{
@@ -763,7 +778,7 @@ namespace PPBA
 			pawn._isNavPathDirty = true;
 			pawn._isAttacking = false;
 			//pawn._moveSpeed = 3.6111111f;
-			pawn._navMeshPath = null;
+			pawn._navMeshPath = new NavMeshPath();
 			pawn._morale = pawn._maxMorale;
 
 			pawn.ClearLists();

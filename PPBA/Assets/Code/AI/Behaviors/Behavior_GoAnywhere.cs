@@ -69,13 +69,15 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
+			/*
 			if(s_targetDictionary.ContainsKey(pawn))
 			{
 				if(pawn.transform.position != s_targetDictionary[pawn])
 					return 1f;
 			}
-
-			s_targetDictionary[pawn] = GetRandomPoint(pawn);
+			*/
+			//s_targetDictionary[pawn] = GetRandomPoint(pawn);
+			s_targetDictionary[pawn] = pawn.transform.position + 3f * new Vector3(Mathf.Sin(TickHandler.s_currentTick), 0f, Mathf.Cos(TickHandler.s_currentTick));
 			//s_targetDictionary[pawn] = pawn.transform.position + Vector3.forward;
 			return 1f;
 		}
@@ -89,7 +91,7 @@ namespace PPBA
 
 			for(int i = 0; i < 32; i++)
 			{
-				probe = Random.insideUnitCircle * 3f;
+				probe = Random.insideUnitCircle * 10f;
 				probePosition = new Vector3(transform.position.x + probe.x, transform.position.y, transform.position.z + probe.y);
 
 				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, NavMesh.AllAreas))

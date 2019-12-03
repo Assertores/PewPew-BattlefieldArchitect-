@@ -8,6 +8,8 @@ namespace PPBA
 	{
 		public static Behavior_Idle s_instance;
 
+		[Range(0f, 0.9f)] private float _fixedScore = 0.1f;
+
 		private void Awake()
 		{
 			if(s_instance == null)
@@ -28,7 +30,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn) => pawn.SetMoveTarget(pawn.transform.position);
 
-		public override float FindBestTarget(Pawn pawn) => 1f;
+		public override float FindBestTarget(Pawn pawn) => _fixedScore;
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
 		{
