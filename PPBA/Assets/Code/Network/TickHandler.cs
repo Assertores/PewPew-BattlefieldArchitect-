@@ -23,6 +23,8 @@ namespace PPBA
 		public static float s_currentTickTime = 0.0f; //referenced to Time.time
 		[SerializeField] private int _inputBuffer = 6;
 
+		[SerializeField] GameState DeltaGameState;
+
 		private void Start()
 		{
 #if UNITY_SERVER
@@ -133,7 +135,7 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
+			//Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 
 			if(nextState._refTick != 0)
 			{
@@ -149,10 +151,17 @@ namespace PPBA
 				}
 				else
 				{
+					if(nextStateTick == 100)
+						DeltaGameState = new GameState(nextState);
+
 					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 				}
 
 				me._gameStates.FreeUpTo(nextState._refTick - 1);
+			}
+			else
+			{
+				Debug.Log("Tick: " + nextStateTick + " has 0 as reference tick");
 			}
 
 			foreach(var it in nextState._newIDRanges)
