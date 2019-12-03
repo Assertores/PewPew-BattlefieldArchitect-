@@ -8,7 +8,7 @@ namespace PPBA
 	public class Behavior_GoToFlag : Behavior
 	{
 		public static Behavior_GoToFlag s_instance;
-		public static Dictionary<Pawn, FlagPole> s_targetDictionary;
+		public static Dictionary<Pawn, FlagPole> s_targetDictionary = new Dictionary<Pawn, FlagPole>();
 		protected const float _maxDistance = 100f;
 		
 		private void Awake()

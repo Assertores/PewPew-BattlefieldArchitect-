@@ -7,7 +7,7 @@ namespace PPBA
 	public class Behavior_GetResources : Behavior
 	{
 		public static Behavior_GetResources s_instance;
-		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary;
+		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary = new Dictionary<Pawn, ResourceDepot>();
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 

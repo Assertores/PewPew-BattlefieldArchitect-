@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 443042304425257965}
   m_Layer: 0
   m_Name: Cover
-  m_TagString: Untagged
+  m_TagString: Cover
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46bd4ed34a3f5148b5a331bfe511e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _team: 0
   _maxHealth: 100
   _coverSlots:
   - {fileID: 6039824074512972266}

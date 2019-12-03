@@ -43,3 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e878f14bd463fe44ea9123f5ad8ff6bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _idle: 1
+  _getDamaged: -10
+  _closePawnDied: -5
+  _closePawnDamaged: 0
+  _enemyDied: 0
+  _enemyDamaged: 0
+  _wonGame: 0

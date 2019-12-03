@@ -7,10 +7,12 @@ namespace PPBA
 {
 	public class Behavior_GoAnywhere : Behavior
 	{
+		//public
 		public static Behavior_GoAnywhere s_instance;
+		public static Dictionary<Pawn, Vector3> s_targetDictionary = new Dictionary<Pawn, Vector3>();
 
+		//private
 		[SerializeField] private float _maxDistance = 30f;
-		private Vector3 _bestTarget;
 
 		private void Awake()
 		{
@@ -32,7 +34,12 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn.SetMoveTarget(_bestTarget);
+			if(s_targetDictionary.ContainsKey(pawn))
+				pawn.SetMoveTarget(s_targetDictionary[pawn]);
+			else
+				pawn.SetMoveTarget(pawn.transform.position);
+
+			//pawn.SetMoveTarget(new Vector3(-135f, 0f, 11f));
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -47,13 +54,13 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name)
+		protected float TargetAxisInputs(Pawn pawn, Vector3 target, string name)
 		{
 			switch(name)
 			{
 				case "Distance":
 				case "DistanceToTarget":
-					return Vector3.Distance(pawn.transform.position, _bestTarget) / _maxDistance;
+					return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -62,9 +69,15 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
-			_bestTarget = GetRandomPoint(pawn);
-			_bestTarget = pawn.transform.position + Vector3.forward;
-			return 1;
+			if(s_targetDictionary.ContainsKey(pawn))
+			{
+				if(pawn.transform.position != s_targetDictionary[pawn])
+					return 1f;
+			}
+
+			s_targetDictionary[pawn] = GetRandomPoint(pawn);
+			//s_targetDictionary[pawn] = pawn.transform.position + Vector3.forward;
+			return 1f;
 		}
 
 		/// <summary> Gets a random point up to 3 from transform.position </summary>
@@ -74,11 +87,11 @@ namespace PPBA
 			Vector2 probe;
 			Vector3 probePosition;
 
-			for(int i = 0; i < 64; i++)
+			for(int i = 0; i < 32; i++)
 			{
 				probe = Random.insideUnitCircle * 3f;
 				probePosition = new Vector3(transform.position.x + probe.x, transform.position.y, transform.position.z + probe.y);
-				
+
 				if(UnityEngine.AI.NavMesh.SamplePosition(probePosition, out hit, 0.1f, NavMesh.AllAreas))
 					return hit.position;
 				else
@@ -89,7 +102,7 @@ namespace PPBA
 				}
 			}
 
-			return transform.position;
+			return pawn.transform.position;
 		}
 
 		public override int GetTargetID(Pawn pawn)
@@ -100,7 +113,12 @@ namespace PPBA
 
 		public override void RemoveFromTargetDict(Pawn pawn)
 		{
-			//empty because no target dictionary
+			if(s_targetDictionary.ContainsKey(pawn))
+			{
+				s_targetDictionary.Remove(pawn);
+			}
+
+			pawn._mountSlot?.GetOut(pawn);
 		}
 	}
 }

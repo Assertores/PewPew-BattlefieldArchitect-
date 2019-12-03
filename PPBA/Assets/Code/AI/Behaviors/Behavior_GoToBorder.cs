@@ -8,7 +8,7 @@ namespace PPBA
 	public class Behavior_GoToBorder : Behavior
 	{
 		public static Behavior_GoToBorder s_instance;
-		public static Dictionary<Pawn, Vector3> s_targetDictionary;
+		public static Dictionary<Pawn, Vector3> s_targetDictionary = new Dictionary<Pawn, Vector3>();
 		protected const float _maxDistance = 100f;
 
 		private void Awake()
