@@ -165,7 +165,7 @@ namespace PPBA
 			if(_messageHolder != null)
 				return _messageHolder;
 
-			List<byte[]> value = new List<byte[]>();
+			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
 			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
@@ -182,7 +182,7 @@ namespace PPBA
 					msg.Add(it._team);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_args.Count > 0)
 			{
@@ -195,7 +195,7 @@ namespace PPBA
 					msg.Add((byte)it._arguments);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_transforms.Count > 0)
 			{
@@ -211,7 +211,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._angle));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_ammos.Count > 0)
 			{
@@ -225,7 +225,7 @@ namespace PPBA
 					//msg.AddRange(BitConverter.GetBytes(it._grenades));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_resources.Count > 0)
 			{
@@ -238,7 +238,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._resources));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_healths.Count > 0)
 			{
@@ -252,7 +252,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._morale));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_behaviors.Count > 0)
 			{
@@ -266,7 +266,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._target));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
 			{
@@ -285,7 +285,7 @@ namespace PPBA
 					}
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_heatMaps.Count > 0)
 			{
@@ -301,7 +301,7 @@ namespace PPBA
 						msg.AddRange(BitConverter.GetBytes(it._values[i]));
 					}
 
-					HandlePackageSize(maxPackageSize, value, msg.ToArray());
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
 			}
 			if(_denyedInputIDs.Count > 0)
@@ -314,7 +314,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._id));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_newIDRanges.Count > 0)
 			{
@@ -328,16 +328,15 @@ namespace PPBA
 					msg.Add((byte)it._type);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 
-			if(value.Count == 0)
+			if(_messageHolder.Count == 0)
 			{
-				value.Add(new byte[0]);
+				_messageHolder.Add(new byte[0]);
 			}
-
-			_messageHolder = value;
-			{
+			
+			/*{
 				_types.Clear();
 				_args.Clear();
 				_transforms.Clear();
@@ -350,10 +349,10 @@ namespace PPBA
 				_heatMaps.Clear();
 				_denyedInputIDs.Clear();
 				_newIDRanges.Clear();
-			}
-			_receivedMessages = new BitField2D(value.Count, 1);
+			}*/
+			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
-			return value;
+			return _messageHolder;
 		}
 
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
@@ -806,7 +805,7 @@ Jump:
 			if(reference == default)
 				return false;
 
-			_messageHolder = null;
+			//_messageHolder = null;
 
 			foreach(var it in reference._types)
 			{
