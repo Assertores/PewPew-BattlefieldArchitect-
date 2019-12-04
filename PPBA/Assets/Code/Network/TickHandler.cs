@@ -23,7 +23,6 @@ namespace PPBA
 		public static float s_currentTickTime = 0.0f; //referenced to Time.time
 		[SerializeField] private int _inputBuffer = 6;
 
-
 		private void Start()
 		{
 #if UNITY_SERVER
@@ -134,12 +133,11 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			//Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
-
 			if(nextState._refTick != 0)
 			{
 				if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 				{
+					Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 					Debug.LogError("Reference Tick not Found");
 					return;//no idea how to fix this
 				}
@@ -150,9 +148,6 @@ namespace PPBA
 				}
 				else
 				{
-					if(nextStateTick == 100)
-						DeltaGameState = new GameState(nextState);
-
 					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 				}
 
