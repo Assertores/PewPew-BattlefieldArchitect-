@@ -23,7 +23,6 @@ namespace PPBA
 		public static float s_currentTickTime = 0.0f; //referenced to Time.time
 		[SerializeField] private int _inputBuffer = 6;
 
-		[SerializeField] GameState DeltaGameState;
 
 		private void Start()
 		{

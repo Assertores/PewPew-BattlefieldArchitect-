@@ -620,7 +620,8 @@ namespace PPBA
 				return false;
 			}
 
-			//Debug.Log("[GameState] reference is: " + reference);
+			//Debug.Log(myTick + ": " + _isDelta + ", " + _isEncrypted + ", " + _isLerped);
+			//Debug.Log(refTick + ": " + reference._isDelta + ", " + reference._isEncrypted + ", " + reference._isLerped);
 
 			_refTick = refTick;
 
@@ -635,12 +636,17 @@ namespace PPBA
 
 				_types.Remove(element);
 			}
+			//Debug.Log(reference._args.Count + " | " + _args.Count);
 			foreach(var it in reference._args)
 			{
 				GSC.arg element = _args.Find(x => x._id == it._id);
 
+				//Debug.Log(it._arguments + " | " + element._arguments);
+
 				if(it._arguments != element._arguments)
 					continue;
+
+				//Debug.Log(element + " will be removed");
 
 				_args.Remove(element);
 			}
