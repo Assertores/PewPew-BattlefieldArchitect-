@@ -133,12 +133,11 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
-
 			if(nextState._refTick != 0)
 			{
 				if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 				{
+					Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 					Debug.LogError("Reference Tick not Found");
 					return;//no idea how to fix this
 				}
@@ -153,6 +152,10 @@ namespace PPBA
 				}
 
 				me._gameStates.FreeUpTo(nextState._refTick - 1);
+			}
+			else
+			{
+				Debug.Log("Tick: " + nextStateTick + " has 0 as reference tick");
 			}
 
 			foreach(var it in nextState._newIDRanges)
@@ -200,5 +203,10 @@ namespace PPBA
 			s_currentTick++;
 		}
 #endif
+		public void DoReset()
+		{
+			s_currentTick = 0;
+			s_currentTickTime = 0;
+		}
 	}
 }

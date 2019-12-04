@@ -165,7 +165,7 @@ namespace PPBA
 			if(_messageHolder != null)
 				return _messageHolder;
 
-			List<byte[]> value = new List<byte[]>();
+			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
 			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
@@ -182,7 +182,7 @@ namespace PPBA
 					msg.Add(it._team);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_args.Count > 0)
 			{
@@ -195,7 +195,7 @@ namespace PPBA
 					msg.Add((byte)it._arguments);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_transforms.Count > 0)
 			{
@@ -211,7 +211,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._angle));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_ammos.Count > 0)
 			{
@@ -225,7 +225,7 @@ namespace PPBA
 					//msg.AddRange(BitConverter.GetBytes(it._grenades));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_resources.Count > 0)
 			{
@@ -238,7 +238,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._resources));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_healths.Count > 0)
 			{
@@ -252,7 +252,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._morale));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_behaviors.Count > 0)
 			{
@@ -266,7 +266,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._target));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
 			{
@@ -285,7 +285,7 @@ namespace PPBA
 					}
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_heatMaps.Count > 0)
 			{
@@ -301,7 +301,7 @@ namespace PPBA
 						msg.AddRange(BitConverter.GetBytes(it._values[i]));
 					}
 
-					HandlePackageSize(maxPackageSize, value, msg.ToArray());
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
 			}
 			if(_denyedInputIDs.Count > 0)
@@ -314,7 +314,7 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._id));
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 			if(_newIDRanges.Count > 0)
 			{
@@ -328,16 +328,15 @@ namespace PPBA
 					msg.Add((byte)it._type);
 				}
 
-				HandlePackageSize(maxPackageSize, value, msg.ToArray());
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 
-			if(value.Count == 0)
+			if(_messageHolder.Count == 0)
 			{
-				value.Add(new byte[0]);
+				_messageHolder.Add(new byte[0]);
 			}
-
-			_messageHolder = value;
-			{
+			
+			/*{
 				_types.Clear();
 				_args.Clear();
 				_transforms.Clear();
@@ -350,10 +349,10 @@ namespace PPBA
 				_heatMaps.Clear();
 				_denyedInputIDs.Clear();
 				_newIDRanges.Clear();
-			}
-			_receivedMessages = new BitField2D(value.Count, 1);
+			}*/
+			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
-			return value;
+			return _messageHolder;
 		}
 
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
@@ -621,7 +620,8 @@ namespace PPBA
 				return false;
 			}
 
-			//Debug.Log("[GameState] reference is: " + reference);
+			//Debug.Log(myTick + ": " + _isDelta + ", " + _isEncrypted + ", " + _isLerped);
+			//Debug.Log(refTick + ": " + reference._isDelta + ", " + reference._isEncrypted + ", " + reference._isLerped);
 
 			_refTick = refTick;
 
@@ -636,12 +636,17 @@ namespace PPBA
 
 				_types.Remove(element);
 			}
+			//Debug.Log(reference._args.Count + " | " + _args.Count);
 			foreach(var it in reference._args)
 			{
 				GSC.arg element = _args.Find(x => x._id == it._id);
 
+				//Debug.Log(it._arguments + " | " + element._arguments);
+
 				if(it._arguments != element._arguments)
 					continue;
+
+				//Debug.Log(element + " will be removed");
 
 				_args.Remove(element);
 			}
@@ -806,7 +811,7 @@ Jump:
 			if(reference == default)
 				return false;
 
-			_messageHolder = null;
+			//_messageHolder = null;
 
 			foreach(var it in reference._types)
 			{
@@ -882,6 +887,9 @@ Jump:
 			foreach(var origin in start._types)
 			{
 				GSC.type target = end._types.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._types.Add(new GSC.type
 				{
 					_id = origin._id,
@@ -892,6 +900,9 @@ Jump:
 			foreach(var origin in start._args)
 			{
 				GSC.arg target = end._args.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._args.Add(new GSC.arg
 				{
 					_id = origin._id,
@@ -901,6 +912,9 @@ Jump:
 			foreach(var origin in start._transforms)
 			{
 				GSC.transform target = end._transforms.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._transforms.Add(new GSC.transform
 				{
 					_id = origin._id,
@@ -911,6 +925,9 @@ Jump:
 			foreach(var origin in start._ammos)
 			{
 				GSC.ammo target = end._ammos.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._ammos.Add(new GSC.ammo
 				{
 					_id = origin._id,
@@ -921,6 +938,8 @@ Jump:
 			foreach(var origin in start._resources)
 			{
 				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
 
 				value._resources.Add(new GSC.resource
 				{
@@ -931,6 +950,9 @@ Jump:
 			foreach(var origin in start._healths)
 			{
 				GSC.health target = end._healths.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._healths.Add(new GSC.health
 				{
 					_id = origin._id,
@@ -941,6 +963,9 @@ Jump:
 			foreach(var origin in start._behaviors)
 			{
 				GSC.behavior target = end._behaviors.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._behaviors.Add(new GSC.behavior
 				{
 					_id = origin._id,
@@ -951,6 +976,9 @@ Jump:
 			foreach(var origin in start._paths)
 			{
 				GSC.path target = end._paths.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._paths.Add(new GSC.path
 				{
 					_id = origin._id,
