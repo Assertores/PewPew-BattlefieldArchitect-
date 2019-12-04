@@ -1,16 +1,19 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSInit
 #pragma kernel CSMain
+#pragma kernel CSTerritorium
 
 int PointSize;
 float4 coords[50];
+float4 Soldiers[50];
 
 RWStructuredBuffer<int> buffer;
 RWTexture2D<float4> Result;
+RWTexture2D<float4> TerritoriumResult;
 Texture2D<float4> InputTexture;
 
 
-[numthreads(1, 1, 1)] // was bedeuetet das wirklich
+[numthreads(1, 1, 1)] 
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
 	for (int i = 0; i < 50; i++)
@@ -48,5 +51,22 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 		InterlockedAdd(buffer[i], minValue * 1000000.0);
 		Result[id.xy] = float4(newCol.rrr, curCol.a);
+	}
+}
+
+[numthreads(8, 8, 1)]
+void CSTerritorium(uint3 id : SV_DispatchThreadID)
+{
+	for (int i = 0; i < PointSize; i++)
+	{
+		float dis = distance(float2(id.x, id.y), float2(Soldiers[i].x, Soldiers[i].y));
+
+		if (dis > 10)
+		{
+			continue;
+		}
+
+
+		TerritoriumResult[id.xy] = float4(float3(1.0,0.0,0.0), 1.0);
 	}
 }

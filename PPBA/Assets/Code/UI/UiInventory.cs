@@ -19,7 +19,10 @@ namespace PPBA
 
 		private void Start()
 		{
-			AddStartItem();
+			if(inventoryPanel != null)
+			{
+				AddStartItem();
+			}
 		}
 
 		public bool IsItemContains(GameObject ip)

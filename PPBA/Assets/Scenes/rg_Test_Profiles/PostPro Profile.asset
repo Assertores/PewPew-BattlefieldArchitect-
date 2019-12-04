@@ -1409,10 +1409,10 @@ MonoBehaviour:
     value: 0.455
   depthNormalThresholdScale:
     overrideState: 1
-    value: 10.12
+    value: 10.52
   normalThreshold:
     overrideState: 1
-    value: 0.22
+    value: 0.473
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

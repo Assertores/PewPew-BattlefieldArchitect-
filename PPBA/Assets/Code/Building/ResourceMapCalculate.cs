@@ -8,7 +8,7 @@ namespace PPBA
 	{
 
 		public ComputeShader _computeShader;
-		public Renderer _GroundRenderer;
+		public Material _GroundMaterial;
 		public RenderTexture _currentTexture;
 
 		private RenderTexture _ResultTexture;
@@ -24,16 +24,22 @@ namespace PPBA
 		
 		void Start()
 		{
-			Texture2D resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
+			if(_GroundMaterial == null)
+			{
+				Debug.LogError("No Ground Material Found!!! (ResourceMapCalculate)");
+				return;
+			}
+
+			Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_NoiseMap")) as Texture2D;
 			_resourceCalcKernel = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
-			_currentTexture = new RenderTexture(512, 512, 0, RenderTextureFormat.R8)
+			_currentTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
 			{
 				enableRandomWrite = true
 			};
 
-			_ResultTexture = new RenderTexture(512, 512, 0, RenderTextureFormat.R8)
+			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
 			{
 				enableRandomWrite = true
 			};
@@ -74,7 +80,7 @@ namespace PPBA
 
 			Graphics.Blit(_ResultTexture, _currentTexture);
 
-			_GroundRenderer.material.SetTexture("_NoiseMap", _ResultTexture);
+			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 			SendToTickManager();
 
 		}
@@ -91,7 +97,15 @@ namespace PPBA
 			_changeMap = !_changeMap;
 
 			int t = _changeMap ? 0 : 1;
-			_GroundRenderer.material.SetFloat("_MetalResourcesInt", t);
+			_GroundMaterial.SetFloat("_MapChange", t);
+		}
+
+		public void SwitchMapTerrritorrium()
+		{
+			_changeMap = !_changeMap;
+
+			int t = _changeMap ? 0 : 2;
+			_GroundMaterial.SetFloat("_MapChange", t);
 		}
 
 
