@@ -628,6 +628,8 @@ namespace PPBA
 			foreach(var it in reference._types)
 			{
 				GSC.type element = _types.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._type != element._type)
 					continue;
@@ -640,6 +642,8 @@ namespace PPBA
 			foreach(var it in reference._args)
 			{
 				GSC.arg element = _args.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				//Debug.Log(it._arguments + " | " + element._arguments);
 
@@ -653,6 +657,8 @@ namespace PPBA
 			foreach(var it in reference._transforms)
 			{
 				GSC.transform element = _transforms.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._position != element._position)
 					continue;
@@ -664,6 +670,8 @@ namespace PPBA
 			foreach(var it in reference._ammos)
 			{
 				GSC.ammo element = _ammos.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._bullets != element._bullets)
 					continue;
@@ -675,6 +683,8 @@ namespace PPBA
 			foreach(var it in reference._resources)
 			{
 				GSC.resource element = _resources.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._resources != element._resources)
 					continue;
@@ -684,6 +694,8 @@ namespace PPBA
 			foreach(var it in reference._healths)
 			{
 				GSC.health element = _healths.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._health != element._health)
 					continue;
@@ -695,6 +707,8 @@ namespace PPBA
 			foreach(var it in reference._behaviors)
 			{
 				GSC.behavior element = _behaviors.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._behavior != element._behavior)
 					continue;
@@ -706,6 +720,8 @@ namespace PPBA
 			foreach(var it in reference._paths)
 			{
 				GSC.path element = _paths.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._path.Length != element._path.Length)
 					continue;
