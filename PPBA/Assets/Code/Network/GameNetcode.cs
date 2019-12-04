@@ -21,7 +21,8 @@ namespace PPBA
 
 		UdpClient socket;
 		IPEndPoint _ep;
-		public int m_maxPackageSize = 1470;
+		[SerializeField] int m_maxPackageSize = 1470;
+		[SerializeField] float _serverTimeOut = 5.0f;
 
 		int _currentID = 0;
 		#endregion
@@ -56,12 +57,8 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			//Debug.Log("[Server] reseaved package");
-
 			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, m_serverPort);
 			byte[] data = socket.Receive(ref remoteEP);
-
-			//Debug.Log("[Server] retreaved package");
 
 			MessageType messageType = (MessageType)data[0];
 			switch(messageType)
@@ -91,8 +88,6 @@ namespace PPBA
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
-			//Debug.Log("[Server] RemoteID: " + RemoteID);
-
 			if(!GlobalVariables.s_instance._clients.Exists(x => x._id == RemoteID))
 				return;
 
@@ -100,28 +95,17 @@ namespace PPBA
 			if(client == null)
 				return;
 
-			//Debug.Log("[Server] found Client");
-
 			//resend missing packages
 			byte[] field = new byte[data[1 + sizeof(int)]];
 
-			//Debug.Log("[Server] Bitfieldsize in byte: " + field.Length);
-
 			Buffer.BlockCopy(data, 2 + sizeof(int), field, 0, field.Length);
 			int fieldTick = BitConverter.ToInt32(data, 2 + sizeof(int) + field.Length);
-			//Debug.Log("[Server] fieldTick: " + fieldTick);
-
-			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0)
-			{
-				//Debug.Log("Tick: " + fieldTick + " | " + client._gameStates[fieldTick]._receivedMessages.ToArray().Length + " | " + field.Length);
-			}
 
 			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0 &&
 				client._gameStates[fieldTick]._receivedMessages.ToArray().Length == field.Length)
 			{
 				client._gameStates[fieldTick]._receivedMessages.FromArray(field);
 
-				//Debug.Log("[Server] resending tick : " + fieldTick + " to client: " + client._id);
 				SendGameStateToClient(fieldTick, client);
 			}
 
@@ -129,14 +113,12 @@ namespace PPBA
 			while(offset < data.Length)
 			{
 				int tick = BitConverter.ToInt32(data, offset);
-				//Debug.Log("[Server] retreaving input for tick: " + tick);
 
 				offset += sizeof(int);
 
 				InputState tmp = new InputState();
 				offset = tmp.Decrypt(RemoteID, data, offset);
 
-				//Debug.Log("[Server] adding inputstate to client inputStateBuffer");
 				client._inputStates[tick] = tmp;
 			}
 
@@ -154,12 +136,12 @@ namespace PPBA
 
 			GlobalVariables.s_instance._clients.Add(element);
 
-			//Debug.Log("[Server] new client connected. id: " + (element._id));
-
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.NEWID;
 			Buffer.BlockCopy(BitConverter.GetBytes(element._id), 0, msg, 1, sizeof(int));
 			socket.Send(msg, msg.Length, ep);
+
+			Debug.Log("[SERVER] new client has connected and got assigned " + element._id);
 		}
 
 		void HandleDisconnect(byte[] data, IPEndPoint ep)
@@ -172,6 +154,8 @@ namespace PPBA
 			client target = GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID);
 			target._isConnected = false;
 			target._ep = ep;
+
+			Debug.Log("[SERVER] client " + RemoteID + " has disconnected");
 
 			bool allDisconnected = true;
 			foreach(var it in GlobalVariables.s_instance._clients)
@@ -186,8 +170,6 @@ namespace PPBA
 			{
 				DoServerRestart();
 			}
-
-			//Debug.Log("[Server] client " + RemoteID + " disconnected");
 		}
 
 		void HandleReconnect(byte[] data, IPEndPoint ep)
@@ -204,13 +186,12 @@ namespace PPBA
 			target._isConnected = true;
 			target._ep = ep;
 
-			//Debug.Log("[Server] client " + RemoteID + " reconnected");
+			Debug.Log("[SERVER] client " + RemoteID + " has reconnected");
 		}
 
 		/// NON:        byte Type, byte PackageNumber, byte PackageCount, int Tick, int RefTick, Gamestate[] states
 		public void Send(int tick)
 		{
-			//Debug.Log("[Server] sinding gamestates for tick: " + tick);
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
 				SendGameStateToClient(tick, it);
@@ -219,12 +200,9 @@ namespace PPBA
 
 		void SendGameStateToClient(int tick, client client)
 		{
-			//Debug.Log("[Server] client: " + client._id + "is connected: " + client._isConnected);
 
 			if(!client._isConnected)
 				return;
-
-			//Debug.Log("[Server] creating delta to tick: " + client._gameStates.GetLowEnd());
 
 			if(!client._gameStates[tick]._isEncrypted)
 				client._gameStates[tick].CreateDelta(client._gameStates, client._gameStates.GetLowEnd(), tick);
@@ -233,7 +211,6 @@ namespace PPBA
 			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
 			for(byte i = 0; i < state.Count; i++)
 			{
-				//Debug.Log("[Server] adding header");
 				msg.Clear();
 
 				msg.Add((byte)MessageType.NON);
@@ -243,7 +220,6 @@ namespace PPBA
 				msg.AddRange(BitConverter.GetBytes(client._gameStates[tick]._refTick));
 				msg.AddRange(state[i]);
 
-				//Debug.Log("[Server] sending message: " + i + "of: " + state.Count);
 				socket.Send(msg.ToArray(), msg.Count, client._ep);
 			}
 
@@ -252,6 +228,7 @@ namespace PPBA
 
 		void DoServerRestart()
 		{
+			Debug.Log("[SERVER] restart");
 			TickHandler.s_instance.DoReset();
 			GlobalVariables.s_instance._clients = new List<client>();
 		}
@@ -342,8 +319,6 @@ namespace PPBA
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
-		//	print(ib.GetLowEnd() + " | " + ib.GetHighEnd());
-
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++)
 			{
 				if(ib[i] == default)
@@ -417,6 +392,7 @@ namespace PPBA
 			socket.DontFragment = true;
 
 			TickHandler.s_GatherValues += AddNewIDsToGameState;
+			Debug.Log("[SERVER] startup. listening on port " + port + ", and waiting for " + playerCount + " players");
 		}
 
 		public void ServerShutDown()
@@ -425,6 +401,8 @@ namespace PPBA
 
 			if(null != socket)
 				socket.Close();
+
+			Debug.Log("[SERVER] shut down");
 		}
 		#endregion
 	}
