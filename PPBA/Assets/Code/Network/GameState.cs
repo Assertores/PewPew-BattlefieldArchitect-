@@ -32,7 +32,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| type: " + _type + ", team: " + _team;
+				return "ID: " + _id.ToString("0000") + "| type: " + _type + ", team: " + _team;
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| arguments: " + _arguments.ToString();
+				return "ID: " + _id.ToString("0000") + "| arguments: " + _arguments.ToString();
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| position: " + _position.ToString() + ", angle: " + _angle + "°";
+				return "ID: " + _id.ToString("0000") + "| position: " + _position.ToString() + ", angle: " + _angle + "°";
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| bullets: " + _bullets;
+				return "ID: " + _id.ToString("0000") + "| bullets: " + _bullets;
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| resources: " + _resources;
+				return "ID: " + _id.ToString("0000") + "| resources: " + _resources;
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| health: " + _health + ", moral: " + _morale;
+				return "ID: " + _id.ToString("0000") + "| health: " + _health + ", moral: " + _morale;
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| work: " + _work;
+				return "ID: " + _id.ToString("0000") + "| work: " + _work;
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| behaviour: " + _behavior.ToString() + ", target-id: " + _target;
+				return "ID: " + _id.ToString("0000") + "| behaviour: " + _behavior.ToString() + ", target-id: " + _target;
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace PPBA
 			{
 				StringBuilder value = new StringBuilder();
 
-				value.Append("ID: " + _id);
+				value.Append("ID: " + _id.ToString("0000"));
 				value.Append("| path count: " + _path.Length);
 				value.Append(" [");
 				for(int i = 0; i < _path.Length - 1; i++)
@@ -148,7 +148,7 @@ namespace PPBA
 			public override string ToString()
 			{
 				StringBuilder value = new StringBuilder();
-				value.AppendLine("ID: " + _id);
+				value.AppendLine("ID: " + _id.ToString("0000"));
 
 				Vector2Int size = _mask.GetSize();
 				int valueIndex = 0;
@@ -180,7 +180,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id + "| for client: " + _client;
+				return "ID: " + _id.ToString("0000") + "| for client: " + _client;
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ObjectPool: " + _type + "| ids: " + _id + " - " + _id + _range;
+				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
 	}
