@@ -35,26 +35,26 @@ namespace PPBA
 		#region Behavior
 		public override void Execute(Pawn pawn)
 		{
-			pawn.SetMoveTarget(pawn.transform.position);
+			pawn.SetMoveTarget(pawn.transform.position);//stand still
 
 			if(s_timerDictionary.ContainsKey(pawn))
-				s_timerDictionary[pawn]++;
+				s_timerDictionary[pawn]++;//increment timer
 			else
 			{
-				s_timerDictionary[pawn] = 0;
+				s_timerDictionary[pawn] = 0;//or initialise timer
 				return;
 			}
 
-			if(_attackBuildUpTime <= s_timerDictionary[pawn])
+			if(_attackBuildUpTime <= s_timerDictionary[pawn])//if build up has been finished
 			{
-				if(s_targetDictionary.ContainsKey(pawn))
+				if(s_targetDictionary.ContainsKey(pawn))//check for target
 				{
 					Pawn target = s_targetDictionary[pawn];
-					if(null != target)
+					if(null != target)//check target
 						Shoot(pawn, target);
 				}
 
-				s_timerDictionary[pawn] = 0;
+				s_timerDictionary[pawn] = 0;//reset timer
 			}
 		}
 
@@ -189,6 +189,7 @@ namespace PPBA
 				}
 
 				target.TakeDamage(RollDamage(pawn));//target hit succesfully
+				Debug.Log("Target " + target.name + " has " + target._health + " left.");
 			}
 		}
 
