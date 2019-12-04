@@ -85,11 +85,19 @@ namespace PPBA
 		{
 			get
 			{
+				List<Pawn> offPawns = new List<Pawn>();
+
 				foreach(var it in _closePawns)
 				{
 					if(!it.gameObject.activeSelf)
-						_closePawns.Remove(it);//inactive pawns are removed here, the other option would be to go through the lists of all pawns whenever a pawn is disabled to remove it from the lists
+						offPawns.Add(it);
 				}
+
+				foreach(var it in offPawns)
+				{
+					_closePawns.Remove(it);
+				}
+
 				return _closePawns;
 			}
 		}
@@ -98,11 +106,19 @@ namespace PPBA
 		{
 			get
 			{
+				List<CoverSlot> offCoverSlots = new List<CoverSlot>();
+
 				foreach(var it in _closeCoverSlots)
 				{
 					if(!it.gameObject.activeSelf)
-						_closeCoverSlots.Remove(it);//inactive covers are removed here
+						offCoverSlots.Add(it);
 				}
+
+				foreach(var it in offCoverSlots)
+				{
+					_closeCoverSlots.Remove(it);
+				}
+
 				return _closeCoverSlots;
 			}
 		}
@@ -219,13 +235,14 @@ namespace PPBA
 
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
-				else
-					return;//if pawn is disabled, no other info is relevant
-
+				
 				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
-
+				
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+
+				if(!isActiveAndEnabled)
+					return;//if pawn is disabled, no other info is relevant
 			}
 
 			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
@@ -343,7 +360,7 @@ namespace PPBA
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
 			_morale = Mathf.Lerp(_lastState._morale, _nextState._morale, lerpFactor);
-			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._morale, lerpFactor);
+			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._resources, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
 		}
@@ -689,7 +706,7 @@ namespace PPBA
 			foreach(Collider c in colliders)
 			{
 				//Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
-				
+
 				switch(c.tag)
 				{
 					case StringCollection.PAWN:
@@ -788,8 +805,10 @@ namespace PPBA
 		#region Gizmos
 		private void OnDrawGizmos()
 		{
-			//Gizmos.color = Color.blue;
-			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
+			/*
+			Gizmos.color = Color.blue;
+			Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
+			*/
 		}
 		#endregion
 
@@ -861,7 +880,7 @@ namespace PPBA
 			TickHandler.s_GatherValues += WriteToGameState;
 
 			if(!_pawns.Contains(this))
-			_pawns.Add(this);
+				_pawns.Add(this);
 #endif
 		}
 
@@ -875,7 +894,7 @@ namespace PPBA
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
-			
+
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
 #endif
