@@ -232,7 +232,8 @@ namespace PPBA
 
 			//Debug.Log("[Server] creating delta to tick: " + client._gameStates.GetLowEnd());
 
-			client._gameStates[tick].CreateDelta(client._gameStates, client._gameStates.GetLowEnd(), tick);
+			if(!client._gameStates[tick]._isEncrypted)
+				client._gameStates[tick].CreateDelta(client._gameStates, client._gameStates.GetLowEnd(), tick);
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
