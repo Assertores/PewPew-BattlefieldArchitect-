@@ -5,7 +5,13 @@
 
 int PointSize;
 float4 coords[50];
+int SoldiersSize;
 float4 Soldiers[50];
+
+const float3 team1 = float3(1,0,0);
+const float3 team2 = float3(0,1,0);
+const float3 team3 = float3(0,0,1);
+const float3 team4 = float3(1,1,0);
 
 RWStructuredBuffer<int> buffer;
 RWTexture2D<float4> Result;
@@ -57,16 +63,25 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
-	for (int i = 0; i < PointSize; i++)
+	for (int i = 0; i < SoldiersSize; i++)
 	{
 		float dis = distance(float2(id.x, id.y), float2(Soldiers[i].x, Soldiers[i].y));
 
-		if (dis > 10)
+		if (dis > 50)
 		{
 			continue;
 		}
 
+		for (int y = 0; y < SoldiersSize; y++)
+		{
+			float disToSoldiers = distance(float2(Soldiers[y].x, Soldiers[y].y), float2(Soldiers[i].x, Soldiers[i].y));
 
-		TerritoriumResult[id.xy] = float4(float3(1.0,0.0,0.0), 1.0);
+			if(disToSoldiers < disToSoldiers * 0.5)
+			{
+
+			}
+		}
+
+		TerritoriumResult[id.xy] = float4(float3(0.0,0.0,1.0), 1.0);
 	}
 }

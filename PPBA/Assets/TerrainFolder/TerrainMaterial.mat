@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TerritorriumMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 2964f0de8e4f43a40be5d66c53c2f5c1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -37,4 +37,4 @@ Material:
     - _TerrriitorumMapInt: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorResource: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorResource: {r: 1, g: 0, b: 0, a: 1}
