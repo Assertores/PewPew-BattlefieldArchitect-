@@ -163,8 +163,8 @@ MonoBehaviour:
   _maxMorale: 100
   _attackDistance: 20
   _attackChance: 0.5
-  _minAttackDamage: 25
-  _maxAttackDamage: 75
+  _minAttackDamage: 100
+  _maxAttackDamage: 100
   _attackDamageCurve:
     serializedVersion: 2
     m_Curve:

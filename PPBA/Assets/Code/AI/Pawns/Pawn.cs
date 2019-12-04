@@ -85,11 +85,19 @@ namespace PPBA
 		{
 			get
 			{
+				List<Pawn> offPawns = new List<Pawn>();
+
 				foreach(var it in _closePawns)
 				{
 					if(!it.gameObject.activeSelf)
-						_closePawns.Remove(it);//inactive pawns are removed here, the other option would be to go through the lists of all pawns whenever a pawn is disabled to remove it from the lists
+						offPawns.Add(it);
 				}
+
+				foreach(var it in offPawns)
+				{
+					_closePawns.Remove(it);
+				}
+
 				return _closePawns;
 			}
 		}

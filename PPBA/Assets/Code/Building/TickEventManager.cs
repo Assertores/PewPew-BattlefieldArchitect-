@@ -7,7 +7,7 @@ namespace PPBA
 	public class TickEventManager : Singleton<TickEventManager>
 	{
 		List<GSC.input> _denyedInputs = new List<GSC.input>();
-		
+
 		private void Start()
 		{
 #if UNITY_SERVER
@@ -27,16 +27,23 @@ namespace PPBA
 		{
 			foreach(var it in TickHandler.s_interfaceInputState._objs)
 			{
+				if(null == GlobalVariables.s_instance._prefabs[(int)it._type] || !ObjectPool.s_objectPools.ContainsKey(GlobalVariables.s_instance._prefabs[(int)it._type]))
+					continue;
+
 				if(false)//TODO: prüfen ob es an der stelle gesetzt werden darf
 				{
 					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
 				}
+
 				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
 				element.transform.position = it._pos;
 				element.transform.rotation = Quaternion.Euler(0, it._angle, 0);
 			}
 			foreach(var it in TickHandler.s_interfaceInputState._combinedObjs)
 			{
+				if(null == GlobalVariables.s_instance._prefabs[(int)it._type] || !ObjectPool.s_objectPools.ContainsKey(GlobalVariables.s_instance._prefabs[(int)it._type]))
+					continue;
+
 				if(false)//TODO: prüfen ob es an der stelle gesetzt werden darf
 				{
 					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
@@ -51,7 +58,7 @@ namespace PPBA
 					element.transform.position = it._corners[i];
 					//----- ----- between ----- -----
 					element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type + 1]].GetNextObject();
-					element.transform.position = (it._corners[i-1] + it._corners[i])/2;
+					element.transform.position = (it._corners[i - 1] + it._corners[i]) / 2;
 					element.transform.rotation = Quaternion.LookRotation(it._corners[i - 1] - it._corners[i], Vector3.up);
 				}
 			}

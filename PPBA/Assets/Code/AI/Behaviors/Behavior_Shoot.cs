@@ -51,7 +51,10 @@ namespace PPBA
 				{
 					Pawn target = s_targetDictionary[pawn];
 					if(null != target)//check target
+					{
 						Shoot(pawn, target);
+					}
+					s_targetDictionary.Remove(pawn);
 				}
 
 				s_timerDictionary[pawn] = 0;//reset timer
@@ -111,10 +114,9 @@ namespace PPBA
 					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
 					return 0.5f;
 				case "ShotOnMe":
-					if(s_targetDictionary.ContainsKey(target))
-						return s_targetDictionary[target] == pawn ? 1f : 0f;
-					else
-						return 0f;
+					return s_targetDictionary.ContainsKey(target) && s_targetDictionary[target] == pawn ? 1f : 0f;
+				case "IsMyTarget":
+					return s_targetDictionary.ContainsKey(pawn) && s_targetDictionary[pawn] == target ? 1f : 0f;
 				default:
 					break;
 			}
