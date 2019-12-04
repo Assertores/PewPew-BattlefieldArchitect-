@@ -887,6 +887,9 @@ Jump:
 			foreach(var origin in start._types)
 			{
 				GSC.type target = end._types.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._types.Add(new GSC.type
 				{
 					_id = origin._id,
@@ -897,6 +900,9 @@ Jump:
 			foreach(var origin in start._args)
 			{
 				GSC.arg target = end._args.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._args.Add(new GSC.arg
 				{
 					_id = origin._id,
@@ -906,6 +912,9 @@ Jump:
 			foreach(var origin in start._transforms)
 			{
 				GSC.transform target = end._transforms.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._transforms.Add(new GSC.transform
 				{
 					_id = origin._id,
@@ -916,6 +925,9 @@ Jump:
 			foreach(var origin in start._ammos)
 			{
 				GSC.ammo target = end._ammos.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._ammos.Add(new GSC.ammo
 				{
 					_id = origin._id,
@@ -926,6 +938,8 @@ Jump:
 			foreach(var origin in start._resources)
 			{
 				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
 
 				value._resources.Add(new GSC.resource
 				{
@@ -936,6 +950,9 @@ Jump:
 			foreach(var origin in start._healths)
 			{
 				GSC.health target = end._healths.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._healths.Add(new GSC.health
 				{
 					_id = origin._id,
@@ -946,6 +963,9 @@ Jump:
 			foreach(var origin in start._behaviors)
 			{
 				GSC.behavior target = end._behaviors.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._behaviors.Add(new GSC.behavior
 				{
 					_id = origin._id,
@@ -956,6 +976,9 @@ Jump:
 			foreach(var origin in start._paths)
 			{
 				GSC.path target = end._paths.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
 				value._paths.Add(new GSC.path
 				{
 					_id = origin._id,
