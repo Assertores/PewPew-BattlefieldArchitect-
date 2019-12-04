@@ -12,35 +12,29 @@ namespace PPBA
 
 	public class GameNetcode : Singleton<GameNetcode>
 	{
-		UdpClient socket;
-		public int m_serverPort = 11000;
 
-		IPEndPoint ep;
+		#region Variables
 		public string m_iP = "127.0.0.1";
+		public int m_serverPort = 11000;
+		[SerializeField] int _playerCount = 1;
+		[SerializeField] int _myID = -1;
 
+		UdpClient socket;
+		IPEndPoint _ep;
 		public int m_maxPackageSize = 1470;
 
 		int _currentID = 0;
-
+		#endregion
+		#region NetCode
 #if UNITY_SERVER
-
 		int _nextID = 0;
-		[SerializeField] int _playerCount = 1;
-
 		void Start()
 		{
-			socket = new UdpClient(m_serverPort);
-			//Debug.Log("[Server] server is ready and lisents");
-			socket.DontFragment = true;
-
-			TickHandler.s_GatherValues += AddNewIDsToGameState;
+			ServerStart(m_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
-			TickHandler.s_GatherValues -= AddNewIDsToGameState;
-
-			if(null != socket)
-				socket.Close();
+			ServerShutDown();
 		}
 
 		private void Update()
@@ -262,38 +256,13 @@ namespace PPBA
 			GlobalVariables.s_instance._clients = new List<client>();
 		}
 #else
-
-		[SerializeField] int _myID = -1;
-
 		void Start()
 		{
-			socket = new UdpClient();
-			ep = new IPEndPoint(IPAddress.Parse(m_iP), m_serverPort); // endpoint where server is listening
-			socket.Connect(ep);
-			socket.DontFragment = true;
-			
-			if(_myID < 0)
-			{
-				byte[] msg = new byte[1];
-				msg[0] = (byte)MessageType.CONNECT;
-				socket.Send(msg, msg.Length);
-			}
-			else
-			{
-				byte[] msg = new byte[1 + sizeof(int)];
-				msg[0] = (byte)MessageType.RECONNECT;
-				Buffer.BlockCopy(BitConverter.GetBytes(_myID),0,msg,1,sizeof(int));
-				socket.Send(msg, msg.Length);
-			}
+			ClientConnect(m_iP, m_serverPort);
 		}
 		private void OnDestroy()
 		{
-			byte[] msg = new byte[1 + sizeof(int)];
-			msg[0] = (byte)MessageType.DISCONNECT;
-			Buffer.BlockCopy(BitConverter.GetBytes(_myID), 0, msg, 1, sizeof(int));
-			socket.Send(msg, msg.Length);
-
-			socket.Close();
+			ClientDisconnect();
 		}
 
 		private void Update()
@@ -311,7 +280,7 @@ namespace PPBA
 			if(socket.Available <= 0)
 				return;
 
-			byte[] data = socket.Receive(ref ep);
+			byte[] data = socket.Receive(ref _ep);
 
 			MessageType messageType = (MessageType)data[0];
 
@@ -414,5 +383,49 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
+		#endregion
+		#region UIInterface
+		public void ClientConnect(string ip, int port)
+		{
+			socket = new UdpClient();
+			_ep = new IPEndPoint(IPAddress.Parse(ip), port); // endpoint where server is listening
+			socket.Connect(_ep);
+			socket.DontFragment = true;
+
+			byte[] msg = new byte[1];
+			msg[0] = (byte)MessageType.CONNECT;
+			socket.Send(msg, msg.Length);
+		}
+
+		public void ClientDisconnect()
+		{
+			if(null == socket)
+				return;
+
+			byte[] msg = new byte[1 + sizeof(int)];
+			msg[0] = (byte)MessageType.DISCONNECT;
+			Buffer.BlockCopy(BitConverter.GetBytes(_myID), 0, msg, 1, sizeof(int));
+			socket.Send(msg, msg.Length);
+
+			socket.Close();
+		}
+
+		public void ServerStart(int port, int playerCount)
+		{
+			m_serverPort = port;
+			socket = new UdpClient(port);
+			socket.DontFragment = true;
+
+			TickHandler.s_GatherValues += AddNewIDsToGameState;
+		}
+
+		public void ServerShutDown()
+		{
+			TickHandler.s_GatherValues -= AddNewIDsToGameState;
+
+			if(null != socket)
+				socket.Close();
+		}
+		#endregion
 	}
 }
