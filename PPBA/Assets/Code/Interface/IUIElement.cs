@@ -12,6 +12,12 @@ namespace PPBA
 		Sprite _Image { get; }
 		TextMeshProUGUI _ToolTipFeld { get; }
 		ObjectType _Type { get; }
+
+		float GetBuildingCost();
+		float GetBuildingCurrentResources();
+		float GetBuildingTime();
+		ObjectType GetObjectType();
+
 	}
 }
 

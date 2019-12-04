@@ -15,13 +15,10 @@ namespace PPBA
 #if !UNITY_SERVER
 			TickHandler.s_GatherValues += RegisterInput;
 #endif
-
 		}
-
 
 		void RegisterInput(int tick)
 		{
-			print("register input ");
 			TickHandler.s_GatherValues -= RegisterInput;
 			TickHandler.s_DoInput += ReactOnInput;
 
@@ -31,7 +28,6 @@ namespace PPBA
 
 		void ReactOnInput(int tick)
 		{
-			print("reeaction on input ");
 			if(tick == _tick)
 			{
 				TickHandler.s_DoInput -= ReactOnInput;
