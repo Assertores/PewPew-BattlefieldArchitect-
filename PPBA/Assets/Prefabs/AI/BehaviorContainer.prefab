@@ -326,6 +326,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
+  _attackBuildUpTime: 8
 --- !u!114 &7515035436541505344
 MonoBehaviour:
   m_ObjectHideFlags: 0
