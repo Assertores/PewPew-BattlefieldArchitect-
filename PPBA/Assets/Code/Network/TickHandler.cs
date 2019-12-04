@@ -8,6 +8,8 @@ namespace PPBA
 {
 	public class TickHandler : Singleton<TickHandler>
 	{
+		public static bool s_NetworkPause { get; private set; } = false;
+
 		public static Action<int> s_SetUp;
 		public static Action<int> s_DoInput;
 		public static Action<int> s_EarlyCalc;
@@ -121,9 +123,11 @@ namespace PPBA
 			if(me._gameStates.GetHighEnd() < s_currentTick ||
 			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
+				s_NetworkPause = true;
 				Debug.Log("Network Pause");
 				return;
 			}
+			s_NetworkPause = false;
 
 			GameState nextState = default;
 			int nextStateTick = s_currentTick;
