@@ -54,14 +54,12 @@ namespace PPBA
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
 
 		//protected
-		[SerializeField] protected bool _isAttacking = false;
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 		protected float _moraleBackingField = 100;
 		protected float _healthBackingField = 100;
 		protected int _ammoBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
-
 		#endregion
 
 		#region References
@@ -80,7 +78,6 @@ namespace PPBA
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
 		private LineRenderer _lineRenderer;
-		[SerializeField] private GameObject _objectToFollow;//to test navAgent
 
 		//targets and target lists
 		public List<Pawn> _closePawns;
@@ -212,7 +209,7 @@ namespace PPBA
 			}
 
 			NavTick();
-			Regenerate();
+			//Regenerate();
 		}
 
 		public void WriteToGameState(int tick)//SERVER
@@ -222,8 +219,10 @@ namespace PPBA
 
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
+				else
+					return;//if pawn is disabled, no other info is relevant
 
-				if(false)
+				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
 
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
@@ -685,23 +684,26 @@ namespace PPBA
 
 			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f, _overlapSphereLayerMask);//TODO: adjust sphere radius
 
-			Debug.Log("I found " + colliders.Length.ToString() + " colliders.");
+			//Debug.Log("I found " + colliders.Length.ToString() + " colliders.");
 
 			foreach(Collider c in colliders)
 			{
-				Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
+				//Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
 				
 				switch(c.tag)
 				{
-					case "Pawn":
-						Debug.Log("hello i'm here");
+					case StringCollection.PAWN:
+						if(c.transform.parent.tag == StringCollection.PAWN)//exit condition: Break if I'm in a child of the Pawn, to reduce use of GetComponent()
+							continue;
+
 						Pawn pawn = c.GetComponent<Pawn>();
 						if(null != pawn && this != pawn)
 							_closePawns.Add(pawn);
-						else
-							Debug.Log("but i didnt find a friend");
 						continue;
-					case "Cover":
+					case StringCollection.COVER:
+						if(c.transform.parent.tag == StringCollection.COVER)//exit condition: Break if I'm in a child of the Cover, to reduce use of GetComponent()
+							continue;
+
 						Cover cover = c.GetComponent<Cover>();
 						if(cover)
 						{
@@ -712,57 +714,57 @@ namespace PPBA
 						}
 						continue;
 					default:
-						Debug.Log("it's a sad default: " + c.tag);
+						//Debug.Log("it's a sad default: " + c.tag);
 						continue;
 				}
 			}
 		}
 
-		private void OnTriggerEnter(Collider other)
-		{
-			//Add relevant objects to closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp)
-					_closePawns.Add(temp);
-			}
+		//private void OnTriggerEnter(Collider other)
+		//{
+		//	//Add relevant objects to closeLists
+		//	if(other.tag == "Pawn")
+		//	{
+		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
+		//		if(temp)
+		//			_closePawns.Add(temp);
+		//	}
 
-			if(other.tag == "Cover")
-			{
-				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp)
-				{
-					foreach(CoverSlot slot in temp._coverSlots)
-					{
-						_closeCoverSlots.Add(slot);
-					}
-				}
-			}
-		}
+		//	if(other.tag == "Cover")
+		//	{
+		//		Cover temp = other.gameObject.GetComponent<Cover>();
+		//		if(temp)
+		//		{
+		//			foreach(CoverSlot slot in temp._coverSlots)
+		//			{
+		//				_closeCoverSlots.Add(slot);
+		//			}
+		//		}
+		//	}
+		//}
 
-		private void OnTriggerExit(Collider other)
-		{
-			//Remove objects from closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp && _closePawns.Contains(temp))
-					_closePawns.Remove(temp);
-			}
+		//private void OnTriggerExit(Collider other)
+		//{
+		//	//Remove objects from closeLists
+		//	if(other.tag == "Pawn")
+		//	{
+		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
+		//		if(temp && _closePawns.Contains(temp))
+		//			_closePawns.Remove(temp);
+		//	}
 
-			if(other.tag == "Cover")
-			{
-				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp)
-				{
-					foreach(CoverSlot slot in temp._coverSlots)
-					{
-						_closeCoverSlots.Add(slot);
-					}
-				}
-			}
-		}
+		//	if(other.tag == "Cover")
+		//	{
+		//		Cover temp = other.gameObject.GetComponent<Cover>();
+		//		if(temp)
+		//		{
+		//			foreach(CoverSlot slot in temp._coverSlots)
+		//			{
+		//				_closeCoverSlots.Add(slot);
+		//			}
+		//		}
+		//	}
+		//}
 		#endregion
 
 		#region Interfaces
@@ -812,7 +814,6 @@ namespace PPBA
 			pawn._morale = pawn._maxMorale;
 			pawn._resources = 0;
 			pawn._isNavPathDirty = true;
-			pawn._isAttacking = false;
 			//pawn._moveSpeed = 3.6111111f;
 			pawn._navMeshPath = new NavMeshPath();
 			pawn._morale = pawn._maxMorale;
