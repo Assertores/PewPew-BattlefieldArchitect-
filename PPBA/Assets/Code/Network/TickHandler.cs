@@ -102,6 +102,8 @@ namespace PPBA
 		}
 
 #if !UNITY_SERVER
+
+		UIPopUpWindowRefHolder h_popUp;
 		private void FixedUpdate()
 		{
 			client me = GlobalVariables.s_instance._clients[0];
@@ -111,7 +113,17 @@ namespace PPBA
 			{
 				s_NetworkPause = true;
 				Debug.Log("Network Pause");
+
+				if(null == h_popUp)
+					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Network Pause");
+
 				return;
+			}
+
+			if(null != h_popUp)
+			{
+				h_popUp.CloseWindow();
+				h_popUp = null;
 			}
 			s_NetworkPause = false;
 
