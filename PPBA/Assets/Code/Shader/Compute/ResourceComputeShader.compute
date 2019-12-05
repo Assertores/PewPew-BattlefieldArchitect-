@@ -8,10 +8,10 @@ float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
 
-const float3 team1 = float3(1,0,0);
-const float3 team2 = float3(0,1,0);
-const float3 team3 = float3(0,0,1);
-const float3 team4 = float3(1,1,0);
+const float4 team1 = float4(1, 0, 0, 1);
+const float4 team2 = float4(0, 1, 0, 1);
+const float4 team3 = float4(0, 0, 1, 1);
+const float4 team4 = float4(1, 1, 0, 1);
 
 RWStructuredBuffer<int> buffer;
 RWTexture2D<float4> Result;
@@ -19,69 +19,103 @@ RWTexture2D<float4> TerritoriumResult;
 Texture2D<float4> InputTexture;
 
 
-[numthreads(1, 1, 1)] 
+[numthreads(1, 1, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-	for (int i = 0; i < 50; i++)
-	{
-		buffer[i] = 0;
-	}
+    for (int i = 0; i < 50; i++)
+    {
+        buffer[i] = 0;
+    }
 
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	for (int i = 0; i < PointSize; i++)
-	{
-		float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
+    for (int i = 0; i < PointSize; i++)
+    {
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-		if (dis > coords[i].w)
-		{
-			continue;
-		}
+        if (dis > coords[i].w)
+        {
+            continue;
+        }
 
-		float maxDis = coords[i].w;
+        float maxDis = coords[i].w;
 		//float distfactor = 1 - (dis / maxDis);
 		//distfactor = sqrt(distfactor * 2);
-		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z;// distfactor * coords[i].z;
+        float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
 
 
-		float4 curCol = InputTexture[id.xy].rgba;
+        float4 curCol = InputTexture[id.xy].rgba;
 		
-		float minValue = float(min(curCol.r, harvestFac));
-		float newCol = curCol.r - minValue;
+        float minValue = float(min(curCol.r, harvestFac));
+        float newCol = curCol.r - minValue;
 	
 		//	float3 col = lerp(curCol.rgb, newCol, t);
-		newCol = saturate(newCol);
+        newCol = saturate(newCol);
 
-		InterlockedAdd(buffer[i], minValue * 1000000.0);
-		Result[id.xy] = float4(newCol.rrr, curCol.a);
-	}
+        InterlockedAdd(buffer[i], minValue * 1000000.0);
+        Result[id.xy] = float4(newCol.rrr, curCol.a);
+    }
 }
 
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
-	for (int i = 0; i < SoldiersSize; i++)
-	{
-		float dis = distance(float2(id.x, id.y), float2(Soldiers[i].x, Soldiers[i].y));
+    float2 st = id.xy / 512;
+    
+    float m_dist = 10; // minimun distance
+    float2 m_point; // minimum position
 
-		if (dis > 50)
-		{
-			continue;
-		}
+    // Iterate through the points positions
+    for (int i = 0; i < 5; i++)
+    {
+        float dist = distance(st, Soldiers[i].xy);
+        if (dist < m_dist)
+        {
+            // Keep the closer distance
+            m_dist = dist;
 
-		for (int y = 0; y < SoldiersSize; y++)
-		{
-			float disToSoldiers = distance(float2(Soldiers[y].x, Soldiers[y].y), float2(Soldiers[i].x, Soldiers[i].y));
+            // Kepp the position of the closer point
+            m_point = Soldiers[i].xy;
+        }
+    }
+    
+    TerritoriumResult[id.xy] = float4(m_point , 0 ,1 );
+    
+    //for (int i = 0; i < SoldiersSize; i++)
+    //{
+    //    float dis = distance(float2(id.x, id.y), float2(Soldiers[i].x, Soldiers[i].y));
 
-			if(disToSoldiers < disToSoldiers * 0.5)
-			{
+    //    if (dis > 2)
+    //    {
+    //        continue;
+    //    }
 
-			}
-		}
+    //    for (int y = 0; y < SoldiersSize; y++)
+    //    {
+    //        float disToSoldiers = distance(float2(Soldiers[y].x, Soldiers[y].y), float2(Soldiers[i].x, Soldiers[i].y));
 
-		TerritoriumResult[id.xy] = float4(float3(0.0,0.0,1.0), 1.0);
-	}
-}
+    //        if (disToSoldiers < (disToSoldiers * 0.5))
+    //        {
+    //            TerritoriumResult[id.xy] = float4(0.0, 0.0, 1.0, 1.0);
+    //        }
+    //        else
+    //        {
+    //            TerritoriumResult[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
+    //        }
+    //    }
+        
+        //if (Soldiers[i].z == 0)
+        //{
+        //    TerritoriumResult[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
+        //}
+        //else
+        //{
+        //    TerritoriumResult[id.xy] = float4(0.0, 0.0, 1.0, 1.0);
+            
+        //}
+
+     //   TerritoriumResult[id.xy] = drawCol;
+    }

@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 46188366}
   - component: {fileID: 46188365}
   - component: {fileID: 46188364}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,10 +224,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 283269890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec79999fbe727794696a1e965e214916, type: 3}
+  m_Script: {fileID: 11500000, guid: fe7b549774edf5444b2db89cc6e05e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  team: 1
+  index: 1
   pos1: {fileID: 1989700201}
   pos2: {fileID: 715684718}
   speed: 2
@@ -371,6 +372,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6486173834760009002, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: TerrainMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 11fcc83d46a7a1c4587c6355e53c9535, type: 2}
     - target: {fileID: 1250242365, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -693,10 +699,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1380680995}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec79999fbe727794696a1e965e214916, type: 3}
+  m_Script: {fileID: 11500000, guid: fe7b549774edf5444b2db89cc6e05e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  index: 0
   pos1: {fileID: 716317835}
   pos2: {fileID: 436674034}
   speed: 2

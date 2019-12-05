@@ -46,7 +46,7 @@ namespace PPBA
 		{
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
-			_computeShader.SetVectorArray("coords", AddSoldier());
+			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
 
 			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
@@ -59,7 +59,9 @@ namespace PPBA
 			//	ressourceManager.AddRessourcesToRefineries(CurrentValue);
 		}
 
-		private Vector4[] AddSoldier()
+
+		// add data for ComputeInput
+		private Vector4[] AddSoldierData()
 		{
 			Vector4[] refsProp = new Vector4[_Soldiers.Count];
 
@@ -70,14 +72,17 @@ namespace PPBA
 			return refsProp;
 		}
 
-
-		public int AddSoldier(Transform sol, Vector2 pos, int Team)
+		// add soldies in List
+		public int AddSoldier(Vector2 pos, int Team)
 		{
-
 			_Soldiers.Add(new Vector4(pos.x , pos.y, Team ));
 			return _Soldiers.Count-1;
 		}
 
+		public void UpdateSoldiersPosition(int index, Vector2 position)
+		{
+			_Soldiers[index] = new Vector4(position.x, position.y, _Soldiers[index].z, 0);
+		}
 
 		//void Update()
 		//{

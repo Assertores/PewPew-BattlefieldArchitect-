@@ -6,7 +6,7 @@ using PPBA;
 public class movetest : MonoBehaviour
 {
 	public int team;
-
+	public int index;
 	public Transform pos1;
 	public Transform pos2;
 	private Transform target;
@@ -17,7 +17,7 @@ public class movetest : MonoBehaviour
     {
 		target = pos1;
 		Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint();
-		TerritoriumMapCalculate.s_instance.AddSoldier(this.transform, pos, 0);
+		TerritoriumMapCalculate.s_instance.AddSoldier( pos, team);
 
     }
 
@@ -37,16 +37,9 @@ public class movetest : MonoBehaviour
 				target = pos1;
 			}
 		}
-
+		Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
 		transform.position = Vector3.MoveTowards(transform.position, target.position, speed* Time.deltaTime);
-		   		 
-    }
-
-	IEnumerator calc()
-	{
-		yield return new WaitForSeconds(1);
-
+		TerritoriumMapCalculate.s_instance.UpdateSoldiersPosition(index, pos);
+		TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
 	}
-
-
 }
