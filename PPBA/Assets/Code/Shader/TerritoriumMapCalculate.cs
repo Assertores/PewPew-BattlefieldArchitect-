@@ -15,9 +15,11 @@ namespace PPBA
 
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
-		private List<RefineryRefHolder> _Refinerys = new List<RefineryRefHolder>();
 
 		private List<Vector4> _Soldiers = new List<Vector4>();
+
+
+
 
 
 		void Start()
@@ -41,7 +43,7 @@ namespace PPBA
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 		}
-
+		
 		public void RefreshCalcTerritorium()
 		{
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
@@ -84,17 +86,7 @@ namespace PPBA
 			_Soldiers[index] = new Vector4(position.x, position.y, _Soldiers[index].z, 0);
 		}
 
-		//void Update()
-		//{
-		//	if(Input.GetKeyDown(KeyCode.M))
-		//	{
-		//		Vector4[] test = new Vector4[2];
-		//		test[0] = new Vector4(100.0f, 100.0f, 1.0f, 0);
-		//		test[1] = new Vector4(256.0f, 256.0f, 0.0f, 0);
-		//		_computeShader.SetVectorArray("Soldiers", test);
-		//		RefreshCalcTerritorium();
-		//	}
-		//}
+
 
 		void OnDisable()
 		{
