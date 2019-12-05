@@ -504,7 +504,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
       propertyPath: _pawnAxes.Array.data[1]._isEnabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
       propertyPath: _pawnAxes.Array.data[1]._curve.m_Curve.Array.data[1].time

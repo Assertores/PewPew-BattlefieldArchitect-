@@ -157,6 +157,8 @@ namespace PPBA
 
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
+#else
+			TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
 
@@ -823,7 +825,6 @@ namespace PPBA
 			TickHandler.s_SetUp += CleanFlags;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
 
 			if(!_pawns.Contains(this))
 				_pawns.Add(this);
@@ -836,13 +837,19 @@ namespace PPBA
 			TickHandler.s_SetUp -= CleanFlags;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
 
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
+#endif
+		}
+
+		private void OnDestroy()
+		{
+#if UNITY_SERVER
+			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
 		#endregion

@@ -10,9 +10,9 @@ namespace PPBA
 
 		void Start()
 		{
-//#if !UNITY_SERVER
+			//#if !UNITY_SERVER
 			TickHandler.s_DoTick += PrintGameState;
-//#endif
+			//#endif
 		}
 
 		private void OnDestroy()
@@ -25,6 +25,10 @@ namespace PPBA
 
 		}
 
-		private void PrintGameState(int tick = 0) => Debug.Log(TickHandler.s_interfaceGameState.ToString());
+		private void PrintGameState(int tick = 0)
+		{
+			if(null != TickHandler.s_interfaceGameState)
+				Debug.Log(TickHandler.s_interfaceGameState.ToString());
+		}
 	}
 }
