@@ -14,6 +14,11 @@ namespace PPBA
 		//private
 		[SerializeField] private float _maxDistance = 30f;
 
+		public Behavior_GoAnywhere()
+		{
+			_name = Behaviors.GOANYWHERE;
+		}
+
 		private void Awake()
 		{
 			if(s_instance == null)

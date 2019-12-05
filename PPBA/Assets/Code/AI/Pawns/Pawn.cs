@@ -55,9 +55,9 @@ namespace PPBA
 
 		//protected
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
-		protected float _moraleBackingField = 100;
-		protected float _healthBackingField = 100;
-		protected int _ammoBackingField = 100;
+		[SerializeField] protected float _healthBackingField = 100;
+		[SerializeField] protected int _ammoBackingField = 100;
+		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
 		#endregion
@@ -187,6 +187,8 @@ namespace PPBA
 
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
+
+					Debug.Log("Behavior: " + _behaviors[i]._name + "got score " + _behaviorScores[i]);
 				}
 			}
 		}
@@ -235,10 +237,10 @@ namespace PPBA
 
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
-				
+
 				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
-				
+
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
 
 				if(!isActiveAndEnabled)
@@ -251,7 +253,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
@@ -456,63 +458,7 @@ namespace PPBA
 			return Behavior_GoAnywhere.s_instance;
 		}
 
-		/// <summary>
-		/// Takes a typeof(Behavior) and returns the corresponding enum
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public Behaviors GetBehaviorsEnum(Behavior behavior)
-		{
-			/*
-			switch(Behaviors)
-			{
-				case Behaviors.IDLE:
-					break;
-				case Behaviors.SHOOT:
-					break;
-				case Behaviors.THROWGRENADE:
-					break;
-				case Behaviors.GOTOFLAG:
-					break;
-				case Behaviors.GOTOBORDER:
-					break;
-				case Behaviors.CONQUERBUILDING:
-					break;
-				case Behaviors.STAYINCOVER:
-					break;
-				case Behaviors.GOTOCOVER:
-					break;
-				case Behaviors.GOTOHEAL:
-					break;
-				case Behaviors.FLEE:
-					break;
-				case Behaviors.GETRESOURCES:
-					break;
-				case Behaviors.BRINGRESOURCES:
-					break;
-				case Behaviors.BUILD:
-					break;
-				case Behaviors.DECONSTRUCT:
-					break;
-				case Behaviors.GETAMMO:
-					break;
-				case Behaviors.MOUNT:
-					break;
-				case Behaviors.FOLLOW:
-					break;
-				case Behaviors.DIE:
-					break;
-				case Behaviors.WINCHEER:
-					break;
-				case Behaviors.GOANYWHERE:
-					break;
-				default:
-					break;
-			}
-			*/
-
-			return Behaviors.IDLE;
-		}
+		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
 		#endregion
 
 		#region Member Admin

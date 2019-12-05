@@ -10,7 +10,12 @@ namespace PPBA
 		public static Behavior_GoToFlag s_instance;
 		public static Dictionary<Pawn, FlagPole> s_targetDictionary = new Dictionary<Pawn, FlagPole>();
 		protected const float _maxDistance = 100f;
-		
+
+		public Behavior_GoToFlag()
+		{
+			_name = Behaviors.GOTOFLAG;
+		}
+
 		private void Awake()
 		{
 			if(s_instance == null)

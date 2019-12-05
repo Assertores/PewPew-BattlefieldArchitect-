@@ -14,6 +14,11 @@ namespace PPBA
 		//private
 		[SerializeField] [Tooltip("How long from starting the attack to shooting in ticks?")] private int _attackBuildUpTime = 8;
 
+		public Behavior_Shoot()
+		{
+			_name = Behaviors.SHOOT;
+		}
+
 		void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
 		{
 			if(s_instance == null)
@@ -35,10 +40,14 @@ namespace PPBA
 		#region Behavior
 		public override void Execute(Pawn pawn)
 		{
-			pawn.SetMoveTarget(pawn.transform.position);//stand still
+			//pawn.SetMoveTarget(pawn.transform.position);//stand still
 
-			if(s_timerDictionary.ContainsKey(pawn))
+			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn))
+			{
 				s_timerDictionary[pawn]++;//increment timer
+				if(null != s_targetDictionary[pawn])
+					pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			}
 			else
 			{
 				s_timerDictionary[pawn] = 0;//or initialise timer
@@ -65,16 +74,33 @@ namespace PPBA
 		{
 			float bestScore = 0;
 
+			Pawn lastTarget = pawn;
+			bool hadTarget = false;
+
+			if(s_targetDictionary.ContainsKey(pawn))
+			{
+				lastTarget = s_targetDictionary[pawn];
+
+				if(null != lastTarget && lastTarget.isActiveAndEnabled)
+				{
+					bestScore = CalculateTargetScore(pawn, lastTarget) + 0.2f;
+					hadTarget = true;
+				}
+			}
+
 			foreach(Pawn target in pawn._activePawns.FindAll(x => x._team != pawn._team))
 			{
 				float tempScore = CalculateTargetScore(pawn, target);
 
 				if(bestScore < tempScore)
 				{
-					s_targetDictionary[pawn] = target;
+					s_targetDictionary[pawn] = target;//change target if score is better
 					bestScore = tempScore;
 				}
 			}
+
+			if(hadTarget && null != lastTarget && s_targetDictionary.ContainsKey(pawn) && lastTarget != s_targetDictionary[pawn])
+				s_timerDictionary[pawn] = 0;//reset timer if target was changed
 
 			return bestScore;
 		}
@@ -135,7 +161,14 @@ namespace PPBA
 			{
 				if(_targetAxes[i]._isEnabled)
 				{
+					//normal version
+					/*
 					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
+					*/
+					//debug version
+					float temp = Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
+					Debug.Log("Pawn " + pawn._id + " target axis " + _targetAxes[i]._name + " evaluated to " + temp);
+					score *= temp;
 				}
 			}
 

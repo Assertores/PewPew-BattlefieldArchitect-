@@ -12,6 +12,11 @@ namespace PPBA
 		[SerializeField] private float _maxDistance = 70f;
 		[SerializeField][Tooltip("How close does a pawn have to be to allow mounting?")] private float _mountDistance = 2f;
 
+		public Behavior_Mount()
+		{
+			_name = Behaviors.MOUNT;
+		}
+
 		private void Awake()
 		{
 			if(s_instance == null)

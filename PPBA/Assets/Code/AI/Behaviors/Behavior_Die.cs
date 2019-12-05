@@ -8,6 +8,13 @@ namespace PPBA
 	{
 		public static Behavior_Die s_instance;
 
+		public Behavior_Die()
+		{
+			_name = Behaviors.DIE;
+		}
+
+		//public override Behaviors _name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
 		private void Awake()
 		{
 			if(s_instance == null)

@@ -11,6 +11,11 @@ namespace PPBA
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
+		public Behavior_GetResources()
+		{
+			_name = Behaviors.GETRESOURCES;
+		}
+
 		private void Awake()
 		{
 			if(s_instance == null)
