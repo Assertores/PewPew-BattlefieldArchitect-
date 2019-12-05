@@ -12,6 +12,7 @@ namespace PPBA
 
 	public class GameNetcode : Singleton<GameNetcode>
 	{
+		public static bool s_ServerIsTimedOut = false;
 
 		#region Variables
 		public string m_iP = "127.0.0.1";
@@ -23,6 +24,7 @@ namespace PPBA
 		IPEndPoint _ep;
 		[SerializeField] int m_maxPackageSize = 1470;
 		[SerializeField] float _serverTimeOut = 5.0f;
+		float _lastPackageTime = float.MaxValue;
 
 		int _currentID = 0;
 		#endregion
@@ -252,10 +254,27 @@ namespace PPBA
 			Send();
 		}
 
+		UIPopUpWindowRefHolder h_popUp;
 		void Listen()
 		{
+			if(Time.unscaledTime - _lastPackageTime > _serverTimeOut)
+			{
+				s_ServerIsTimedOut = true;
+				Debug.Log("Server Timed Out");
+				if(null == h_popUp)
+					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Server Timed Out");
+			}
+
 			if(socket.Available <= 0)
 				return;
+
+			if(null != h_popUp)
+			{
+				h_popUp.CloseWindow();
+				h_popUp = null;
+			}
+			s_ServerIsTimedOut = false;
+			_lastPackageTime = Time.unscaledTime;
 
 			byte[] data = socket.Receive(ref _ep);
 
