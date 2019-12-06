@@ -4,12 +4,23 @@ using UnityEngine;
 
 namespace PPBA
 {
+
+	struct HeatMapReturnValue
+	{
+		public RenderTexture tex;
+		public int[] bitfield;
+	}
+
 	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
 	{
+
+
+
+
 		public ComputeShader _computeShader;
 		public Material _GroundMaterial;
 
-		public Texture TerritorriumMap;
+		public Texture _TerritorriumMap;
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
@@ -44,7 +55,7 @@ namespace PPBA
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 		}
 		
-		public void RefreshCalcTerritorium()
+		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
@@ -53,11 +64,12 @@ namespace PPBA
 			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
-			SendToTickManager();
+			return new HeatMapReturnValue { tex = _ResultTexture , bitfield =  };
 		}
 
 		private void SendToTickManager()
 		{
+
 			//	ressourceManager.AddRessourcesToRefineries(CurrentValue);
 		}
 
@@ -90,7 +102,7 @@ namespace PPBA
 
 		void OnDisable()
 		{
-			_GroundMaterial.SetTexture("_TerritorriumMap", TerritorriumMap);
+			_GroundMaterial.SetTexture("_TerritorriumMap", _TerritorriumMap);
 		}
 	}
 

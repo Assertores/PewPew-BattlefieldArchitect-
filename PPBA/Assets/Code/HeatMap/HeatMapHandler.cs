@@ -12,6 +12,7 @@ namespace PPBA
 		/// <returns>all ids of existing HeatMaps</returns>
 		public int[] GetAllIds()
 		{
+
 			throw new System.NotImplementedException();
 		}
 
@@ -22,6 +23,7 @@ namespace PPBA
 		/// <returns>size of the heatMap</returns>
 		public Vector2Int GetHeatMapSize(int id)
 		{
+
 			throw new System.NotImplementedException();
 		}
 
@@ -32,6 +34,8 @@ namespace PPBA
 		/// <returns>the values that have changed in the last tick</returns>
 		public byte[] GetBitMap(int id)
 		{
+			// out von compute shader 
+
 			throw new System.NotImplementedException();
 		}
 
@@ -42,6 +46,7 @@ namespace PPBA
 		/// <returns>the texture of the respective heatMap</returns>
 		public Texture2D GetHeatMap(int id)
 		{
+			// pointer auf map
 			throw new System.NotImplementedException();
 		}
 	}

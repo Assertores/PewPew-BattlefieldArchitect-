@@ -60,19 +60,19 @@ namespace PPBA
 
 			_Refinerys.Add(refHolder);
 		}
-		
-		public void RefreshCalcRes()
+
+		public HeatMapReturnValue RefreshCalcRes()
 		{
-			_currentBitField = new int[(512 * 512)/8/sizeof(int)];
+			_currentBitField = new int[(512 * 512) / 8 / sizeof(int)];
 			_ResourceValues = new int[_Refinerys.Count];
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
-			_bitField = new ComputeBuffer(262144‬, sizeof(int));
+			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
 
 			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
-			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex" , _bitField);
+			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
 
 			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _currentTexture);
@@ -92,13 +92,9 @@ namespace PPBA
 			Graphics.Blit(_ResultTexture, _currentTexture);
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
-			SendToTickManager();
 
-		}
+			return new HeatMapReturnValue { bitfield = _currentBitField, tex = _currentTexture };
 
-		private void SendToTickManager()
-		{
-		//	ressourceManager.AddRessourcesToRefineries(CurrentValue);
 		}
 
 		private bool _changeMap = false;
