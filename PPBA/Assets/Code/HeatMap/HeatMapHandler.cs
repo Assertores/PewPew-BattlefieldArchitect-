@@ -20,6 +20,11 @@ namespace PPBA
 #if UNITY_SERVER
 			TickHandler.s_DoTick += CalculateMaps;
 			TickHandler.s_GatherValues += SaveMapToGameState;
+#else
+			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
+			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
+
+			TickHandler.s_DoInput += SetMap;
 #endif
 		}
 		private void OnDestroy()
@@ -27,6 +32,8 @@ namespace PPBA
 #if UNITY_SERVER
 			TickHandler.s_DoTick -= CalculateMaps;
 			TickHandler.s_GatherValues -= SaveMapToGameState;
+#else
+			TickHandler.s_DoInput -= SetMap;
 #endif
 		}
 
@@ -67,6 +74,31 @@ namespace PPBA
 				}
 
 				TickHandler.s_interfaceGameState._heatMaps.Add(hm);
+			}
+		}
+
+		void SetMap(int tick)
+		{
+			foreach(var it in TickHandler.s_interfaceGameState._heatMaps)
+			{
+				Vector2Int[] pos = it._mask.GetActiveBits();
+				for(int i = 0; i < pos.Length; i++)
+				{
+					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, new Color(it._values[i], 0, 0, 0));
+				}
+
+				switch(it._id)
+				{
+					case 0:
+						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						break;
+					case 1:
+						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						break;
+					default:
+						Debug.LogError("Heatmap index not found");
+						break;
+				}
 			}
 		}
 
