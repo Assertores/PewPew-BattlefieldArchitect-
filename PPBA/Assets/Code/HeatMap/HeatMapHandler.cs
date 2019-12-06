@@ -4,10 +4,15 @@ using UnityEngine;
 
 namespace PPBA
 {
+	public struct HeatMapReturnValue
+	{
+		public RenderTexture tex;
+		public byte[] bitfield;
+	}
 	public class HeatMapHandler : Singleton<HeatMapHandler>
 	{
-		RenderTexture[] _heatMaps;
-		BitField2D[] _bitFields;
+		RenderTexture[] _heatMaps = new RenderTexture[2];
+		BitField2D[] _bitFields = new BitField2D[2];
 
 		private void Start()
 		{
@@ -26,8 +31,13 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
-			ResourceMapCalculate.s_instance.RefreshCalcRes();
-			TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
+			HeatMapReturnValue value;
+			value = ResourceMapCalculate.s_instance.RefreshCalcRes();
+			_heatMaps[0] = value.tex;
+			_bitFields[0].FromArray(value.bitfield);
+			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
+			_heatMaps[1] = value.tex;
+			_bitFields[1].FromArray(value.bitfield);
 		}
 
 		void Converter(int tick)

@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace PPBA
 {
-
-	struct HeatMapReturnValue
-	{
-		public RenderTexture tex;
-		public int[] bitfield;
-	}
-
 	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
 	{
 
