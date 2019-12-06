@@ -6,10 +6,6 @@ namespace PPBA
 {
 	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
 	{
-
-
-
-
 		public ComputeShader _computeShader;
 		public Material _GroundMaterial;
 
@@ -17,14 +13,13 @@ namespace PPBA
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
+		private ComputeBuffer _bitField;
+		private byte[] _currentBitField;
+
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
 
 		private List<Vector4> _Soldiers = new List<Vector4>();
-
-
-
-
 
 		void Start()
 		{
@@ -50,14 +45,24 @@ namespace PPBA
 		
 		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
+			_currentBitField = new byte[(512 * 512) / 8];
+			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
+
+			_computeShader.SetBuffer(_resourceCalcKernel, "resourcesIndex", _bitField);
+			
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
 			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
-
+			
 			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
-			return new HeatMapReturnValue { tex = _ResultTexture , bitfield =  };
+
+			_bitField.GetData(_currentBitField);
+			_bitField.Release();
+			_bitField = null;
+
+			return new HeatMapReturnValue { tex = _ResultTexture , bitfield = _currentBitField };
 		}
 
 		private void SendToTickManager()

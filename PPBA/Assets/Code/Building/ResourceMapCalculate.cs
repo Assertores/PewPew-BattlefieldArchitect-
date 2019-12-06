@@ -10,6 +10,7 @@ namespace PPBA
 		public ComputeShader _computeShader;
 		public Material _GroundMaterial;
 		public RenderTexture _currentTexture;
+		[SerializeField] Texture2D _original;
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
@@ -24,7 +25,7 @@ namespace PPBA
 		private int[] _ResourceValues;
 
 
-		private int[] _currentBitField;
+		private byte[] _currentBitField;
 
 		
 		void Start()
@@ -55,6 +56,14 @@ namespace PPBA
 
 		}
 
+		public Texture2D GetStartTex() => _original;
+
+		public void UpdateTexture(Texture2D newTexture)
+		{
+			_GroundMaterial.SetTexture("_NoiseMap", newTexture);
+
+		}
+
 		public void AddFabric(RefineryRefHolder refHolder)
 		{
 
@@ -63,10 +72,10 @@ namespace PPBA
 
 		public HeatMapReturnValue RefreshCalcRes()
 		{
-			_currentBitField = new int[(512 * 512) / 8 / sizeof(int)];
+			_currentBitField = new byte[(512 * 512) / 8];
+			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 			_ResourceValues = new int[_Refinerys.Count];
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
-			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
 
@@ -91,7 +100,7 @@ namespace PPBA
 
 			Graphics.Blit(_ResultTexture, _currentTexture);
 
-			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
+			//_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
 			return new HeatMapReturnValue { bitfield = _currentBitField, tex = _currentTexture };
 

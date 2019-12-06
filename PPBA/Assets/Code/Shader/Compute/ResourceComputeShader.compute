@@ -75,14 +75,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	if (InputTexture[id.xy].r != currentResources)
 	{
-		//int myIndex;
-		//InterlockedAdd(resourcesIndex[0], 1, myIndex);
-		//resourcesChangedX[myIndex] = id.x;
-		//resourcesChangedY[myIndex] = id.y;
-
-	//	int bit = y * _fieldWidth + x;
-	//	_backingArray[bit / 8] = (byte)(_backingArray[bit / 8] | (byte)(1 << (bit % 8)));
-
 		int bit = id.y * weightMap + id.x;
 		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 		
@@ -120,21 +112,24 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 		}
 		if (Soldiers[i].z == 1)
 		{
-			m_point = float3(1, 1, 0);
-
+			m_point = float3(2, 0, 0);
 		}
 		if (Soldiers[i].z == 2)
 		{
-			m_point = float3(0, 1, 0);
-
+			m_point = float3(3, 0, 0);
 		}
 		if (Soldiers[i].z == 3)
 		{
-			m_point = float3(0, 0, 1);
-
+			m_point = float3(4, 0, 0);
 		}
 
-		TerritoriumResult[id.xy] = float4(m_point, 0, 1);
+		if (TerritoriumResult[id.xy].r != m_point.r)
+		{
+			int bit = id.y * weightMap + id.x;
+			InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+						
+			TerritoriumResult[id.xy] = float4(m_point, 1);
+		}
 	}
 }
 
