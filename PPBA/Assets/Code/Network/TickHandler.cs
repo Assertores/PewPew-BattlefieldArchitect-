@@ -97,6 +97,8 @@ namespace PPBA
 
 			s_GatherValues?.Invoke(s_currentTick);
 
+			Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
+
 			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
@@ -185,6 +187,8 @@ namespace PPBA
 			s_interfaceInputState = me._inputStates[nextStateTick];
 
 			s_currentTickTime = Time.time;
+
+			Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
 			s_SetUp?.Invoke(s_currentTick);
 			s_DoInput?.Invoke(s_currentTick);
