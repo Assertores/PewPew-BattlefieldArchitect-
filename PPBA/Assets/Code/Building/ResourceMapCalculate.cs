@@ -50,7 +50,7 @@ namespace PPBA
 			};
 
 			_ResultTexture.Create();
-			//Graphics.Blit(resourceTexture, _ResultTexture);
+			Graphics.Blit(resourceTexture, _ResultTexture);
 			//Graphics.Blit(resourceTexture, _currentTexture);
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
@@ -84,8 +84,8 @@ namespace PPBA
 			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
 
-			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _ResultTexture);
-		//	_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
+		//	_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _ResultTexture);
+			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
 			_computeShader.Dispatch(_resourceCalcKernel1, 512 / 8, 512 / 8, 1);
