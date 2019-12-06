@@ -163,29 +163,44 @@ MonoBehaviour:
   _maxMorale: 100
   _attackDistance: 20
   _attackChance: 0.5
-  _minAttackDamage: 25
-  _maxAttackDamage: 75
+  _minAttackDamage: 100
+  _maxAttackDamage: 100
   _attackDamageCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   _resources: 0
   _maxResource: 10
   _isNavPathDirty: 1
-  _isAttacking: 0
   _moveSpeed: 3.611111
   _healthRegen: 1
   _moraleRegen: 1
-  e_behaviors: 1301
+  e_behaviors: 01
   _behaviorMultipliers:
-  - 0
-  - 10
+  - 1
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []
-  _objectToFollow: {fileID: 8532531223116004335}
   _closePawns: []
   _closeCoverSlots: []
   _moveTarget: {x: 0, y: 0, z: 0}

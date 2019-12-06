@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.ComponentModel;
+using System.Text;
 
 namespace PPBA
 {
@@ -28,12 +29,22 @@ namespace PPBA
 		{
 			public byte _type = 0;
 			public byte _team = 0;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| type: " + _type + ", team: " + _team;
+			}
 		}
 
 		[System.Serializable]
 		public class arg : gsc
 		{
 			public Arguments _arguments = Arguments.NON;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| arguments: " + _arguments.ToString();
+			}
 		}
 
 		[System.Serializable]
@@ -41,6 +52,11 @@ namespace PPBA
 		{
 			public Vector3 _position = Vector3.zero;
 			public float _angle = 0; //in degrees
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| position: " + _position.ToString() + ", angle: " + _angle + "°";
+			}
 		}
 
 		[System.Serializable]
@@ -48,12 +64,22 @@ namespace PPBA
 		{
 			public int _bullets = 0;
 			//public int _grenades;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| bullets: " + _bullets;
+			}
 		}
 
 		[System.Serializable]
 		public class resource : gsc
 		{
 			public int _resources = 0;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| resources: " + _resources;
+			}
 		}
 
 		[System.Serializable]
@@ -61,12 +87,22 @@ namespace PPBA
 		{
 			public float _health = 0;
 			public float _morale = 0;//used for _score by depots/blueprints
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| health: " + _health + ", moral: " + _morale;
+			}
 		}
 
 		[System.Serializable]
 		public class work : gsc
 		{
 			public int _work = 0;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| work: " + _work;
+			}
 		}
 
 		[System.Serializable]
@@ -74,12 +110,37 @@ namespace PPBA
 		{
 			public Behaviors _behavior = Behaviors.IDLE;
 			public int _target = 0;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| behaviour: " + _behavior.ToString() + ", target-id: " + _target;
+			}
 		}
 
 		[System.Serializable]
 		public class path : gsc
 		{
 			public Vector3[] _path = new Vector3[0];
+
+			public override string ToString()
+			{
+				StringBuilder value = new StringBuilder();
+
+				value.Append("ID: " + _id.ToString("0000"));
+				value.Append("| path count: " + _path.Length);
+
+				if(0 == _path.Length)
+					return value.ToString();
+
+				value.Append(" [");
+				for(int i = 0; i < _path.Length - 1; i++)
+				{
+					value.Append(_path[i].ToString() + ", ");
+				}
+				value.Append(_path[_path.Length - 1].ToString() + "]");
+
+				return value.ToString();
+			}
 		}
 
 		[System.Serializable]
@@ -87,12 +148,44 @@ namespace PPBA
 		{
 			public BitField2D _mask = new BitField2D(0,0);
 			public List<float> _values = new List<float>();
+
+			public override string ToString()
+			{
+				StringBuilder value = new StringBuilder();
+				value.AppendLine("ID: " + _id.ToString("0000"));
+
+				Vector2Int size = _mask.GetSize();
+				int valueIndex = 0;
+				for(int y = 0; y < size.y; y++)
+				{
+					for(int x = 0; x < size.x; x++)
+					{
+						if(_mask[x, y])
+						{
+							value.Append(" " + _values[valueIndex].ToString("0.000") + " ");
+							valueIndex++;
+						}
+						else
+						{
+							value.Append(" XXXXX ");
+						}
+					}
+					value.AppendLine();
+				}
+
+				return value.ToString();
+			}
 		}
 
 		[System.Serializable]
 		public class input : gsc
 		{
 			public int _client;
+
+			public override string ToString()
+			{
+				return "ID: " + _id.ToString("0000") + "| for client: " + _client;
+			}
 		}
 
 		[System.Serializable]
@@ -100,6 +193,11 @@ namespace PPBA
 		{
 			public int _range;
 			public ObjectType _type;
+
+			public override string ToString()
+			{
+				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
+			}
 		}
 	}
 
@@ -488,7 +586,7 @@ namespace PPBA
 							value._id = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
 
-							value._health = BitConverter.ToInt32(msg, offset);
+							value._health = BitConverter.ToSingle(msg, offset);
 							offset += sizeof(int);
 
 							value._morale = BitConverter.ToSingle(msg, offset);
@@ -628,6 +726,8 @@ namespace PPBA
 			foreach(var it in reference._types)
 			{
 				GSC.type element = _types.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._type != element._type)
 					continue;
@@ -640,6 +740,8 @@ namespace PPBA
 			foreach(var it in reference._args)
 			{
 				GSC.arg element = _args.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				//Debug.Log(it._arguments + " | " + element._arguments);
 
@@ -653,6 +755,8 @@ namespace PPBA
 			foreach(var it in reference._transforms)
 			{
 				GSC.transform element = _transforms.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._position != element._position)
 					continue;
@@ -664,6 +768,8 @@ namespace PPBA
 			foreach(var it in reference._ammos)
 			{
 				GSC.ammo element = _ammos.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._bullets != element._bullets)
 					continue;
@@ -675,6 +781,8 @@ namespace PPBA
 			foreach(var it in reference._resources)
 			{
 				GSC.resource element = _resources.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._resources != element._resources)
 					continue;
@@ -684,6 +792,8 @@ namespace PPBA
 			foreach(var it in reference._healths)
 			{
 				GSC.health element = _healths.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._health != element._health)
 					continue;
@@ -695,6 +805,8 @@ namespace PPBA
 			foreach(var it in reference._behaviors)
 			{
 				GSC.behavior element = _behaviors.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._behavior != element._behavior)
 					continue;
@@ -706,6 +818,8 @@ namespace PPBA
 			foreach(var it in reference._paths)
 			{
 				GSC.path element = _paths.Find(x => x._id == it._id);
+				if(element == null)
+					continue;
 
 				if(it._path.Length != element._path.Length)
 					continue;
@@ -1147,6 +1261,101 @@ Jump:
 			Debug.Log("Hash: " + hash);
 
 			return hash;
+		}
+
+		public override string ToString()
+		{
+			StringBuilder value = new StringBuilder();
+
+			value.AppendLine("reference tick is:- - - " + _refTick);
+			value.AppendLine("is Delta: - - - - - - - " + _isDelta);
+			value.AppendLine("is Lerped:- - - - - - - " + _isLerped);
+			value.AppendLine("is Encrypted: - - - - - " + _isEncrypted);
+			value.AppendLine("packages where created: " + (null != _messageHolder));
+			if(null != _messageHolder)
+			{
+				value.AppendLine("total amount of messages: " + _receivedMessages.GetSize().x);
+				for(int i = 0; i < _receivedMessages.GetSize().x; i++)
+				{
+					value.AppendLine("package " + i + " was " + (_receivedMessages[i, 0] ? "receaved" : "not receaved"));
+				}
+			}
+
+			value.AppendLine();
+
+			value.AppendLine("type count:- - - - - " + _types.Count);
+			foreach(var it in _types)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("argument count:- - - " + _args.Count);
+			foreach(var it in _args)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("transform count: - - " + _transforms.Count);
+			foreach(var it in _transforms)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("ammo count:- - - - - " + _ammos.Count);
+			foreach(var it in _ammos)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("resource count:- - - " + _resources.Count);
+			foreach(var it in _resources)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("health count:- - - - " + _healths.Count);
+			foreach(var it in _healths)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("work count:- - - - - " + _works.Count);
+			foreach(var it in _works)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("behavior count:- - - " + _behaviors.Count);
+			foreach(var it in _behaviors)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("path count:- - - - - " + _paths.Count);
+			foreach(var it in _paths)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("heatMap count: - - - " + _heatMaps.Count);
+			foreach(var it in _heatMaps)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("denyedInputID count: " + _denyedInputIDs.Count);
+			foreach(var it in _denyedInputIDs)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			value.AppendLine("newIDRange count:- - " + _newIDRanges.Count);
+			foreach(var it in _newIDRanges)
+			{
+				value.AppendLine(it.ToString());
+			}
+
+			return value.ToString();
 		}
 	}
 }

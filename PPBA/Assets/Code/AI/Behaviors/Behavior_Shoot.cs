@@ -14,6 +14,11 @@ namespace PPBA
 		//private
 		[SerializeField] [Tooltip("How long from starting the attack to shooting in ticks?")] private int _attackBuildUpTime = 8;
 
+		public Behavior_Shoot()
+		{
+			_name = Behaviors.SHOOT;
+		}
+
 		void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
 		{
 			if(s_instance == null)
@@ -35,26 +40,33 @@ namespace PPBA
 		#region Behavior
 		public override void Execute(Pawn pawn)
 		{
-			pawn.SetMoveTarget(pawn.transform.position);
+			//pawn.SetMoveTarget(pawn.transform.position);//stand still
 
-			if(s_timerDictionary.ContainsKey(pawn))
-				s_timerDictionary[pawn]++;
+			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn))
+			{
+				s_timerDictionary[pawn]++;//increment timer
+				if(null != s_targetDictionary[pawn])
+					pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			}
 			else
 			{
-				s_timerDictionary[pawn] = 0;
+				s_timerDictionary[pawn] = 0;//or initialise timer
 				return;
 			}
 
-			if(_attackBuildUpTime <= s_timerDictionary[pawn])
+			if(_attackBuildUpTime <= s_timerDictionary[pawn])//if build up has been finished
 			{
-				if(s_targetDictionary.ContainsKey(pawn))
+				if(s_targetDictionary.ContainsKey(pawn))//check for target
 				{
 					Pawn target = s_targetDictionary[pawn];
-					if(null != target)
+					if(null != target)//check target
+					{
 						Shoot(pawn, target);
+					}
+					s_targetDictionary.Remove(pawn);
 				}
 
-				s_timerDictionary[pawn] = 0;
+				s_timerDictionary[pawn] = 0;//reset timer
 			}
 		}
 
@@ -62,16 +74,33 @@ namespace PPBA
 		{
 			float bestScore = 0;
 
+			Pawn lastTarget = pawn;
+			bool hadTarget = false;
+
+			if(s_targetDictionary.ContainsKey(pawn))
+			{
+				lastTarget = s_targetDictionary[pawn];
+
+				if(null != lastTarget && lastTarget.isActiveAndEnabled)
+				{
+					bestScore = CalculateTargetScore(pawn, lastTarget) + 0.2f;
+					hadTarget = true;
+				}
+			}
+
 			foreach(Pawn target in pawn._activePawns.FindAll(x => x._team != pawn._team))
 			{
 				float tempScore = CalculateTargetScore(pawn, target);
 
 				if(bestScore < tempScore)
 				{
-					s_targetDictionary[pawn] = target;
+					s_targetDictionary[pawn] = target;//change target if score is better
 					bestScore = tempScore;
 				}
 			}
+
+			if(hadTarget && null != lastTarget && s_targetDictionary.ContainsKey(pawn) && lastTarget != s_targetDictionary[pawn])
+				s_timerDictionary[pawn] = 0;//reset timer if target was changed
 
 			return bestScore;
 		}
@@ -83,7 +112,7 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				case "Ammo":
-					return pawn._ammo / pawn._maxAmmo;
+					return (float) pawn._ammo / pawn._maxAmmo;
 				case "Cover":
 					if(pawn._isMounting)
 						return pawn._mountSlot.GetCoverScore(pawn.transform.position);
@@ -111,10 +140,9 @@ namespace PPBA
 					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
 					return 0.5f;
 				case "ShotOnMe":
-					if(s_targetDictionary.ContainsKey(target))
-						return s_targetDictionary[target] == pawn ? 1f : 0f;
-					else
-						return 0f;
+					return s_targetDictionary.ContainsKey(target) && s_targetDictionary[target] == pawn ? 1f : 0f;
+				case "IsMyTarget":
+					return s_targetDictionary.ContainsKey(pawn) && s_targetDictionary[pawn] == target ? 1f : 0f;
 				default:
 					break;
 			}
@@ -133,7 +161,14 @@ namespace PPBA
 			{
 				if(_targetAxes[i]._isEnabled)
 				{
+					//normal version
+					/*
 					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
+					*/
+					//debug version
+					float temp = Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
+					Debug.Log("Pawn " + pawn._id + " target axis " + _targetAxes[i]._name + " evaluated to " + temp);
+					score *= temp;
 				}
 			}
 
@@ -189,6 +224,7 @@ namespace PPBA
 				}
 
 				target.TakeDamage(RollDamage(pawn));//target hit succesfully
+				Debug.Log("Target " + target.name + " has " + target._health + " left.");
 			}
 		}
 

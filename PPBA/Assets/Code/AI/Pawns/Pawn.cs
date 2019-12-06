@@ -14,7 +14,7 @@ namespace PPBA
 	{
 		protected class State
 		{
-			public Vector3 position;
+			public Vector3 _position;
 			public float _angle; //in degrees
 			public float _health;
 			public float _ammo;
@@ -54,14 +54,12 @@ namespace PPBA
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
 
 		//protected
-		[SerializeField] protected bool _isAttacking = false;
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
-		protected float _moraleBackingField = 100;
-		protected float _healthBackingField = 100;
-		protected int _ammoBackingField = 100;
+		[SerializeField] protected float _healthBackingField = 100;
+		[SerializeField] protected int _ammoBackingField = 100;
+		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
-
 		#endregion
 
 		#region References
@@ -80,7 +78,6 @@ namespace PPBA
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
 		private LineRenderer _lineRenderer;
-		[SerializeField] private GameObject _objectToFollow;//to test navAgent
 
 		//targets and target lists
 		public List<Pawn> _closePawns;
@@ -88,11 +85,19 @@ namespace PPBA
 		{
 			get
 			{
+				List<Pawn> offPawns = new List<Pawn>();
+
 				foreach(var it in _closePawns)
 				{
 					if(!it.gameObject.activeSelf)
-						_closePawns.Remove(it);//inactive pawns are removed here, the other option would be to go through the lists of all pawns whenever a pawn is disabled to remove it from the lists
+						offPawns.Add(it);
 				}
+
+				foreach(var it in offPawns)
+				{
+					_closePawns.Remove(it);
+				}
+
 				return _closePawns;
 			}
 		}
@@ -101,11 +106,19 @@ namespace PPBA
 		{
 			get
 			{
+				List<CoverSlot> offCoverSlots = new List<CoverSlot>();
+
 				foreach(var it in _closeCoverSlots)
 				{
 					if(!it.gameObject.activeSelf)
-						_closeCoverSlots.Remove(it);//inactive covers are removed here
+						offCoverSlots.Add(it);
 				}
+
+				foreach(var it in offCoverSlots)
+				{
+					_closeCoverSlots.Remove(it);
+				}
+
 				return _closeCoverSlots;
 			}
 		}
@@ -144,6 +157,8 @@ namespace PPBA
 
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
+#else
+			TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
 
@@ -174,6 +189,8 @@ namespace PPBA
 
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
+
+					Debug.Log("Behavior: " + _behaviors[i]._name + "got score " + _behaviorScores[i]);
 				}
 			}
 		}
@@ -212,7 +229,7 @@ namespace PPBA
 			}
 
 			NavTick();
-			Regenerate();
+			//Regenerate();
 		}
 
 		public void WriteToGameState(int tick)//SERVER
@@ -223,10 +240,13 @@ namespace PPBA
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
 
-				if(false)
+				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
 
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+
+				if(!isActiveAndEnabled)
+					return;//if pawn is disabled, no other info is relevant
 			}
 
 			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
@@ -235,7 +255,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
@@ -276,7 +296,7 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_nextState.position = temp._position;
+					_nextState._position = temp._position;
 					_nextState._angle = temp._angle;
 				}
 			}
@@ -339,12 +359,12 @@ namespace PPBA
 			else
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
-			transform.position = Vector3.Lerp(_lastState.position, _nextState.position, lerpFactor);
+			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
 			_morale = Mathf.Lerp(_lastState._morale, _nextState._morale, lerpFactor);
-			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._morale, lerpFactor);
+			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._resources, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
 		}
@@ -440,63 +460,7 @@ namespace PPBA
 			return Behavior_GoAnywhere.s_instance;
 		}
 
-		/// <summary>
-		/// Takes a typeof(Behavior) and returns the corresponding enum
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public Behaviors GetBehaviorsEnum(Behavior behavior)
-		{
-			/*
-			switch(Behaviors)
-			{
-				case Behaviors.IDLE:
-					break;
-				case Behaviors.SHOOT:
-					break;
-				case Behaviors.THROWGRENADE:
-					break;
-				case Behaviors.GOTOFLAG:
-					break;
-				case Behaviors.GOTOBORDER:
-					break;
-				case Behaviors.CONQUERBUILDING:
-					break;
-				case Behaviors.STAYINCOVER:
-					break;
-				case Behaviors.GOTOCOVER:
-					break;
-				case Behaviors.GOTOHEAL:
-					break;
-				case Behaviors.FLEE:
-					break;
-				case Behaviors.GETRESOURCES:
-					break;
-				case Behaviors.BRINGRESOURCES:
-					break;
-				case Behaviors.BUILD:
-					break;
-				case Behaviors.DECONSTRUCT:
-					break;
-				case Behaviors.GETAMMO:
-					break;
-				case Behaviors.MOUNT:
-					break;
-				case Behaviors.FOLLOW:
-					break;
-				case Behaviors.DIE:
-					break;
-				case Behaviors.WINCHEER:
-					break;
-				case Behaviors.GOANYWHERE:
-					break;
-				default:
-					break;
-			}
-			*/
-
-			return Behaviors.IDLE;
-		}
+		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
 		#endregion
 
 		#region Member Admin
@@ -660,7 +624,7 @@ namespace PPBA
 		}
 
 		private void SetNavPathClean(int tick = 0) => _isNavPathDirty = false;
-		private void CleanFlags(int tick = 0)
+		private void ClearFlags(int tick = 0)
 		{
 			SetNavPathClean();
 			_arguments = new Arguments();
@@ -685,23 +649,26 @@ namespace PPBA
 
 			Collider[] colliders = Physics.OverlapSphere(transform.position, 50f, _overlapSphereLayerMask);//TODO: adjust sphere radius
 
-			Debug.Log("I found " + colliders.Length.ToString() + " colliders.");
+			//Debug.Log("I found " + colliders.Length.ToString() + " colliders.");
 
 			foreach(Collider c in colliders)
 			{
-				Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
-				
+				//Debug.Log("Found a collider named: " + c.name + " on GameObject " + c.gameObject.name + ".");
+
 				switch(c.tag)
 				{
-					case "Pawn":
-						Debug.Log("hello i'm here");
+					case StringCollection.PAWN:
+						if(c.transform.parent.tag == StringCollection.PAWN)//exit condition: Break if I'm in a child of the Pawn, to reduce use of GetComponent()
+							continue;
+
 						Pawn pawn = c.GetComponent<Pawn>();
 						if(null != pawn && this != pawn)
 							_closePawns.Add(pawn);
-						else
-							Debug.Log("but i didnt find a friend");
 						continue;
-					case "Cover":
+					case StringCollection.COVER:
+						if(c.transform.parent.tag == StringCollection.COVER)//exit condition: Break if I'm in a child of the Cover, to reduce use of GetComponent()
+							continue;
+
 						Cover cover = c.GetComponent<Cover>();
 						if(cover)
 						{
@@ -712,57 +679,57 @@ namespace PPBA
 						}
 						continue;
 					default:
-						Debug.Log("it's a sad default: " + c.tag);
+						//Debug.Log("it's a sad default: " + c.tag);
 						continue;
 				}
 			}
 		}
 
-		private void OnTriggerEnter(Collider other)
-		{
-			//Add relevant objects to closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp)
-					_closePawns.Add(temp);
-			}
+		//private void OnTriggerEnter(Collider other)
+		//{
+		//	//Add relevant objects to closeLists
+		//	if(other.tag == "Pawn")
+		//	{
+		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
+		//		if(temp)
+		//			_closePawns.Add(temp);
+		//	}
 
-			if(other.tag == "Cover")
-			{
-				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp)
-				{
-					foreach(CoverSlot slot in temp._coverSlots)
-					{
-						_closeCoverSlots.Add(slot);
-					}
-				}
-			}
-		}
+		//	if(other.tag == "Cover")
+		//	{
+		//		Cover temp = other.gameObject.GetComponent<Cover>();
+		//		if(temp)
+		//		{
+		//			foreach(CoverSlot slot in temp._coverSlots)
+		//			{
+		//				_closeCoverSlots.Add(slot);
+		//			}
+		//		}
+		//	}
+		//}
 
-		private void OnTriggerExit(Collider other)
-		{
-			//Remove objects from closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp && _closePawns.Contains(temp))
-					_closePawns.Remove(temp);
-			}
+		//private void OnTriggerExit(Collider other)
+		//{
+		//	//Remove objects from closeLists
+		//	if(other.tag == "Pawn")
+		//	{
+		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
+		//		if(temp && _closePawns.Contains(temp))
+		//			_closePawns.Remove(temp);
+		//	}
 
-			if(other.tag == "Cover")
-			{
-				Cover temp = other.gameObject.GetComponent<Cover>();
-				if(temp)
-				{
-					foreach(CoverSlot slot in temp._coverSlots)
-					{
-						_closeCoverSlots.Add(slot);
-					}
-				}
-			}
-		}
+		//	if(other.tag == "Cover")
+		//	{
+		//		Cover temp = other.gameObject.GetComponent<Cover>();
+		//		if(temp)
+		//		{
+		//			foreach(CoverSlot slot in temp._coverSlots)
+		//			{
+		//				_closeCoverSlots.Add(slot);
+		//			}
+		//		}
+		//	}
+		//}
 		#endregion
 
 		#region Interfaces
@@ -786,8 +753,10 @@ namespace PPBA
 		#region Gizmos
 		private void OnDrawGizmos()
 		{
-			//Gizmos.color = Color.blue;
-			//Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
+			/*
+			Gizmos.color = Color.blue;
+			Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
+			*/
 		}
 		#endregion
 
@@ -812,7 +781,6 @@ namespace PPBA
 			pawn._morale = pawn._maxMorale;
 			pawn._resources = 0;
 			pawn._isNavPathDirty = true;
-			pawn._isAttacking = false;
 			//pawn._moveSpeed = 3.6111111f;
 			pawn._navMeshPath = new NavMeshPath();
 			pawn._morale = pawn._maxMorale;
@@ -854,29 +822,34 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp += CleanFlags;
+			TickHandler.s_SetUp += ClearFlags;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
 
 			if(!_pawns.Contains(this))
-			_pawns.Add(this);
+				_pawns.Add(this);
 #endif
 		}
 
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp -= CleanFlags;
+			TickHandler.s_SetUp -= ClearFlags;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
-			
+
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
+#endif
+		}
+
+		private void OnDestroy()
+		{
+#if UNITY_SERVER
+			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
 		#endregion

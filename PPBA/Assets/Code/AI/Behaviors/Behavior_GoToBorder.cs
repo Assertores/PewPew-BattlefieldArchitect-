@@ -11,6 +11,11 @@ namespace PPBA
 		public static Dictionary<Pawn, Vector3> s_targetDictionary = new Dictionary<Pawn, Vector3>();
 		protected const float _maxDistance = 100f;
 
+		public Behavior_GoToBorder()
+		{
+			_name = Behaviors.GOTOBORDER;
+		}
+
 		private void Awake()
 		{
 			if(s_instance == null)

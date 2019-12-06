@@ -8,6 +8,8 @@ namespace PPBA
 {
 	public class TickHandler : Singleton<TickHandler>
 	{
+		public static bool s_NetworkPause { get; private set; } = false;
+
 		public static Action<int> s_SetUp;
 		public static Action<int> s_DoInput;
 		public static Action<int> s_EarlyCalc;
@@ -25,29 +27,22 @@ namespace PPBA
 
 		private void Start()
 		{
-#if UNITY_SERVER
-			//Time.timeScale = 0;
-#else
+#if !UNITY_SERVER
 			for(int i = 0; i < _inputBuffer; i++)
 			{
 				GlobalVariables.s_instance._clients[0]._inputStates[i] = new InputState();
-				//print(GlobalVariables.s_instance._clients[0]._inputStates.GetHighEnd());
 			}
 #endif
 		}
 
 		public int Simulate()
 		{
-			//Debug.Log("[Server] Simulating");
-
 			int min = int.MaxValue;
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
 				if(it._isConnected && it._inputStates.GetHighEnd() < min)//Game goes on if some clients disconnect
 					min = it._inputStates.GetHighEnd();
 			}
-
-			//Debug.Log("[Server] min value: " + min);
 
 			if(min == int.MaxValue)
 			{
@@ -60,7 +55,6 @@ namespace PPBA
 
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
 			{
-				//Debug.Log("[Server] Simulating tick: " + s_currentTick);
 				s_interfaceInputState = new InputState();
 				for(int i = 0; i < GlobalVariables.s_instance._clients.Count; i++) //combines inputs from all clients
 				{
@@ -75,7 +69,6 @@ namespace PPBA
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
 				}
-				//Debug.Log("[Server] combined inputs");
 
 #if !UNITY_SERVER
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
@@ -90,8 +83,6 @@ namespace PPBA
 			}
 			s_currentTick--;
 
-			//Debug.Log("[Server] Finished simulating");
-
 			s_interfaceGameState = new GameState();
 			s_interfaceInputState = new InputState();
 
@@ -102,7 +93,6 @@ namespace PPBA
 			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
-				//Debug.Log("[Server] for client: " + it._id);
 				GameState element = new GameState(s_interfaceGameState);
 
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
@@ -116,6 +106,8 @@ namespace PPBA
 		}
 
 #if !UNITY_SERVER
+
+		UIPopUpWindowRefHolder h_popUp;
 		private void FixedUpdate()
 		{
 			client me = GlobalVariables.s_instance._clients[0];
@@ -123,9 +115,21 @@ namespace PPBA
 			if(me._gameStates.GetHighEnd() < s_currentTick ||
 			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
+				s_NetworkPause = true;
 				Debug.Log("Network Pause");
+
+				if(null == h_popUp)
+					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Network Pause");
+
 				return;
 			}
+
+			if(null != h_popUp)
+			{
+				h_popUp.CloseWindow();
+				h_popUp = null;
+			}
+			s_NetworkPause = false;
 
 			GameState nextState = default;
 			int nextStateTick = s_currentTick;
@@ -154,10 +158,6 @@ namespace PPBA
 				}
 
 				me._gameStates.FreeUpTo(nextState._refTick - 1);
-			}
-			else
-			{
-				Debug.Log("Tick: " + nextStateTick + " has 0 as reference tick");
 			}
 
 			foreach(var it in nextState._newIDRanges)
