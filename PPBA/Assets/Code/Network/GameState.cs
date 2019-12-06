@@ -737,16 +737,27 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
-				//Debug.Log("[GameState] creating heat map delta");
+				//setting up current Bitfield
+				{
+					Vector2Int size = HeatMapHandler.s_instance.GetHeatMapSize(it._id);
+					it._mask = new BitField2D(size.x, size.y);
+					Vector2Int[] unordertPositions = HeatMapHandler.s_instance.GetChangedPositions(it._id);
+					foreach(var jt in unordertPositions)
+					{
+						it._mask[jt.x, jt.y] = true;
+					}
+				}
+
+				//baking Bitfield
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					//Debug.Log("[GameState] adding heat map of tick" + i);
 					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
 				}
-				//Debug.Log("[GameState] finished aditive heat map backing");
 
+				//getting values
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
+
 				Vector2Int[] positions = it._mask.GetActiveBits();
 				Texture2D heatMap = HeatMapHandler.s_instance.GetHeatMap(it._id);
 				it._values = new List<float>(positions.Length);
