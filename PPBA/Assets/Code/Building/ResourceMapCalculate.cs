@@ -13,14 +13,19 @@ namespace PPBA
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
+		private ComputeBuffer _bitField;
 
-		private int _resourceCalcKernel;
+		private int _resourceCalcKernel1;
 		private int _resourceCalcKernel2;
 		private List<RefineryRefHolder> _Refinerys = new List<RefineryRefHolder>();
 
 
 		[SerializeField]
 		private int[] _ResourceValues;
+
+
+		private int[] _currentBitField;
+
 		
 		void Start()
 		{
@@ -31,7 +36,7 @@ namespace PPBA
 			}
 
 			Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_NoiseMap")) as Texture2D;
-			_resourceCalcKernel = _computeShader.FindKernel("CSMain");
+			_resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
 			_currentTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
@@ -55,25 +60,31 @@ namespace PPBA
 
 			_Refinerys.Add(refHolder);
 		}
-
+		
 		public void RefreshCalcRes()
 		{
-
+			_currentBitField = new int[(512 * 512)/8/sizeof(int)];
 			_ResourceValues = new int[_Refinerys.Count];
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
+			_bitField = new ComputeBuffer(262144‬, sizeof(int));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
+
 			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
+			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex" , _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
-			_computeShader.SetBuffer(_resourceCalcKernel, "buffer", _buffer);
 
-			_computeShader.SetTexture(_resourceCalcKernel, "InputTexture", _currentTexture);
-			_computeShader.SetTexture(_resourceCalcKernel, "Result", _ResultTexture);
+			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _currentTexture);
+			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
-			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
+			_computeShader.Dispatch(_resourceCalcKernel1, 512 / 8, 512 / 8, 1);
 
+
+			_bitField.GetData(_currentBitField);
+			_bitField.Release();
+			_bitField = null;
 			_buffer.GetData(_ResourceValues);
 			_buffer.Release();
 			_buffer = null;

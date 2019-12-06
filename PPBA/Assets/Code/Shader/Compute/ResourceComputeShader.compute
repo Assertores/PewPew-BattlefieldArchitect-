@@ -5,21 +5,17 @@
 #pragma kernel CSTerritorium
 #pragma kernel CSNextEdge
 
-#pragma target 4.0
-
 int PointSize;
+int weightMap;
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
 int stateSize;
 float2 state[50];
 
-const float4 team1 = float4(1, 0, 0, 1);
-const float4 team2 = float4(0, 0, 0, 1);
-const float4 team3 = float4(0, 0, 0, 1);
-const float4 team4 = float4(1, 0, 0, 1);
-
 RWStructuredBuffer<int> buffer;
+RWStructuredBuffer<uint> bitField;
+
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
 Texture2D<float4> InputTexture;
@@ -32,38 +28,68 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 	{
 		buffer[i] = 0;
 	}
-
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
+
+	float currentResources = InputTexture[id.xy].r;
+
 	for (int i = 0; i < PointSize; i++)
 	{
 		float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-		if (dis > coords[i].w)
+		float maxDis = coords[i].w;
+
+		if (dis > maxDis)
 		{
 			continue;
 		}
-
-		float maxDis = coords[i].w;
 		
 		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
 		
-		float4 curCol = InputTexture[id.xy].rgba;
+		//float4 curCol = InputTexture[id.xy].rgba;
 
-		float minValue = float(min(curCol.r, harvestFac));
+		//float minValue = float(min(curCol.r, harvestFac));
+		float minValue = float(min(currentResources, harvestFac));
 		
-		float newCol = curCol.r - minValue;
+		//float newCol = curCol.r - minValue;
+		currentResources -= minValue;
 
 		//	float3 col = lerp(curCol.rgb, newCol, t);
-		newCol = saturate(newCol);
+		//newCol = saturate(newCol);
+		currentResources = saturate(currentResources);
 
 		InterlockedAdd(buffer[i], minValue * 1000000.0);
-		Result[id.xy] = float4(newCol.rrr, curCol.a);
+		/*
+		if (Result[id.xy] != float4(newCol.rrr, curCol.a))
+		{
+			int myIndex;
+			InterlockedAdd(resourcesIndex, 1, myIndex);
+			resourcesChanged[myIndex] = id.x;
+
+			Result[id.xy] = float4(newCol.rrr, curCol.a);
+		}*/
+	}
+
+	if (InputTexture[id.xy].r != currentResources)
+	{
+		//int myIndex;
+		//InterlockedAdd(resourcesIndex[0], 1, myIndex);
+		//resourcesChangedX[myIndex] = id.x;
+		//resourcesChangedY[myIndex] = id.y;
+
+	//	int bit = y * _fieldWidth + x;
+	//	_backingArray[bit / 8] = (byte)(_backingArray[bit / 8] | (byte)(1 << (bit % 8)));
+
+		int bit = id.y * weightMap + id.x;
+		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+		
+		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
 	}
 }
+
 
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
@@ -118,103 +144,103 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSNextEdge(uint3 id : SV_DispatchThreadID)
 {
-	bool imIn = false;
-	for (int q = 0; !imIn || q < SoldiersSize; q++)
-	{
-		if (id.x == Soldiers[q].x ||  id.y == Soldiers[q].y)
-			imIn = true;
-	}
-	if (!imIn)
-		discard;
+	//bool imIn = false;
+	//for (int q = 0; !imIn || q < SoldiersSize; q++)
+	//{
+	//	if (id.x == Soldiers[q].x ||  id.y == Soldiers[q].y)
+	//		imIn = true;
+	//}
+	//if (!imIn)
+	//	discard;
 
-	float myTeam = TerritoriumResult[id.xy].x;
+	//float myTeam = TerritoriumResult[id.xy].x;
 
-	int i;
+	//int i;
 
-	float maxPixelToTest = (stateSize * stateSize * 3.14159) / 8;
-	//for (; i < stateSize - 1;)
-	for (int p = 0; p < maxPixelToTest; p++)
-	{
-		i = 0;
+	//float maxPixelToTest = (stateSize * stateSize * 3.14159) / 8;
+	////for (; i < stateSize - 1;)
+	//for (int p = 0; p < maxPixelToTest; p++)
+	//{
+	//	i = 0;
 
-		//searches for the first row whitch isn't already completly checkt
-		for (; i < stateSize; i++)
-		{
-			if (state[i].x <= i)
-				break;
-		}
+	//	//searches for the first row whitch isn't already completly checkt
+	//	for (; i < stateSize; i++)
+	//	{
+	//		if (state[i].x <= i)
+	//			break;
+	//	}
 
-		//serches from this row onword the nerest not checked pixel untill the distance is smaler than the row count
-		for (int j = i + 1; j < stateSize && j < state[i].y; j++)
-		{
-			if (state[j].y < state[i].y)
-			{
-				i = j;
-			}
-		}
+	//	//serches from this row onword the nerest not checked pixel untill the distance is smaler than the row count
+	//	for (int j = i + 1; j < stateSize && j < state[i].y; j++)
+	//	{
+	//		if (state[j].y < state[i].y)
+	//		{
+	//			i = j;
+	//		}
+	//	}
 
-		//checks all 8 pixel of the circle
-		if (TerritoriumResult[id.xy + float2(state[i].x, i)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x + state[i].x;
-			TerritoriumResult[id.xy].z = id.y + i;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(-state[i].x, i)].r != myTeam)
-		{
+	//	//checks all 8 pixel of the circle
+	//	if (TerritoriumResult[id.xy + float2(state[i].x, i)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x + state[i].x;
+	//		TerritoriumResult[id.xy].z = id.y + i;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(-state[i].x, i)].r != myTeam)
+	//	{
 
-			TerritoriumResult[id.xy].y = id.x - state[i].x;
-			TerritoriumResult[id.xy].z = id.y + i;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(state[i].x, -i)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x + state[i].x;
-			TerritoriumResult[id.xy].z = id.y - i;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(-state[i].x, -i)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x - state[i].x;
-			TerritoriumResult[id.xy].z = id.y - i;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(i, state[i].x)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x + i;
-			TerritoriumResult[id.xy].z = id.y + state[i].x;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(-i, state[i].x)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x - i;
-			TerritoriumResult[id.xy].z = id.y + state[i].x;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(i, -state[i].x)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x + i;
-			TerritoriumResult[id.xy].z = id.y - state[i].x;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
-		if (TerritoriumResult[id.xy + float2(-i, -state[i].x)].r != myTeam)
-		{
-			TerritoriumResult[id.xy].y = id.x - i;
-			TerritoriumResult[id.xy].z = id.y - state[i].x;
-			TerritoriumResult[id.xy].w = state[i].y;
-			break;
-		}
+	//		TerritoriumResult[id.xy].y = id.x - state[i].x;
+	//		TerritoriumResult[id.xy].z = id.y + i;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(state[i].x, -i)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x + state[i].x;
+	//		TerritoriumResult[id.xy].z = id.y - i;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(-state[i].x, -i)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x - state[i].x;
+	//		TerritoriumResult[id.xy].z = id.y - i;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(i, state[i].x)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x + i;
+	//		TerritoriumResult[id.xy].z = id.y + state[i].x;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(-i, state[i].x)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x - i;
+	//		TerritoriumResult[id.xy].z = id.y + state[i].x;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(i, -state[i].x)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x + i;
+	//		TerritoriumResult[id.xy].z = id.y - state[i].x;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
+	//	if (TerritoriumResult[id.xy + float2(-i, -state[i].x)].r != myTeam)
+	//	{
+	//		TerritoriumResult[id.xy].y = id.x - i;
+	//		TerritoriumResult[id.xy].z = id.y - state[i].x;
+	//		TerritoriumResult[id.xy].w = state[i].y;
+	//		break;
+	//	}
 
-		//marks the next pixel in the row to be checkt
-		state[i].x++;
-		//calculatest the distance of the pixel to check
-		state[i].y = sqrt(i * i + state[i].x * state[i].x);
-	}
+	//	//marks the next pixel in the row to be checkt
+	//	state[i].x++;
+	//	//calculatest the distance of the pixel to check
+	//	state[i].y = sqrt(i * i + state[i].x * state[i].x);
+	//}
 }
