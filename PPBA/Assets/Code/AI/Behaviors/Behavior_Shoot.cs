@@ -112,7 +112,7 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				case "Ammo":
-					return pawn._ammo / pawn._maxAmmo;
+					return (float) pawn._ammo / pawn._maxAmmo;
 				case "Cover":
 					if(pawn._isMounting)
 						return pawn._mountSlot.GetCoverScore(pawn.transform.position);
