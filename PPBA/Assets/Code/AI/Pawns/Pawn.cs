@@ -14,7 +14,7 @@ namespace PPBA
 	{
 		protected class State
 		{
-			public Vector3 position;
+			public Vector3 _position;
 			public float _angle; //in degrees
 			public float _health;
 			public float _ammo;
@@ -296,7 +296,7 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_nextState.position = temp._position;
+					_nextState._position = temp._position;
 					_nextState._angle = temp._angle;
 				}
 			}
@@ -359,7 +359,7 @@ namespace PPBA
 			else
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
-			transform.position = Vector3.Lerp(_lastState.position, _nextState.position, lerpFactor);
+			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
@@ -624,7 +624,7 @@ namespace PPBA
 		}
 
 		private void SetNavPathClean(int tick = 0) => _isNavPathDirty = false;
-		private void CleanFlags(int tick = 0)
+		private void ClearFlags(int tick = 0)
 		{
 			SetNavPathClean();
 			_arguments = new Arguments();
@@ -822,7 +822,7 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp += CleanFlags;
+			TickHandler.s_SetUp += ClearFlags;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 
@@ -834,7 +834,7 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp -= CleanFlags;
+			TickHandler.s_SetUp -= ClearFlags;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
 

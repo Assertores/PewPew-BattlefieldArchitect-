@@ -9,6 +9,11 @@ namespace PPBA
 		//public
 		public Cover _parentCover;
 
+		void Awake()
+		{
+			
+		}
+
 		void Start()
 		{
 
