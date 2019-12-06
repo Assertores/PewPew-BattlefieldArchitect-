@@ -128,6 +128,10 @@ namespace PPBA
 
 				value.Append("ID: " + _id.ToString("0000"));
 				value.Append("| path count: " + _path.Length);
+
+				if(0 == _path.Length)
+					return value.ToString();
+
 				value.Append(" [");
 				for(int i = 0; i < _path.Length - 1; i++)
 				{
@@ -582,7 +586,7 @@ namespace PPBA
 							value._id = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
 
-							value._health = BitConverter.ToInt32(msg, offset);
+							value._health = BitConverter.ToSingle(msg, offset);
 							offset += sizeof(int);
 
 							value._morale = BitConverter.ToSingle(msg, offset);

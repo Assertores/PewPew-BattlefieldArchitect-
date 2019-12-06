@@ -7,6 +7,8 @@ namespace PPBA
 	[DefaultExecutionOrder(-10)]
 	public abstract class Behavior : MonoBehaviour
 	{
+		[HideInInspector] public Behaviors _name { get; set; }
+
 		[System.Serializable]
 		public class Axis
 		{
@@ -34,8 +36,18 @@ namespace PPBA
 
 			for(int i = 0; i < _pawnAxes.Length; i++)//calculate pawn-score
 			{
+				//normal version
+				/*
 				if(_pawnAxes[i]._isEnabled)
 					score *= Mathf.Clamp(_pawnAxes[i]._curve.Evaluate(PawnAxisInputs(pawn, _pawnAxes[i]._name)), 0f, 1f);
+				*/
+				//debug version
+				if(_pawnAxes[i]._isEnabled)
+				{
+					float temp = Mathf.Clamp(_pawnAxes[i]._curve.Evaluate(PawnAxisInputs(pawn, _pawnAxes[i]._name)), 0f, 1f);
+					Debug.Log("Pawn " + pawn._id + " " + pawn.gameObject.name + " axis " + _pawnAxes[i]._name + " evaluated to " + temp);
+					score *= temp;
+				}
 			}
 
 			if(score == 0f)//early skip

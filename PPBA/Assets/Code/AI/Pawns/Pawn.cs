@@ -14,7 +14,7 @@ namespace PPBA
 	{
 		protected class State
 		{
-			public Vector3 position;
+			public Vector3 _position;
 			public float _angle; //in degrees
 			public float _health;
 			public float _ammo;
@@ -55,9 +55,9 @@ namespace PPBA
 
 		//protected
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
-		protected float _moraleBackingField = 100;
-		protected float _healthBackingField = 100;
-		protected int _ammoBackingField = 100;
+		[SerializeField] protected float _healthBackingField = 100;
+		[SerializeField] protected int _ammoBackingField = 100;
+		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
 		#endregion
@@ -157,6 +157,8 @@ namespace PPBA
 
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
+#else
+			TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
 
@@ -187,6 +189,8 @@ namespace PPBA
 
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
+
+					Debug.Log("Behavior: " + _behaviors[i]._name + "got score " + _behaviorScores[i]);
 				}
 			}
 		}
@@ -235,10 +239,10 @@ namespace PPBA
 
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
-				
+
 				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
-				
+
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
 
 				if(!isActiveAndEnabled)
@@ -251,7 +255,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = GetBehaviorsEnum(_lastBehavior), _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
@@ -292,7 +296,7 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_nextState.position = temp._position;
+					_nextState._position = temp._position;
 					_nextState._angle = temp._angle;
 				}
 			}
@@ -355,7 +359,7 @@ namespace PPBA
 			else
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
-			transform.position = Vector3.Lerp(_lastState.position, _nextState.position, lerpFactor);
+			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
@@ -456,63 +460,7 @@ namespace PPBA
 			return Behavior_GoAnywhere.s_instance;
 		}
 
-		/// <summary>
-		/// Takes a typeof(Behavior) and returns the corresponding enum
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public Behaviors GetBehaviorsEnum(Behavior behavior)
-		{
-			/*
-			switch(Behaviors)
-			{
-				case Behaviors.IDLE:
-					break;
-				case Behaviors.SHOOT:
-					break;
-				case Behaviors.THROWGRENADE:
-					break;
-				case Behaviors.GOTOFLAG:
-					break;
-				case Behaviors.GOTOBORDER:
-					break;
-				case Behaviors.CONQUERBUILDING:
-					break;
-				case Behaviors.STAYINCOVER:
-					break;
-				case Behaviors.GOTOCOVER:
-					break;
-				case Behaviors.GOTOHEAL:
-					break;
-				case Behaviors.FLEE:
-					break;
-				case Behaviors.GETRESOURCES:
-					break;
-				case Behaviors.BRINGRESOURCES:
-					break;
-				case Behaviors.BUILD:
-					break;
-				case Behaviors.DECONSTRUCT:
-					break;
-				case Behaviors.GETAMMO:
-					break;
-				case Behaviors.MOUNT:
-					break;
-				case Behaviors.FOLLOW:
-					break;
-				case Behaviors.DIE:
-					break;
-				case Behaviors.WINCHEER:
-					break;
-				case Behaviors.GOANYWHERE:
-					break;
-				default:
-					break;
-			}
-			*/
-
-			return Behaviors.IDLE;
-		}
+		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
 		#endregion
 
 		#region Member Admin
@@ -676,7 +624,7 @@ namespace PPBA
 		}
 
 		private void SetNavPathClean(int tick = 0) => _isNavPathDirty = false;
-		private void CleanFlags(int tick = 0)
+		private void ClearFlags(int tick = 0)
 		{
 			SetNavPathClean();
 			_arguments = new Arguments();
@@ -874,10 +822,9 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp += CleanFlags;
+			TickHandler.s_SetUp += ClearFlags;
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
-			TickHandler.s_GatherValues += WriteToGameState;
 
 			if(!_pawns.Contains(this))
 				_pawns.Add(this);
@@ -887,16 +834,22 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_SetUp -= CleanFlags;
+			TickHandler.s_SetUp -= ClearFlags;
 			TickHandler.s_AIEvaluate -= Evaluate;
 			TickHandler.s_DoTick -= Execute;
-			TickHandler.s_GatherValues -= WriteToGameState;
 
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
 
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
+#endif
+		}
+
+		private void OnDestroy()
+		{
+#if UNITY_SERVER
+			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
 		#endregion

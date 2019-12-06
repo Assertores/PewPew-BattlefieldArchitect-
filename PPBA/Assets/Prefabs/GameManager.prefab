@@ -268,10 +268,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22a4b7918c228847ae75ece55c23155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_serverPort: 11000
   m_iP: 127.0.0.1
-  m_maxPackageSize: 1470
+  m_serverPort: 11000
   _playerCount: 1
+  _myID: -1
+  m_maxPackageSize: 1470
+  _serverTimeOut: 5
 --- !u!114 &6486173835104257566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,6 +356,7 @@ MonoBehaviour:
   - _type: 9
     _prefab: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
       type: 3}
+  _initialObjectPoolSize: 10
   _prefabs:
   - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
   - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
@@ -497,6 +500,47 @@ PrefabInstance:
     - target: {fileID: 7515035436285199967, guid: 6b952cb98fda6e64182062bcbbc8f34f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[1]._isEnabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[1]._curve.m_Curve.Array.data[1].time
+      value: 0.20083618
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].value
+      value: 0.90234375
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].inSlope
+      value: 0.09765625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].outSlope
+      value: 0.09765625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[1].inSlope
+      value: 0.09765625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[1].outSlope
+      value: 0.09765625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
+      propertyPath: _attackBuildUpTime
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831144996769013326, guid: 6b952cb98fda6e64182062bcbbc8f34f,
+        type: 3}
+      propertyPath: _fixedScore
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

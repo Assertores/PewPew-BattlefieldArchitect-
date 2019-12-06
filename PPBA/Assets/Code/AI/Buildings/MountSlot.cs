@@ -102,15 +102,18 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+#if UNITY_SERVER
 			if(null != JobCenter.s_mountSlots && _team < JobCenter.s_mountSlots.Length && !JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
 			//TickHandler.s_GatherValues += WriteToGameState;
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			if(null != JobCenter.s_mountSlots && JobCenter.s_mountSlots[_team].Contains(this))
 				JobCenter.s_mountSlots[_team].Remove(this);
 
@@ -119,6 +122,7 @@ namespace PPBA
 
 			TickHandler.s_LateCalc -= CalculateScore;
 			//TickHandler.s_GatherValues -= WriteToGameState;
+#endif
 		}
 	}
 }

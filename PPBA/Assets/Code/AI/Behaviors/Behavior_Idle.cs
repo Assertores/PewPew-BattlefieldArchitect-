@@ -8,7 +8,12 @@ namespace PPBA
 	{
 		public static Behavior_Idle s_instance;
 
-		[Range(0f, 0.9f)] private float _fixedScore = 0.1f;
+		[SerializeField] [Range(0f, 0.9f)] private float _fixedScore = 0.1f;
+
+		public Behavior_Idle()
+		{
+			_name = Behaviors.IDLE;
+		}
 
 		private void Awake()
 		{

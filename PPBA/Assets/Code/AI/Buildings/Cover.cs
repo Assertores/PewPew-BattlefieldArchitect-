@@ -7,9 +7,17 @@ namespace PPBA
 {
 	public class Cover : MonoBehaviour, INetElement, IPanelInfo
 	{
+		protected class State
+		{
+			public Vector3 position;
+			public float _angle;
+			public float _health;
+		}
+
 		#region Variables
 		//public
 		public int _id { get; set; }
+		public Arguments _arguments = new Arguments();
 		[SerializeField] public int _team = 0;
 		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
 		[SerializeField] public float _maxHealth = 100;
@@ -22,6 +30,15 @@ namespace PPBA
 		//public
 		public CoverSlot[] _coverSlots;
 		#endregion
+
+		void Awake()
+		{
+#if !UNITY_SERVER
+			TickHandler.s_DoInput += ExtractFromGameState;
+#else
+			TickHandler.s_GatherValues += WriteToGameState;
+#endif
+		}
 
 		void Start()
 		{
@@ -54,13 +71,90 @@ namespace PPBA
 			}
 		}
 
-		public void WriteToGameState(int tick)
+		#region Interfaces
+		#region INetElement
+		public void ClearFlags(int tick)
 		{
-			//add team to gamestate
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
+			_arguments = new Arguments();
 		}
 
-		#region Interfaces
+		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
+		{
+			/*
+			if(null != _nextState)
+				_lastState = _nextState;
+
+			_nextState = new State();
+
+			#region Writing into _nextState from s_interfaceGameState
+			{
+				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
+
+				if(null == temp || !temp._arguments.HasFlag(Arguments.ENABLED))
+				{
+					if(gameObject.activeSelf)
+						gameObject.SetActive(false);
+					return;
+				}
+				else
+				{
+					if(!gameObject.activeSelf)
+					{
+						gameObject.SetActive(true);
+						ResetToDefault(this, 0);
+					}
+				}
+
+				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				{
+					// do trigger stuff
+				}
+			}
+			{
+				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
+
+				if(null != temp)
+				{
+					_nextState.position = temp._position;
+					_nextState._angle = temp._angle;
+				}
+			}
+			{
+				GSC.health temp = TickHandler.s_interfaceGameState.GetHealth(_id);
+				if(null != temp)
+				{
+					_nextState._health = temp._health;
+					_nextState._morale = temp._morale;
+				}
+			}
+			#endregion
+			*/
+		}
+
+		public void WriteToGameState(int tick)
+		{
+			{
+				Arguments temp = new Arguments();
+
+				if(isActiveAndEnabled)
+					temp |= Arguments.ENABLED;
+
+				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+					temp |= Arguments.TRIGGERBEHAVIOUR;
+
+				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+
+				if(!isActiveAndEnabled)
+					return;//if cover is disabled, no other info is relevant
+			}
+
+			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
+			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
+		}
+		#endregion
+
+		#region IPanelInfo
 		private TextMeshProUGUI[] _panelDetails;
 		public void InitialiseUnitPanel()
 		{
@@ -76,12 +170,8 @@ namespace PPBA
 			}
 		}
 		#endregion
+		#endregion
 
-		/// <summary>
-		/// Resets a pawn to factory setting.
-		/// </summary>
-		/// <param name="pawn">The pawn to be reset.</param>
-		/// <param name="team"></param>
 		private static void ResetToDefault(Cover cover, int team)
 		{
 			cover._team = team;

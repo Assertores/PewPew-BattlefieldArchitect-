@@ -195,10 +195,9 @@ MonoBehaviour:
   _moveSpeed: 3.611111
   _healthRegen: 1
   _moraleRegen: 1
-  e_behaviors: 1301
+  e_behaviors: 01
   _behaviorMultipliers:
-  - 0
-  - 10
+  - 1
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []
