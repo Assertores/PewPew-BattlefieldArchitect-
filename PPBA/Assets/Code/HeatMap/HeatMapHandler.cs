@@ -30,7 +30,7 @@ namespace PPBA
 		/// </summary>
 		/// <param name="id">the id of the heatMap</param>
 		/// <returns>the values that have changed in the last tick</returns>
-		public Vector2Int[] GetChangedPositions(int id)
+		public byte[] GetBitMap(int id)
 		{
 			throw new System.NotImplementedException();
 		}

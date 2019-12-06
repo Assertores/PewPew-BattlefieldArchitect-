@@ -27,15 +27,9 @@ namespace PPBA
 				hm._id = it;
 
 				//setting up current Bitfield
-				{
-					Vector2Int size = HeatMapHandler.s_instance.GetHeatMapSize(it);
-					hm._mask = new BitField2D(size.x, size.y);
-					Vector2Int[] unordertPositions = HeatMapHandler.s_instance.GetChangedPositions(it);
-					foreach(var jt in unordertPositions)
-					{
-						hm._mask[jt.x, jt.y] = true;
-					}
-				}
+				Vector2Int size = HeatMapHandler.s_instance.GetHeatMapSize(it);
+				hm._mask = new BitField2D(size.x, size.y, HeatMapHandler.s_instance.GetBitMap(it));
+
 				Vector2Int[] positions = hm._mask.GetActiveBits();
 
 				//saving values
