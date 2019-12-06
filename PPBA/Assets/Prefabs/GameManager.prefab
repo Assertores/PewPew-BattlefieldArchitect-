@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 6486173834760009006}
   - component: {fileID: 6486173834760009003}
   - component: {fileID: 6486173834760009007}
-  - component: {fileID: 4952936064431878291}
   - component: {fileID: 6486173834760009008}
   - component: {fileID: 6486173834760009009}
   - component: {fileID: 6486173834760009010}
@@ -150,21 +149,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _computeShader: {fileID: 7200000, guid: 4d86b9bb0d22d3346a3f696451651f60, type: 3}
-  _GroundMaterial: {fileID: 0}
+  _GroundRenderer: {fileID: 0}
   _currentTexture: {fileID: 8400000, guid: b181cf4511947b44db4e93097ef4b2cb, type: 2}
   _ResourceValues: 
---- !u!114 &4952936064431878291
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6486173834760009001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29dc7b3ae8d94a04da8565b9ead2f4bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6486173834760009008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,7 +211,6 @@ MonoBehaviour:
   ignore:
     serializedVersion: 2
     m_Bits: 311
-  TerrainMat: {fileID: 0}
 --- !u!1 &6486173835104257564
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,10 +255,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22a4b7918c228847ae75ece55c23155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_serverPort: 11000
   m_iP: 127.0.0.1
-  m_maxPackageSize: 1470
+  m_serverPort: 11000
   _playerCount: 1
+  _myID: -1
+  m_maxPackageSize: 1470
+  _serverTimeOut: 5
 --- !u!114 &6486173835104257566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,6 +343,7 @@ MonoBehaviour:
   - _type: 9
     _prefab: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
       type: 3}
+  _initialObjectPoolSize: 10
   _prefabs:
   - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
   - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
