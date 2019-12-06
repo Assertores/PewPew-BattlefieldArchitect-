@@ -128,7 +128,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 			int bit = id.y * weightMap + id.x;
 			InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 						
-			TerritoriumResult[id.xy] = float4(m_point, 1);
+			TerritoriumResult[id.xy] = float4( m_point , 0  , 1);
 		}
 	}
 }

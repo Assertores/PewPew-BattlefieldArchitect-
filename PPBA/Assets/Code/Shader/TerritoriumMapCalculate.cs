@@ -6,9 +6,10 @@ namespace PPBA
 {
 	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
 	{
-		public ComputeShader _computeShader;
-		public Material _GroundMaterial;
-
+		[SerializeField] private ComputeShader _computeShader;
+		[SerializeField] private Material _GroundMaterial;
+		[SerializeField] Texture2D _original;
+				
 		public Texture _TerritorriumMap;
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
@@ -42,7 +43,15 @@ namespace PPBA
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 		}
-		
+
+		public Texture2D GetStartTex() => _original;
+
+		public void UpdateTexture(Texture2D newTexture)
+		{
+			_GroundMaterial.SetTexture("_TerritorriumMap", newTexture);
+
+		}
+
 		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
 			_currentBitField = new byte[(512 * 512) / 8];
@@ -64,13 +73,6 @@ namespace PPBA
 
 			return new HeatMapReturnValue { tex = _ResultTexture , bitfield = _currentBitField };
 		}
-
-		private void SendToTickManager()
-		{
-
-			//	ressourceManager.AddRessourcesToRefineries(CurrentValue);
-		}
-
 
 		// add data for ComputeInput
 		private Vector4[] AddSoldierData()
