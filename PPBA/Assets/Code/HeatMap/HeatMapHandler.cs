@@ -11,6 +11,11 @@ namespace PPBA
 			throw new System.NotImplementedException();
 		}
 
+		public Vector2Int[] GetChangedPositions(int id)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public Texture2D GetHeatMap(int id)
 		{
 			throw new System.NotImplementedException();
