@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class HeatMapToGameStateConverter : MonoBehaviour
+	public class HeatMapToGameStateConverter : Singleton<HeatMapToGameStateConverter>
 	{
 		void Start()
 		{
