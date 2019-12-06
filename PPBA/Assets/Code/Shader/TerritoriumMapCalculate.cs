@@ -10,7 +10,6 @@ namespace PPBA
 		[SerializeField] private Material _GroundMaterial;
 		[SerializeField] Texture2D _original;
 				
-		public Texture _TerritorriumMap;
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
@@ -65,8 +64,6 @@ namespace PPBA
 			
 			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
-			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
-
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
 			_bitField = null;
@@ -102,8 +99,14 @@ namespace PPBA
 
 		void OnDisable()
 		{
-			_GroundMaterial.SetTexture("_TerritorriumMap", _TerritorriumMap);
+			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
 		}
+
+		void OnEnable()
+		{
+			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
+		}
+
 	}
 
 }

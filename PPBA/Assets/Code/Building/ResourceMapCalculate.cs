@@ -9,7 +9,7 @@ namespace PPBA
 
 		public ComputeShader _computeShader;
 		public Material _GroundMaterial;
-		public RenderTexture _currentTexture;
+	//	public RenderTexture _currentTexture;
 		[SerializeField] Texture2D _original;
 
 		private RenderTexture _ResultTexture;
@@ -23,8 +23,7 @@ namespace PPBA
 
 		[SerializeField]
 		private int[] _ResourceValues;
-
-
+		
 		private byte[] _currentBitField;
 
 		
@@ -40,10 +39,10 @@ namespace PPBA
 			_resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
-			_currentTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
-			{
-				enableRandomWrite = true
-			};
+			//_currentTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
+			//{
+			//	enableRandomWrite = true
+			//};
 
 			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
 			{
@@ -51,8 +50,9 @@ namespace PPBA
 			};
 
 			_ResultTexture.Create();
-			Graphics.Blit(resourceTexture, _ResultTexture);
-			Graphics.Blit(resourceTexture, _currentTexture);
+			//Graphics.Blit(resourceTexture, _ResultTexture);
+			//Graphics.Blit(resourceTexture, _currentTexture);
+			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
 		}
 
@@ -84,8 +84,8 @@ namespace PPBA
 			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
 
-			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _currentTexture);
-			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
+			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _ResultTexture);
+		//	_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
 			_computeShader.Dispatch(_resourceCalcKernel1, 512 / 8, 512 / 8, 1);
@@ -98,13 +98,14 @@ namespace PPBA
 			_buffer.Release();
 			_buffer = null;
 
-			Graphics.Blit(_ResultTexture, _currentTexture);
+		//	Graphics.Blit(_ResultTexture, _currentTexture);
 
 			//_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
-			return new HeatMapReturnValue { bitfield = _currentBitField, tex = _currentTexture };
+			return new HeatMapReturnValue { bitfield = _currentBitField, tex = _ResultTexture };
 
 		}
+
 
 		private bool _changeMap = false;
 
@@ -135,6 +136,20 @@ namespace PPBA
 			}
 			return refsProp;
 		}
+		
+
+
+		void OnDisable()
+		{
+			_GroundMaterial.SetTexture("_NoiseMap", _original);
+		}
+
+		void OnEnable()
+		{
+			_GroundMaterial.SetTexture("_NoiseMap", _original);
+		}
+
+
 	}
 		
 }
