@@ -21,78 +21,78 @@ public class TestSearchAlgorythem : MonoBehaviour
 	{
 		foundDist = float.MaxValue;
 
-		int row = int.MaxValue;
+		int maxIndex = int.MaxValue;
 
 		float startcolor = texture.GetPixel(position.x, position.y).r;
 
-		for(int i = 1; i * i < foundDist; i++)
+		for(int column = 1; column * column < foundDist; column++)
 		{
-			int h = Mathf.Min(i, row);
-			for(int j = 0; j < h; j++)
+			int rowLength = Mathf.Min(column, maxIndex);
+			for(int row = 0; row <= rowLength; row++)
 			{
 				Vector2Int pos = new Vector2Int();
-				bool doCheck = false;
+				bool valueIsDifferent = false;
 
 				#region Check 8 positions
 
-				if(startcolor != texture.GetPixel(position.x + i, position.y + j).r)
+				if(startcolor != texture.GetPixel(position.x + column, position.y + row).r)
 				{
-					pos.x = position.x + i;
-					pos.y = position.y + j;
-					doCheck = true;
+					pos.x = position.x + column;
+					pos.y = position.y + row;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - i, position.y + j).r)
+				else if(startcolor != texture.GetPixel(position.x - column, position.y + row).r)
 				{
-					pos.x = position.x - i;
-					pos.y = position.y + j;
-					doCheck = true;
+					pos.x = position.x - column;
+					pos.y = position.y + row;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + i, position.y - j).r)
+				else if(startcolor != texture.GetPixel(position.x + column, position.y - row).r)
 				{
-					pos.x = position.x + i;
-					pos.y = position.y - j;
-					doCheck = true;
+					pos.x = position.x + column;
+					pos.y = position.y - row;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - i, position.y - j).r)
+				else if(startcolor != texture.GetPixel(position.x - column, position.y - row).r)
 				{
-					pos.x = position.x - i;
-					pos.y = position.y - j;
-					doCheck = true;
+					pos.x = position.x - column;
+					pos.y = position.y - row;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + j, position.y + i).r)
+				else if(startcolor != texture.GetPixel(position.x + row, position.y + column).r)
 				{
-					pos.x = position.x + j;
-					pos.y = position.y + i;
-					doCheck = true;
+					pos.x = position.x + row;
+					pos.y = position.y + column;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - j, position.y + i).r)
+				else if(startcolor != texture.GetPixel(position.x - row, position.y + column).r)
 				{
-					pos.x = position.x - j;
-					pos.y = position.y + i;
-					doCheck = true;
+					pos.x = position.x - row;
+					pos.y = position.y + column;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + j, position.y - i).r)
+				else if(startcolor != texture.GetPixel(position.x + row, position.y - column).r)
 				{
-					pos.x = position.x + j;
-					pos.y = position.y - i;
-					doCheck = true;
+					pos.x = position.x + row;
+					pos.y = position.y - column;
+					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - j, position.y - i).r)
+				else if(startcolor != texture.GetPixel(position.x - row, position.y - column).r)
 				{
-					pos.x = position.x - j;
-					pos.y = position.y - i;
-					doCheck = true;
+					pos.x = position.x - row;
+					pos.y = position.y - column;
+					valueIsDifferent = true;
 				}
 
 				#endregion
 
-				if(doCheck)
+				if(valueIsDifferent)
 				{
-					int dist = i * i + j * j;
+					int dist = column * column + row * row;
 					if(foundDist > dist)
 					{
 						found = pos;
-						row = j;
+						maxIndex = row;
 						foundDist = dist;
 					}
 				}
