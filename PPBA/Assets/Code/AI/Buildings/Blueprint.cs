@@ -88,7 +88,10 @@ namespace PPBA
 
 			//exchange blueprint for building
 			if(null != _refHolder)
+			{
 				ResourceMapCalculate.s_instance.AddFabric(_refHolder);
+				transform.parent.GetChild(0).gameObject.SetActive(true);
+			}
 
 			//deactivate this child
 			//activate child with building
