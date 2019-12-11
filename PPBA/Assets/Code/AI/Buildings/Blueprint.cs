@@ -4,9 +4,19 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Blueprint : MonoBehaviour
+	public class Blueprint : MonoBehaviour, INetElement
 	{
-		[SerializeField] public int _id = 0;
+		protected class State
+		{
+			public Vector3 _position;
+			public float _angle; //in degrees
+								 //public float _health;
+			public int _resources;
+			public int _work;
+		}
+
+		#region Variables
+		[SerializeField] public int _id { get; set; }
 		[SerializeField] public int _team = 0;
 		[SerializeField] public int _resources = 0;
 		[SerializeField] public int _resourcesIncoming = 0;
@@ -14,7 +24,19 @@ namespace PPBA
 		[SerializeField] public int _work = 0;
 		[SerializeField] public int _workMax = 50;
 
+		#endregion
+
+		#region References
+		[SerializeField] private IRefHolder _refHolder;
 		[SerializeField] public List<Pawn> _workers = new List<Pawn>();
+
+		//GameStates
+		protected State _lastState;
+		protected State _nextState;
+
+		//private
+		[SerializeField] private Material _material;
+		#endregion
 
 		public float _workDoable
 		{
@@ -35,7 +57,9 @@ namespace PPBA
 		// Update is called once per frame
 		void Update()
 		{
-
+#if !UNITY_SERVER
+			VisualizeLerpedStates();
+#endif
 		}
 
 		public void WorkTick()
@@ -52,7 +76,7 @@ namespace PPBA
 		public void DoWork(uint amount = 1)
 		{
 			_work += (int)amount;
-			
+
 			if(_workMax <= _work)
 				WorkIsFinished();
 		}
@@ -63,30 +87,162 @@ namespace PPBA
 				JobCenter.s_blueprints[_team].Remove(this);
 
 			//exchange blueprint for building
+			if(null != _refHolder)
+				ResourceMapCalculate.s_instance.AddFabric(_refHolder);
+
+			//deactivate this child
+			//activate child with building
+			//call EnableBuilding from an IBuilding
+
 		}
 
 		#region Initialisation
 		private void OnEnable()
 		{
+			_refHolder = GetComponentInParent<IRefHolder>();
+
+#if UNITY_SERVER
 			if(!JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Add(this);
 
 			TickHandler.s_GatherValues += WriteToGameState;
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			if(JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
 
 			TickHandler.s_GatherValues -= WriteToGameState;
+#endif
 		}
 
 		public void WriteToGameState(int tick)
 		{
+			{
+				Arguments temp = new Arguments();
+
+				if(isActiveAndEnabled)
+					temp |= Arguments.ENABLED;
+
+				//if trigger needed, set flag here
+
+				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+
+				if(!isActiveAndEnabled)
+					return;//if pawn is disabled, no other info is relevant
+			}
+
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });			
-			TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work});
+			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
+			TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
+		}
+
+		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
+		{
+			if(null != _nextState)
+				_lastState = _nextState;
+
+			_nextState = new State();
+
+			#region Writing into _nextState from s_interfaceGameState
+			{
+				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
+
+				if(null == temp || !temp._arguments.HasFlag(Arguments.ENABLED))
+				{
+					if(gameObject.activeSelf)
+						gameObject.SetActive(false);
+					return;
+				}
+				else
+				{
+					if(!gameObject.activeSelf)
+					{
+						gameObject.SetActive(true);
+						ResetToDefault(this, 0);
+					}
+				}
+
+				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				{
+					// do trigger stuff
+				}
+			}
+			{
+				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
+
+				if(null != temp)
+				{
+					_nextState._position = temp._position;
+					_nextState._angle = temp._angle;
+				}
+			}
+			{
+				GSC.resource temp = TickHandler.s_interfaceGameState.GetResource(_id);
+
+				if(null != temp)
+				{
+					_nextState._resources = temp._resources;
+				}
+			}
+			{
+				GSC.work temp = TickHandler.s_interfaceGameState.GetWork(_id);
+
+				if(null != temp)
+				{
+					_nextState._work = temp._work;
+				}
+			}
+			#endregion
+		}
+
+		private static void ResetToDefault(Blueprint blueprint, int team)
+		{
+			/*
+			blueprint._arguments = new Arguments();
+			blueprint._team = team;//not needed if object pools are per player
+			blueprint._health = pawn._maxHealth;
+			blueprint._ammo = pawn._maxAmmo;
+			blueprint._morale = pawn._maxMorale;
+			blueprint._resources = 0;
+			blueprint._isNavPathDirty = true;
+			//pawn._moveSpeed = 3.6111111f;
+			blueprint._navMeshPath = new NavMeshPath();
+			blueprint._morale = pawn._maxMorale;
+
+			blueprint.ClearLists();
+
+			//pawn._moveTarget = Vector3.forward;
+			blueprint._mountSlot = null;
+			*/
+			blueprint._lastState = new State();
+			blueprint._nextState = new State();
+		}
+
+		public void VisualizeLerpedStates()//clientside
+		{
+			float lerpFactor;
+
+			if(null == _lastState || null == _nextState)
+			{
+				if(null != _nextState)
+					lerpFactor = 1f;
+				else if(null != _lastState)
+					lerpFactor = 0f;
+				else
+					return;
+			}
+			else
+				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
+
+			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._resources, lerpFactor);
+			_work = (int)Mathf.Lerp(_lastState._work, _nextState._work, lerpFactor);
+
+			if(null != _material)
+				_material.SetFloat("_Clip", (float)_work / _workMax);
 		}
 		#endregion
 	}

@@ -46,7 +46,7 @@ namespace PPBA
 				if(items.Count < guiItemImages.Count)
 				{
 					items.Add(ip, 1);
-					button.onClick.AddListener(delegate { BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IUIElement>()._Type); }); // weißt button function zu
+					button.onClick.AddListener(delegate { BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()._Type); }); // weißt button function zu
 					//button.onClick.AddListener(delegate { BuildingController.s_instance.HandleNewObject(ip.GetComponent<IUIElement>().); }); // weißt button function zu
 				}
 				else
@@ -97,7 +97,7 @@ namespace PPBA
 			foreach(KeyValuePair<GameObject, int> current in items)
 			{
 				guiItemImages[index].enabled = true;
-				guiItemImages[index].sprite = current.Key.GetComponent<IUIElement>()._Image;
+				guiItemImages[index].sprite = current.Key.GetComponent<IRefHolder>()._Image;
 				guiItemImages[index].GetComponentInChildren<TextMeshProUGUI>().text = current.Value.ToString();
 				index++;
 			}

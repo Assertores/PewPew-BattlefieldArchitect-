@@ -5,7 +5,7 @@ namespace PPBA
 {
 	public class BuildingProcessRefinery : MonoBehaviour
 	{
-		private IUIElement element;
+		private IRefHolder element;
 		private bool _EnoughResources;
 
 		private void OnEnable()

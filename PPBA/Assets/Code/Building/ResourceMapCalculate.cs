@@ -16,7 +16,7 @@ namespace PPBA
 
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
-		private List<RefineryRefHolder> _Refinerys = new List<RefineryRefHolder>();
+		private List<IRefHolder> _Refinerys = new List<IRefHolder>();
 
 
 		[SerializeField]
@@ -44,9 +44,8 @@ namespace PPBA
 
 		}
 
-		public void AddFabric(RefineryRefHolder refHolder)
+		public void AddFabric(IRefHolder refHolder)
 		{
-
 			_Refinerys.Add(refHolder);
 		}
 

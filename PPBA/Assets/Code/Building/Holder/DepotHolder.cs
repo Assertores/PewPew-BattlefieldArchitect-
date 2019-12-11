@@ -6,7 +6,7 @@ using TMPro;
 namespace PPBA
 {
 
-	public class DepotHolder : MonoBehaviour, IUIElement
+	public class DepotHolder : MonoBehaviour, IRefHolder
 	{
 		public AudioClip _BuildingSound;
 		[SerializeField] private Sprite _ImageUI;
