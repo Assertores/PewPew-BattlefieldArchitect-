@@ -7,7 +7,9 @@
 		_Color("Tint", Color) = (1, 1, 1, 1)
 		_InsideColor("InsideColor", Color) = (1,1,1,1)
 		_MainTex("Texture", 2D) = "white" {}
-		_Specular("Specular Color", Color) = (1,1,1,1)
+		_BumpMap("Bumpmap", 2D) = "bump" {}
+		_Specular("Specular", 2D) = "black" {}
+	//	_Specular("Specular Color", Color) = (1,1,1,1)
 		[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
 
 		[Header(Lighting Parameters)]
@@ -16,6 +18,7 @@
 		_StepWidth("Step Size", Range(0, 1)) = 0.25
 		_SpecularSize("Specular Size", Range(0, 1)) = 0.1
 		_SpecularFalloff("Specular Falloff", Range(0, 2)) = 1
+
 
 		[Header(Noise Parameters)]
 		_Amplitude("Amplitude", Vector) = (0,0,0,0)
@@ -44,9 +47,12 @@
 			#include "Includes/SimplexNoise3D.cginc"
 
 			sampler2D _MainTex;
+			sampler2D _BumpMap;
+			sampler2D _Specular;
+
 			fixed4 _Color;
 			half3 _Emission;
-			fixed4 _Specular;
+		//	fixed4 _Specular;
 
 			float3 _ShadowTint;
 			float _StepWidth;
@@ -142,6 +148,9 @@
 			//the surface shader function which sets parameters the lighting function then uses
 			void surf(Input i, inout ToonSurfaceOutput o)
 			{
+
+
+
 				float3 p = i.worldPos;
 				float3 s = _NoiseScale * p;
 				float noise = snoise(s);
@@ -162,13 +171,14 @@
 
 				col *= _Color;
 				o.Albedo = col.rgb * color;
-				o.Specular = _Specular;
+				o.Normal = UnpackNormal(tex2D(_BumpMap, i.uv_MainTex));
+
+				o.Specular = tex2D(_Specular, i.uv_MainTex);
 				float3 shadowColor = col.rgb * _ShadowTint;
 				o.Emission = _Emission + shadowColor;
 				//half alpha = clamp(dTexRead, 0.0f, 1.0f);
 			}
 			ENDCG
-
 		}
 			FallBack "Standard"
 }

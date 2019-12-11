@@ -2,110 +2,112 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace PPBA
 {
-	public class TerritoriumMapCalculate : MonoBehaviour
+	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
 	{
-		public ComputeShader _TerritoriumComputeShader;
-		public Renderer _GroundRenderer;
-		public RenderTexture _currentTerritoriumMap;
-
+		[SerializeField] private ComputeShader _computeShader;
+		[SerializeField] private Material _GroundMaterial;
+		[SerializeField] Texture2D _original;
+				
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
+		private ComputeBuffer _bitField;
+		private byte[] _currentBitField;
+
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
-		private List<RefineryRefHolder> _Refinerys = new List<RefineryRefHolder>();
 
-
-		[SerializeField]
-		private int[] _ResourceValues;
+		private List<Vector4> _Soldiers = new List<Vector4>();
 
 		void Start()
 		{
-			Texture2D resourceTexture = Instantiate(_GroundRenderer.material.GetTexture("_NoiseMap")) as Texture2D;
-		
-			_resourceCalcKernel = _TerritoriumComputeShader.FindKernel("CSMain");
-			_resourceCalcKernel2 = _TerritoriumComputeShader.FindKernel("CSInit");
-
-			_currentTerritoriumMap = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
+			if(_GroundMaterial == null)
 			{
-				enableRandomWrite = true
-			};
+				Debug.LogError("No Ground Material Found!!! (ResourceMapCalculate)");
+				return;
+			}
 
-			_ResultTexture = new RenderTexture(512, 512, 0, RenderTextureFormat.R8)
+			Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_TerritorriumMap")) as Texture2D;
+			_resourceCalcKernel = _computeShader.FindKernel("CSTerritorium");
+
+			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.ARGB32)
 			{
 				enableRandomWrite = true
 			};
 
 			_ResultTexture.Create();
 			Graphics.Blit(resourceTexture, _ResultTexture);
-			Graphics.Blit(resourceTexture, _currentTerritoriumMap);
+
+			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
+		}
+
+		public Texture2D GetStartTex() => _original;
+
+		public void UpdateTexture(Texture2D newTexture)
+		{
+			_GroundMaterial.SetTexture("_TerritorriumMap", newTexture);
 
 		}
 
-		public void AddFabric(RefineryRefHolder refHolder)
+		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
+			_currentBitField = new byte[(512 * 512) / 8];
+			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
-			_Refinerys.Add(refHolder);
+			_computeShader.SetBuffer(_resourceCalcKernel, "resourcesIndex", _bitField);
+			
+			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
+			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
+			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
+			
+			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
+
+			_bitField.GetData(_currentBitField);
+			_bitField.Release();
+			_bitField = null;
+
+			return new HeatMapReturnValue { tex = _ResultTexture , bitfield = _currentBitField };
 		}
 
-		public void RefreshCalcRes()
+		// add data for ComputeInput
+		private Vector4[] AddSoldierData()
 		{
+			Vector4[] refsProp = new Vector4[_Soldiers.Count];
 
-			_ResourceValues = new int[_Refinerys.Count];
-			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
-
-			_TerritoriumComputeShader.SetInt("PointSize", _Refinerys.Count);
-			_TerritoriumComputeShader.SetVectorArray("coords", RefineriesProperties());
-
-			_TerritoriumComputeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
-			_TerritoriumComputeShader.SetBuffer(_resourceCalcKernel, "buffer", _buffer);
-
-			_TerritoriumComputeShader.SetTexture(_resourceCalcKernel, "InputTexture", _currentTerritoriumMap);
-			_TerritoriumComputeShader.SetTexture(_resourceCalcKernel, "Result", _ResultTexture);
-
-			_TerritoriumComputeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
-			_TerritoriumComputeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
-
-			_buffer.GetData(_ResourceValues);
-			_buffer.Release();
-			_buffer = null;
-
-			Graphics.Blit(_ResultTexture, _currentTerritoriumMap);
-
-			_GroundRenderer.material.SetTexture("_NoiseMap", _ResultTexture);
-			SendToTickManager();
-
-		}
-
-		private void SendToTickManager()
-		{
-			//	ressourceManager.AddRessourcesToRefineries(CurrentValue);
-		}
-
-		private bool _changeMap = false;
-
-		public void SwitchMap()
-		{
-			_changeMap = !_changeMap;
-
-			int t = _changeMap ? 0 : 1;
-			_GroundRenderer.material.SetFloat("_MetalResourcesInt", t);
-		}
-
-
-		private Vector4[] RefineriesProperties()
-		{
-			Vector4[] refsProp = new Vector4[_Refinerys.Count];
-
-			for(int i = 0; i < _Refinerys.Count; i++)
+			for(int i = 0; i < _Soldiers.Count; i++)
 			{
-				refsProp[i] = _Refinerys[i].GetShaderProperties();
+				refsProp[i] = new Vector4(_Soldiers[i].x , _Soldiers[i].y, _Soldiers[i].z, 0);
 			}
 			return refsProp;
 		}
+
+		// add soldies in List
+		public int AddSoldier(Vector2 pos, int Team)
+		{
+			_Soldiers.Add(new Vector4(pos.x , pos.y, Team ));
+			return _Soldiers.Count-1;
+		}
+
+		public void UpdateSoldiersPosition(int index, Vector2 position)
+		{
+			_Soldiers[index] = new Vector4(position.x, position.y, _Soldiers[index].z, 0);
+		}
+
+
+
+		void OnDisable()
+		{
+			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
+		}
+
+		void OnEnable()
+		{
+			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
+		}
+
 	}
+
 }
 

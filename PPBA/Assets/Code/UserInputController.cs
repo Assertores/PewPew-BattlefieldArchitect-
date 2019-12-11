@@ -7,7 +7,7 @@ namespace PPBA
 	public class UserInputController : Singleton<UserInputController>
 	{
 		public LayerMask ignore;
-
+		public Material TerrainMat;
 		public Vector3 GetWorldPoint()
 		{
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -35,5 +35,21 @@ namespace PPBA
 			}
 			return Vector3.zero;
 		}
+
+		public Vector2 GetTexturePixelPoint(Transform Obj)
+		{
+			Vector2 pixelUV;
+
+			RaycastHit hitInfo;
+			if(Physics.Raycast(Obj.position, Vector3.down, out hitInfo, 1000, ignore))
+			{
+				pixelUV = hitInfo.textureCoord;
+				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
+				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
+				return pixelUV;
+			}
+			return Vector3.zero;
+		}
+
 	}
 }

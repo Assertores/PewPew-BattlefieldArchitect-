@@ -851,20 +851,19 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
-				//Debug.Log("[GameState] creating heat map delta");
+
+				//baking Bitfield
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					//Debug.Log("[GameState] adding heat map of tick" + i);
 					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
 				}
-				//Debug.Log("[GameState] finished aditive heat map backing");
 
+				//getting values
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
-				Vector2Int[] positions = it._mask.GetActiveBits();
-				Texture2D heatMap = HeatMapHandler.s_instance.GetHeatMap(it._id);
-				it._values = new List<float>(positions.Length);
 
+				Vector2Int[] positions = it._mask.GetActiveBits();
+				List<float> values = new List<float>(positions.Length);
 
 				for(int i = 0, j = 0; i < positions.Length; i++)
 				{
@@ -878,17 +877,16 @@ Jump:
 					//wenn gleiches element existiert
 					if(refPos[j] == positions[i])
 					{
-						float value = heatMap.GetPixel(positions[i].x, positions[i].y).r;
+						float value = it._values[i];
 
 						//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
 						if(refMap._values[j] == value)
 							it._mask[positions[i].x, positions[i].y] = false;
 						else
-							it._values.Add(value);
+							values.Add(value);
 					}
 				}
-
-				//Debug.Log("[GameState] finished creating heat map delta");
+				it._values = values;
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
