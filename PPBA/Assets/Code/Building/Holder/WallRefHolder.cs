@@ -5,7 +5,7 @@ using TMPro;
 using PPBA;
 
 
-public class WallRefHolder : MonoBehaviour, IUIElement
+public class WallRefHolder : MonoBehaviour, IRefHolder
 {
 	public AudioClip _BuildingSound;
 	[SerializeField] private Sprite _ImageUI;

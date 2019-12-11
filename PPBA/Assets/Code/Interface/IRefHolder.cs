@@ -6,8 +6,9 @@ using TMPro;
 
 namespace PPBA
 {
-	public interface IUIElement
+	public interface IRefHolder
 	{
+		GameObject _blueprintObj { get; }
 		GameObject _GhostPrefabObj { get; }
 		Sprite _Image { get; }
 		TextMeshProUGUI _ToolTipFeld { get; }
@@ -17,8 +18,12 @@ namespace PPBA
 		float GetBuildingCurrentResources();
 		float GetBuildingTime();
 		ObjectType GetObjectType();
+		Material GetMaterial();
 
-	}
+		Vector4 GetShaderProperties();
+
+
+ }
 }
 
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using PPBA;
 
-public class RefineryRefHolder : MonoBehaviour, IUIElement
+public class RefineryRefHolder : MonoBehaviour, IRefHolder
 {
 
 	public AudioClip _BuildingSound;
@@ -13,6 +13,7 @@ public class RefineryRefHolder : MonoBehaviour, IUIElement
 	[SerializeField] private TextMeshProUGUI _TextField;
 	[SerializeField] private ObjectType _ObjectType;
 	[SerializeField] private GameObject _GhostPrefab;
+	[SerializeField] private GameObject _blueprintPrefab;
 
 	public float _HarvestRadius;
 	public float _HarvestIntensity;
@@ -25,10 +26,13 @@ public class RefineryRefHolder : MonoBehaviour, IUIElement
 	public float _LivePoints;
 	public float _MaxLivePoints;
 
+	[SerializeField] Material BaseMaterial;
+
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
+	[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
 
 	public Vector4 GetShaderProperties()
 	{
@@ -54,6 +58,15 @@ public class RefineryRefHolder : MonoBehaviour, IUIElement
 	{
 		return _ObjectType;
 	}
+
+	public Material GetMaterial() => BaseMaterial;
+
+
+	//private void OnValidate()
+	//{
+	//	if(null == _blueprintPrefab)
+			
+	//}
 }
 
 
