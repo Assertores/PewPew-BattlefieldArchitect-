@@ -21,9 +21,7 @@ namespace PPBA
 		Material GetMaterial();
 
 		Vector4 GetShaderProperties();
-
-
- }
+	}
 }
 
 

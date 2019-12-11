@@ -11,7 +11,7 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if !UNITY_SERVER
-			element = GetComponent<IUIElement>();
+			element = GetComponent<IRefHolder>();
 			Startbuilding();
 #endif
 		}

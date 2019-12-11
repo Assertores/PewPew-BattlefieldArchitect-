@@ -12,6 +12,7 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 	[SerializeField] private TextMeshProUGUI _TextField;
 	[SerializeField] private ObjectType _ObjectType;
 	[SerializeField] private GameObject _GhostPrefab;
+	[SerializeField] private GameObject _blueprintPrefab;
 
 	public float _BuildingTime;
 	public float _BuildingCosts;
@@ -24,6 +25,15 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
+	[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
+
+	[SerializeField] Material BaseMaterial;
+
+	public Vector4 GetShaderProperties()
+	{
+		return Vector4.zero;
+		//return new Vector4(_Positions.x, _Positions.y, _HarvestIntensity, _HarvestRadius);
+	}
 
 	public float GetBuildingCost()
 	{
@@ -45,6 +55,7 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 		return _ObjectType;
 	}
 
+	public Material GetMaterial() => BaseMaterial;
 }
 
 
