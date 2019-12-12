@@ -12,7 +12,8 @@ namespace PPBA {
 		void Start()
 		{
 #if !UNITY_SERVER
-		Destroy(this.gameObject);
+			Destroy(this.gameObject);
+			return;
 #endif
 			if(!_portField)
 			{
