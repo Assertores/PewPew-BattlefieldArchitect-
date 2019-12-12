@@ -381,6 +381,8 @@ namespace PPBA
 		#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
+			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
+
 			socket = new UdpClient();
 			_ep = new IPEndPoint(IPAddress.Parse(ip), port); // endpoint where server is listening
 			socket.Connect(_ep);
@@ -395,6 +397,8 @@ namespace PPBA
 		{
 			if(null == socket)
 				return;
+
+			Debug.Log("[CLIENT] disconnecting");
 
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.DISCONNECT;
