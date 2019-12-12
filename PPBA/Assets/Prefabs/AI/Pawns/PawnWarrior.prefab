@@ -193,11 +193,16 @@ MonoBehaviour:
   _maxResource: 10
   _isNavPathDirty: 1
   _moveSpeed: 3.611111
+  _healthBackingField: 100
+  _ammoBackingField: 100
+  _moraleBackingField: 100
   _healthRegen: 1
   _moraleRegen: 1
-  e_behaviors: 01
+  e_behaviors: 130103
   _behaviorMultipliers:
   - 1
+  - 2
+  - 2
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []
@@ -207,7 +212,7 @@ MonoBehaviour:
   _mountSlot: {fileID: 0}
   _overlapSphereLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2560
 --- !u!1001 &8582627025483372878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -215,16 +220,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8740127555245988679}
     m_Modifications:
-    - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
-        type: 3}
-      propertyPath: m_Name
-      value: PawnModel
-      objectReference: {fileID: 0}
-    - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
-        type: 3}
-      propertyPath: m_Layer
-      value: 11
-      objectReference: {fileID: 0}
     - target: {fileID: 3257966617531606111, guid: 08524a5835aaf214e8193ae63b0d15da,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -279,6 +274,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
+        type: 3}
+      propertyPath: m_Name
+      value: PawnModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257966617531606106, guid: 08524a5835aaf214e8193ae63b0d15da,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6676420409812695421, guid: 08524a5835aaf214e8193ae63b0d15da,
         type: 3}

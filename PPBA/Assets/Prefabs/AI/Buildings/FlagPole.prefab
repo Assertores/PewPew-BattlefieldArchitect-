@@ -44,6 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b6c711d02f0364699ece34948b1e33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _team: 0
+  _score: 1
+  _maxPawns: 10
+  _friendlyPawns: []
+  _overlapSphereLayerMask:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &8372896231655002120
 GameObject:
   m_ObjectHideFlags: 0

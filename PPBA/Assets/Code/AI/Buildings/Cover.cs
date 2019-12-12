@@ -29,6 +29,9 @@ namespace PPBA
 		#region References
 		//public
 		public CoverSlot[] _coverSlots;
+		//private
+		private State _lastState;
+		private State _nextState;
 		#endregion
 
 		void Awake()
@@ -80,7 +83,6 @@ namespace PPBA
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
-			/*
 			if(null != _nextState)
 				_lastState = _nextState;
 
@@ -124,11 +126,9 @@ namespace PPBA
 				if(null != temp)
 				{
 					_nextState._health = temp._health;
-					_nextState._morale = temp._morale;
 				}
 			}
 			#endregion
-			*/
 		}
 
 		public void WriteToGameState(int tick)

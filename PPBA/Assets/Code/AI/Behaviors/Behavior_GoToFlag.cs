@@ -44,8 +44,10 @@ namespace PPBA
 		{
 			switch(name)
 			{
-				case "Health":
+				case StringCollection.HEALTH:
 					return pawn._health / pawn._maxHealth;
+				case StringCollection.MORALE:
+					return pawn._morale / pawn._maxMorale;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -59,8 +61,8 @@ namespace PPBA
 				case "Distance":
 				case "DistanceToTarget":
 					return Vector3.Distance(pawn.transform.position, flagPole.transform.position) / _maxDistance;
-				case "Crowdedness":
-					return 0f;
+				case "Score":
+					return flagPole._score;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -102,7 +104,10 @@ namespace PPBA
 
 		public override int GetTargetID(Pawn pawn)
 		{
-			throw new System.NotImplementedException();
+			if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn])
+				return s_targetDictionary[pawn]._id;
+			else
+				return -1;
 		}
 
 		public override void RemoveFromTargetDict(Pawn pawn)

@@ -80,7 +80,7 @@ namespace PPBA
 		private LineRenderer _lineRenderer;
 
 		//targets and target lists
-		public List<Pawn> _closePawns;
+		public List<Pawn> _closePawns = new List<Pawn>();
 		public List<Pawn> _activePawns//this is an accessor to the _closePawns List, ensuring I don't have to write this every time I want to use the list.
 		{
 			get
@@ -101,7 +101,7 @@ namespace PPBA
 				return _closePawns;
 			}
 		}
-		public List<CoverSlot> _closeCoverSlots;
+		public List<CoverSlot> _closeCoverSlots = new List<CoverSlot>();
 		public List<CoverSlot> _activeCoverSlots
 		{
 			get
@@ -684,52 +684,6 @@ namespace PPBA
 				}
 			}
 		}
-
-		//private void OnTriggerEnter(Collider other)
-		//{
-		//	//Add relevant objects to closeLists
-		//	if(other.tag == "Pawn")
-		//	{
-		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
-		//		if(temp)
-		//			_closePawns.Add(temp);
-		//	}
-
-		//	if(other.tag == "Cover")
-		//	{
-		//		Cover temp = other.gameObject.GetComponent<Cover>();
-		//		if(temp)
-		//		{
-		//			foreach(CoverSlot slot in temp._coverSlots)
-		//			{
-		//				_closeCoverSlots.Add(slot);
-		//			}
-		//		}
-		//	}
-		//}
-
-		//private void OnTriggerExit(Collider other)
-		//{
-		//	//Remove objects from closeLists
-		//	if(other.tag == "Pawn")
-		//	{
-		//		Pawn temp = other.gameObject.GetComponent<Pawn>();
-		//		if(temp && _closePawns.Contains(temp))
-		//			_closePawns.Remove(temp);
-		//	}
-
-		//	if(other.tag == "Cover")
-		//	{
-		//		Cover temp = other.gameObject.GetComponent<Cover>();
-		//		if(temp)
-		//		{
-		//			foreach(CoverSlot slot in temp._coverSlots)
-		//			{
-		//				_closeCoverSlots.Add(slot);
-		//			}
-		//		}
-		//	}
-		//}
 		#endregion
 
 		#region Interfaces

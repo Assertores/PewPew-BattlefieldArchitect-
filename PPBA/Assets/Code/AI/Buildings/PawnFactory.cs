@@ -39,6 +39,10 @@ namespace PPBA
 				ObjectType pawnType = ObjectType.PAWN_WARRIOR;
 				int team = _ticker % 2 == 0 ? 0 : 1;
 				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker * 2f, team);
+
+				float temp = _ticker == 0 ? 1f : -1f;
+				FlagPole.Spawn(transform.position + Vector3.right * temp * 10f, team);
+
 				_ticker++;
 			}
 		}

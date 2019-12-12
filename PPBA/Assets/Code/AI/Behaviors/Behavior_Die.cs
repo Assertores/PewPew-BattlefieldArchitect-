@@ -13,8 +13,6 @@ namespace PPBA
 			_name = Behaviors.DIE;
 		}
 
-		//public override Behaviors _name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
 		private void Awake()
 		{
 			if(s_instance == null)
@@ -66,20 +64,11 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name, ResourceDepot depot)
-		{
-			return 1;
-		}
+		protected float TargetAxisInputs(Pawn pawn, string name, ResourceDepot depot) => 1;
 
-		protected float CalculateTargetScore(Pawn pawn, ResourceDepot depot)
-		{
-			return 1;
-		}
+		protected float CalculateTargetScore(Pawn pawn, ResourceDepot depot) => 1;
 
-		public override int GetTargetID(Pawn pawn)
-		{
-			return pawn._id;
-		}
+		public override int GetTargetID(Pawn pawn) => pawn._id;
 
 		public override void RemoveFromTargetDict(Pawn pawn)
 		{

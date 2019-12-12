@@ -204,23 +204,13 @@ namespace PPBA
 
 		private static void ResetToDefault(Blueprint blueprint, int team)
 		{
-			/*
-			blueprint._arguments = new Arguments();
+			//blueprint._arguments = new Arguments();
 			blueprint._team = team;//not needed if object pools are per player
-			blueprint._health = pawn._maxHealth;
-			blueprint._ammo = pawn._maxAmmo;
-			blueprint._morale = pawn._maxMorale;
 			blueprint._resources = 0;
-			blueprint._isNavPathDirty = true;
-			//pawn._moveSpeed = 3.6111111f;
-			blueprint._navMeshPath = new NavMeshPath();
-			blueprint._morale = pawn._maxMorale;
+			blueprint._work = 0;
 
-			blueprint.ClearLists();
-
-			//pawn._moveTarget = Vector3.forward;
-			blueprint._mountSlot = null;
-			*/
+			//blueprint.ClearLists();
+			
 			blueprint._lastState = new State();
 			blueprint._nextState = new State();
 		}
