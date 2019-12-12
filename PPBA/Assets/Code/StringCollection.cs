@@ -12,5 +12,9 @@ namespace PPBA
 		public const string MORALE = "Morale";
 		public const string RESOURCES = "Resources";
 		public const string PAWN = "Pawn";
+
+		public const string MASTER = "Master";
+		public const string MUSIC = "Music";
+		public const string SFX = "SFX";
 	}
 }
