@@ -38,6 +38,10 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_SERVER
+			Destroy(this.gameObject);
+			return;
+#endif
 			#region Checks
 			if(!_ipField)
 			{
