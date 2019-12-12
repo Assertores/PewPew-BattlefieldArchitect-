@@ -198,11 +198,12 @@ MonoBehaviour:
   _moraleBackingField: 100
   _healthRegen: 1
   _moraleRegen: 1
-  e_behaviors: 130103
+  e_behaviors: 13010300
   _behaviorMultipliers:
   - 1
   - 2
   - 2
+  - 1
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []

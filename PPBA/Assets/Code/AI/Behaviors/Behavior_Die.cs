@@ -47,10 +47,7 @@ namespace PPBA
 			pawn.gameObject.SetActive(false);
 		}
 
-		public override float FindBestTarget(Pawn pawn)
-		{
-			return 1;
-		}
+		public override float FindBestTarget(Pawn pawn) => 1f;
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
 		{

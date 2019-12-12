@@ -586,11 +586,6 @@ PrefabInstance:
       propertyPath: _attackBuildUpTime
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 3831144996769013326, guid: 6b952cb98fda6e64182062bcbbc8f34f,
-        type: 3}
-      propertyPath: _fixedScore
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
 --- !u!4 &7515035437403473525 stripped
