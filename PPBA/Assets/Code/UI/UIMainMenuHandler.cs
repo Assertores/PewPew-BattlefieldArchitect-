@@ -245,7 +245,7 @@ namespace PPBA
 			Debug.Log("Change Scene");
 			string ip = _ipField.text == "" ? "127.0.0.1" : _ipField.text;
 			int port = _portField.text == "" ? 13370 : int.Parse(_portField.text);
-			GameNetcode.s_instance.ClientConnect(ip, port);
+			MainMenuToGame.s_instance.ClientExecute(ip, port);
 		}
 
 		public void Quit()

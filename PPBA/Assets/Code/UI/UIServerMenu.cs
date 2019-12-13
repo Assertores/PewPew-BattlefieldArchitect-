@@ -78,7 +78,7 @@ namespace PPBA {
 		{
 			Debug.Log("Change Scene");
 			int port = _portField.text == "" ? 13370 : int.Parse(_portField.text);
-			GameNetcode.s_instance.ServerStart(port, (int)_playerCount.value, _map.value, (int)_botLimit.value, GetHMRes(),_regToMaster);
+			MainMenuToGame.s_instance.ServerExecute(port, (int)_playerCount.value, _map.value, (int)_botLimit.value, GetHMRes(),_regToMaster);
 		}
 
 		public void SetMasterServer(bool set)
