@@ -13,6 +13,7 @@ namespace PPBA
 		[SerializeField] private ObjectType _ObjectType;
 		[SerializeField] private GameObject _GhostPrefab;
 		[SerializeField] private GameObject _blueprintPrefab;
+		[SerializeField] private GameObject _logicObject;
 
 		[HideInInspector] public Sprite _Image { get => _ImageUI; }
 		[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
@@ -35,5 +36,10 @@ namespace PPBA
 			return _ObjectType;
 		}
 		public Material GetMaterial() => BaseMaterial;
+
+		private void OnEnable()
+		{
+			_logicObject.SetActive(true);
+		}
 	}
 }

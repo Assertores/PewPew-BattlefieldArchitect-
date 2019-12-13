@@ -85,6 +85,7 @@ MonoBehaviour:
   _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
     type: 3}
   _blueprintPrefab: {fileID: 0}
+  _logicObject: {fileID: 8959561800333315175}
   BaseMaterial: {fileID: 0}
   _Positions: {x: 0, y: 0}
 --- !u!114 &5763944625188300945
