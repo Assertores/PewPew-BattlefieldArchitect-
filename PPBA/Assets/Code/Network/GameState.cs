@@ -910,7 +910,7 @@ Jump:
 					continue;
 				}
 
-				_newIDRanges.AddRange(references[i]._newIDRanges);
+				_newIDRanges.AddRange(references[i]._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
 
 			_isDelta = true;
