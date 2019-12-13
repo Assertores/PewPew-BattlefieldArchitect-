@@ -4,14 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_Build : Behavior
+	public class Behavior_BringSupplies : Behavior
 	{
-		public static Behavior_Build s_instance;
+		public static Behavior_BringSupplies s_instance;
 		public static Dictionary<Pawn, Blueprint> s_targetDictionary = new Dictionary<Pawn, Blueprint>();
 
-		public Behavior_Build()
+		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
+
+		public Behavior_BringSupplies()
 		{
-			_name = Behaviors.BUILD;
+			_name = Behaviors.BRINGSUPPLIES;
 		}
 
 		private void Awake()
@@ -40,7 +42,7 @@ namespace PPBA
 				pawn.SetMoveTarget(targetPosition);
 
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
-					s_targetDictionary[pawn].DoWork();
+					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
 			}
 		}
 
@@ -66,8 +68,10 @@ namespace PPBA
 		{
 			switch(name)
 			{
-				case "Health":
+				case StringCollection.HEALTH:
 					return pawn._health / pawn._maxHealth;
+				case "Supplies":
+					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -79,12 +83,12 @@ namespace PPBA
 			switch(name)
 			{
 				case "Distance":
-					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 60f;
+					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 40f;
+				case "SuppliesNeeded":
+					return blueprint._resourcesNeeded;//NOT 0..1 YET !!
 				/*
-			case "Score":
+				case "Score":
 				return blueprint._score;
-			case "Resources":
-				return blueprint._resources / blueprint._maxResources;
 				*/
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);

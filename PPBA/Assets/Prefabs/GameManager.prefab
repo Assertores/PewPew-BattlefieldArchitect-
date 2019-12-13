@@ -175,7 +175,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6486173834760009006}
-  - component: {fileID: 6486173834760009003}
   - component: {fileID: 6486173834760009009}
   - component: {fileID: 6486173834760009010}
   - component: {fileID: 6486173834760009002}
@@ -205,25 +204,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6486173834760009003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6486173834760009001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7be2c63e5e9e80f4bb878a7a915343ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartBuilds:
-  - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
-  - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
-  inventoryPanel: {fileID: 0}
-  inventoryTiles: {fileID: 1298776132748419602, guid: dfc8b7ec20333c948b45d329eae83609,
-    type: 3}
-  guiItemImages: []
 --- !u!114 &6486173834760009009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,6 +383,9 @@ MonoBehaviour:
     _prefab: {fileID: 49946178406561578, guid: d334033ec91ea9d419ceeadf96220266, type: 3}
   - _type: 9
     _prefab: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
+      type: 3}
+  - _type: 10
+    _prefab: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
       type: 3}
   _initialObjectPoolSize: 10
   _prefabs:

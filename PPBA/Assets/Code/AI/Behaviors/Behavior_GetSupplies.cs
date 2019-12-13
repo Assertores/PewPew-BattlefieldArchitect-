@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_GetResources : Behavior
+	public class Behavior_GetSupplies : Behavior
 	{
-		public static Behavior_GetResources s_instance;
+		public static Behavior_GetSupplies s_instance;
 		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary = new Dictionary<Pawn, ResourceDepot>();
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
-		public Behavior_GetResources()
+		public Behavior_GetSupplies()
 		{
-			_name = Behaviors.GETRESOURCES;
+			_name = Behaviors.GETSUPPLIES;
 		}
 
 		private void Awake()
@@ -42,7 +42,7 @@ namespace PPBA
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{
 				//Takes an amount of resources from the depot no larger than (1) the space left at pawn (2) the res left at depot, and gives it to the pawn.
-				pawn._resources += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxResource - pawn._resources));
+				pawn._supplies += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxSupplies - pawn._supplies));
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				case "Resources":
-					return pawn._resources / pawn._maxResource;
+					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

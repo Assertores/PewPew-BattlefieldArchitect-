@@ -33,7 +33,7 @@ namespace PPBA
 		int _nextID = 0;
 		void Start()
 		{
-			ServerStart(m_serverPort, _playerCount);
+			//ServerStart(m_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
@@ -237,7 +237,7 @@ namespace PPBA
 #else
 		void Start()
 		{
-			ClientConnect(m_iP, m_serverPort);
+			//ClientConnect(m_iP, m_serverPort);
 		}
 		private void OnDestroy()
 		{
@@ -381,6 +381,8 @@ namespace PPBA
 		#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
+			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
+
 			socket = new UdpClient();
 			_ep = new IPEndPoint(IPAddress.Parse(ip), port); // endpoint where server is listening
 			socket.Connect(_ep);
@@ -396,6 +398,8 @@ namespace PPBA
 			if(null == socket)
 				return;
 
+			Debug.Log("[CLIENT] disconnecting");
+
 			byte[] msg = new byte[1 + sizeof(int)];
 			msg[0] = (byte)MessageType.DISCONNECT;
 			Buffer.BlockCopy(BitConverter.GetBytes(_myID), 0, msg, 1, sizeof(int));
@@ -404,7 +408,7 @@ namespace PPBA
 			socket.Close();
 		}
 
-		public void ServerStart(int port, int playerCount)
+		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
 			m_serverPort = port;
 			socket = new UdpClient(port);

@@ -23,7 +23,7 @@ namespace PPBA
 		[SerializeField] public int _resourcesMax = 100;
 		[SerializeField] public int _work = 0;
 		[SerializeField] public int _workMax = 50;
-
+		[SerializeField] public float _interactRadius = 5f;
 		#endregion
 
 		#region References
@@ -62,6 +62,7 @@ namespace PPBA
 #endif
 		}
 
+		#region Give & Take
 		public void WorkTick()
 		{
 			foreach(Pawn w in _workers)
@@ -95,12 +96,24 @@ namespace PPBA
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
 			transform.parent.GetChild(1)?.gameObject.SetActive(false);//deactivate child with blueprint
-
-			//call EnableBuilding from an IBuilding
-
-			//deactivate this child
-
 		}
+
+		public int GiveResources(int amount)
+		{
+			int spaceLeft = _resourcesMax - _resources;
+
+			if(amount <= spaceLeft)//enough space
+			{
+				_resources += amount;
+				return amount;
+			}
+			else//not enough space
+			{
+				_resources += spaceLeft;
+				return spaceLeft;
+			}
+		}
+		#endregion
 
 		#region Initialisation
 		private void OnEnable()
@@ -214,7 +227,7 @@ namespace PPBA
 			blueprint._work = 0;
 
 			//blueprint.ClearLists();
-			
+
 			blueprint._lastState = new State();
 			blueprint._nextState = new State();
 		}
