@@ -1708,6 +1708,7 @@ GameObject:
   - component: {fileID: 3144815780529957359}
   - component: {fileID: 3144815780529957328}
   - component: {fileID: 7997383855094243283}
+  - component: {fileID: 4709207934069220716}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1811,6 +1812,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _popUpPrefab: {fileID: 6280995596406915092, guid: 189c8879bf88fc24981e97c3f1368be6,
     type: 3}
+--- !u!114 &4709207934069220716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3144815780529957329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7be2c63e5e9e80f4bb878a7a915343ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartBuilds:
+  - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
+  - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
+  inventoryPanel: {fileID: 1401503508}
+  inventoryTiles: {fileID: 1298776132748419602, guid: dfc8b7ec20333c948b45d329eae83609,
+    type: 3}
+  guiItemImages: []
 --- !u!1 &3144815780665235155
 GameObject:
   m_ObjectHideFlags: 0
