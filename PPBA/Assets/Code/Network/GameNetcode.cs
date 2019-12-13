@@ -15,6 +15,8 @@ namespace PPBA
 		public static bool s_ServerIsTimedOut = false;
 
 		#region Variables
+		[SerializeField] bool _startInScene = false;
+
 		public string m_iP = "127.0.0.1";
 		public int m_serverPort = 11000;
 		[SerializeField] int _playerCount = 1;
@@ -33,7 +35,8 @@ namespace PPBA
 		int _nextID = 0;
 		void Start()
 		{
-			//ServerStart(m_serverPort, _playerCount);
+			if(_startInScene)
+				ServerStart(m_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
@@ -237,7 +240,8 @@ namespace PPBA
 #else
 		void Start()
 		{
-			//ClientConnect(m_iP, m_serverPort);
+			if(_startInScene)
+				ClientConnect(m_iP, m_serverPort);
 		}
 		private void OnDestroy()
 		{
