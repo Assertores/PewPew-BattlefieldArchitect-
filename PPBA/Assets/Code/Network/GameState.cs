@@ -899,8 +899,9 @@ Jump:
 				}
 
 				//Debug.Log("[GameState] adding denyed inputs");
-				_denyedInputIDs.AddRange(references[i]._denyedInputIDs);
+				_denyedInputIDs.AddRange(nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id)));
 			}
+			_denyedInputIDs.RemoveAll(x => reference._denyedInputIDs.Exists(y => y._id == x._id));
 			//Debug.Log("[GameState] finished denyed input backing");
 			for(int i = refTick + 1; i < myTick; i++)
 			{
@@ -910,8 +911,9 @@ Jump:
 					continue;
 				}
 
-				_newIDRanges.AddRange(references[i]._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
+				_newIDRanges.AddRange(nextState._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
+			_newIDRanges.RemoveAll(x => reference._newIDRanges.Exists(y => y._id == x._id));
 
 			_isDelta = true;
 
