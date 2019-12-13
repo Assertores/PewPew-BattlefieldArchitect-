@@ -385,7 +385,7 @@ MonoBehaviour:
   - _type: 10
     _prefab: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
       type: 3}
-  _initialObjectPoolSize: 10
+  _initialObjectPoolSize: 100
   _prefabs:
   - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
   - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}

@@ -8,7 +8,7 @@ namespace PPBA
 {
 	//alle combined typen: cornername und between name müssen direkt hintereinander stehen in dieser reihenfolge
 	//e.g. ..., WALL, WALL_BETWEEN, ...
-	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, COVER, FLAGPOLE,HQ, SIZE };
+	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, COVER, FLAGPOLE,HQ , SIZE };
 
 	[System.Serializable]
 	public class client
@@ -96,7 +96,7 @@ namespace PPBA
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_HEALER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_PIONEER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<FlagPole>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
-			ObjectPool.CreatePool<FlagPole>(ObjectType.HQ, _initialObjectPoolSize, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<HQHolder>(ObjectType.HQ, _initialObjectPoolSize, transform); //über netzwerk getracked
 						
 			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
