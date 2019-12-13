@@ -88,7 +88,8 @@ namespace PPBA
 
 			s_GatherValues?.Invoke(s_currentTick);
 
-			//Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
+			if(s_currentTick % 20 == 0)
+				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
 			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
@@ -154,6 +155,8 @@ namespace PPBA
 				}
 				else
 				{
+					if(s_currentTick % 20 == 0)
+						Debug.Log("DeltaTick: " + s_currentTick + "\n" + nextState.ToString());
 					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 				}
 
@@ -188,7 +191,8 @@ namespace PPBA
 
 			s_currentTickTime = Time.time;
 
-			Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
+			if(s_currentTick % 20 == 0)
+				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
 			s_SetUp?.Invoke(s_currentTick);
 			s_DoInput?.Invoke(s_currentTick);

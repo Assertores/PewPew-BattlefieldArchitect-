@@ -214,7 +214,9 @@ namespace PPBA
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
-			print("TICK: " + tick + "\n" + client._gameStates[tick].ToString());
+			if(s_currentTick % 20 == 0)
+				print("DeltaTick: " + tick + "\n" + client._gameStates[tick].ToString());
+
 			for(byte i = 0; i < state.Count; i++)
 			{
 				msg.Clear();
