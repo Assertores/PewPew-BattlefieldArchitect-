@@ -5,6 +5,7 @@ namespace PPBA
 {
 	public interface IRefHolder
 	{
+		int _team { get; set; }
 		GameObject _blueprintObj { get; }
 		GameObject _GhostPrefabObj { get; }
 		Sprite _Image { get; }

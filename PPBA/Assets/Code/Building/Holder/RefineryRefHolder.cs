@@ -28,6 +28,7 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 
 	[SerializeField] Material BaseMaterial;
 
+	[HideInInspector] public int _team { get; set; }
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
