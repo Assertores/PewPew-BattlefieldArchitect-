@@ -14,13 +14,10 @@ namespace PPBA
 		TextMeshProUGUI _ToolTipFeld { get; }
 		ObjectType _Type { get; }
 
-		float GetBuildingCost();
-		float GetBuildingCurrentResources();
-		float GetBuildingTime();
 		ObjectType GetObjectType();
 		Material GetMaterial();
 
-		Vector4 GetShaderProperties();
+		Vector4 GetShaderProperties { get; set; }
 	}
 }
 

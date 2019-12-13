@@ -131,7 +131,7 @@ namespace PPBA
 
 			for(int i = 0; i < _Refinerys.Count; i++)
 			{
-				refsProp[i] = _Refinerys[i].GetShaderProperties();
+				refsProp[i] = _Refinerys[i].GetShaderProperties;
 			}
 			return refsProp;
 		}

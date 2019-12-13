@@ -57,10 +57,6 @@ namespace PPBA
 
 						foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 						{
-							//if(build == _PlayedBuilts.Count - 1)
-							//{
-							//	continue;
-							//}
 							Destroy(build.Key);
 						}
 					}
@@ -70,6 +66,7 @@ namespace PPBA
 					foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 					{
 						build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
+						// TODO : als einzelne objecte übertragen und aufm server WallBEtween setzen
 					}
 
 					_PlayedBuilts.Clear();

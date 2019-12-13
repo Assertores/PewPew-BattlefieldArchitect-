@@ -27,11 +27,11 @@ namespace PPBA
 
 			while(!_EnoughResources)
 			{
-				if(element.GetBuildingCurrentResources() >= element.GetBuildingCost())
-				{
-					_EnoughResources = true;
-				}
-				yield return new WaitForSeconds(1);
+				//if(element.GetBuildingCurrentResources() >= element.GetBuildingCost())
+				//{
+				//	_EnoughResources = true;
+				//}
+				//yield return new WaitForSeconds(1);
 			}
 
 			yield return StartCoroutine(BuildingRoutine());

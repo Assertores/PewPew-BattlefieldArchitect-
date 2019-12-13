@@ -34,9 +34,14 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
 	[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
 
-	public Vector4 GetShaderProperties()
-	{
-		return new Vector4(_Positions.x, _Positions.y, _HarvestIntensity, _HarvestRadius);
+
+	/// <summary>
+	/// get the Properties for RessourceCalculate or set die Postion on die Textur
+	/// </summary>
+	public Vector4 GetShaderProperties
+	{		
+		get { return new Vector4(_Positions.x, _Positions.y, _HarvestIntensity, _HarvestRadius); }
+		set { _Positions = value; }
 	}
 
 	public float GetBuildingCost()

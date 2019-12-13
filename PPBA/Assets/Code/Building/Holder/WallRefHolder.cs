@@ -29,10 +29,10 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 
 	[SerializeField] Material BaseMaterial;
 
-	public Vector4 GetShaderProperties()
+	public Vector4 GetShaderProperties
 	{
-		return Vector4.zero;
-		//return new Vector4(_Positions.x, _Positions.y, _HarvestIntensity, _HarvestRadius);
+		get { return Vector4.zero; }
+		set { }
 	}
 
 	public float GetBuildingCost()
