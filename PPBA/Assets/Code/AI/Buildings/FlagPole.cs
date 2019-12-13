@@ -6,13 +6,12 @@ namespace PPBA
 {
 	public class FlagPole : MonoBehaviour, INetElement
 	{
-		/*
 		private class State
 		{
-			Vector3 _position;
-			float _angle;
+			public Vector3 _position;
+			public float _angle;
 		}
-		*/
+
 		public static float _radius = 15f;
 
 		public int _id { get; set; }
@@ -42,7 +41,10 @@ namespace PPBA
 				return _friendlyPawns;
 			}
 		}
+		private State _lastState = new State();
+		private State _nextState = new State();
 
+		#region
 		private void Awake()
 		{
 #if !UNITY_SERVER
@@ -57,8 +59,31 @@ namespace PPBA
 
 		void Update()
 		{
-
+#if !UNITY_SERVER
+			VisualizeLerpedStates();
+#endif
 		}
+
+		private void VisualizeLerpedStates()
+		{
+			float lerpFactor;
+
+			if(null == _lastState || null == _nextState)
+			{
+				if(null != _nextState)
+					lerpFactor = 1f;
+				else if(null != _lastState)
+					lerpFactor = 0f;
+				else
+					return;
+			}
+			else
+				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
+
+			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
+			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
+		}
+		#endregion
 
 		private void Calculate(int tick = 0)
 		{
@@ -106,21 +131,19 @@ namespace PPBA
 			newFlagPole.ClearLists();
 
 			if(null != JobCenter.s_flagPoles[team])
-			JobCenter.s_flagPoles[team].Add(newFlagPole);
+				JobCenter.s_flagPoles[team].Add(newFlagPole);
 		}
 
-#region Interfaces
-#region INetElement
+		#region Interfaces
+		#region INetElement
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
-			/*
 			if(null != _nextState)
 				_lastState = _nextState;
 
 			_nextState = new State();
-			*/
-			/*
-#region Writing into _nextState from s_interfaceGameState
+
+			#region Writing into _nextState from s_interfaceGameState
 			{
 				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
 
@@ -133,10 +156,15 @@ namespace PPBA
 				else
 				{
 					if(!gameObject.activeSelf)
-					{
 						gameObject.SetActive(true);
-						//ResetToDefault(this, 0);
-					}
+				}
+			}
+			{
+				GSC.type temp = TickHandler.s_interfaceGameState.GetType(_id);
+
+				if(null != temp)
+				{
+					_team = temp._team;
 				}
 			}
 			{
@@ -144,21 +172,12 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					transform.position = temp._position;
-					//_nextState.position = temp._position;
-					//_nextState._angle = temp._angle;
+					//transform.position = temp._position;
+					_nextState._position = temp._position;
+					_nextState._angle = temp._angle;
 				}
 			}
-			{
-				GSC.health temp = TickHandler.s_interfaceGameState.GetHealth(_id);
-				if(null != temp)
-				{
-					_nextState._health = temp._health;
-					_nextState._morale = temp._morale;
-				}
-			}
-#endregion
-			*/
+			#endregion
 		}
 
 		public void WriteToGameState(int tick)
@@ -178,11 +197,8 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 		}
-#endregion
-#endregion
-
-		//WriteToGameState() -> s_GatherValues(Server)
-		//ExtractFromGameState() -> s_DoInput(Client)
+		#endregion
+		#endregion
 
 		private void OnEnable()
 		{
