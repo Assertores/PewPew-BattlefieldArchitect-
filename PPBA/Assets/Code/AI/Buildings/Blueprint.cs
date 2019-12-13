@@ -103,6 +103,7 @@ namespace PPBA
 		private void OnEnable()
 		{
 			_refHolder = GetComponentInParent<IRefHolder>();
+			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
 			if(!JobCenter.s_blueprints[_team].Contains(this))
