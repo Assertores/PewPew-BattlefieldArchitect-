@@ -408,7 +408,7 @@ namespace PPBA
 			socket.Close();
 		}
 
-		public void ServerStart(int port, int playerCount)
+		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
 			m_serverPort = port;
 			socket = new UdpClient(port);
