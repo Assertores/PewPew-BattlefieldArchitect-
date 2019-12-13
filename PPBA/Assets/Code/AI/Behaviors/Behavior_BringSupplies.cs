@@ -4,14 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_Build : Behavior
+	public class Behavior_BringSupplies : Behavior
 	{
-		public static Behavior_Build s_instance;
+		public static Behavior_BringSupplies s_instance;
 		public static Dictionary<Pawn, Blueprint> s_targetDictionary = new Dictionary<Pawn, Blueprint>();
 
-		public Behavior_Build()
+		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
+
+		public Behavior_BringSupplies()
 		{
-			_name = Behaviors.BUILD;
+			_name = Behaviors.BRINGSUPPLIES;
 		}
 
 		private void Awake()
@@ -40,7 +42,7 @@ namespace PPBA
 				pawn.SetMoveTarget(targetPosition);
 
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
-					s_targetDictionary[pawn].DoWork();
+					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
 			}
 		}
 
@@ -80,6 +82,8 @@ namespace PPBA
 			{
 				case "Distance":
 					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 60f;
+				case "SuppliesNeeded":
+					return blueprint._resourcesNeeded;
 				/*
 			case "Score":
 				return blueprint._score;

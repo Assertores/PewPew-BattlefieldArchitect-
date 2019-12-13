@@ -7,7 +7,7 @@ using TMPro;
 
 namespace PPBA
 {
-	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETRESOURCES, BRINGRESOURCES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
+	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
 
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
@@ -19,7 +19,7 @@ namespace PPBA
 			public float _health;
 			public float _ammo;
 			public float _morale;
-			public int _resources;
+			public int _supplies;
 			public Vector3[] _navPathCorners;
 			public Behaviors _behavior;
 		}
@@ -48,8 +48,8 @@ namespace PPBA
 		[SerializeField] public float _maxAttackDamage = 75f;
 		[SerializeField] [Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
-		[SerializeField] public int _resources;//resources carried
-		[SerializeField] public int _maxResource = 10;
+		[SerializeField] public int _supplies;//resources carried
+		[SerializeField] public int _maxSupplies = 10;
 
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
 
@@ -253,7 +253,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
+			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _supplies });
 			if(_lastBehavior != null)
 				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
@@ -321,7 +321,7 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_nextState._resources = temp._resources;
+					_nextState._supplies = temp._resources;
 				}
 			}
 			{
@@ -364,7 +364,7 @@ namespace PPBA
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
 			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
 			_morale = Mathf.Lerp(_lastState._morale, _nextState._morale, lerpFactor);
-			_resources = (int)Mathf.Lerp(_lastState._resources, _nextState._resources, lerpFactor);
+			_supplies = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
 		}
@@ -432,9 +432,9 @@ namespace PPBA
 					return Behavior_GoAnywhere.s_instance;
 				case Behaviors.FLEE:
 					break;
-				case Behaviors.GETRESOURCES:
-					return Behavior_GetResources.s_instance;
-				case Behaviors.BRINGRESOURCES:
+				case Behaviors.GETSUPPLIES:
+					return Behavior_GetSupplies.s_instance;
+				case Behaviors.BRINGSUPPLIES:
 					break;
 				case Behaviors.BUILD:
 					return Behavior_Build.s_instance;
@@ -733,7 +733,7 @@ namespace PPBA
 			pawn._health = pawn._maxHealth;
 			pawn._ammo = pawn._maxAmmo;
 			pawn._morale = pawn._maxMorale;
-			pawn._resources = 0;
+			pawn._supplies = 0;
 			pawn._isNavPathDirty = true;
 			//pawn._moveSpeed = 3.6111111f;
 			pawn._navMeshPath = new NavMeshPath();
@@ -756,7 +756,7 @@ namespace PPBA
 			newPawn._moveTarget = spawnPoint;
 
 			//debuuuug
-			newPawn._resources = 50;
+			newPawn._supplies = 50;
 		}
 
 		public static ObjectType RandomPawnType()
