@@ -18,6 +18,6 @@ namespace PPBA
 		public const string SFX = "SFX";
 
 		public const string MAINMENU = "MainMenu";
-		public const string GAME = "BuildingTest";
+		public const string GAME = "Game";
 	}
 }
