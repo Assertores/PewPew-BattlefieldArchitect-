@@ -379,9 +379,7 @@ namespace PPBA
 
 		void AddNewIDsToGameState(int tick)
 		{
-#if BROCKEN
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
-#endif
 			h_newIDs.Clear();
 		}
 #endregion
