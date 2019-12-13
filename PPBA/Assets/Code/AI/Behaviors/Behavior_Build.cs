@@ -72,12 +72,6 @@ namespace PPBA
 			{
 				case "Distance":
 					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 60f;
-				/*
-			case "Score":
-				return blueprint._score;
-			case "Resources":
-				return blueprint._resources / blueprint._maxResources;
-				*/
 				case "WorkDoable":
 					return blueprint._workDoable;
 				default:
