@@ -251,6 +251,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5235602872602720232}
   - component: {fileID: 5538910421972728176}
+  - component: {fileID: 5712454156475713158}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -284,5 +285,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a0b90e99523d64bb9226415cd7612d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _resourceDepot: {fileID: 5712454156475713158}
+--- !u!114 &5712454156475713158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8959561800333315175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7863abe65f0204b4db7008903587c75b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _team: 0
-  _supplies: 0
+  _health: 1000
+  _maxHealth: 1000
+  _resources: 0
+  _maxResources: 1000
+  _ammo: 0
+  _maxAmmo: 1000
+  _score: 0
+  _maxScore: 1
+  _interactRadius: 2

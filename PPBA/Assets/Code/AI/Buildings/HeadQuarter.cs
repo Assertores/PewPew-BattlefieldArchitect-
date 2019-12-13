@@ -6,27 +6,30 @@ namespace PPBA
 {
 	public class HeadQuarter : MonoBehaviour//, INetElement
 	{
-		/*
-		private class State
+		#region Variables
+
+		#endregion
+
+		#region References
+		[SerializeField] private ResourceDepot _resourceDepot;
+		#endregion
+
+		private void OnEnable()
 		{
-			int _team;
-			int _supplies;
+#if UNITY_SERVER
+			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
+				if(!JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
+					JobCenter.s_headQuarters[_resourceDepot._team].Add(this);
+#endif
 		}
 
-		public int _id { get; set; }
-		public int _team;
-		public int _supplies;
-		public int _maxSupplies;
-
-		void Start()
+		private void OnDisable()
 		{
-			
+#if UNITY_SERVER
+			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
+				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
+					JobCenter.s_headQuarters[_resourceDepot._team].Remove(this);
+#endif
 		}
-
-		void Update()
-		{
-			
-		}
-		*/
 	}
 }
