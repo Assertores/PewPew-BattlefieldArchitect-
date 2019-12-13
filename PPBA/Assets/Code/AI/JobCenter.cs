@@ -14,6 +14,8 @@ namespace PPBA
 		public static List<CoverSlot>[] s_coverSlots = new List<CoverSlot>[10];
 		public static List<FlagPole>[] s_flagPoles = new List<FlagPole>[10];
 
+		public static HeadQuarter[] s_headQuarters = new HeadQuarter[10];
+
 		void Awake()
 		{
 			if(s_instance == null)

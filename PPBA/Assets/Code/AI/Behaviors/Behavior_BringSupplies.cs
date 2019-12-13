@@ -68,8 +68,10 @@ namespace PPBA
 		{
 			switch(name)
 			{
-				case "Health":
+				case StringCollection.HEALTH:
 					return pawn._health / pawn._maxHealth;
+				case "Supplies":
+					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -81,14 +83,12 @@ namespace PPBA
 			switch(name)
 			{
 				case "Distance":
-					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 60f;
+					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 40f;
 				case "SuppliesNeeded":
-					return blueprint._resourcesNeeded;
+					return blueprint._resourcesNeeded;//NOT 0..1 YET !!
 				/*
-			case "Score":
+				case "Score":
 				return blueprint._score;
-			case "Resources":
-				return blueprint._resources / blueprint._maxResources;
 				*/
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);

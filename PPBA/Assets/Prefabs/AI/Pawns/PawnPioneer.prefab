@@ -203,8 +203,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _resources: 50
-  _maxResource: 50
+  _supplies: 0
+  _maxSupplies: 10
   _isNavPathDirty: 1
   _moveSpeed: 3.611111
   _healthBackingField: 100
@@ -215,9 +215,10 @@ MonoBehaviour:
   e_behaviors: 130a0b0c
   _behaviorMultipliers:
   - 1
-  - 2
-  - 2
   - 5
+  - 5
+  - 10
+  _behaviors: []
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []

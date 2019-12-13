@@ -435,7 +435,7 @@ namespace PPBA
 				case Behaviors.GETSUPPLIES:
 					return Behavior_GetSupplies.s_instance;
 				case Behaviors.BRINGSUPPLIES:
-					break;
+					return Behavior_BringSupplies.s_instance;
 				case Behaviors.BUILD:
 					return Behavior_Build.s_instance;
 				case Behaviors.DECONSTRUCT:
