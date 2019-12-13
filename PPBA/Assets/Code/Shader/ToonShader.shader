@@ -28,7 +28,7 @@
 		_Clip("Clip Height", Float) = 0.5
 		_Noise("Noise", Float) = 0.0
 		_NoiseScale("Noise Scale", Float) = 1.0
-
+		_BuildingHeight("BuildingHeight", Float)= 5.0
 	}
 
 		SubShader
@@ -68,6 +68,7 @@
 			float _Clip;
 			float _Noise;
 			float _NoiseScale;
+			float _BuildingHeight;
 
 			struct ToonSurfaceOutput
 			{
@@ -148,9 +149,6 @@
 			//the surface shader function which sets parameters the lighting function then uses
 			void surf(Input i, inout ToonSurfaceOutput o)
 			{
-
-
-
 				float3 p = i.worldPos;
 				float3 s = _NoiseScale * p;
 				float noise = snoise(s);
@@ -159,7 +157,9 @@
 				float d = p.y + length(n);
 				noise = d;
 
-				if (step(d, _Clip) <= 0.0)
+				float tmp = _Clip * _BuildingHeight;
+
+				if (step(d, tmp) <= 0.0)
 				{
 					discard;
 				}
