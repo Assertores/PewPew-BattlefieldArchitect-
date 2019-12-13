@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3726227847000358571}
+  - component: {fileID: 5457416838595606793}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
@@ -31,6 +32,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5457416838595606793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3686617034535011622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 745ed11174820074487e8d4d854dc10f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _BuildingSound: {fileID: 0}
+  _ImageUI: {fileID: 0}
+  _TextField: {fileID: 0}
+  _ObjectType: 4
+  _GhostPrefab: {fileID: 0}
+  _blueprintPrefab: {fileID: 0}
+  _BuildingTime: 0
+  _BuildingCosts: 0
+  _CurrentResources: 0
+  _LivePoints: 0
+  _MaxLivePoints: 0
+  BaseMaterial: {fileID: 0}
 --- !u!1001 &3513285979696346863
 PrefabInstance:
   m_ObjectHideFlags: 0

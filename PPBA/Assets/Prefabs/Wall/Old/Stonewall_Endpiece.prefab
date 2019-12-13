@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1058426523684325116}
   - component: {fileID: 7139002033557223674}
+  - component: {fileID: 6603631378473981604}
+  - component: {fileID: -3295806300095209701}
   m_Layer: 0
   m_Name: Stonewall_Endpiece
   m_TagString: Untagged
@@ -47,6 +49,42 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.25, y: 1, z: 0.35}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &6603631378473981604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4101390062667216111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 745ed11174820074487e8d4d854dc10f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _BuildingSound: {fileID: 0}
+  _ImageUI: {fileID: 0}
+  _TextField: {fileID: 0}
+  _ObjectType: 4
+  _GhostPrefab: {fileID: 0}
+  _blueprintPrefab: {fileID: 0}
+  _BuildingTime: 0
+  _BuildingCosts: 0
+  _CurrentResources: 0
+  _LivePoints: 0
+  _MaxLivePoints: 0
+  BaseMaterial: {fileID: 0}
+--- !u!114 &-3295806300095209701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4101390062667216111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5526385203462419703
 GameObject:
   m_ObjectHideFlags: 0

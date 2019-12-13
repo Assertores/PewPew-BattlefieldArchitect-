@@ -16,5 +16,5 @@ EditorBuildSettings:
     guid: 0f22cfab628b5994488f12b69bf156bf
   - enabled: 0
     path: Assets/Scenes/AI/AI_BuildingTestTakeOver.unity
-    guid: 76ee08b38de7d604082a03bda26ef98d
+    guid: decf6fbb785d0f44eb7338d5cf996140
   m_configObjects: {}

@@ -8,7 +8,7 @@ namespace PPBA
 {
 	//alle combined typen: cornername und between name müssen direkt hintereinander stehen in dieser reihenfolge
 	//e.g. ..., WALL, WALL_BETWEEN, ...
-	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, COVER, FLAGPOLE, SIZE };
+	public enum ObjectType { REFINERY, DEPOT, GUN_TURRET, WALL, WALL_BETWEEN, PAWN_WARRIOR, PAWN_HEALER, PAWN_PIONEER, COVER, FLAGPOLE,HQ, SIZE };
 
 	[System.Serializable]
 	public class client
@@ -55,7 +55,7 @@ namespace PPBA
 			public GameObject _prefab;
 		}
 		[SerializeField] private BuildAssignment[] _prefabInput;
-		[SerializeField] [Range(1, 100)] private int _initialObjectPoolSize = 10;
+		[SerializeField] [Range(1, 100)] private int _initialObjectPoolSize = 100;
 
 		[HideInInspector] public GameObject[] _prefabs;
 
@@ -89,13 +89,16 @@ namespace PPBA
 			//ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
 
 			ObjectPool.CreatePool<RefineryRefHolder>(ObjectType.REFINERY, _initialObjectPoolSize, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, _initialObjectPoolSize, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL_BETWEEN, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, 100, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_WARRIOR, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_HEALER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_PIONEER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<FlagPole>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<FlagPole>(ObjectType.HQ, _initialObjectPoolSize, transform); //über netzwerk getracked
 						
-			ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
+			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
 		}
 

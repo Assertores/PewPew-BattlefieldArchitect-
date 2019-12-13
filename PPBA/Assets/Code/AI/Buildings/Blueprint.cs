@@ -23,7 +23,7 @@ namespace PPBA
 		[SerializeField] public int _resourcesMax = 100;
 		[SerializeField] public int _work = 0;
 		[SerializeField] public int _workMax = 50;
-
+		[SerializeField] public float _interactRadius = 5f;
 		#endregion
 
 		#region References
@@ -62,6 +62,7 @@ namespace PPBA
 #endif
 		}
 
+		#region Give & Take
 		public void WorkTick()
 		{
 			foreach(Pawn w in _workers)
@@ -86,20 +87,39 @@ namespace PPBA
 			if(JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
 
-			//exchange blueprint for building
+			_material.SetFloat("_Clip", 1f);//ensure building is not dissolved
+
 			if(null != _refHolder)
-				ResourceMapCalculate.s_instance.AddFabric(_refHolder);
+			{
+				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
+			}
 
-			//deactivate this child
-			//activate child with building
-			//call EnableBuilding from an IBuilding
-
+			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
+			transform.parent.GetChild(1)?.gameObject.SetActive(false);//deactivate child with blueprint
 		}
+
+		public int GiveResources(int amount)
+		{
+			int spaceLeft = _resourcesMax - _resources;
+
+			if(amount <= spaceLeft)//enough space
+			{
+				_resources += amount;
+				return amount;
+			}
+			else//not enough space
+			{
+				_resources += spaceLeft;
+				return spaceLeft;
+			}
+		}
+		#endregion
 
 		#region Initialisation
 		private void OnEnable()
 		{
 			_refHolder = GetComponentInParent<IRefHolder>();
+			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
 			if(!JobCenter.s_blueprints[_team].Contains(this))
@@ -201,23 +221,13 @@ namespace PPBA
 
 		private static void ResetToDefault(Blueprint blueprint, int team)
 		{
-			/*
-			blueprint._arguments = new Arguments();
+			//blueprint._arguments = new Arguments();
 			blueprint._team = team;//not needed if object pools are per player
-			blueprint._health = pawn._maxHealth;
-			blueprint._ammo = pawn._maxAmmo;
-			blueprint._morale = pawn._maxMorale;
 			blueprint._resources = 0;
-			blueprint._isNavPathDirty = true;
-			//pawn._moveSpeed = 3.6111111f;
-			blueprint._navMeshPath = new NavMeshPath();
-			blueprint._morale = pawn._maxMorale;
+			blueprint._work = 0;
 
-			blueprint.ClearLists();
+			//blueprint.ClearLists();
 
-			//pawn._moveTarget = Vector3.forward;
-			blueprint._mountSlot = null;
-			*/
 			blueprint._lastState = new State();
 			blueprint._nextState = new State();
 		}

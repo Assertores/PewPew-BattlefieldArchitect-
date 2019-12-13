@@ -16,20 +16,8 @@ namespace PPBA
 		//[SerializeField] float _BorderThickness = 10f;
 		[SerializeField] Vector2 _panLimit = new Vector2(40f, 40f);
 
-		private void OnEnable()
-		{
-#if !UNITY_SERVER
-			TickHandler.s_DoTick += RegisterInput;
-#endif
-		}
 
-		void RegisterInput(int tick)
-		{
-			//print("qqqqqqqq " + tick);
-
-		}
-
-		void Update()
+		void LateUpdate()
 		{
 			if(Input.GetMouseButton(1))
 			{

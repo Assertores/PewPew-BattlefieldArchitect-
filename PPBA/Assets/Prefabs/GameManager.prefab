@@ -368,7 +368,7 @@ MonoBehaviour:
     _prefab: {fileID: 4101390062667216111, guid: 8f4308316695df54482f68707a7ca78e,
       type: 3}
   - _type: 4
-    _prefab: {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee,
+    _prefab: {fileID: 4608242534838623985, guid: 6da75379fa8fe344181facfee6292131,
       type: 3}
   - _type: 5
     _prefab: {fileID: 8532531223116004335, guid: bebc45b5713d3b84fb79fe916035f666,
@@ -383,6 +383,9 @@ MonoBehaviour:
     _prefab: {fileID: 49946178406561578, guid: d334033ec91ea9d419ceeadf96220266, type: 3}
   - _type: 9
     _prefab: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
+      type: 3}
+  - _type: 10
+    _prefab: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
       type: 3}
   _initialObjectPoolSize: 10
   _prefabs:
@@ -531,10 +534,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[1]._isEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
       propertyPath: _pawnAxes.Array.data[1]._curve.m_Curve.Array.data[1].time
       value: 0.20083618
       objectReference: {fileID: 0}
@@ -565,11 +564,6 @@ PrefabInstance:
     - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
       propertyPath: _attackBuildUpTime
       value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3831144996769013326, guid: 6b952cb98fda6e64182062bcbbc8f34f,
-        type: 3}
-      propertyPath: _fixedScore
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}

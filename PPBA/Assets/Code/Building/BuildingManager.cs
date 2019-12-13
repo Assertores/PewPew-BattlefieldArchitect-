@@ -31,8 +31,8 @@ namespace PPBA
 					return;
 				}
 
-				if(!_isBuilt)
-				{
+				//if(!_isBuilt)
+				//{
 					MoveCurrentObjectToMouse();
 					RotateCurrentObjectWithMouseWheel();
 
@@ -43,24 +43,20 @@ namespace PPBA
 							ReleaseIfClicked();
 						}
 					}
-				}
+				//}
 
 				if(Input.GetMouseButton(0) && _currentPrefabIndex > 0)
 				{
 					WallBuildingRoutine();
 				}
 
-				if(Input.GetMouseButtonUp(0) && _isBuilt)
+				if(Input.GetMouseButtonUp(0) && _isBuilt && _currentPrefabIndex > 2)
 				{
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
 
 						foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 						{
-							//if(build == _PlayedBuilts.Count - 1)
-							//{
-							//	continue;
-							//}
 							Destroy(build.Key);
 						}
 					}
@@ -70,6 +66,7 @@ namespace PPBA
 					foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
 					{
 						build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
+						// TODO : als einzelne objecte übertragen und aufm server WallBEtween setzen
 					}
 
 					_PlayedBuilts.Clear();
@@ -185,31 +182,6 @@ namespace PPBA
 				ConstructBetween();
 				ConstructWall();
 			}
-
-			//float _angle = 0;
-			//float length = _currentPlaceableObject.GetComponent<BoxCollider>().size.z;
-			//Vector3 lastPos = _lastPole;
-
-			//Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - lastPos);
-			//float dis = dir.magnitude;
-
-			//Vector3 forward = _lastPole;
-
-			//Vector3 v3Pos = Camera.main.WorldToScreenPoint(lastPos);
-			//v3Pos = Input.mousePosition - v3Pos;
-			//_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			//v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * length);
-
-			//Vector3 dir2 = (_currentPlaceableObject.transform.position - lastPos).normalized;
-			//Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
-			//_currentPlaceableObject.transform.rotation = rotationObj;
-
-			//_currentPlaceableObject.transform.position = lastPos + v3Pos;
-
-			//if(dis > length)
-			//{
-			//	ConstructWall();
-			//}
 		}
 
 		private void ConstructBetween()

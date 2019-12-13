@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class ResourceDepot : MonoBehaviour
+	public class ResourceDepot : MonoBehaviour, INetElement
 	{
-		[SerializeField] public int _id = 0;
+		[SerializeField] public int _id { get; set; }
 		[SerializeField] public int _team = 0;
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
@@ -15,9 +15,14 @@ namespace PPBA
 		[SerializeField] public int _ammo = 0;
 		[SerializeField] public int _maxAmmo = 1000;
 		[SerializeField] public float _score = 0;
-		[SerializeField] public float _maxScore = 0;
+		[SerializeField] public float _maxScore = 1;
 		[SerializeField] [Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
+
+		void Awake()
+		{
+
+		}
 
 		void Start()
 		{
@@ -113,20 +118,25 @@ namespace PPBA
 		#region Initialisation
 		private void OnEnable()
 		{
+#if UNITY_SERVER
 			if(!JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
 			TickHandler.s_GatherValues += WriteToGameState;
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			if(JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Remove(this);
 
 			TickHandler.s_LateCalc -= CalculateScore;
 			TickHandler.s_GatherValues -= WriteToGameState;
+#endif
+			gameObject.SetActive(false);
 		}
 
 		public void WriteToGameState(int tick)
@@ -136,6 +146,6 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _score });
 		}
-		#endregion
+#endregion
 	}
 }
