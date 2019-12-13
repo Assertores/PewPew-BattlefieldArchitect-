@@ -17,7 +17,7 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, BEHAVIOUR, PATH, MAP, INPUTS, RANGE };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, PATH, MAP, INPUTS, RANGE };
 
 		public class gsc
 		{
@@ -352,6 +352,19 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			if(_works.Count > 0)
+			{
+				msg.Clear();
+				msg.Add((byte)GSC.DataType.WORK);
+				msg.AddRange(BitConverter.GetBytes(_works.Count));
+				foreach(var it in _works)
+				{
+					msg.AddRange(BitConverter.GetBytes(it._id));
+					msg.AddRange(BitConverter.GetBytes(it._work));
+				}
+
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+			}
 			if(_behaviors.Count > 0)
 			{
 				msg.Clear();
@@ -587,12 +600,29 @@ namespace PPBA
 							offset += sizeof(int);
 
 							value._health = BitConverter.ToSingle(msg, offset);
-							offset += sizeof(int);
+							offset += sizeof(float);
 
 							value._morale = BitConverter.ToSingle(msg, offset);
 							offset += sizeof(float);
 
 							_healths.Add(value);
+						}
+						break;
+					}
+					case GSC.DataType.WORK:
+					{
+						_works = new List<GSC.work>(count);
+						for(int i = 0; i < count; i++)
+						{
+							GSC.work value = new GSC.work();
+
+							value._id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._work = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							_works.Add(value);
 						}
 						break;
 					}
