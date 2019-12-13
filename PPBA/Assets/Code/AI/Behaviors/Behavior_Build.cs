@@ -86,6 +86,8 @@ namespace PPBA
 			case "Resources":
 				return blueprint._resources / blueprint._maxResources;
 				*/
+				case "WorkDoable":
+					return blueprint._workDoable;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

@@ -116,29 +116,6 @@ namespace PPBA
 		#endregion
 
 		#region Initialisation
-		private void OnEnable()
-		{
-			_refHolder = GetComponentInParent<IRefHolder>();
-			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
-
-#if UNITY_SERVER
-			if(!JobCenter.s_blueprints[_team].Contains(this))
-				JobCenter.s_blueprints[_team].Add(this);
-
-			TickHandler.s_GatherValues += WriteToGameState;
-#endif
-		}
-
-		private void OnDisable()
-		{
-#if UNITY_SERVER
-			if(JobCenter.s_blueprints[_team].Contains(this))
-				JobCenter.s_blueprints[_team].Remove(this);
-
-			TickHandler.s_GatherValues -= WriteToGameState;
-#endif
-		}
-
 		public void WriteToGameState(int tick)
 		{
 			{
@@ -253,6 +230,45 @@ namespace PPBA
 
 			if(null != _material)
 				_material.SetFloat("_Clip", (float)_work / _workMax);
+		}
+
+		public void CalculateIncomingSupplies(int tick = 0)
+		{
+			/*
+			_resourcesIncoming = 0;
+
+			foreach(Pawn pawn in Pawn._pawns)
+			{
+				if(pawn.enabled == false)
+					continue;
+
+				if(Behavior_BringSupplies.s_targetDictionary.ContainsKey(pawn))
+				if(Behavior_BringSupplies.s_targetDictionary[pawn])
+			}
+			*/
+		}
+
+		private void OnEnable()
+		{
+			_refHolder = GetComponentInParent<IRefHolder>();
+			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
+
+#if UNITY_SERVER
+			if(!JobCenter.s_blueprints[_team].Contains(this))
+				JobCenter.s_blueprints[_team].Add(this);
+
+			TickHandler.s_GatherValues += WriteToGameState;
+#endif
+		}
+
+		private void OnDisable()
+		{
+#if UNITY_SERVER
+			if(JobCenter.s_blueprints[_team].Contains(this))
+				JobCenter.s_blueprints[_team].Remove(this);
+
+			TickHandler.s_GatherValues -= WriteToGameState;
+#endif
 		}
 		#endregion
 	}
