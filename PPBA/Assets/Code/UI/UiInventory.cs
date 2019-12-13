@@ -49,7 +49,7 @@ namespace PPBA
 				if(items.Count < guiItemImages.Count)
 				{
 					items.Add(ip, 1);
-					button.onClick.AddListener(delegate { BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()._Type); }); // weißt button function zu
+					button.onClick.AddListener(delegate { BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()); }); // weißt button function zu
 					//button.onClick.AddListener(delegate { BuildingController.s_instance.HandleNewObject(ip.GetComponent<IUIElement>().); }); // weißt button function zu
 				}
 				else

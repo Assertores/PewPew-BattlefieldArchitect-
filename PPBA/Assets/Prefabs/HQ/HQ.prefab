@@ -82,9 +82,11 @@ MonoBehaviour:
   _ImageUI: {fileID: 0}
   _TextField: {fileID: 0}
   _ObjectType: 10
-  _GhostPrefab: {fileID: 0}
+  _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
+    type: 3}
   _blueprintPrefab: {fileID: 0}
   BaseMaterial: {fileID: 0}
+  _Positions: {x: 0, y: 0}
 --- !u!114 &5763944625188300945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +242,7 @@ MonoBehaviour:
   _workMax: 50
   _interactRadius: 5
   _workers: []
-  _material: {fileID: 0}
+  _material: {fileID: 2100000, guid: 5df7ac787a2861342b2e6cbd6c8512c5, type: 2}
 --- !u!1 &8959561800333315175
 GameObject:
   m_ObjectHideFlags: 0
