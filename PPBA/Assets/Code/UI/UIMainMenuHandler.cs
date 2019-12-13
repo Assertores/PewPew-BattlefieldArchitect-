@@ -242,7 +242,6 @@ namespace PPBA
 
 		public void ConnectToServer()
 		{
-			Debug.Log("Change Scene");
 			string ip = _ipField.text == "" ? "127.0.0.1" : _ipField.text;
 			int port = _portField.text == "" ? 13370 : int.Parse(_portField.text);
 			MainMenuToGame.s_instance.ClientExecute(ip, port);

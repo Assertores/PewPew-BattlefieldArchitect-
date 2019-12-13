@@ -33,7 +33,7 @@ namespace PPBA
 		int _nextID = 0;
 		void Start()
 		{
-			ServerStart(m_serverPort, _playerCount);
+			//ServerStart(m_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
@@ -237,7 +237,7 @@ namespace PPBA
 #else
 		void Start()
 		{
-			ClientConnect(m_iP, m_serverPort);
+			//ClientConnect(m_iP, m_serverPort);
 		}
 		private void OnDestroy()
 		{

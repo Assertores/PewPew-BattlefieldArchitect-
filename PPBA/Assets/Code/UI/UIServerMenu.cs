@@ -61,7 +61,6 @@ namespace PPBA {
 			}
 
 			string hostName = Dns.GetHostName(); // Retrive the Name of HOST
-			Debug.Log(hostName);
 			string myIP = "";
 			foreach(var it in Dns.GetHostEntry(hostName).AddressList)// get IPv4
 			{
@@ -76,7 +75,6 @@ namespace PPBA {
 
 		public void StartServer()
 		{
-			Debug.Log("Change Scene");
 			int port = _portField.text == "" ? 13370 : int.Parse(_portField.text);
 			MainMenuToGame.s_instance.ServerExecute(port, (int)_playerCount.value, _map.value, (int)_botLimit.value, GetHMRes(),_regToMaster);
 		}
