@@ -228,8 +228,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8491ff2a2a5dc4f4a8502d8f19cff98e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GhostRefinery: {fileID: 2196524662138505386, guid: 6b958e2d9daf2a64bb864547d7b7a65a,
-    type: 3}
   GhostWall: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
     type: 3}
   GhostWallBetween: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
