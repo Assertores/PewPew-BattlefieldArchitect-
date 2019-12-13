@@ -14,6 +14,11 @@ namespace PPBA
 		[SerializeField] private ResourceDepot _resourceDepot;
 		#endregion
 
+		private void CarePackage(int tick = 0)
+		{
+
+		}
+
 		private void OnEnable()
 		{
 #if UNITY_SERVER
