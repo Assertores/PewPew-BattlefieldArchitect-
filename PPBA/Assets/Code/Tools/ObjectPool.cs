@@ -75,7 +75,7 @@ namespace PPBA
 			}
 			if(!prefab.GetComponent(typeof(T)))
 			{
-				Debug.LogError("skript is not on the gameobject");
+				Debug.LogError("skript is not on the gameobject: " + prefab.name);
 				return null;
 			}
 			if(prefab.GetComponentsInChildren<INetElement>().Length <= 0)
