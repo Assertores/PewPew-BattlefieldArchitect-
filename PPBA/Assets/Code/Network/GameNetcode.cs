@@ -214,6 +214,7 @@ namespace PPBA
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
+			print("TICK: " + tick + "\n" + client._gameStates[tick].ToString());
 			for(byte i = 0; i < state.Count; i++)
 			{
 				msg.Clear();
@@ -378,11 +379,13 @@ namespace PPBA
 
 		void AddNewIDsToGameState(int tick)
 		{
+#if BROCKEN
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
+#endif
 			h_newIDs.Clear();
 		}
-		#endregion
-		#region UIInterface
+#endregion
+#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
 			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
@@ -432,6 +435,6 @@ namespace PPBA
 
 			Debug.Log("[SERVER] shut down");
 		}
-		#endregion
+#endregion
 	}
 }
