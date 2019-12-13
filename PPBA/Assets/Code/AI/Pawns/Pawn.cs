@@ -69,7 +69,7 @@ namespace PPBA
 		//Behaviors
 		[SerializeField] protected Behaviors[] e_behaviors;
 		[SerializeField] protected float[] _behaviorMultipliers;
-		protected Behavior[] _behaviors;
+		[SerializeField] protected Behavior[] _behaviors;
 		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 		public Behaviors _clientBehavior = Behaviors.IDLE;
@@ -437,7 +437,7 @@ namespace PPBA
 				case Behaviors.BRINGRESOURCES:
 					break;
 				case Behaviors.BUILD:
-					break;
+					return Behavior_Build.s_instance;
 				case Behaviors.DECONSTRUCT:
 					break;
 				case Behaviors.GETAMMO:
@@ -754,6 +754,9 @@ namespace PPBA
 			ResetToDefault(newPawn, team);
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
+
+			//debuuuug
+			newPawn._resources = 50;
 		}
 
 		public static ObjectType RandomPawnType()

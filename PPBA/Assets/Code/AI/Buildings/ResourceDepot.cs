@@ -15,7 +15,7 @@ namespace PPBA
 		[SerializeField] public int _ammo = 0;
 		[SerializeField] public int _maxAmmo = 1000;
 		[SerializeField] public float _score = 0;
-		[SerializeField] public float _maxScore = 0;
+		[SerializeField] public float _maxScore = 1;
 		[SerializeField] [Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
 
@@ -127,6 +127,8 @@ namespace PPBA
 
 			TickHandler.s_LateCalc -= CalculateScore;
 			TickHandler.s_GatherValues -= WriteToGameState;
+
+			gameObject.SetActive(false);
 		}
 
 		public void WriteToGameState(int tick)

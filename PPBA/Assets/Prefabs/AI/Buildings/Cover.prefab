@@ -31,6 +31,7 @@ Transform:
   - {fileID: 2663174008532240646}
   - {fileID: 138820995298495179}
   - {fileID: 9000762322731175148}
+  - {fileID: 6255388624474757260}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -46,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46bd4ed34a3f5148b5a331bfe511e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _arguments: 0
   _team: 0
   _maxHealth: 100
   _coverSlots:
@@ -207,6 +209,57 @@ MonoBehaviour:
   _mountingPawn: {fileID: 0}
   _closePawns: []
   _parentCover: {fileID: 443042304425257965}
+--- !u!1 &7609622222816547501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6255388624474757260}
+  - component: {fileID: 7175165577015849917}
+  m_Layer: 9
+  m_Name: Blueprint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6255388624474757260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7609622222816547501}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8960741173932209555}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7175165577015849917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7609622222816547501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b3f2d80b2b95164496b2d40e424f9a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _team: 0
+  _resources: 0
+  _resourcesIncoming: 0
+  _resourcesMax: 100
+  _work: 0
+  _workMax: 50
+  _workers: []
+  _material: {fileID: 0}
 --- !u!1 &8226593136798999635
 GameObject:
   m_ObjectHideFlags: 0

@@ -109,8 +109,6 @@ namespace PPBA
 			JobCenter.s_flagPoles[team].Add(newFlagPole);
 		}
 
-
-
 #region Interfaces
 #region INetElement
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen

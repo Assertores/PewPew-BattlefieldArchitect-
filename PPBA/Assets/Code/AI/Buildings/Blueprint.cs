@@ -86,16 +86,19 @@ namespace PPBA
 			if(JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
 
-			//exchange blueprint for building
+			_material.SetFloat("_Clip", 1f);//ensure building is not dissolved
+
 			if(null != _refHolder)
 			{
-				ResourceMapCalculate.s_instance.AddFabric(_refHolder);
-				transform.parent.GetChild(0).gameObject.SetActive(true);
+				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
 			}
 
-			//deactivate this child
-			//activate child with building
+			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
+			transform.parent.GetChild(1)?.gameObject.SetActive(false);//deactivate child with blueprint
+
 			//call EnableBuilding from an IBuilding
+
+			//deactivate this child
 
 		}
 

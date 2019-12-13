@@ -388,7 +388,7 @@ MonoBehaviour:
     _prefab: {fileID: 4101390062667216111, guid: 8f4308316695df54482f68707a7ca78e,
       type: 3}
   - _type: 4
-    _prefab: {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee,
+    _prefab: {fileID: 4608242534838623985, guid: 6da75379fa8fe344181facfee6292131,
       type: 3}
   - _type: 5
     _prefab: {fileID: 8532531223116004335, guid: bebc45b5713d3b84fb79fe916035f666,
@@ -549,10 +549,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[1]._isEnabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
       propertyPath: _pawnAxes.Array.data[1]._curve.m_Curve.Array.data[1].time

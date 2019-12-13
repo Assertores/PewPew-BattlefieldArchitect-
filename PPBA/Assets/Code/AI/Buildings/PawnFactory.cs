@@ -8,6 +8,7 @@ namespace PPBA
 	{
 		[Tooltip("Maximum number of pawns spawned.")] public int _maxPawns = 10;
 		private int _ticker = 0;
+		[SerializeField] private bool _isOneTeam = false;
 
 		void Start()
 		{
@@ -36,8 +37,8 @@ namespace PPBA
 			if(_ticker < _maxPawns)
 			{
 				//ObjectType pawnType = Pawn.RandomPawnType();
-				ObjectType pawnType = ObjectType.PAWN_WARRIOR;
-				int team = _ticker % 2 == 0 ? 0 : 1;
+				ObjectType pawnType = ObjectType.PAWN_PIONEER;
+				int team = !_isOneTeam && _ticker % 2 == 0 ? 1 : 0;
 				Pawn.Spawn(pawnType, transform.position + Vector3.forward * _ticker * 2f, team);
 
 				float temp = _ticker == 0 ? 1f : -1f;

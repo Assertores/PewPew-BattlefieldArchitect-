@@ -45,7 +45,7 @@ namespace PPBA
 				if(_pawnAxes[i]._isEnabled)
 				{
 					float temp = Mathf.Clamp(_pawnAxes[i]._curve.Evaluate(PawnAxisInputs(pawn, _pawnAxes[i]._name)), 0f, 1f);
-					Debug.Log("Pawn " + pawn._id + " " + pawn.gameObject.name + " axis " + _pawnAxes[i]._name + " evaluated to " + temp);
+					Debug.Log("Behavior " + _name + "Pawn " + pawn._id + " " + pawn.gameObject.name + " axis " + _pawnAxes[i]._name + " evaluated to " + temp);
 					score *= temp;
 				}
 			}

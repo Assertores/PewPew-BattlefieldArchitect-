@@ -206,6 +206,7 @@ namespace PPBA
 		private void OnDisable()
 		{
 			RemoveCoverSlotsFromLists();
+			gameObject.SetActive(false);
 		}
 	}
 }
