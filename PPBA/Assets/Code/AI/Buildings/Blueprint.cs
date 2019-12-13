@@ -48,19 +48,21 @@ namespace PPBA
 			get => (float)(_resourcesMax - _resources - _resourcesIncoming);
 		}
 
-		// Start is called before the first frame update
-		void Start()
+		#region
+		void Awake()
 		{
-
+#if !UNITY_SERVER
+			TickHandler.s_DoInput += ExtractFromGameState;
+#endif
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
 		}
+		#endregion
 
 		#region Give & Take
 		public void WorkTick()
@@ -187,7 +189,6 @@ namespace PPBA
 			}
 			{
 				GSC.work temp = TickHandler.s_interfaceGameState.GetWork(_id);
-
 				if(null != temp)
 				{
 					_nextState._work = temp._work;
