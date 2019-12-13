@@ -411,6 +411,7 @@ namespace PPBA
 		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
 			m_serverPort = port;
+			_playerCount = playerCount;
 			socket = new UdpClient(port);
 			socket.DontFragment = true;
 
