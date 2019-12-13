@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1104179920457717733}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6571662370558201566}
   m_Father: {fileID: 2629620312372173525}
@@ -40,10 +40,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2629620312372173525}
-  - component: {fileID: 3301649464203582964}
-  - component: {fileID: 5763944625188300945}
+  - component: {fileID: -403219021972848154}
   m_Layer: 0
-  m_Name: HQ
+  m_Name: GhostHQ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,11 +60,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5196537407882409945}
-  - {fileID: 1058095763491795343}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3301649464203582964
+--- !u!114 &-403219021972848154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,30 +72,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2213009535242751257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 905a3ab36be12824ca6647935e8fc86e, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a0ebffffa0000a499857ebd790e67ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 0}
-  _TextField: {fileID: 0}
-  _ObjectType: 10
-  _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
-    type: 3}
-  _blueprintPrefab: {fileID: 0}
-  BaseMaterial: {fileID: 0}
-  _Positions: {x: 0, y: 0}
---- !u!114 &5763944625188300945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2213009535242751257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _type: 10
 --- !u!1 &2735574723882578816
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,7 +134,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5df7ac787a2861342b2e6cbd6c8512c5, type: 2}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -190,54 +168,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &5333057613725341048
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1058095763491795343}
-  - component: {fileID: 8432226077143233149}
-  m_Layer: 0
-  m_Name: BluePrint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1058095763491795343
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5333057613725341048}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2629620312372173525}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8432226077143233149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5333057613725341048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b3f2d80b2b95164496b2d40e424f9a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _team: 0
-  _resources: 0
-  _resourcesIncoming: 0
-  _resourcesMax: 100
-  _work: 0
-  _workMax: 50
-  _workers: []
-  _material: {fileID: 2100000, guid: 5df7ac787a2861342b2e6cbd6c8512c5, type: 2}

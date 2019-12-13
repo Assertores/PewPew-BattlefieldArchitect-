@@ -22,10 +22,12 @@ namespace PPBA
 
 		[SerializeField] Material BaseMaterial;
 
+		public Vector2 _Positions;
+
 		public Vector4 GetShaderProperties
 		{
 			get { return Vector4.zero; }
-			set { }
+			set { _Positions = value; }
 		}
 
 		public ObjectType GetObjectType()

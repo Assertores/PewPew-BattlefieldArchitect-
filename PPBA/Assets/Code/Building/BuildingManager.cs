@@ -5,7 +5,7 @@ namespace PPBA
 {
 	public class BuildingManager : Singleton<BuildingManager>
 	{
-		public GameObject GhostRefinery;
+		//public GameObject GhostRefinery;
 		public GameObject GhostWall;
 		public GameObject GhostWallBetween;
 
@@ -33,16 +33,16 @@ namespace PPBA
 
 				//if(!_isBuilt)
 				//{
-					MoveCurrentObjectToMouse();
-					RotateCurrentObjectWithMouseWheel();
+				MoveCurrentObjectToMouse();
+				RotateCurrentObjectWithMouseWheel();
 
-					if(Input.GetMouseButtonDown(0))
+				if(Input.GetMouseButtonDown(0))
+				{
+					if(_canBuild)
 					{
-						if(_canBuild)
-						{
-							ReleaseIfClicked();
-						}
+						ReleaseIfClicked();
 					}
+				}
 				//}
 
 				if(Input.GetMouseButton(0) && _currentPrefabIndex > 0)
@@ -77,7 +77,7 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(_CurrentObjectType == ObjectType.REFINERY /*|| other single object*/)
+			if(_CurrentObjectType == ObjectType.REFINERY || _CurrentObjectType == ObjectType.HQ)
 			{
 				PlaceRefineryPrefab();
 			}
@@ -89,18 +89,41 @@ namespace PPBA
 			}
 		}
 
-		public void HandleNewObject(ObjectType PrefabBuildingType)
+		public void HandleNewObject(IRefHolder PrefabBuildingType)
 		{
-			_CurrentObjectType = PrefabBuildingType;
+			_CurrentObjectType = PrefabBuildingType._Type;
 
-			if(PrefabBuildingType == ObjectType.REFINERY)
-			{
-				_currentPlaceableObject = Instantiate(GhostRefinery, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
-			}
 
-			if(PrefabBuildingType == ObjectType.WALL)
+
+			switch(PrefabBuildingType._Type)
 			{
-				ConstructWall();
+				case ObjectType.REFINERY:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+					break;
+				case ObjectType.DEPOT:
+					break;
+				case ObjectType.GUN_TURRET:
+					break;
+				case ObjectType.WALL:
+					ConstructWall();
+					break;
+				case ObjectType.WALL_BETWEEN:
+					break;
+				case ObjectType.PAWN_WARRIOR:
+					break;
+				case ObjectType.PAWN_HEALER:
+					break;
+				case ObjectType.PAWN_PIONEER:
+					break;
+				case ObjectType.COVER:
+					break;
+				case ObjectType.FLAGPOLE:
+					break;
+				case ObjectType.HQ:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+					break;
+				case ObjectType.SIZE:
+					break;
 			}
 		}
 
