@@ -19,6 +19,7 @@ namespace PPBA
 			_name = Behaviors.SHOOT;
 		}
 
+		#region Monobehaviour
 		void Awake()//my own singleton pattern, the Singleton.cs doesn't work here as I need multiple behaviors.
 		{
 			if(s_instance == null)
@@ -26,16 +27,7 @@ namespace PPBA
 			else
 				Destroy(gameObject);
 		}
-
-		void Start()
-		{
-
-		}
-
-		void Update()
-		{
-
-		}
+		#endregion
 
 		#region Behavior
 		public override void Execute(Pawn pawn)
@@ -112,7 +104,7 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				case "Ammo":
-					return (float) pawn._ammo / pawn._maxAmmo;
+					return (float)pawn._ammo / pawn._maxAmmo;
 				case "Cover":
 					if(pawn._isMounting)
 						return pawn._mountSlot.GetCoverScore(pawn.transform.position);

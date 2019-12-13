@@ -14,6 +14,7 @@ namespace PPBA
 			_name = Behaviors.BUILD;
 		}
 
+		#region Monobehaviour
 		private void Awake()
 		{
 			if(s_instance == null)
@@ -21,16 +22,7 @@ namespace PPBA
 			else
 				Destroy(gameObject);
 		}
-
-		void Start()
-		{
-
-		}
-
-		void Update()
-		{
-
-		}
+		#endregion
 
 		public override void Execute(Pawn pawn)
 		{

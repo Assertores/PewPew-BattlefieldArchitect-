@@ -17,6 +17,7 @@ namespace PPBA
 			_name = Behaviors.MOUNT;
 		}
 
+		#region Monobehaviour
 		private void Awake()
 		{
 			if(s_instance == null)
@@ -24,6 +25,7 @@ namespace PPBA
 			else
 				Destroy(gameObject);
 		}
+		#endregion
 
 		public override void Execute(Pawn pawn)
 		{
@@ -101,16 +103,6 @@ namespace PPBA
 				default:
 					return 1f;
 			}
-		}
-
-		void Start()
-		{
-
-		}
-
-		void Update()
-		{
-
 		}
 
 		public override void RemoveFromTargetDict(Pawn pawn)
