@@ -16,5 +16,8 @@ namespace PPBA
 		public const string MASTER = "Master";
 		public const string MUSIC = "Music";
 		public const string SFX = "SFX";
+
+		public const string MAINMENU = "MainMenu";
+		public const string GAME = "BuildingTest";
 	}
 }
