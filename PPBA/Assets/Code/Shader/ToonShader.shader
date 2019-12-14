@@ -8,6 +8,8 @@
 		_InsideColor("InsideColor", Color) = (1,1,1,1)
 		_MainTex("Texture", 2D) = "white" {}
 		_BumpMap("Bumpmap", 2D) = "bump" {}
+		_ParallaxMap ("Heightmap (A)", 2D) = "black" {}
+		_Parallax ("Height", Range (0.005, 0.08)) = 0.02
 		_Specular("Specular", 2D) = "black" {}
 	//	_Specular("Specular Color", Color) = (1,1,1,1)
 		[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
@@ -49,6 +51,7 @@
 			sampler2D _MainTex;
 			sampler2D _BumpMap;
 			sampler2D _Specular;
+ 			sampler2D _ParallaxMap;			// sampler2D _ResourceMap;
 
 			fixed4 _Color;
 			half3 _Emission;
@@ -69,7 +72,8 @@
 			float _Noise;
 			float _NoiseScale;
 			float _BuildingHeight;
-
+			float _Parallax;
+			
 			struct ToonSurfaceOutput
 			{
 				fixed3 Albedo;
@@ -141,14 +145,22 @@
 			//input struct which is automatically filled by unity
 			struct Input
 			{
+				float3 viewDir;
 				float3 worldPos;
 				float2 uv_MainTex;
+				float2 uv_BumpMap;
 				half frontFace : VFACE;
 			};
 
 			//the surface shader function which sets parameters the lighting function then uses
 			void surf(Input i, inout ToonSurfaceOutput o)
 			{
+				half h = tex2D (_ParallaxMap, i.uv_MainTex).w;
+     			float2 offset = ParallaxOffset (h, _Parallax, i.viewDir);
+
+    			i.uv_MainTex += offset;
+     			i.uv_BumpMap += offset;
+
 				float3 p = i.worldPos;
 				float3 s = _NoiseScale * p;
 				float noise = snoise(s);
