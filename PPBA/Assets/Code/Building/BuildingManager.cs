@@ -92,9 +92,7 @@ namespace PPBA
 		public void HandleNewObject(IRefHolder PrefabBuildingType)
 		{
 			_CurrentObjectType = PrefabBuildingType._Type;
-
-
-
+					   
 			switch(PrefabBuildingType._Type)
 			{
 				case ObjectType.REFINERY:
@@ -133,6 +131,8 @@ namespace PPBA
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
 			_PlayedBuilts.Clear();
+			_canBuild = true;
+
 
 		}
 

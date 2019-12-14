@@ -12,7 +12,7 @@ public class CollisionDetecting : MonoBehaviour
 	{
 		if(other.gameObject.layer == _FaultBuildingLayer)
 		{
-			BuildingManager.s_instance._canBuild = false;
+			//BuildingManager.s_instance._canBuild = false;
 
 			if(GhostMaterial != null)
 			{
@@ -25,7 +25,7 @@ public class CollisionDetecting : MonoBehaviour
 	{
 		if(other.gameObject.layer == _FaultBuildingLayer)
 		{
-			BuildingManager.s_instance._canBuild = true;
+			//BuildingManager.s_instance._canBuild = true;
 			if(GhostMaterial != null)
 			{
 				GhostMaterial.SetColor("_Color", new Color(0, 1, 0, 0.3f));
