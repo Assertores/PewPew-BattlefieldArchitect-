@@ -219,6 +219,9 @@ namespace PPBA
 
 			for(byte i = 0; i < state.Count; i++)
 			{
+				if(client._gameStates[tick]._receivedMessages[i, 0])
+					continue;
+
 				msg.Clear();
 
 				msg.Add((byte)MessageType.NON);
@@ -231,7 +234,8 @@ namespace PPBA
 				socket.Send(msg.ToArray(), msg.Count, client._ep);
 			}
 
-			client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
+			if(client._gameStates[tick]._isDelta)
+				client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
 		}
 
 		void DoServerRestart()
