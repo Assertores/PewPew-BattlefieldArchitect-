@@ -114,7 +114,7 @@ namespace PPBA
 				SendGameStateToClient(fieldTick, client);
 			}
 
-			int offset = 2 + sizeof(int) + field.Length;
+			int offset = 2 + 2 * sizeof(int) + field.Length;
 
 			int startTick = BitConverter.ToInt32(data, offset);
 			offset += sizeof(int);
