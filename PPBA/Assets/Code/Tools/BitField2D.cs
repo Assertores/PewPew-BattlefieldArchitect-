@@ -135,55 +135,15 @@ namespace PPBA
 				if(_backingArray[i] == 0)
 					continue;
 
-				if((_backingArray[i] & (1)) > 0)
+				for(int bit = 0; bit < 8; bit++)
 				{
-					Vector2Int pos = GetPositionOfBit(i * 8);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
+					if((_backingArray[i] & (1 << bit)) > 0)
+					{
+						Vector2Int pos = GetPositionOfBit(i * 8 + bit);
+						if(this[pos.x, pos.y])
+							value.Add(pos);
+					}
 				}
-				if((_backingArray[i] & (1 << 1)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 1);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 2)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 2);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 3)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 3);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 4)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 4);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 5)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 5);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 6)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 6);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-				if((_backingArray[i] & (1 << 7)) > 0)
-				{
-					Vector2Int pos = GetPositionOfBit(i * 8 + 7);
-					if(this[pos.x, pos.y])
-						value.Add(pos);
-				}
-
 			}
 			/*/
 			for(int y = 0; y < _fieldHight; y++)
