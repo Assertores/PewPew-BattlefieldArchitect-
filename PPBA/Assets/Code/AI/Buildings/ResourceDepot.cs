@@ -134,7 +134,7 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
-			if(!JobCenter.s_resourceDepots[_team].Contains(this))
+			if(null != JobCenter.s_resourceDepots?[_team] && !JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
@@ -145,7 +145,7 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			if(JobCenter.s_resourceDepots[_team].Contains(this))
+			if(null != JobCenter.s_resourceDepots?[_team] && JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Remove(this);
 
 			TickHandler.s_LateCalc -= CalculateScore;

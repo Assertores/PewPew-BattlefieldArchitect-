@@ -272,7 +272,7 @@ namespace PPBA
 			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
-			if(!JobCenter.s_blueprints[_team].Contains(this))
+			if(null != JobCenter.s_blueprints?[_team] && !JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Add(this);
 
 			TickHandler.s_GatherValues += WriteToGameState;
@@ -282,7 +282,7 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			if(JobCenter.s_blueprints[_team].Contains(this))
+			if(null != JobCenter.s_blueprints?[_team] && JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
 
 			TickHandler.s_GatherValues -= WriteToGameState;
