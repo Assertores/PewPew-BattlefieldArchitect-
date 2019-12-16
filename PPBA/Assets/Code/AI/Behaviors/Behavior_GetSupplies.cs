@@ -29,13 +29,15 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-			pawn.SetMoveTarget(targetPosition);
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{
 				//Takes an amount of resources from the depot no larger than (1) the space left at pawn (2) the res left at depot, and gives it to the pawn.
 				pawn._supplies += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxSupplies - pawn._supplies));
+				targetPosition = pawn.transform.position;
 			}
+
+			pawn.SetMoveTarget(targetPosition);
 		}
 
 		public override float FindBestTarget(Pawn pawn)

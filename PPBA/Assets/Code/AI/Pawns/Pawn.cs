@@ -70,7 +70,7 @@ namespace PPBA
 		[SerializeField] protected Behaviors[] e_behaviors;
 		[SerializeField] protected float[] _behaviorMultipliers;
 		[SerializeField] protected Behavior[] _behaviors;
-		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
+		public Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 		public Behaviors _clientBehavior = Behaviors.IDLE;
 
@@ -217,7 +217,7 @@ namespace PPBA
 					}
 				}
 
-				if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
+				if(_lastBehavior != null && _lastBehavior != _behaviors[bestBehavior])//on behavior change
 				{
 					_lastBehavior.RemoveFromTargetDict(this);//remove from lastBehaviors targetList
 
@@ -330,6 +330,7 @@ namespace PPBA
 				if(null != temp)
 				{
 					_nextState._behavior = temp._behavior;
+					_clientBehavior = temp._behavior;
 				}
 			}
 			{

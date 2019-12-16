@@ -17,7 +17,19 @@ namespace PPBA
 
 		#region Variables
 		[SerializeField] public int _id { get; set; }
-		[SerializeField] public int _team { get => _myRefHolder._team; }
+		public int _team
+		{
+			get
+			{
+				if(null == _myRefHolder)
+					_myRefHolder = GetComponentInParent<IRefHolder>();
+
+				if(null == _myRefHolder)
+					return 0;
+				else
+					return _myRefHolder._team;
+			}
+		}
 		[SerializeField] public int _resources = 0;
 		[SerializeField] public int _resourcesIncoming = 0;
 		[SerializeField] public int _resourcesMax = 100;

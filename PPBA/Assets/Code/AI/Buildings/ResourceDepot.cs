@@ -7,7 +7,19 @@ namespace PPBA
 	public class ResourceDepot : MonoBehaviour, INetElement
 	{
 		[SerializeField] public int _id { get; set; }
-		[SerializeField] public int _team { get => _myRefHolder._team; }
+		public int _team
+		{
+			get
+			{
+				if(null == _myRefHolder)
+					_myRefHolder = GetComponentInParent<IRefHolder>();
+
+				if(null == _myRefHolder)
+					return 0;
+				else
+					return _myRefHolder._team;
+			}
+		}
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
 		[SerializeField] public int _resources = 0;
@@ -16,7 +28,8 @@ namespace PPBA
 		[SerializeField] public int _maxAmmo = 1000;
 		[SerializeField] public float _score = 0;
 		[SerializeField] public float _maxScore = 1;
-		[SerializeField] [Tooltip("How close does a pawn have to be to interact with this?")]
+		[SerializeField]
+		[Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
 
 		private IRefHolder _myRefHolder;
@@ -148,6 +161,6 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _score });
 		}
-#endregion
+		#endregion
 	}
 }

@@ -31,10 +31,14 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
 			{
 				Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-				pawn.SetMoveTarget(targetPosition);
 
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
+				{
 					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
+					targetPosition = pawn.transform.position;
+				}
+
+				pawn.SetMoveTarget(targetPosition);
 			}
 		}
 
@@ -113,6 +117,20 @@ namespace PPBA
 		{
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
+		}
+
+		public void CalculateIncomingSupplies(int tick = 0)//not called yet
+		{
+			foreach(Pawn pawn in Pawn._pawns.FindAll((x) => x._lastBehavior == Behavior_BringSupplies.s_instance))
+			{
+				if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn])
+					s_targetDictionary[pawn]._resourcesIncoming += pawn._supplies;
+			}
+		}
+
+		public void PromiseSupplies(Blueprint blueprint, int value)//not called yet
+		{
+			blueprint._resourcesIncoming += value;
 		}
 	}
 }
