@@ -88,7 +88,7 @@ namespace PPBA
 			return true;
 		}
 
-		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void HandleNON(byte[] data, IPEndPoint ep)
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
@@ -115,19 +115,18 @@ namespace PPBA
 			}
 
 			int offset = 2 + sizeof(int) + field.Length;
-			while(offset < data.Length)
+
+			int startTick = BitConverter.ToInt32(data, offset);
+			offset += sizeof(int);
+			for(int tick = startTick; offset < data.Length; tick++)
 			{
-				int tick = BitConverter.ToInt32(data, offset);
-
-				offset += sizeof(int);
-
 				InputState tmp = new InputState();
 				offset = tmp.Decrypt(RemoteID, data, offset);
 
 				client._inputStates[tick] = tmp;
 			}
 
-			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(fieldTick - 2);
+			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 2);
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -333,7 +332,9 @@ namespace PPBA
 			_myID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+
+		readonly byte[] h_emptyInputState = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void Send()
 		{
 			List<byte> msg = new List<byte>();
@@ -353,16 +354,22 @@ namespace PPBA
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
+			msg.AddRange(BitConverter.GetBytes(ib.GetLowEnd()));
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++)
 			{
 				if(ib[i] == default)
+				{
+					msg.AddRange(h_emptyInputState);
 					continue;
+				}
 
 				byte[] tmp = ib[i].Encrypt();
 				if(tmp == null)
+				{
+					msg.AddRange(h_emptyInputState);
 					continue;
+				}
 
-				msg.AddRange(BitConverter.GetBytes(i));
 				msg.AddRange(tmp);
 			}
 
@@ -392,8 +399,8 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
-#endregion
-#region UIInterface
+		#endregion
+		#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
 			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
@@ -443,6 +450,6 @@ namespace PPBA
 
 			Debug.Log("[SERVER] shut down");
 		}
-#endregion
+		#endregion
 	}
 }
