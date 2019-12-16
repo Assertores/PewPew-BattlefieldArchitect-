@@ -79,6 +79,8 @@ namespace PPBA
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
 		private LineRenderer _lineRenderer;
+		[SerializeField] private HealthBarController _healthBarController;
+		[SerializeField] private Material _material;
 
 		//targets and target lists
 		public List<Pawn> _closePawns = new List<Pawn>();
@@ -173,6 +175,7 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
+			_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			ShowNavPath();
 		}
 		#endregion
@@ -191,7 +194,7 @@ namespace PPBA
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
 
-					Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
+					//Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
 				}
 			}
 		}

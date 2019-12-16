@@ -197,7 +197,7 @@ namespace PPBA
 
 		public static void Spawn(Vector3 spawnPoint, int team)
 		{
-			Cover newCover = (Cover)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.COVER]].GetNextObject();
+			Cover newCover = (Cover)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.COVER]].GetNextObject(team);
 			ResetToDefault(newCover, team);
 			newCover.AddCoverSlotsToLists();
 			newCover.transform.position = spawnPoint;
