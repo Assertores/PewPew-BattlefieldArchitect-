@@ -287,6 +287,7 @@ namespace PPBA
 
 			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
 
+			Profiler.BeginSample("[GameState] types");
 			if(_types.Count > 0)
 			{
 				msg.Clear();
@@ -301,6 +302,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] args");
 			if(_args.Count > 0)
 			{
 				msg.Clear();
@@ -314,6 +317,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] transforms");
 			if(_transforms.Count > 0)
 			{
 				msg.Clear();
@@ -330,6 +335,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] ammo");
 			if(_ammos.Count > 0)
 			{
 				msg.Clear();
@@ -344,6 +351,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] resources");
 			if(_resources.Count > 0)
 			{
 				msg.Clear();
@@ -357,6 +366,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] healths");
 			if(_healths.Count > 0)
 			{
 				msg.Clear();
@@ -371,6 +382,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] works");
 			if(_works.Count > 0)
 			{
 				msg.Clear();
@@ -384,6 +397,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] behaviors");
 			if(_behaviors.Count > 0)
 			{
 				msg.Clear();
@@ -398,6 +413,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] paths");
 			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
 			{
 				msg.Clear();
@@ -417,6 +434,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] heatMaps");
 			if(_heatMaps.Count > 0)
 			{
 				/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
@@ -456,6 +475,8 @@ namespace PPBA
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] denyedInput");
 			if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
@@ -468,6 +489,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] IDRanges");
 			if(_newIDRanges.Count > 0)
 			{
 				msg.Clear();
@@ -482,6 +505,7 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
 
 			if(_messageHolder.Count == 0)
 			{
