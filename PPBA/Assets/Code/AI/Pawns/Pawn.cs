@@ -191,7 +191,7 @@ namespace PPBA
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
 
-					Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
+					//Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
 				}
 			}
 		}
