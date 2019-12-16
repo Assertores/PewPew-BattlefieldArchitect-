@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//#define UNITY_SERVER
 namespace PPBA
 {
 	public struct HeatMapReturnValue
@@ -19,7 +20,7 @@ namespace PPBA
 		private void Start()
 		{
 #if UNITY_SERVER
-			TickHandler.s_DoTick += CalculateMaps;
+			TickHandler.s_EarlyCalc += CalculateMaps;
 			TickHandler.s_GatherValues += SaveMapToGameState;
 #else
 			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
@@ -31,7 +32,7 @@ namespace PPBA
 		private void OnDestroy()
 		{
 #if UNITY_SERVER
-			TickHandler.s_DoTick -= CalculateMaps;
+			TickHandler.s_EarlyCalc -= CalculateMaps;
 			TickHandler.s_GatherValues -= SaveMapToGameState;
 #else
 			TickHandler.s_DoInput -= SetMap;

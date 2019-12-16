@@ -442,7 +442,8 @@ namespace PPBA
 				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
 				foreach(var it in _heatMaps)
 				{
-					if(it._mask.GetActiveBits().Length != it._values.Count)
+					Vector2Int[] pos = it._mask.GetActiveBits();
+					if(pos.Length != it._values.Count)
 					{
 						Debug.LogError("Values and Bitfield don't fit together. " + it._id);
 						continue;
@@ -453,7 +454,7 @@ namespace PPBA
 					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
-						Vector2Int[] pos = it._mask.GetActiveBits();
+						
 						msg.AddRange(BitConverter.GetBytes(pos.Length));
 						for(int i = 0; i < pos.Length; i++)
 						{
