@@ -191,7 +191,7 @@ namespace PPBA
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
 
-					Debug.Log("Behavior: " + _behaviors[i]._name + "got score " + _behaviorScores[i]);
+					Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
 				}
 			}
 		}
@@ -290,6 +290,14 @@ namespace PPBA
 				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 				{
 					// do trigger stuff
+				}
+			}
+			{
+				GSC.type temp = TickHandler.s_interfaceGameState.GetType(_id);
+
+				if(null != temp)
+				{
+					_team = temp._team;
 				}
 			}
 			{
@@ -731,7 +739,7 @@ namespace PPBA
 		private static void ResetToDefault(Pawn pawn, int team)
 		{
 			pawn._arguments = new Arguments();
-			pawn._team = team;//not needed if object pools are per player
+			pawn._team = team;
 			pawn._health = pawn._maxHealth;
 			pawn._ammo = pawn._maxAmmo;
 			pawn._morale = pawn._maxMorale;
@@ -756,9 +764,6 @@ namespace PPBA
 			ResetToDefault(newPawn, team);
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
-
-			//debuuuug
-			newPawn._supplies = 50;
 		}
 
 		public static ObjectType RandomPawnType()

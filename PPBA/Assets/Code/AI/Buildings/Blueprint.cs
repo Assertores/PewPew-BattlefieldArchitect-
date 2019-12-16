@@ -25,7 +25,10 @@ namespace PPBA
 					_myRefHolder = GetComponentInParent<IRefHolder>();
 
 				if(null == _myRefHolder)
+				{
+					Debug.LogError("Blueprint couldn't find IRefHolder");
 					return 0;
+				}
 				else
 					return _myRefHolder._team;
 			}
