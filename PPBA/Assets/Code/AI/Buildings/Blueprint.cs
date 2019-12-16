@@ -52,7 +52,8 @@ namespace PPBA
 
 		public float _workDoable
 		{
-			get => ((float)(_resources * _resourcesMax) / (float)_workMax) - (float)_work;
+			//get => ((float)(_resources * _resourcesMax) / (float)_workMax) - (float)_work;
+			get => Mathf.Clamp(((float)(_resources * _workMax)) / (float)_resourcesMax - (float)_work, 0f, _workMax);
 		}
 
 		public float _resourcesNeeded

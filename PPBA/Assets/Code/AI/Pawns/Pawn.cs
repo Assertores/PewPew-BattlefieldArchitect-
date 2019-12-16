@@ -48,7 +48,7 @@ namespace PPBA
 		[SerializeField] public float _maxAttackDamage = 75f;
 		[SerializeField] [Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
-		[SerializeField] public int _supplies;//resources carried
+		[SerializeField] public int _supplies { get => _suppliesBackingField; set => _suppliesBackingField = Mathf.Clamp(value, 0, _maxSupplies); } //resources carried
 		[SerializeField] public int _maxSupplies = 10;
 
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
@@ -57,6 +57,7 @@ namespace PPBA
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 		[SerializeField] protected float _healthBackingField = 100;
 		[SerializeField] protected int _ammoBackingField = 100;
+		[SerializeField] protected int _suppliesBackingField = 0;
 		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
