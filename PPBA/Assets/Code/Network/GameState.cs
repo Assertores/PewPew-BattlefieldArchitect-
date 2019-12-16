@@ -423,6 +423,11 @@ namespace PPBA
 				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
 				foreach(var it in _heatMaps)
 				{
+					if(it._mask.GetActiveBits().Length != it._values.Count)
+					{
+						Debug.LogError("Values and Bitfield don't fit together. " + it._id);
+						continue;
+					}
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
