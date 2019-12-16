@@ -760,7 +760,7 @@ namespace PPBA
 
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
-			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject();
+			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
 			ResetToDefault(newPawn, team);
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
