@@ -136,6 +136,7 @@ namespace PPBA
 			//Get references
 			_navMeshPath = new NavMeshPath();
 			_lineRenderer = GetComponent<LineRenderer>();
+			//_material = transform.GetChild(0).GetComponent<Material>();
 
 			//Initialisation
 			InitiateBehaviors();
@@ -300,6 +301,9 @@ namespace PPBA
 
 				if(null != temp)
 				{
+					if(_team != temp._team)
+						SetMaterialColor(_team);
+
 					_team = temp._team;
 				}
 			}
@@ -759,6 +763,8 @@ namespace PPBA
 
 			pawn._lastState = new State();
 			pawn._nextState = new State();
+
+			pawn.SetMaterialColor(team);
 		}
 
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
@@ -784,6 +790,38 @@ namespace PPBA
 				default:
 					return ObjectType.PAWN_WARRIOR;
 			}
+		}
+
+		private void SetMaterialColor(int team = 0)
+		{
+			Color color;
+
+			switch(team)
+			{
+				case 0:
+					color = Color.magenta;
+					break;
+				case 1:
+					color = Color.blue;
+					break;
+				case 2:
+					color = Color.green;
+					break;
+				case 3:
+					color = Color.yellow;
+					break;
+				default:
+					color = Color.gray;
+					break;
+			}
+
+			if(null == _material)
+				_material = transform.GetChild(0).GetComponent<Material>();
+
+			if(null != _material)
+				_material.color = color;
+			else
+				Debug.LogWarning("Pawn still couldn't get a material");
 		}
 
 		private void OnEnable()

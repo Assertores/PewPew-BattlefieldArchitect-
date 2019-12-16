@@ -196,7 +196,7 @@ MonoBehaviour:
   _clientBehavior: 0
   _clientNavPathCorners: []
   _healthBarController: {fileID: 6350925231370483310}
-  _material: {fileID: 0}
+  _material: {fileID: 2100000, guid: 85f8cc39e96cac64bacc8213a4a96aa5, type: 2}
   _closePawns: []
   _closeCoverSlots: []
   _moveTarget: {x: 0, y: 0, z: 0}
