@@ -23,7 +23,7 @@ public class TestSearchAlgorythem : MonoBehaviour
 
 		int maxIndex = int.MaxValue;
 
-		float startcolor = texture.GetPixel(position.x, position.y).r;
+		float myTeam = texture.GetPixel(position.x, position.y).r;
 
 		for(int column = 1; column * column < foundDist; column++)
 		{
@@ -35,49 +35,49 @@ public class TestSearchAlgorythem : MonoBehaviour
 
 				#region Check 8 positions
 
-				if(startcolor != texture.GetPixel(position.x + column, position.y + row).r)
+				if(myTeam != texture.GetPixel(position.x + column, position.y + row).r)
 				{
 					pos.x = position.x + column;
 					pos.y = position.y + row;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - column, position.y + row).r)
+				else if(myTeam != texture.GetPixel(position.x - column, position.y + row).r)
 				{
 					pos.x = position.x - column;
 					pos.y = position.y + row;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + column, position.y - row).r)
+				else if(myTeam != texture.GetPixel(position.x + column, position.y - row).r)
 				{
 					pos.x = position.x + column;
 					pos.y = position.y - row;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - column, position.y - row).r)
+				else if(myTeam != texture.GetPixel(position.x - column, position.y - row).r)
 				{
 					pos.x = position.x - column;
 					pos.y = position.y - row;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + row, position.y + column).r)
+				else if(myTeam != texture.GetPixel(position.x + row, position.y + column).r)
 				{
 					pos.x = position.x + row;
 					pos.y = position.y + column;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - row, position.y + column).r)
+				else if(myTeam != texture.GetPixel(position.x - row, position.y + column).r)
 				{
 					pos.x = position.x - row;
 					pos.y = position.y + column;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x + row, position.y - column).r)
+				else if(myTeam != texture.GetPixel(position.x + row, position.y - column).r)
 				{
 					pos.x = position.x + row;
 					pos.y = position.y - column;
 					valueIsDifferent = true;
 				}
-				else if(startcolor != texture.GetPixel(position.x - row, position.y - column).r)
+				else if(myTeam != texture.GetPixel(position.x - row, position.y - column).r)
 				{
 					pos.x = position.x - row;
 					pos.y = position.y - column;

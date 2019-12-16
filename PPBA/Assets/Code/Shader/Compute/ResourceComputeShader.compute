@@ -27,6 +27,7 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 	for (int i = 0; i < 50; i++)
 	{
 		buffer[i] = 0;
+
 	}
 }
 
@@ -46,14 +47,14 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 		{
 			continue;
 		}
-		
+
 		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
-		
+
 		//float4 curCol = InputTexture[id.xy].rgba;
 
 		//float minValue = float(min(curCol.r, harvestFac));
 		float minValue = float(min(currentResources, harvestFac));
-		
+
 		//float newCol = curCol.r - minValue;
 		currentResources -= minValue;
 
@@ -77,7 +78,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	{
 		int bit = id.y * weightMap + id.x;
 		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-		
+
 		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
 	}
 }
@@ -127,8 +128,8 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 		{
 			int bit = id.y * weightMap + id.x;
 			InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-						
-			TerritoriumResult[id.xy] = float4( m_point , 0  , 1);
+
+			TerritoriumResult[id.xy] = float4(m_point, 0, 1);
 		}
 	}
 }
@@ -139,103 +140,63 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSNextEdge(uint3 id : SV_DispatchThreadID)
 {
-	//bool imIn = false;
-	//for (int q = 0; !imIn || q < SoldiersSize; q++)
-	//{
-	//	if (id.x == Soldiers[q].x ||  id.y == Soldiers[q].y)
-	//		imIn = true;
-	//}
-	//if (!imIn)
-	//	discard;
+	//===== ===== relevance test ===== =====
+	bool imIn = false;
+	for (int q = 0; !imIn || q < SoldiersSize; q++)
+	{
+		if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
+			imIn = true;
+	}
+	if (!imIn)
+		return;
 
-	//float myTeam = TerritoriumResult[id.xy].x;
+	//===== ===== init ===== =====
+	float myTeam = TerritoriumResult[id.xy].x;
+	float2 found;
 
-	//int i;
+	float foundDist = 3.402823466e+38F;
 
-	//float maxPixelToTest = (stateSize * stateSize * 3.14159) / 8;
-	////for (; i < stateSize - 1;)
-	//for (int p = 0; p < maxPixelToTest; p++)
-	//{
-	//	i = 0;
+	int maxIndex = 4000000;
 
-	//	//searches for the first row whitch isn't already completly checkt
-	//	for (; i < stateSize; i++)
-	//	{
-	//		if (state[i].x <= i)
-	//			break;
-	//	}
+	//===== ===== serach ===== =====
+	for (int column = 1; column * column < foundDist; column++)
+	{
+		int rowLength = min(column, maxIndex);
+		for (int row = 0; row <= rowLength; row++)
+		{
+			float2 pos;
+			bool valueIsDifferent = false;
 
-	//	//serches from this row onword the nerest not checked pixel untill the distance is smaler than the row count
-	//	for (int j = i + 1; j < stateSize && j < state[i].y; j++)
-	//	{
-	//		if (state[j].y < state[i].y)
-	//		{
-	//			i = j;
-	//		}
-	//	}
+			pos = id.xy + float2(column, row);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(-column, row);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(column, -row);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(-column, -row);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(row, column);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(-row, column);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(row, -column);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+			pos = id.xy + float2(-row, -column);
+			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
 
-	//	//checks all 8 pixel of the circle
-	//	if (TerritoriumResult[id.xy + float2(state[i].x, i)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x + state[i].x;
-	//		TerritoriumResult[id.xy].z = id.y + i;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(-state[i].x, i)].r != myTeam)
-	//	{
+			if (valueIsDifferent)
+			{
+				int dist = column * column + row * row;
+				if (foundDist > dist)
+				{
+					found = pos;
+					maxIndex = row;
+					foundDist = dist;
+				}
+			}
+		}
 
-	//		TerritoriumResult[id.xy].y = id.x - state[i].x;
-	//		TerritoriumResult[id.xy].z = id.y + i;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(state[i].x, -i)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x + state[i].x;
-	//		TerritoriumResult[id.xy].z = id.y - i;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(-state[i].x, -i)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x - state[i].x;
-	//		TerritoriumResult[id.xy].z = id.y - i;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(i, state[i].x)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x + i;
-	//		TerritoriumResult[id.xy].z = id.y + state[i].x;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(-i, state[i].x)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x - i;
-	//		TerritoriumResult[id.xy].z = id.y + state[i].x;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(i, -state[i].x)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x + i;
-	//		TerritoriumResult[id.xy].z = id.y - state[i].x;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-	//	if (TerritoriumResult[id.xy + float2(-i, -state[i].x)].r != myTeam)
-	//	{
-	//		TerritoriumResult[id.xy].y = id.x - i;
-	//		TerritoriumResult[id.xy].z = id.y - state[i].x;
-	//		TerritoriumResult[id.xy].w = state[i].y;
-	//		break;
-	//	}
-
-	//	//marks the next pixel in the row to be checkt
-	//	state[i].x++;
-	//	//calculatest the distance of the pixel to check
-	//	state[i].y = sqrt(i * i + state[i].x * state[i].x);
-	//}
+		//===== ===== result ===== =====
+		TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
+	}
 }
