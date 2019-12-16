@@ -17,7 +17,7 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, PATH, MAP, INPUTS, RANGE };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
 
 		public class gsc
 		{
@@ -417,15 +417,33 @@ namespace PPBA
 			}
 			if(_heatMaps.Count > 0)
 			{
-				foreach(var it in _heatMaps)/// byte Type, int ID, 32768 byte BitField, {float Values}[]
+				/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
+				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
+				foreach(var it in _heatMaps)
 				{
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
-					msg.AddRange(it._mask.ToArray());
-					for(int i = 0; i < it._values.Count; i++)
+					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
 					{
-						msg.AddRange(BitConverter.GetBytes(it._values[i]));
+						msg.Add((byte)GSC.DataType.PIXELWISE);
+						Vector2Int[] pos = it._mask.GetActiveBits();
+						msg.AddRange(BitConverter.GetBytes(pos.Length));
+						for(int i = 0; i < pos.Length; i++)
+						{
+							msg.AddRange(BitConverter.GetBytes(pos[i].x));
+							msg.AddRange(BitConverter.GetBytes(pos[i].y));
+							msg.AddRange(BitConverter.GetBytes(it._values[i]));
+						}
+					}
+					else
+					{
+						msg.Add((byte)GSC.DataType.BITMAPWISE);
+						msg.AddRange(it._mask.ToArray());
+						for(int i = 0; i < it._values.Count; i++)
+						{
+							msg.AddRange(BitConverter.GetBytes(it._values[i]));
+						}
 					}
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
@@ -692,35 +710,53 @@ namespace PPBA
 						}
 						break;
 					}
-					case GSC.DataType.MAP:/// byte Type, int ID, 32768 byte BitField, {float Values}[]
+					/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
+					/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
+					case GSC.DataType.MAP:
 					{
 						GSC.heatMap value = new GSC.heatMap();
 						value._id = count;//value overload
-						Debug.Log(value._id);
 
 						Vector2Int space = HeatMapHandler.s_instance.GetHeatMapSize(value._id);
 						value._mask = new BitField2D(space.x, space.y);
-						Debug.Log(space);
 
-						byte[] mask = value._mask.ToArray();
-						Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
-						offset += mask.Length;
-						Debug.Log(offset);
-
-						value._mask.FromArray(mask);
-
-						Debug.Log("id: " + value._id);
-						Debug.Log(value.ToString());
-
-						int size = value._mask.GetActiveBits().Length;
-						Debug.Log(size);
-
-						value._values = new List<float>(size);
-						for(int j = 0; j < size; j++)
+						offset++;
+						if((GSC.DataType)msg[offset-1] == GSC.DataType.PIXELWISE)
 						{
-							value._values.Add(BitConverter.ToSingle(msg, offset));
-							offset += sizeof(float);
-							Debug.Log(value._values[value._values.Count - 1] + ", " + offset);
+							int size = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							for(int i = 0; i < size; i++)
+							{
+								value._mask[BitConverter.ToInt32(msg, offset), BitConverter.ToInt32(msg, offset + sizeof(int))] = true;
+								offset += 2 * sizeof(int);
+
+								value._values.Add(BitConverter.ToSingle(msg, offset));
+								offset += sizeof(float);
+							}
+						}
+						else
+						{
+							byte[] mask = value._mask.ToArray();
+							Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
+							offset += mask.Length;
+							Debug.Log(offset);
+
+							value._mask.FromArray(mask);
+
+							Debug.Log("id: " + value._id);
+							Debug.Log(value.ToString());
+
+							int size = value._mask.GetActiveBits().Length;
+							Debug.Log(size);
+
+							value._values = new List<float>(size);
+							for(int j = 0; j < size; j++)
+							{
+								value._values.Add(BitConverter.ToSingle(msg, offset));
+								offset += sizeof(float);
+								Debug.Log(value._values[value._values.Count - 1] + ", " + offset);
+							}
 						}
 
 						_heatMaps.Add(value);
