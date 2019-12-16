@@ -54,6 +54,7 @@ namespace PPBA
 				return -2;
 			}
 
+			Profiler.BeginSample("[Server] Simulating all");
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
 			{
 				s_interfaceInputState = new InputState();
@@ -94,15 +95,18 @@ namespace PPBA
 				Profiler.EndSample();
 			}
 			s_currentTick--;
-
+			Profiler.EndSample();
+			Profiler.BeginSample("[Server] Gather Values");
 			s_interfaceGameState = new GameState();
 			s_interfaceInputState = new InputState();
 
 			s_GatherValues?.Invoke(s_currentTick);
+			Profiler.EndSample();
 
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
+			Profiler.BeginSample("[Server] Seperating GS");
 			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
@@ -114,6 +118,7 @@ namespace PPBA
 
 				it._inputStates.FreeUpTo(s_currentTick);
 			}
+			Profiler.EndSample();
 
 			return s_currentTick;
 		}
