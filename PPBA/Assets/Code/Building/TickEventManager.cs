@@ -35,11 +35,7 @@ namespace PPBA
 					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
 				}
 
-				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
-				if(element is IRefHolder)
-				{
-					(element as IRefHolder)._team = it._client;
-				}
+				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject(it._client);
 
 				element.transform.position = it._pos;
 				element.transform.rotation = Quaternion.Euler(0, it._angle, 0);
@@ -54,11 +50,7 @@ namespace PPBA
 					_denyedInputs.Add(new GSC.input { _id = it._id, _client = it._client });
 				}
 
-				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject();
-				if(element is IRefHolder)
-				{
-					(element as IRefHolder)._team = it._client;
-				}
+				MonoBehaviour element = ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]].GetNextObject(it._client);
 
 				element.transform.position = it._corners[0];
 				for(int i = 1; i < it._corners.Length; i++)
