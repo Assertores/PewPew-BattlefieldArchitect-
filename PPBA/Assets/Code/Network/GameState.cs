@@ -154,7 +154,24 @@ namespace PPBA
 				StringBuilder value = new StringBuilder();
 				value.AppendLine("ID: " + _id.ToString("0000"));
 
-				Vector2Int size = _mask.GetSize();
+				Vector2Int[] points = _mask.GetActiveBits();
+				if(points.Length != _values.Count)
+				{
+					value.Append("mask and values don't match: mask " + points.Length + ", values " + _values.Count);
+				}
+				else
+				{
+					if(points.Length == 0)
+					{
+						value.Append("no points set");
+					}
+					for(int i = 0; i < points.Length; i++)
+					{
+						value.Append(points[i] + " = " + _values[i]);
+					}
+				}
+
+				/*Vector2Int size = _mask.GetSize();
 				int valueIndex = 0;
 				for(int y = 0; y < size.y; y++)
 				{
@@ -171,7 +188,7 @@ namespace PPBA
 						}
 					}
 					value.AppendLine();
-				}
+				}*/
 
 				return value.ToString();
 			}
@@ -486,6 +503,8 @@ namespace PPBA
 			int count;
 			while(offset < msg.Length)
 			{
+				Debug.Log((GSC.DataType)msg[offset]);
+				Debug.Log(msg.Length + " | " + offset);
 				count = BitConverter.ToInt32(msg, offset + 1);
 				offset += sizeof(int) + 1;
 				switch((GSC.DataType)msg[offset - 1 - sizeof(int)])
@@ -678,23 +697,31 @@ namespace PPBA
 					{
 						GSC.heatMap value = new GSC.heatMap();
 						value._id = count;//value overload
+						Debug.Log(value._id);
 
 						Vector2Int space = HeatMapHandler.s_instance.GetHeatMapSize(value._id);
 						value._mask = new BitField2D(space.x, space.y);
+						Debug.Log(space);
 
 						byte[] mask = value._mask.ToArray();
 						Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
 						offset += mask.Length;
+						Debug.Log(offset);
 
 						value._mask.FromArray(mask);
 
+						Debug.Log("id: " + value._id);
+						Debug.Log(value.ToString());
 
 						int size = value._mask.GetActiveBits().Length;
+						Debug.Log(size);
+
 						value._values = new List<float>(size);
 						for(int j = 0; j < size; j++)
 						{
 							value._values.Add(BitConverter.ToSingle(msg, offset));
 							offset += sizeof(float);
+							Debug.Log(value._values[value._values.Count - 1] + ", " + offset);
 						}
 
 						_heatMaps.Add(value);
