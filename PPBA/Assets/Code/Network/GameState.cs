@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.ComponentModel;
 using System.Text;
+using UnityEngine.Profiling;
 
 namespace PPBA
 {
@@ -280,6 +281,7 @@ namespace PPBA
 			if(_messageHolder != null)
 				return _messageHolder;
 
+			Profiler.BeginSample("[GameState] Encrypt");
 			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
@@ -497,6 +499,8 @@ namespace PPBA
 			}*/
 			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
+
+			Profiler.EndSample();
 			return _messageHolder;
 		}
 
@@ -511,6 +515,7 @@ namespace PPBA
 			if(_receivedMessages[packageNumber, 0])
 				return;
 
+			Profiler.BeginSample("[GameState] Decrypt");
 			_receivedMessages[packageNumber, 0] = true;
 
 
@@ -800,6 +805,7 @@ namespace PPBA
 				_isEncrypted = false;
 			}
 
+			Profiler.EndSample();
 			//Debug.Log("----- EOM -----");
 		}
 
@@ -813,6 +819,8 @@ namespace PPBA
 				Debug.Log("reference not found. Tick: " + myTick + " | ref: " + refTick);
 				return false;
 			}
+
+			Profiler.BeginSample("[GameState] Create Delta");
 
 			//Debug.Log(myTick + ": " + _isDelta + ", " + _isEncrypted + ", " + _isLerped);
 			//Debug.Log(refTick + ": " + reference._isDelta + ", " + reference._isEncrypted + ", " + reference._isLerped);
@@ -1024,6 +1032,8 @@ Jump:
 
 			_isDelta = true;
 
+			Profiler.EndSample();
+
 			return true;
 		}
 
@@ -1031,6 +1041,8 @@ Jump:
 		{
 			if(reference == default)
 				return false;
+
+			Profiler.BeginSample("[GameState] Dismantle Delta");
 
 			//_messageHolder = null;
 
@@ -1098,11 +1110,14 @@ Jump:
 
 			_isDelta = false;
 
+			Profiler.EndSample();
+
 			return true;
 		}
 
 		public static GameState Lerp(GameState start, GameState end, float lerpValue)
 		{
+			Profiler.BeginSample("[GameState] Lerp");
 			GameState value = new GameState();
 
 			foreach(var origin in start._types)
@@ -1218,6 +1233,7 @@ Jump:
 			value._isDelta = false;
 			value._isLerped = true;
 
+			Profiler.EndSample();
 			return value;
 		}
 
@@ -1270,10 +1286,12 @@ Jump:
 				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
 				packages[index] = tmp;
 			}
+			
 		}
 
 		int GetHash()
 		{
+			Profiler.BeginSample("[GameState] Hash");
 			int hash = 0;
 
 			for(int i = 0; i < _types.Count; i++)
@@ -1368,6 +1386,8 @@ Jump:
 			}
 
 			Debug.Log("Hash: " + hash);
+
+			Profiler.EndSample();
 
 			return hash;
 		}
