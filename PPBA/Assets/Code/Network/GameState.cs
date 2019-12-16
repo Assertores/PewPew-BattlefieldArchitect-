@@ -428,6 +428,7 @@ namespace PPBA
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
 						Vector2Int[] pos = it._mask.GetActiveBits();
+						msg.AddRange(BitConverter.GetBytes(pos.Length));
 						for(int i = 0; i < pos.Length; i++)
 						{
 							msg.AddRange(BitConverter.GetBytes(pos[i].x));
