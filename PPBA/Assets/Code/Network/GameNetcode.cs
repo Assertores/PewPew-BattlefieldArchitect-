@@ -88,7 +88,7 @@ namespace PPBA
 			return true;
 		}
 
-		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
 		void HandleNON(byte[] data, IPEndPoint ep)
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
@@ -101,10 +101,10 @@ namespace PPBA
 				return;
 
 			//resend missing packages
-			byte[] field = new byte[data[1 + sizeof(int)]];
+			byte[] field = new byte[data[1 + 2 * sizeof(int)]];
 
-			Buffer.BlockCopy(data, 2 + sizeof(int), field, 0, field.Length);
-			int fieldTick = BitConverter.ToInt32(data, 2 + sizeof(int) + field.Length);
+			Buffer.BlockCopy(data, 2 + 2 * sizeof(int), field, 0, field.Length);
+			int fieldTick = BitConverter.ToInt32(data, 1 + sizeof(int));
 
 			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0 &&
 				client._gameStates[fieldTick]._receivedMessages.ToArray().Length == field.Length)
@@ -329,7 +329,7 @@ namespace PPBA
 			_myID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
 		void Send()
 		{
 			List<byte> msg = new List<byte>();
@@ -338,10 +338,14 @@ namespace PPBA
 
 			RingBuffer<InputState> ib = GlobalVariables.s_instance._clients[0]._inputStates;
 
-			byte[] field = new byte[0];
-			if(GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()] != null)
-				field = GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()]?._receivedMessages.ToArray();
+			//----- obsolite -----
+			//byte[] field = new byte[0];
+			//if(GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()] != null)
+			//	field = GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()]?._receivedMessages.ToArray();
 
+			byte[] field = GlobalVariables.s_instance._clients[0]._gameStates[GlobalVariables.s_instance._clients[0]._gameStates.GetHighEnd()]._receivedMessages.ToArray();
+
+			msg.AddRange(BitConverter.GetBytes(GlobalVariables.s_instance._clients[0]._gameStates.GetHighEnd()));
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
