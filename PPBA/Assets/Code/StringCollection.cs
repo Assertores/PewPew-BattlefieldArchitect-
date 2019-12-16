@@ -9,7 +9,9 @@ namespace PPBA
 		//public const string TEST = "test";
 		public const string COVER = "Cover";
 		public const string HEALTH = "Health";
+		public const string AMMO = "Ammo";
 		public const string MORALE = "Morale";
+		public const string SUPPLIES = "Supplies";
 		public const string RESOURCES = "Resources";
 		public const string PAWN = "Pawn";
 

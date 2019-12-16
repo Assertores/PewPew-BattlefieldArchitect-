@@ -45,8 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _idle: 1
   _getDamaged: -10
-  _closePawnDied: -5
-  _closePawnDamaged: 0
-  _enemyDied: 0
-  _enemyDamaged: 0
-  _wonGame: 0
+  _closePawnDied: -50
+  _closePawnDamaged: -10
+  _enemyDied: 50
+  _enemyDamaged: 10
+  _wonGame: 100

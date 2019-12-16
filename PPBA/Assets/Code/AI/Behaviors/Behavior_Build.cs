@@ -29,10 +29,14 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
 			{
 				Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-				pawn.SetMoveTarget(targetPosition);
 
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
+				{
 					s_targetDictionary[pawn].DoWork();
+					targetPosition = pawn.transform.position;
+				}
+
+				pawn.SetMoveTarget(targetPosition);
 			}
 		}
 

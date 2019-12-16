@@ -13,6 +13,7 @@ namespace PPBA
 
 		//private
 		[SerializeField] [Tooltip("How long from starting the attack to shooting in ticks?")] private int _attackBuildUpTime = 8;
+		[SerializeField] [Tooltip("Max attack range")] private float _attackRange = 2f;
 
 		public Behavior_Shoot()
 		{
@@ -32,13 +33,18 @@ namespace PPBA
 		#region Behavior
 		public override void Execute(Pawn pawn)
 		{
-			//pawn.SetMoveTarget(pawn.transform.position);//stand still
-
-			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn))
+			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
 			{
-				s_timerDictionary[pawn]++;//increment timer
-				if(null != s_targetDictionary[pawn])
+				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
+				{
+					s_timerDictionary[pawn]++;//increment timer
+					pawn.SetMoveTarget(pawn.transform.position);//stand still
+				}
+				else
+				{
+					s_timerDictionary[pawn] = 0;
 					pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+				}
 			}
 			else
 			{
@@ -154,13 +160,12 @@ namespace PPBA
 				if(_targetAxes[i]._isEnabled)
 				{
 					//normal version
-					/*
 					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
-					*/
+					
 					//debug version
-					float temp = Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
-					Debug.Log("Pawn " + pawn._id + " target axis " + _targetAxes[i]._name + " evaluated to " + temp);
-					score *= temp;
+					//float temp = Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
+					//Debug.Log("Pawn " + pawn._id + " target axis " + _targetAxes[i]._name + " evaluated to " + temp);
+					//score *= temp;
 				}
 			}
 

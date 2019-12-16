@@ -17,7 +17,22 @@ namespace PPBA
 
 		#region Variables
 		[SerializeField] public int _id { get; set; }
-		[SerializeField] public int _team = 0;
+		public int _team
+		{
+			get
+			{
+				if(null == _myRefHolder)
+					_myRefHolder = GetComponentInParent<IRefHolder>();
+
+				if(null == _myRefHolder)
+				{
+					Debug.LogError("Blueprint couldn't find IRefHolder");
+					return 0;
+				}
+				else
+					return _myRefHolder._team;
+			}
+		}
 		[SerializeField] public int _resources = 0;
 		[SerializeField] public int _resourcesIncoming = 0;
 		[SerializeField] public int _resourcesMax = 100;
@@ -27,7 +42,7 @@ namespace PPBA
 		#endregion
 
 		#region References
-		[SerializeField] private IRefHolder _refHolder;
+		private IRefHolder _myRefHolder;
 		[SerializeField] public List<Pawn> _workers = new List<Pawn>();
 
 		//GameStates
@@ -40,7 +55,8 @@ namespace PPBA
 
 		public float _workDoable
 		{
-			get => ((float)(_resources * _resourcesMax) / (float)_workMax) - (float)_work;
+			//get => ((float)(_resources * _resourcesMax) / (float)_workMax) - (float)_work;
+			get => Mathf.Clamp(((float)(_resources * _workMax)) / (float)_resourcesMax - (float)_work, 0f, _workMax);
 		}
 
 		public float _resourcesNeeded
@@ -51,6 +67,7 @@ namespace PPBA
 		#region
 		void Awake()
 		{
+			_myRefHolder = GetComponentInParent<IRefHolder>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #endif
@@ -91,7 +108,7 @@ namespace PPBA
 
 			_material.SetFloat("_Clip", 1f);//ensure building is not dissolved
 
-			if(null != _refHolder)
+			if(null != _myRefHolder)
 			{
 				_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
  				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
@@ -130,6 +147,7 @@ namespace PPBA
 				//if trigger needed, set flag here
 
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+				TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
 
 				if(!isActiveAndEnabled)
 					return;//if pawn is disabled, no other info is relevant
@@ -137,7 +155,6 @@ namespace PPBA
 
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
-			TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -198,10 +215,10 @@ namespace PPBA
 			#endregion
 		}
 
-		private static void ResetToDefault(Blueprint blueprint, int team)
+		private static void ResetToDefault(Blueprint blueprint, int team = 0)
 		{
 			//blueprint._arguments = new Arguments();
-			blueprint._team = team;//not needed if object pools are per player
+			//blueprint._team = team;//not needed if object pools are per player
 			blueprint._resources = 0;
 			blueprint._work = 0;
 
@@ -252,10 +269,11 @@ namespace PPBA
 
 		private void OnEnable()
 		{
-			_refHolder = GetComponentInParent<IRefHolder>();
+			_myRefHolder = GetComponentInParent<IRefHolder>();
+			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
-			if(!JobCenter.s_blueprints[_team].Contains(this))
+			if(null != JobCenter.s_blueprints?[_team] && !JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Add(this);
 
 			TickHandler.s_GatherValues += WriteToGameState;
@@ -265,7 +283,7 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			if(JobCenter.s_blueprints[_team].Contains(this))
+			if(null != JobCenter.s_blueprints?[_team] && JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
 
 			TickHandler.s_GatherValues -= WriteToGameState;

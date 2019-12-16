@@ -46,6 +46,8 @@ namespace PPBA
 			{
 				case StringCollection.HEALTH:
 					return pawn._health / pawn._maxHealth;
+				case StringCollection.AMMO:
+					return (float) pawn._ammo / pawn._maxAmmo;
 				case StringCollection.MORALE:
 					return pawn._morale / pawn._maxMorale;
 				default:

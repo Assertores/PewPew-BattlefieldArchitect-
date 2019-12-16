@@ -48,7 +48,7 @@ namespace PPBA
 		[SerializeField] public float _maxAttackDamage = 75f;
 		[SerializeField] [Tooltip("How far to lerp from _minAttackDamage to _maxAttackDamage depending on random number between 0f and 1?")] public AnimationCurve _attackDamageCurve;
 
-		[SerializeField] public int _supplies;//resources carried
+		[SerializeField] public int _supplies { get => _suppliesBackingField; set => _suppliesBackingField = Mathf.Clamp(value, 0, _maxSupplies); } //resources carried
 		[SerializeField] public int _maxSupplies = 10;
 
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
@@ -57,6 +57,7 @@ namespace PPBA
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 		[SerializeField] protected float _healthBackingField = 100;
 		[SerializeField] protected int _ammoBackingField = 100;
+		[SerializeField] protected int _suppliesBackingField = 0;
 		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
@@ -70,7 +71,7 @@ namespace PPBA
 		[SerializeField] protected Behaviors[] e_behaviors;
 		[SerializeField] protected float[] _behaviorMultipliers;
 		[SerializeField] protected Behavior[] _behaviors;
-		protected Behavior _lastBehavior = Behavior_Idle.s_instance;
+		public Behavior _lastBehavior = Behavior_Idle.s_instance;
 		[SerializeField] [Tooltip("Displays last calculated behavior-scores.\nNo reason to change these.")] protected float[] _behaviorScores;
 		public Behaviors _clientBehavior = Behaviors.IDLE;
 
@@ -190,7 +191,7 @@ namespace PPBA
 					if(i < _behaviorMultipliers.Length)
 						_behaviorScores[i] *= _behaviorMultipliers[i];
 
-					Debug.Log("Behavior: " + _behaviors[i]._name + "got score " + _behaviorScores[i]);
+					Debug.Log("Pawn: " + this.name + " -- Behavior: " + _behaviors[i]._name + " got score " + _behaviorScores[i]);
 				}
 			}
 		}
@@ -217,7 +218,7 @@ namespace PPBA
 					}
 				}
 
-				if(_lastBehavior != _behaviors[bestBehavior])//on behavior change
+				if(_lastBehavior != null && _lastBehavior != _behaviors[bestBehavior])//on behavior change
 				{
 					_lastBehavior.RemoveFromTargetDict(this);//remove from lastBehaviors targetList
 
@@ -229,7 +230,7 @@ namespace PPBA
 			}
 
 			NavTick();
-			//Regenerate();
+			Regenerate();
 		}
 
 		public void WriteToGameState(int tick)//SERVER
@@ -292,6 +293,14 @@ namespace PPBA
 				}
 			}
 			{
+				GSC.type temp = TickHandler.s_interfaceGameState.GetType(_id);
+
+				if(null != temp)
+				{
+					_team = temp._team;
+				}
+			}
+			{
 				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
 
 				if(null != temp)
@@ -330,6 +339,7 @@ namespace PPBA
 				if(null != temp)
 				{
 					_nextState._behavior = temp._behavior;
+					_clientBehavior = temp._behavior;
 				}
 			}
 			{
@@ -441,7 +451,7 @@ namespace PPBA
 				case Behaviors.DECONSTRUCT:
 					break;
 				case Behaviors.GETAMMO:
-					break;
+					return Behavior_GetAmmo.s_instance;
 				case Behaviors.MOUNT:
 					return Behavior_Mount.s_instance;
 				case Behaviors.FOLLOW:
@@ -729,7 +739,7 @@ namespace PPBA
 		private static void ResetToDefault(Pawn pawn, int team)
 		{
 			pawn._arguments = new Arguments();
-			pawn._team = team;//not needed if object pools are per player
+			pawn._team = team;
 			pawn._health = pawn._maxHealth;
 			pawn._ammo = pawn._maxAmmo;
 			pawn._morale = pawn._maxMorale;
@@ -754,9 +764,6 @@ namespace PPBA
 			ResetToDefault(newPawn, team);
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
-
-			//debuuuug
-			newPawn._supplies = 50;
 		}
 
 		public static ObjectType RandomPawnType()

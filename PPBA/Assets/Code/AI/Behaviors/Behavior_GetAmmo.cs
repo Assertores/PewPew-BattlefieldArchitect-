@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_GetSupplies : Behavior
+	public class Behavior_GetAmmo : Behavior
 	{
-		public static Behavior_GetSupplies s_instance;
+		public static Behavior_GetAmmo s_instance;
 		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary = new Dictionary<Pawn, ResourceDepot>();
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
-		public Behavior_GetSupplies()
+		public Behavior_GetAmmo()
 		{
-			_name = Behaviors.GETSUPPLIES;
+			_name = Behaviors.GETAMMO;
 		}
 
 		#region Monobehaviour
@@ -29,15 +29,13 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
+			pawn.SetMoveTarget(targetPosition);
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{
-				//Takes an amount of resources from the depot no larger than (1) the space left at pawn (2) the res left at depot, and gives it to the pawn.
-				pawn._supplies += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxSupplies - pawn._supplies));
-				targetPosition = pawn.transform.position;
+				//Takes an amount of ammo from the depot no larger than (1) the space left at pawn (2) the ammo left at depot, and gives it to the pawn.
+				pawn._ammo += s_targetDictionary[pawn].TakeAmmo(Mathf.Min(_grabSize, pawn._maxAmmo - pawn._ammo));
 			}
-
-			pawn.SetMoveTarget(targetPosition);
 		}
 
 		public override float FindBestTarget(Pawn pawn)
@@ -64,8 +62,8 @@ namespace PPBA
 			{
 				case "Health":
 					return pawn._health / pawn._maxHealth;
-				case "Resources":
-					return (float) pawn._supplies / pawn._maxSupplies;
+				case "Ammo":
+					return (float) pawn._ammo / pawn._maxAmmo;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
@@ -78,10 +76,10 @@ namespace PPBA
 			{
 				case "Distance":
 					return Vector3.Distance(pawn.transform.position, depot.transform.position) / 60f;
-				case "Score":
-					return depot._score;
-				case "Resources":
-					return (float) depot._resources / depot._maxResources;
+				//case "Score":
+				//	return depot._score;
+				case "Ammo":
+					return (float) depot._ammo / depot._maxAmmo;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
