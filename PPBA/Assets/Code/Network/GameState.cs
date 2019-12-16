@@ -982,7 +982,7 @@ Jump:
 					}
 
 					//wenn gleiches element existiert
-					if(refPos[j] == positions[i])
+					if(j < refPos.Length && refPos[j] == positions[i])
 					{
 						float value = it._values[i];
 
