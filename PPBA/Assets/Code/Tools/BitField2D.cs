@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace PPBA
 {
@@ -126,6 +127,7 @@ namespace PPBA
 
 		public Vector2Int[] GetActiveBits()
 		{
+			Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
 
 			for(int y = 0; y < _fieldHight; y++)
@@ -137,6 +139,7 @@ namespace PPBA
 				}
 			}
 
+			Profiler.EndSample();
 			return value.ToArray();
 		}
 
