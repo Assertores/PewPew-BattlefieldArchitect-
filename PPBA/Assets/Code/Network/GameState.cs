@@ -502,8 +502,8 @@ namespace PPBA
 			int count;
 			while(offset < msg.Length)
 			{
-				Debug.Log((GSC.DataType)msg[offset]);
-				Debug.Log(msg.Length + " | " + offset);
+				//Debug.Log((GSC.DataType)msg[offset]);
+				//Debug.Log(msg.Length + " | " + offset);
 				count = BitConverter.ToInt32(msg, offset + 1);
 				offset += sizeof(int) + 1;
 				switch((GSC.DataType)msg[offset - 1 - sizeof(int)])
@@ -760,7 +760,11 @@ namespace PPBA
 			}
 
 			if(_receivedMessages.AreAllBytesActive())
+			{
 				_isEncrypted = false;
+			}
+
+			//Debug.Log("----- EOM -----");
 		}
 
 		public bool CreateDelta(RingBuffer<GameState> references, int refTick, int myTick)

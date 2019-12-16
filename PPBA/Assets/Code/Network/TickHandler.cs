@@ -155,8 +155,7 @@ namespace PPBA
 				}
 				else
 				{
-					if(s_currentTick % 20 == 0)
-						Debug.Log("DeltaTick: " + s_currentTick + "\n" + nextState.ToString());
+					
 					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 				}
 
