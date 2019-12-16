@@ -93,14 +93,18 @@ namespace PPBA
 		/// <summary>
 		/// use this to get a free element in the object pool whitch will be automaticly already be set active.
 		/// </summary>
+		/// <param name="team">the team that should be aplyed to the IRefHolder if set</param>
 		/// <returns>the reference to the type as MonoBehaviour</returns>
-		public MonoBehaviour GetNextObject()
+		public MonoBehaviour GetNextObject(int team = -1)
 		{
 
 			for(int i = 0; i < _parent.childCount; i++)
 			{
 				if(!_parent.GetChild(i).gameObject.activeSelf)
 				{
+					if(team >= 0 && _elements[i] is IRefHolder)
+						(_elements[i] as IRefHolder)._team = team;
+
 					_parent.GetChild(i).gameObject.SetActive(true);
 					return _elements[i];
 				}
