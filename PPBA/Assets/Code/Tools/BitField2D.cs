@@ -129,7 +129,63 @@ namespace PPBA
 		{
 			Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
+			//*
+			for(int i = 0; i < _backingArray.Length; i++)
+			{
+				if(_backingArray[i] == 0)
+					continue;
 
+				if((_backingArray[i] & (1)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 1)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 1);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 2)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 2);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 3)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 3);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 4)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 4);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 5)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 5);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 6)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 6);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+				if((_backingArray[i] & (1 << 7)) > 0)
+				{
+					Vector2Int pos = GetPositionOfBit(i * 8 + 7);
+					if(this[pos.x, pos.y])
+						value.Add(pos);
+				}
+
+			}
+			/*/
 			for(int y = 0; y < _fieldHight; y++)
 			{
 				for(int x = 0; x < _fieldWidth; x++)
@@ -138,7 +194,7 @@ namespace PPBA
 						value.Add(new Vector2Int(x, y));
 				}
 			}
-
+			//*/
 			Profiler.EndSample();
 			return value.ToArray();
 		}
@@ -191,5 +247,7 @@ namespace PPBA
 
 			return true;
 		}
+
+		Vector2Int GetPositionOfBit(int bit) => new Vector2Int(bit % _fieldWidth, bit / _fieldWidth);
 	}
 }
