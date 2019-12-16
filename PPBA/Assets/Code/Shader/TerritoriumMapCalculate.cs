@@ -56,7 +56,7 @@ namespace PPBA
 			_currentBitField = new byte[(512 * 512) / 8];
 			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
-			_computeShader.SetBuffer(_resourceCalcKernel, "resourcesIndex", _bitField);
+			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);
 			
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);

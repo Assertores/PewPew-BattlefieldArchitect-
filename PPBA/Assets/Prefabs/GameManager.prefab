@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 1693805405}
   - component: {fileID: 1693805406}
   - component: {fileID: 1693805407}
+  - component: {fileID: 7634826460318776889}
   m_Layer: 0
   m_Name: MapCalculation
   m_TagString: Untagged
@@ -96,6 +97,18 @@ MonoBehaviour:
   _computeShader: {fileID: 7200000, guid: 4d86b9bb0d22d3346a3f696451651f60, type: 3}
   _GroundMaterial: {fileID: 2100000, guid: 11fcc83d46a7a1c4587c6355e53c9535, type: 2}
   _original: {fileID: 2800000, guid: 2964f0de8e4f43a40be5d66c53c2f5c1, type: 3}
+--- !u!114 &7634826460318776889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693805404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cb6ace3afb39c04f8b4061ca3cd625d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6486173834488494120
 GameObject:
   m_ObjectHideFlags: 0

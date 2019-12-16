@@ -93,7 +93,8 @@ namespace PPBA
 
 			if(null != _refHolder)
 			{
-				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
+				_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
+ 				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
 			}
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
@@ -252,7 +253,6 @@ namespace PPBA
 		private void OnEnable()
 		{
 			_refHolder = GetComponentInParent<IRefHolder>();
-			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
 			if(!JobCenter.s_blueprints[_team].Contains(this))

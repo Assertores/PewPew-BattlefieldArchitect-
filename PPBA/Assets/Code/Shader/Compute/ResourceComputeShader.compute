@@ -6,7 +6,7 @@
 #pragma kernel CSNextEdge
 
 int PointSize;
-int weightMap;
+const int weightMap = 512;
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
@@ -18,7 +18,7 @@ RWStructuredBuffer<uint> bitField;
 
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
-Texture2D<float4> InputTexture;
+//Texture2D<float4> InputTexture;
 
 
 [numthreads(1, 1, 1)]
@@ -35,7 +35,7 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
 
-	float currentResources = InputTexture[id.xy].r;
+	float currentResources = Result[id.xy].r;
 
 	for (int i = 0; i < PointSize; i++)
 	{
@@ -74,7 +74,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 		}*/
 	}
 
-	if (InputTexture[id.xy].r != currentResources)
+	
+	if (Result[id.xy].r != currentResources)
 	{
 		int bit = id.y * weightMap + id.x;
 		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));

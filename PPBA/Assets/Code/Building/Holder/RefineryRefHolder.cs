@@ -67,12 +67,6 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 
 	public Material GetMaterial() => BaseMaterial;
 
-
-	//private void OnValidate()
-	//{
-	//	if(null == _blueprintPrefab)
-			
-	//}
 }
 
 

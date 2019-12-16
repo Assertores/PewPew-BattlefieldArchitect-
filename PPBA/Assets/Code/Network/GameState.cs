@@ -146,7 +146,7 @@ namespace PPBA
 		[System.Serializable]
 		public class heatMap : gsc
 		{
-			public BitField2D _mask = new BitField2D(0,0);
+			public BitField2D _mask = new BitField2D(0, 0);
 			public List<float> _values = new List<float>();
 
 			public override string ToString()
@@ -241,7 +241,7 @@ namespace PPBA
 		public bool _isDelta { get; private set; } = false;
 		public bool _isEncrypted { get; private set; } = false;
 		//public byte _messageCount;
-		public BitField2D _receivedMessages = new BitField2D(0,0);
+		public BitField2D _receivedMessages = new BitField2D(0, 0);
 		private List<byte[]> _messageHolder = null;
 		//int _hash = 0;
 
@@ -446,7 +446,7 @@ namespace PPBA
 			{
 				_messageHolder.Add(new byte[0]);
 			}
-			
+
 			/*{
 				_types.Clear();
 				_args.Clear();
@@ -881,15 +881,26 @@ Jump:
 			}
 			foreach(var it in _heatMaps)
 			{
+				//escape if reference tick dosn't have the heatmap
+				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
+				if(null == refMap)
+					continue;
 
 				//baking Bitfield
 				for(int i = refTick + 1; i < myTick; i++)
 				{
-					it._mask += references[i]?._heatMaps.Find(x => x._id == it._id)._mask;
+					GameState nextState = references[i];
+					if(nextState == default)
+						continue;
+
+					BitField2D tmp = references[i]._heatMaps.Find(x => x._id == it._id)?._mask;
+					if(null == tmp)
+						continue;
+
+					it._mask += references[i]._heatMaps.Find(x => x._id == it._id)._mask;
 				}
 
 				//getting values
-				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
 
 				Vector2Int[] positions = it._mask.GetActiveBits();

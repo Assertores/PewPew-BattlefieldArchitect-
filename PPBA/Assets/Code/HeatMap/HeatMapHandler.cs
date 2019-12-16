@@ -19,7 +19,6 @@ namespace PPBA
 		{
 #if UNITY_SERVER
 			TickHandler.s_DoTick += CalculateMaps;
-			TickHandler.s_GatherValues += SaveMapToGameState;
 #else
 			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
 			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
@@ -39,6 +38,13 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
+			if(ResourceMapCalculate.s_instance.HasRefinerys())
+			{
+				return;
+			}
+			print("calculate maps Heatmaphandler");
+
+			TickHandler.s_GatherValues += SaveMapToGameState;
 			//----- ----- init ----- -----
 			HeatMapReturnValue value;
 
@@ -47,7 +53,7 @@ namespace PPBA
 			_heatMaps[0] = ConvertTexture(value.tex);
 			_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
-			//----- ----- TerritoriumMap ----- -----
+			////----- ----- TerritoriumMap ----- -----
 			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
 			_heatMaps[1] = ConvertTexture(value.tex);
 			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
@@ -114,21 +120,27 @@ namespace PPBA
 			Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
 
 			// ofc you probably don't have a class that is called CameraController :P
-			Camera activeCamera = Camera.main;
+			//	Camera activeCamera = Camera.main;
 
-			// Initialize and render
-			activeCamera.targetTexture = rt;
-			activeCamera.Render();
+			//	// Initialize and render
+			//	activeCamera.targetTexture = rt;
+			//	activeCamera.Render();
+			//	RenderTexture.active = rt;
+
+			//	// Read pixels
+			//	tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+			//	tex.Apply();
+			//	// Clean up
+			//	activeCamera.targetTexture = null;
+			//	RenderTexture.active = null; // added to avoid errors 
+			////	DestroyImmediate(rt);
+
 			RenderTexture.active = rt;
-
-			// Read pixels
 			tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+			tex.Apply();
 
-			// Clean up
-			activeCamera.targetTexture = null;
-			RenderTexture.active = null; // added to avoid errors 
-			DestroyImmediate(rt);
 			return tex;
+
 		}
 	}
 }

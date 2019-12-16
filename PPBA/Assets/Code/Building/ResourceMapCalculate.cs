@@ -66,6 +66,7 @@ namespace PPBA
 
 		public void AddFabric(IRefHolder refHolder)
 		{
+			print("add fabric");
 			_Refinerys.Add(refHolder);
 		}
 
@@ -80,15 +81,16 @@ namespace PPBA
 
 			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
-			_computeShader.SetBuffer(_resourceCalcKernel1, "resourcesIndex", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
+
+			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
+			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
 
 		//	_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _ResultTexture);
 			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
 			_computeShader.Dispatch(_resourceCalcKernel1, 512 / 8, 512 / 8, 1);
-
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
@@ -127,6 +129,7 @@ namespace PPBA
 
 		private Vector4[] RefineriesProperties()
 		{
+			print("property von cacl fabric");
 			Vector4[] refsProp = new Vector4[_Refinerys.Count];
 
 			for(int i = 0; i < _Refinerys.Count; i++)
@@ -146,6 +149,12 @@ namespace PPBA
 		void OnEnable()
 		{
 			_GroundMaterial.SetTexture("_NoiseMap", _original);
+		}
+
+
+		public bool HasRefinerys()
+		{
+			return !(_Refinerys.Count != 0);
 		}
 
 

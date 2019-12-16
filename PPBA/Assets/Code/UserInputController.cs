@@ -41,7 +41,7 @@ namespace PPBA
 			Vector2 pixelUV;
 
 			RaycastHit hitInfo;
-			if(Physics.Raycast(Obj.position, Vector3.down, out hitInfo, 1000, ignore))
+			if(Physics.Raycast(Obj.position+ Vector3.up, Vector3.down, out hitInfo, 1000, ignore))
 			{
 				pixelUV = hitInfo.textureCoord;
 				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
