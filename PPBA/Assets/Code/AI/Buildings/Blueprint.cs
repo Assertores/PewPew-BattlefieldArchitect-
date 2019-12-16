@@ -17,7 +17,7 @@ namespace PPBA
 
 		#region Variables
 		[SerializeField] public int _id { get; set; }
-		[SerializeField] public int _team = 0;
+		[SerializeField] public int _team { get => _myRefHolder._team; }
 		[SerializeField] public int _resources = 0;
 		[SerializeField] public int _resourcesIncoming = 0;
 		[SerializeField] public int _resourcesMax = 100;
@@ -27,7 +27,7 @@ namespace PPBA
 		#endregion
 
 		#region References
-		[SerializeField] private IRefHolder _refHolder;
+		private IRefHolder _myRefHolder;
 		[SerializeField] public List<Pawn> _workers = new List<Pawn>();
 
 		//GameStates
@@ -51,6 +51,7 @@ namespace PPBA
 		#region
 		void Awake()
 		{
+			_myRefHolder = GetComponentInParent<IRefHolder>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #endif
@@ -91,9 +92,9 @@ namespace PPBA
 
 			_material.SetFloat("_Clip", 1f);//ensure building is not dissolved
 
-			if(null != _refHolder)
+			if(null != _myRefHolder)
 			{
-				ResourceMapCalculate.s_instance.AddFabric(_refHolder);//HAS TO DIFFER PER PREFAB
+				ResourceMapCalculate.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
 			}
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
@@ -129,6 +130,7 @@ namespace PPBA
 				//if trigger needed, set flag here
 
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+				TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
 
 				if(!isActiveAndEnabled)
 					return;//if pawn is disabled, no other info is relevant
@@ -136,7 +138,6 @@ namespace PPBA
 
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
-			TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -197,10 +198,10 @@ namespace PPBA
 			#endregion
 		}
 
-		private static void ResetToDefault(Blueprint blueprint, int team)
+		private static void ResetToDefault(Blueprint blueprint, int team = 0)
 		{
 			//blueprint._arguments = new Arguments();
-			blueprint._team = team;//not needed if object pools are per player
+			//blueprint._team = team;//not needed if object pools are per player
 			blueprint._resources = 0;
 			blueprint._work = 0;
 
@@ -251,8 +252,8 @@ namespace PPBA
 
 		private void OnEnable()
 		{
-			_refHolder = GetComponentInParent<IRefHolder>();
-			_refHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
+			_myRefHolder = GetComponentInParent<IRefHolder>();
+			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 
 #if UNITY_SERVER
 			if(!JobCenter.s_blueprints[_team].Contains(this))

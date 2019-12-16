@@ -229,7 +229,7 @@ namespace PPBA
 			}
 
 			NavTick();
-			//Regenerate();
+			Regenerate();
 		}
 
 		public void WriteToGameState(int tick)//SERVER
@@ -441,7 +441,7 @@ namespace PPBA
 				case Behaviors.DECONSTRUCT:
 					break;
 				case Behaviors.GETAMMO:
-					break;
+					return Behavior_GetAmmo.s_instance;
 				case Behaviors.MOUNT:
 					return Behavior_Mount.s_instance;
 				case Behaviors.FOLLOW:

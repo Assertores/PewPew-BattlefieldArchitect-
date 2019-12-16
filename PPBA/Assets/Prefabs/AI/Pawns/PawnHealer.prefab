@@ -170,6 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d981c42a95650a43a95c587423d9b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _arguments: 0
   _team: 0
   _maxHealth: 100
   _maxAmmo: 100
@@ -184,18 +185,28 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _resources: 0
-  _maxResource: 10
+  _supplies: 0
+  _maxSupplies: 10
   _isNavPathDirty: 1
-  _isAttacking: 0
   _moveSpeed: 3.611111
+  _healthBackingField: 100
+  _ammoBackingField: 100
+  _moraleBackingField: 100
   _healthRegen: 1
   _moraleRegen: 1
-  e_behaviors: 
+  e_behaviors: 13010e0a0b0c11
+  _behaviorMultipliers:
+  - 1
+  - 10
+  - 5
+  - 5
+  - 5
+  - 5
+  - 10
+  _behaviors: []
   _behaviorScores: []
   _clientBehavior: 0
   _clientNavPathCorners: []
-  _objectToFollow: {fileID: 8532531223116004335}
   _closePawns: []
   _closeCoverSlots: []
   _moveTarget: {x: 0, y: 0, z: 0}

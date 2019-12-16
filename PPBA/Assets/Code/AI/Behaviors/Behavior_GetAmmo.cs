@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_BringSupplies : Behavior
+	public class Behavior_GetAmmo : Behavior
 	{
-		public static Behavior_BringSupplies s_instance;
-		public static Dictionary<Pawn, Blueprint> s_targetDictionary = new Dictionary<Pawn, Blueprint>();
+		public static Behavior_GetAmmo s_instance;
+		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary = new Dictionary<Pawn, ResourceDepot>();
 
 		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
-		public Behavior_BringSupplies()
+		public Behavior_GetAmmo()
 		{
-			_name = Behaviors.BRINGSUPPLIES;
+			_name = Behaviors.GETAMMO;
 		}
 
 		#region Monobehaviour
@@ -28,13 +28,13 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
-			{
-				Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
-				pawn.SetMoveTarget(targetPosition);
+			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
+			pawn.SetMoveTarget(targetPosition);
 
-				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
-					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
+			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
+			{
+				//Takes an amount of ammo from the depot no larger than (1) the space left at pawn (2) the ammo left at depot, and gives it to the pawn.
+				pawn._ammo += s_targetDictionary[pawn].TakeAmmo(Mathf.Min(_grabSize, pawn._maxAmmo - pawn._ammo));
 			}
 		}
 
@@ -42,13 +42,13 @@ namespace PPBA
 		{
 			float bestScore = 0f;
 
-			foreach(Blueprint blueprint in JobCenter.s_blueprints[pawn._team])
+			foreach(ResourceDepot depot in JobCenter.s_resourceDepots[pawn._team])
 			{
-				float tempScore = CalculateTargetScore(pawn, blueprint);
+				float tempScore = CalculateTargetScore(pawn, depot);
 
 				if(bestScore < tempScore)
 				{
-					s_targetDictionary[pawn] = blueprint;
+					s_targetDictionary[pawn] = depot;
 					bestScore = tempScore;
 				}
 			}
@@ -60,42 +60,40 @@ namespace PPBA
 		{
 			switch(name)
 			{
-				case StringCollection.HEALTH:
+				case "Health":
 					return pawn._health / pawn._maxHealth;
-				case StringCollection.SUPPLIES:
-					return (float) pawn._supplies / pawn._maxSupplies;
+				case "Ammo":
+					return (float) pawn._ammo / pawn._maxAmmo;
 				default:
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, string name, Blueprint blueprint)
+		protected float TargetAxisInputs(Pawn pawn, string name, ResourceDepot depot)
 		{
 			switch(name)
 			{
 				case "Distance":
-					return Vector3.Distance(pawn.transform.position, blueprint.transform.position) / 40f;
-				case "SuppliesNeeded":
-					return blueprint._resourcesNeeded;//NOT 0..1 YET !!
-				/*
-				case "Score":
-				return blueprint._score;
-				*/
+					return Vector3.Distance(pawn.transform.position, depot.transform.position) / 60f;
+				//case "Score":
+				//	return depot._score;
+				case "Ammo":
+					return (float) depot._ammo / depot._maxAmmo;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
 		}
 
-		protected float CalculateTargetScore(Pawn pawn, Blueprint blueprint)
+		protected float CalculateTargetScore(Pawn pawn, ResourceDepot depot)
 		{
 			float _score = 1;
 
 			for(int i = 0; i < _targetAxes.Length; i++)
 			{
 				if(_targetAxes[i]._isEnabled)
-					_score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, blueprint)), 0f, 1f);
+					_score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, depot)), 0f, 1f);
 			}
 
 			return _score;

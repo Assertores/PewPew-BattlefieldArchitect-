@@ -7,7 +7,7 @@ namespace PPBA
 	public class ResourceDepot : MonoBehaviour, INetElement
 	{
 		[SerializeField] public int _id { get; set; }
-		[SerializeField] public int _team = 0;
+		[SerializeField] public int _team { get => _myRefHolder._team; }
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
 		[SerializeField] public int _resources = 0;
@@ -19,9 +19,11 @@ namespace PPBA
 		[SerializeField] [Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
 
+		private IRefHolder _myRefHolder;
+
 		void Awake()
 		{
-
+			_myRefHolder = GetComponentInParent<IRefHolder>();
 		}
 
 		void Start()
