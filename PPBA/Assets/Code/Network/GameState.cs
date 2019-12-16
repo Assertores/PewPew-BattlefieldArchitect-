@@ -953,6 +953,7 @@ Jump:
 
 				_paths.Remove(element);
 			}
+			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
 				//escape if reference tick dosn't have the heatmap
@@ -1029,6 +1030,7 @@ Jump:
 				_newIDRanges.AddRange(nextState._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
 			_newIDRanges.RemoveAll(x => reference._newIDRanges.Exists(y => y._id == x._id));
+			Profiler.EndSample();
 
 			_isDelta = true;
 
