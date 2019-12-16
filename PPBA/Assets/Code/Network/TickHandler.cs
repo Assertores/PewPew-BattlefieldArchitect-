@@ -125,6 +125,12 @@ namespace PPBA
 				return;
 			}
 
+			if(s_NetworkPause && me._gameStates.GetHighEnd() - s_currentTick <= _inputBuffer / 2)//not quite shure. feals right. might get stuck in an deadlock otherwise.
+			{
+				Debug.Log("waiting for buffer refilling");
+				return;
+			}
+
 			if(null != h_popUp)
 			{
 				h_popUp.CloseWindow();
@@ -155,7 +161,7 @@ namespace PPBA
 				}
 				else
 				{
-					
+
 					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
 				}
 
