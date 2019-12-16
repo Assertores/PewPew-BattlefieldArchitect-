@@ -88,7 +88,7 @@ namespace PPBA
 			return true;
 		}
 
-		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void HandleNON(byte[] data, IPEndPoint ep)
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
@@ -101,10 +101,10 @@ namespace PPBA
 				return;
 
 			//resend missing packages
-			byte[] field = new byte[data[1 + sizeof(int)]];
+			byte[] field = new byte[data[1 + 2 * sizeof(int)]];
 
-			Buffer.BlockCopy(data, 2 + sizeof(int), field, 0, field.Length);
-			int fieldTick = BitConverter.ToInt32(data, 2 + sizeof(int) + field.Length);
+			Buffer.BlockCopy(data, 2 + 2 * sizeof(int), field, 0, field.Length);
+			int fieldTick = BitConverter.ToInt32(data, 1 + sizeof(int));
 
 			if(client._gameStates[fieldTick] != default && fieldTick != 0 && field.Length != 0 &&
 				client._gameStates[fieldTick]._receivedMessages.ToArray().Length == field.Length)
@@ -114,20 +114,19 @@ namespace PPBA
 				SendGameStateToClient(fieldTick, client);
 			}
 
-			int offset = 2 + sizeof(int) + field.Length;
-			while(offset < data.Length)
+			int offset = 2 + 2 * sizeof(int) + field.Length;
+
+			int startTick = BitConverter.ToInt32(data, offset);
+			offset += sizeof(int);
+			for(int tick = startTick; offset < data.Length; tick++)
 			{
-				int tick = BitConverter.ToInt32(data, offset);
-
-				offset += sizeof(int);
-
 				InputState tmp = new InputState();
 				offset = tmp.Decrypt(RemoteID, data, offset);
 
 				client._inputStates[tick] = tmp;
 			}
 
-			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(fieldTick - 2);
+			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 2);
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -219,6 +218,9 @@ namespace PPBA
 
 			for(byte i = 0; i < state.Count; i++)
 			{
+				if(client._gameStates[tick]._receivedMessages[i, 0])
+					continue;
+
 				msg.Clear();
 
 				msg.Add((byte)MessageType.NON);
@@ -231,7 +233,8 @@ namespace PPBA
 				socket.Send(msg.ToArray(), msg.Count, client._ep);
 			}
 
-			client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
+			if(client._gameStates[tick]._isDelta)
+				client._gameStates[tick].DismantleDelta(client._gameStates[client._gameStates.GetLowEnd()]);//creates exagtly the same gamestate the client will have
 		}
 
 		void DoServerRestart()
@@ -329,7 +332,9 @@ namespace PPBA
 			_myID = BitConverter.ToInt32(data, 1);
 		}
 
-		/// NON:        byte Type, int ID, byte BitFieldSize, byte[] ReceavedPackageBitField, {int tick, InputType[] inputs}[] tickInputs
+
+		readonly byte[] h_emptyInputState = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void Send()
 		{
 			List<byte> msg = new List<byte>();
@@ -338,23 +343,33 @@ namespace PPBA
 
 			RingBuffer<InputState> ib = GlobalVariables.s_instance._clients[0]._inputStates;
 
-			byte[] field = new byte[0];
-			if(GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()] != null)
-				field = GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()]?._receivedMessages.ToArray();
+			//----- obsolite -----
+			//byte[] field = new byte[0];
+			//if(GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()] != null)
+			//	field = GlobalVariables.s_instance._clients[0]._gameStates[ib.GetLowEnd()]?._receivedMessages.ToArray();
 
+			byte[] field = GlobalVariables.s_instance._clients[0]._gameStates[GlobalVariables.s_instance._clients[0]._gameStates.GetHighEnd()]._receivedMessages.ToArray();
+
+			msg.AddRange(BitConverter.GetBytes(GlobalVariables.s_instance._clients[0]._gameStates.GetHighEnd()));
 			msg.Add((byte)field.Length);
 			msg.AddRange(field);
 
+			msg.AddRange(BitConverter.GetBytes(ib.GetLowEnd()));
 			for(int i = ib.GetLowEnd(); i < ib.GetHighEnd(); i++)
 			{
 				if(ib[i] == default)
+				{
+					msg.AddRange(h_emptyInputState);
 					continue;
+				}
 
 				byte[] tmp = ib[i].Encrypt();
 				if(tmp == null)
+				{
+					msg.AddRange(h_emptyInputState);
 					continue;
+				}
 
-				msg.AddRange(BitConverter.GetBytes(i));
 				msg.AddRange(tmp);
 			}
 
@@ -384,8 +399,8 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
-#endregion
-#region UIInterface
+		#endregion
+		#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
 			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
@@ -435,6 +450,6 @@ namespace PPBA
 
 			Debug.Log("[SERVER] shut down");
 		}
-#endregion
+		#endregion
 	}
 }
