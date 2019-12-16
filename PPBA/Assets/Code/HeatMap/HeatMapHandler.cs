@@ -14,11 +14,13 @@ namespace PPBA
 	{
 		Texture2D[] _heatMaps = new Texture2D[2];
 		BitField2D[] _bitFields = new BitField2D[2];
+		bool _isInit = false;
 
 		private void Start()
 		{
 #if UNITY_SERVER
 			TickHandler.s_DoTick += CalculateMaps;
+			TickHandler.s_GatherValues += SaveMapToGameState;
 #else
 			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
 			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
@@ -44,7 +46,6 @@ namespace PPBA
 			}
 			print("calculate maps Heatmaphandler");
 
-			TickHandler.s_GatherValues += SaveMapToGameState;
 			//----- ----- init ----- -----
 			HeatMapReturnValue value;
 
@@ -57,10 +58,17 @@ namespace PPBA
 			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
 			_heatMaps[1] = ConvertTexture(value.tex);
 			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
+
+			_isInit = true;
 		}
 
 		void SaveMapToGameState(int tick)
 		{
+			if(!_isInit)
+			{
+				Debug.Log("Heatmaps not initialiced yet");
+				return;
+			}
 			for(int i = 0; i < _heatMaps.Length; i++)
 			{
 				GSC.heatMap hm = new GSC.heatMap();
