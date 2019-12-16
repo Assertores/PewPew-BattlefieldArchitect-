@@ -417,13 +417,12 @@ namespace PPBA
 			}
 			if(_heatMaps.Count > 0)
 			{
-				foreach(var it in _heatMaps)
+				foreach(var it in _heatMaps)/// byte Type, int ID, 32768 byte BitField, {float Values}[]
 				{
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 					msg.AddRange(it._mask.ToArray());
-					msg.AddRange(BitConverter.GetBytes(it._values.Count));
 					for(int i = 0; i < it._values.Count; i++)
 					{
 						msg.AddRange(BitConverter.GetBytes(it._values[i]));
@@ -693,7 +692,7 @@ namespace PPBA
 						}
 						break;
 					}
-					case GSC.DataType.MAP:
+					case GSC.DataType.MAP:/// byte Type, int ID, 32768 byte BitField, {float Values}[]
 					{
 						GSC.heatMap value = new GSC.heatMap();
 						value._id = count;//value overload
