@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22a4b7918c228847ae75ece55c23155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startInScene: 1
+  _startInScene: 0
   m_iP: 127.0.0.1
   m_serverPort: 11000
   _playerCount: 1
