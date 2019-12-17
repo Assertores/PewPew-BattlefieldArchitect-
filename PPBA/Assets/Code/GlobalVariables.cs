@@ -95,8 +95,8 @@ namespace PPBA
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_WARRIOR, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_HEALER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_PIONEER, _initialObjectPoolSize, transform); //über netzwerk getracked
-			ObjectPool.CreatePool<FlagPole>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<HQHolder>(ObjectType.HQ, 10, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, 10, transform); //über netzwerk getracked
 						
 			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();

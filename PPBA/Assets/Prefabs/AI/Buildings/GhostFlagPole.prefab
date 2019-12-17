@@ -151,10 +151,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4219740302618107161}
-  - component: {fileID: 2859109500263142835}
-  - component: {fileID: 1931648550861304276}
+  - component: {fileID: 3720063481078398447}
   m_Layer: 9
-  m_Name: FlagPole
+  m_Name: GhostFlagPole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +175,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2859109500263142835
+--- !u!114 &3720063481078398447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185,41 +184,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4985250074432113010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2b6c711d02f0364699ece34948b1e33, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a0ebffffa0000a499857ebd790e67ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 0
-  _score: 1
-  _maxPawns: 10
-  _friendlyPawns: []
-  _overlapSphereLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
---- !u!114 &1931648550861304276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4985250074432113010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35e7d45bba655734e91a2429b666bcc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 21300000, guid: efa0a122445582c46be5c025da0d4aa7, type: 3}
-  _TextField: {fileID: 0}
-  _ObjectType: 9
-  _GhostPrefab: {fileID: 4985250074432113010, guid: 398b9457636752c4f91c0e8c51e72bec,
-    type: 3}
-  _blueprintPrefab: {fileID: 0}
-  _BuildingTime: 0
-  _BuildingCosts: 0
-  _CurrentResources: 0
-  _LivePoints: 0
-  _MaxLivePoints: 0
-  BaseMaterial: {fileID: 0}
+  _type: 9
 --- !u!1 &8372896231655002120
 GameObject:
   m_ObjectHideFlags: 0

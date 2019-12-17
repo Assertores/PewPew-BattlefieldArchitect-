@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1015203428542432909}
   - component: {fileID: 5579100440847303236}
-  m_Layer: 0
-  m_Name: GhostTrashwall
+  m_Layer: 9
+  m_Name: GhostTrashwallCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 2272308229106090585}
   - component: {fileID: 6613180254639418730}
   - component: {fileID: 5753036658810400773}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bike saddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1329567144695685110}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

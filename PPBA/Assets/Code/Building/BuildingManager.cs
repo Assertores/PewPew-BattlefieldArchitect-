@@ -77,7 +77,7 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(_CurrentObjectType == ObjectType.REFINERY || _CurrentObjectType == ObjectType.HQ  || _CurrentObjectType == ObjectType.COVER)
+			if(_CurrentObjectType != ObjectType.WALL)
 			{
 				PlaceRefineryPrefab();
 			}
@@ -117,6 +117,7 @@ namespace PPBA
 					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
 				case ObjectType.FLAGPOLE:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
 				case ObjectType.HQ:
 					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
