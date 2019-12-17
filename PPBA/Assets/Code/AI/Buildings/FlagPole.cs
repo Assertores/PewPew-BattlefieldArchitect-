@@ -125,7 +125,7 @@ namespace PPBA
 
 		public static void Spawn(Vector3 spawnPoint, int team)
 		{
-			FlagPole newFlagPole = (FlagPole)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.FLAGPOLE]].GetNextObject();
+			FlagPole newFlagPole = (FlagPole)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.FLAGPOLE]].GetNextObject(team);
 			newFlagPole.transform.position = spawnPoint;
 			newFlagPole._team = team;
 			newFlagPole.ClearLists();
