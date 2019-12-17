@@ -77,7 +77,7 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(_CurrentObjectType == ObjectType.REFINERY || _CurrentObjectType == ObjectType.HQ)
+			if(_CurrentObjectType == ObjectType.REFINERY || _CurrentObjectType == ObjectType.HQ  || _CurrentObjectType == ObjectType.COVER)
 			{
 				PlaceRefineryPrefab();
 			}
@@ -114,6 +114,7 @@ namespace PPBA
 				case ObjectType.PAWN_PIONEER:
 					break;
 				case ObjectType.COVER:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
 				case ObjectType.FLAGPOLE:
 					break;
