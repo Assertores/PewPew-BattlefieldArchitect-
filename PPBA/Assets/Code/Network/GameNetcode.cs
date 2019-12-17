@@ -133,8 +133,8 @@ namespace PPBA
 
 				client._inputStates[tick] = tmp;
 			}
-
-			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 2);
+			Debug.Log("startTick: " + startTick);
+			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 1);
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -336,7 +336,8 @@ namespace PPBA
 			if(TickHandler.s_currentTick % 20 == 0)
 				Debug.Log("DeltaTick: " + TickHandler.s_currentTick + "\n" + element.ToString());
 
-			GlobalVariables.s_instance._clients[0]._inputStates.FreeUpTo(tick);
+			//if(element._receivedMessages.AreAllBytesActive())
+				GlobalVariables.s_instance._clients[0]._inputStates.FreeUpTo(tick + 1);
 		}
 
 		void HandleNewID(byte[] data)
