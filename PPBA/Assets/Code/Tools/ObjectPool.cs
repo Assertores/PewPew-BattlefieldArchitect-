@@ -90,6 +90,22 @@ namespace PPBA
 			return s_objectPools[prefab];
 		}
 
+		public static void ResetAllObjectPools()
+		{
+			foreach(var it in s_objectPools)
+			{
+				it.Value.ResetObjectPool();
+			}
+		}
+
+		public void ResetObjectPool()
+		{
+			foreach(Transform it in _parent)
+			{
+				it.gameObject.SetActive(false);
+			}
+		}
+
 		/// <summary>
 		/// use this to get a free element in the object pool whitch will be automaticly already be set active.
 		/// </summary>

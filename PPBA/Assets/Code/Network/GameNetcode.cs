@@ -248,6 +248,7 @@ namespace PPBA
 		void DoServerRestart()
 		{
 			Debug.Log("[SERVER] restart");
+			ObjectPool.ResetAllObjectPools();
 			TickHandler.s_instance.DoReset();
 			GlobalVariables.s_instance._clients = new List<client>();
 		}
