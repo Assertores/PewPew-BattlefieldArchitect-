@@ -127,7 +127,7 @@ namespace PPBA
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
 		public MountSlot _mountSlot = null;
-		public bool _isMounting => _mountSlot != null;
+		public bool _isMounting => _mountSlot != null && _mountSlot.isActiveAndEnabled;
 		#endregion
 
 		#region MonoBehaviour
@@ -446,7 +446,7 @@ namespace PPBA
 				case Behaviors.CONQUERBUILDING:
 					break;
 				case Behaviors.STAYINCOVER:
-					break;
+					return Behavior_StayInCover.s_instance;
 				case Behaviors.GOTOCOVER:
 					break;
 				case Behaviors.GOTOHEAL:

@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 7515035436541505344}
   - component: {fileID: 1580922640460329105}
   - component: {fileID: 128041602174902717}
+  - component: {fileID: 1777836687972694027}
   m_Layer: 0
   m_Name: BehaviorContainer
   m_TagString: Untagged
@@ -357,6 +358,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
   _attackBuildUpTime: 2
+  _attackRange: 2
 --- !u!114 &971023362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1278,3 +1280,19 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
   _grabSize: 10
+--- !u!114 &1777836687972694027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515035436285199966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea3ef2c5f80a9ee4bbefb51032fbaf05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pawnAxes: []
+  _targetAxes: []
+  _maxDistance: 7
+  _mountDistance: 0.15

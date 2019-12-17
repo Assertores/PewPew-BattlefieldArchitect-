@@ -44,10 +44,12 @@ namespace PPBA
 
 		public override float GetCoverScore(Vector3 shooterPosition)
 		{
-			if(null != _parentCover && Vector3.Magnitude(_parentCover.transform.position - shooterPosition) < Vector3.Magnitude(transform.position - shooterPosition))//Is CoverPoint further from shooter than _parentCover?
-				return _coverScore;
-			else
-				return 0f;
+			return _coverScore;
+
+			//	if(null != _parentCover && Vector3.Magnitude(_parentCover.transform.position - shooterPosition) < Vector3.Magnitude(transform.position - shooterPosition))//Is CoverPoint further from shooter than _parentCover?
+			//		return _coverScore;
+			//	else
+			//		return 0f;
 		}
 
 		public override void Execute()

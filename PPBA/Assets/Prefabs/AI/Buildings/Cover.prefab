@@ -250,6 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5720190746590458697}
   - component: {fileID: 4622082364059899262}
+  - component: {fileID: 2254800408289661979}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -291,6 +292,22 @@ MonoBehaviour:
   _coverSlots:
   - {fileID: 6039824074512972266}
   - {fileID: 2570203676158108117}
+--- !u!114 &2254800408289661979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8128366849191760977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 1
+  m_Area: 6
+  m_IgnoreFromBuild: 0
+  m_AffectedAgents: ffffffff
 --- !u!1 &8226593136798999635
 GameObject:
   m_ObjectHideFlags: 0
