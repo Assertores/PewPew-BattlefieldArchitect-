@@ -41,59 +41,37 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
-			if(!_isInit)
-			{
-				if(ResourceMapCalculate.s_instance.HasRefinerys() /*|| TerritoriumMapCalculate.s_instance.HasSoldiers()*/)
-				{
-					_isInit = true;
-				}
-
-				if(!_isInit)
-				{
-					return;
-				}
-			}
-
 			HeatMapReturnValue value;
 
 			print("calculate maps Heatmaphandler");
 
 			//----- ----- init ----- -----
 
-			if(ResourceMapCalculate.s_instance.HasRefinerys())
-			{
 				print("map calc refi");
 				//----- ----- ResourceMap ----- -----
 				value = ResourceMapCalculate.s_instance.RefreshCalcRes();
 				_heatMaps[0] = ConvertTexture(value.tex);
 				_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);				
-			}
 
-			if(TerritoriumMapCalculate.s_instance.HasSoldiers())
-			{
 				print("map calc soldiers");
 				////----- ----- TerritoriumMap ----- -----
 				value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
 				_heatMaps[1] = ConvertTexture(value.tex);
 				print("heatpmap value  " + value.tex);
 				_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
-			}
+			
 		}
 
 		void SaveMapToGameState(int tick)
 		{
-			if(!_isInit)
-			{
-				Debug.Log("Heatmaps not initialiced yet");
-				return;
-			}
+
 			for(int i = 0; i < _heatMaps.Length; i++)
 			{
 				GSC.heatMap hm = new GSC.heatMap();
 				hm._id = i;
 
 				//setting up current Bitfield
-				hm._mask = _bitFields[i];
+				hm._mask = new BitField2D(_bitFields[i]);
 
 				Vector2Int[] positions = hm._mask.GetActiveBits();
 

@@ -27,7 +27,7 @@ namespace PPBA
 			Buffer.BlockCopy(values, 0, _backingArray, 0, Mathf.CeilToInt((width * hight) / 8.0f));
 		}
 
-		public BitField2D(BitField2D origin, bool doEmpty)
+		public BitField2D(BitField2D origin, bool doEmpty = false)
 		{
 			_fieldWidth = origin._fieldWidth;
 			_fieldHight = origin._fieldHight;

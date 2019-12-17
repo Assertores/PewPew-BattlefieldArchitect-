@@ -54,6 +54,15 @@ namespace PPBA
 		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
 			_currentBitField = new byte[(512 * 512) / 8];
+			HeatMapReturnValue value;
+			value.bitfield = _currentBitField;
+			value.tex = _ResultTexture;
+			if(!s_instance.HasSoldiers())
+			{
+				return value;
+			}
+
+			_currentBitField = new byte[(512 * 512) / 8];
 			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);

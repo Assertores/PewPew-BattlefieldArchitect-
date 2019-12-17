@@ -68,6 +68,14 @@ namespace PPBA
 		public HeatMapReturnValue RefreshCalcRes()
 		{
 			_currentBitField = new byte[(512 * 512) / 8];
+			HeatMapReturnValue value;
+			value.bitfield = _currentBitField;
+			value.tex = _ResultTexture;
+			if(!s_instance.HasRefinerys())
+			{
+				return value;
+			}
+
 			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 			_ResourceValues = new int[_Refinerys.Count];
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
@@ -96,7 +104,7 @@ namespace PPBA
 
 		//	Graphics.Blit(_ResultTexture, _currentTexture);
 
-			//_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
+			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
 			return new HeatMapReturnValue { bitfield = _currentBitField, tex = _ResultTexture };
 
