@@ -107,7 +107,6 @@ namespace PPBA
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
 			Profiler.BeginSample("[Server] Seperating GS");
-			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
 				GameState element = new GameState(s_interfaceGameState);

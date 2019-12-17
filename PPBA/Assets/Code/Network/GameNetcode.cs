@@ -133,7 +133,7 @@ namespace PPBA
 
 				client._inputStates[tick] = tmp;
 			}
-			Debug.Log("startTick: " + startTick);
+
 			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 1);
 		}
 

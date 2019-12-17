@@ -445,7 +445,7 @@ namespace PPBA
 					Vector2Int[] pos = it._mask.GetActiveBits();
 					if(pos.Length != it._values.Count)
 					{
-						Debug.LogError("Values and Bitfield don't fit together. " + it._id);
+						Debug.LogError("Values and Bitfield don't fit together. " + it._id + " (" + pos.Length + ", " + it._values.Count + ")");
 						continue;
 					}
 					msg.Clear();
@@ -1006,12 +1006,14 @@ Change:
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
+				Debug.Log("PreDelta: " + it.ToString());
 				//escape if reference tick dosn't have the heatmap
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				if(null == refMap)
 					continue;
 
 				//baking Bitfield
+				//problem: heatmap backing geht so garnicht
 				for(int i = refTick + 1; i < myTick; i++)
 				{
 					GameState nextState = references[i];
@@ -1031,6 +1033,13 @@ Change:
 				Vector2Int[] positions = it._mask.GetActiveBits();
 				List<float> values = new List<float>(positions.Length);
 
+				Debug.Log(positions.Length + " | " + refPos.Length);
+
+				//wenn gefunden und values gleich
+				//	pixel removen und value entfernen
+				//sonst
+				//	pixel behalten
+
 				for(int i = 0, j = 0; i < positions.Length; i++)
 				{
 					//finde gleiches element (hör auf zu suchen, wenn es größer ist)
@@ -1040,19 +1049,31 @@ Change:
 							break;
 					}
 
-					//wenn gleiches element existiert
-					if(j < refPos.Length && refPos[j] == positions[i])
-					{
-						float value = it._values[i];
+					Debug.Log(i + " - " + j);
+					Debug.Log("(" + positions[i] + ", " + refPos[j] + ")");
 
-						//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
-						if(refMap._values[j] == value)
-							it._mask[positions[i].x, positions[i].y] = false;
-						else
-							values.Add(value);
+					//wenn gleiches element existiert
+					if(j < refPos.Length)
+					{
+						if(refPos[j] == positions[i])
+						{
+							float value = it._values[i];
+
+							//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
+							if(refMap._values[j] == value)
+								it._mask[positions[i].x, positions[i].y] = false;
+							else
+								values.Add(value);
+						}
 					}
+					else
+					{
+						values.Add(it._values[i]);
+					}
+					
 				}
 				it._values = values;
+				Debug.Log("Create Delta: " + it.ToString());
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
