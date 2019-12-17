@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Behavior_Mount : Behavior
+	public class Behavior_StayInCover : Behavior
 	{
-		public static Behavior_Mount s_instance;
+		public static Behavior_StayInCover s_instance;
 		public static Dictionary<Pawn, MountSlot> s_targetDictionary = new Dictionary<Pawn, MountSlot>();
 
 		[SerializeField] private float _maxDistance = 70f;
 		[SerializeField][Tooltip("How close does a pawn have to be to allow mounting?")] private float _mountDistance = .15f;
 
-		public Behavior_Mount()
+		public Behavior_StayInCover()
 		{
 			_name = Behaviors.MOUNT;
 		}
