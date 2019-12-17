@@ -61,6 +61,7 @@ namespace PPBA
 		[SerializeField] protected float _moraleBackingField = 100;
 		[SerializeField] [Tooltip("Health regeneration per tick.")] protected float _healthRegen = 1f;
 		[SerializeField] [Tooltip("Morale regeneration per tick.")] protected float _moraleRegen = 1f;
+		[SerializeField] int TerritoryMapId;
 		#endregion
 
 		#region References
@@ -395,10 +396,6 @@ namespace PPBA
 			_supplies = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
-
-			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
-			TerritoriumMapCalculate.s_instance.UpdateSoldiersPosition(TerritoryMapId, pos);
-			print(pos + "position soldies");
 		}
 
 		/*
@@ -782,7 +779,6 @@ namespace PPBA
 			pawn.SetMaterialColor(team);
 		}
 
-		[SerializeField] int TerritoryMapId;
 
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
@@ -791,10 +787,10 @@ namespace PPBA
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
 
-
+#if UNITY_SERVER			
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
-			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(pos, team);
-
+			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
+#endif
 		}
 
 		public static ObjectType RandomPawnType()
@@ -870,6 +866,10 @@ namespace PPBA
 
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
+
+			
+			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
+		//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
 #endif
 		}
 
@@ -879,6 +879,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-		#endregion
+#endregion
 	}
 }

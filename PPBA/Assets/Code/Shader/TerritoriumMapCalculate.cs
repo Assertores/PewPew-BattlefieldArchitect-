@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace PPBA
 {
@@ -9,7 +10,7 @@ namespace PPBA
 		[SerializeField] private ComputeShader _computeShader;
 		[SerializeField] private Material _GroundMaterial;
 		[SerializeField] Texture2D _original;
-				
+
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 
@@ -19,7 +20,7 @@ namespace PPBA
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
 
-		private List<Vector4> _Soldiers = new List<Vector4>();
+		private Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
 
 		void Start()
 		{
@@ -53,10 +54,12 @@ namespace PPBA
 
 		public HeatMapReturnValue RefreshCalcTerritorium()
 		{
+
 			_currentBitField = new byte[(512 * 512) / 8];
 			HeatMapReturnValue value;
 			value.bitfield = _currentBitField;
 			value.tex = _ResultTexture;
+
 			if(!s_instance.HasSoldiers())
 			{
 				return value;
@@ -66,18 +69,18 @@ namespace PPBA
 			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);
-			
+
 			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
 			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
-			
+
 			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
 			_bitField = null;
 
-			return new HeatMapReturnValue { tex = _ResultTexture , bitfield = _currentBitField };
+			return new HeatMapReturnValue { tex = _ResultTexture, bitfield = _currentBitField };
 		}
 
 		// add data for ComputeInput
@@ -85,26 +88,38 @@ namespace PPBA
 		{
 			Vector4[] refsProp = new Vector4[_Soldiers.Count];
 
-			for(int i = 0; i < _Soldiers.Count; i++)
+			int index = 0;
+
+			foreach(KeyValuePair<Transform, int> soldier in _Soldiers)
 			{
-				refsProp[i] = new Vector4(_Soldiers[i].x , _Soldiers[i].y, _Soldiers[i].z, 0);
+				refsProp[index] = new Vector4(soldier.Key.position.x, soldier.Key.position.y, soldier.Value, 0);
+				index++;
 			}
 			return refsProp;
 		}
 
+		void Update()
+		{
+			print(_Soldiers.Count + " "+ _Soldiers.Keys);
+		}
+
 		// add soldies in List
-		public int AddSoldier(Vector2 pos, int Team)
+		public int AddSoldier(Transform pawn, int Team)
 		{
-			_Soldiers.Add(new Vector4(pos.x , pos.y, Team ));
-			return _Soldiers.Count-1;
+			print("add Soldiers");
+			if(!_Soldiers.ContainsKey(pawn))
+			{
+				_Soldiers[pawn] = Team;
+				return _Soldiers.Count - 1;
+
+			}
+			return -1;
 		}
 
-		public void UpdateSoldiersPosition(int index, Vector2 position)
+		public void RemoveSoldiers(Transform pawn, int index)
 		{
-			_Soldiers[index] = new Vector4(position.x, position.y, _Soldiers[index].z, 0);
+			_Soldiers.Remove(pawn);
 		}
-
-
 
 		void OnDisable()
 		{
@@ -119,7 +134,7 @@ namespace PPBA
 
 		public bool HasSoldiers()
 		{
-			print("soldier cound "+ _Soldiers.Count);
+			print("soldier cound " + _Soldiers.Count);
 			return _Soldiers.Count != 0;
 		}
 
