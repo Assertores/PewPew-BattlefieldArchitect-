@@ -100,7 +100,7 @@ namespace PPBA
 				case "Distance":
 					return Vector3.Distance(pawn.transform.position, mountSlot.transform.position) / _maxDistance;
 				case "Score":
-					return mountSlot._score;
+					return mountSlot._coverScore;
 				default:
 					return 1f;
 			}
