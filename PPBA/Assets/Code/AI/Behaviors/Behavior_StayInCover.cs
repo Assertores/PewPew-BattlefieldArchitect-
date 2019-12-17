@@ -14,7 +14,7 @@ namespace PPBA
 
 		public Behavior_StayInCover()
 		{
-			_name = Behaviors.MOUNT;
+			_name = Behaviors.STAYINCOVER;
 		}
 
 		#region Monobehaviour
