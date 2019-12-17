@@ -384,6 +384,10 @@ namespace PPBA
 			_supplies = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
+
+			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
+			TerritoriumMapCalculate.s_instance.UpdateSoldiersPosition(TerritoryMapId, pos);
+			print(pos + "position soldies");
 		}
 
 		/*
@@ -767,12 +771,19 @@ namespace PPBA
 			pawn.SetMaterialColor(team);
 		}
 
+		[SerializeField] int TerritoryMapId;
+
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
 			ResetToDefault(newPawn, team);
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
+
+
+			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
+			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(pos, team);
+
 		}
 
 		public static ObjectType RandomPawnType()

@@ -107,6 +107,13 @@ namespace PPBA
 			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
 		}
 
+
+		public bool HasSoldiers()
+		{
+			print("soldier cound "+ _Soldiers.Count);
+			return _Soldiers.Count != 0;
+		}
+
 	}
 
 }

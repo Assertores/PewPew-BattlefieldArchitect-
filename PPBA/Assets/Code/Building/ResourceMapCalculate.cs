@@ -39,11 +39,6 @@ namespace PPBA
 			_resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
-			//_currentTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
-			//{
-			//	enableRandomWrite = true
-			//};
-
 			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.R8)
 			{
 				enableRandomWrite = true
@@ -138,8 +133,6 @@ namespace PPBA
 			}
 			return refsProp;
 		}
-		
-
 
 		void OnDisable()
 		{
@@ -151,13 +144,10 @@ namespace PPBA
 			_GroundMaterial.SetTexture("_NoiseMap", _original);
 		}
 
-
 		public bool HasRefinerys()
 		{
-			return !(_Refinerys.Count != 0);
+			return _Refinerys.Count != 0;
 		}
-
-
 	}
 		
 }

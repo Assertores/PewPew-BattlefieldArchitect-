@@ -41,26 +41,43 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
-			if(ResourceMapCalculate.s_instance.HasRefinerys())
+			if(!_isInit)
 			{
-				return;
+				if(ResourceMapCalculate.s_instance.HasRefinerys() /*|| TerritoriumMapCalculate.s_instance.HasSoldiers()*/)
+				{
+					_isInit = true;
+				}
+
+				if(!_isInit)
+				{
+					return;
+				}
 			}
+
+			HeatMapReturnValue value;
+
 			print("calculate maps Heatmaphandler");
 
 			//----- ----- init ----- -----
-			HeatMapReturnValue value;
 
-			//----- ----- ResourceMap ----- -----
-			value = ResourceMapCalculate.s_instance.RefreshCalcRes();
-			_heatMaps[0] = ConvertTexture(value.tex);
-			_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
+			if(ResourceMapCalculate.s_instance.HasRefinerys())
+			{
+				print("map calc refi");
+				//----- ----- ResourceMap ----- -----
+				value = ResourceMapCalculate.s_instance.RefreshCalcRes();
+				_heatMaps[0] = ConvertTexture(value.tex);
+				_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);				
+			}
 
-			////----- ----- TerritoriumMap ----- -----
-			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
-			_heatMaps[1] = ConvertTexture(value.tex);
-			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
-
-			_isInit = true;
+			if(TerritoriumMapCalculate.s_instance.HasSoldiers())
+			{
+				print("map calc soldiers");
+				////----- ----- TerritoriumMap ----- -----
+				value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
+				_heatMaps[1] = ConvertTexture(value.tex);
+				print("heatpmap value  " + value.tex);
+				_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
+			}
 		}
 
 		void SaveMapToGameState(int tick)
