@@ -13,9 +13,8 @@ namespace PPBA
 
 	public class HeatMapHandler : Singleton<HeatMapHandler>
 	{
-		Texture2D[] _heatMaps = new Texture2D[2];
-		BitField2D[] _bitFields = new BitField2D[2];
-		bool _isInit = false;
+		public Texture2D[] _heatMaps { get; private set; } = new Texture2D[2];
+		private BitField2D[] _bitFields = new BitField2D[2];
 
 		private void Start()
 		{
@@ -41,25 +40,19 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
+			//----- ----- init ----- -----
 			HeatMapReturnValue value;
 
-			print("calculate maps Heatmaphandler");
+			//----- ----- ResourceMap ----- -----
+			value = ResourceMapCalculate.s_instance.RefreshCalcRes();
+			_heatMaps[0] = ConvertTexture(value.tex);
+			_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
-			//----- ----- init ----- -----
+			//----- ----- TerritoriumMap ----- -----
+			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
+			_heatMaps[1] = ConvertTexture(value.tex);
+			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
-				print("map calc refi");
-				//----- ----- ResourceMap ----- -----
-				value = ResourceMapCalculate.s_instance.RefreshCalcRes();
-				_heatMaps[0] = ConvertTexture(value.tex);
-				_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);				
-
-				print("map calc soldiers");
-				////----- ----- TerritoriumMap ----- -----
-				value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
-				_heatMaps[1] = ConvertTexture(value.tex);
-				print("heatpmap value  " + value.tex);
-				_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
-			
 		}
 
 		void SaveMapToGameState(int tick)
