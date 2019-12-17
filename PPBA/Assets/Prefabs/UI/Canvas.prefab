@@ -1828,6 +1828,9 @@ MonoBehaviour:
   - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
   - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
   - {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e, type: 3}
+  - {fileID: 7730061378370038646, guid: 819ec5a45a2bd0e44ac973f7e97e35a9, type: 3}
+  - {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180, type: 3}
+  - {fileID: 6493288425784081815, guid: dc0c45c6a9274094fba0fcdcf6b155b2, type: 3}
   inventoryPanel: {fileID: 1401503508}
   inventoryTiles: {fileID: 1298776132748419602, guid: dfc8b7ec20333c948b45d329eae83609,
     type: 3}

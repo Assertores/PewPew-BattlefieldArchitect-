@@ -92,7 +92,7 @@ namespace PPBA
 		public void HandleNewObject(IRefHolder PrefabBuildingType)
 		{
 			_CurrentObjectType = PrefabBuildingType._Type;
-					   
+
 			switch(PrefabBuildingType._Type)
 			{
 				case ObjectType.REFINERY:
@@ -122,8 +122,12 @@ namespace PPBA
 				case ObjectType.HQ:
 					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
+				case ObjectType.MEDICAMP:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+					break;
 				case ObjectType.SIZE:
 					break;
+
 			}
 		}
 

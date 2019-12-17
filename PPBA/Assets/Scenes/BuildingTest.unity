@@ -678,29 +678,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1458595919}
-    - target: {fileID: 4709207934069220716, guid: 7881a78edc1b32c419d5c0ef01533344,
-        type: 3}
-      propertyPath: StartBuilds.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4709207934069220716, guid: 7881a78edc1b32c419d5c0ef01533344,
-        type: 3}
-      propertyPath: StartBuilds.Array.data[2]
-      value: 
-      objectReference: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
-        type: 3}
-    - target: {fileID: 4709207934069220716, guid: 7881a78edc1b32c419d5c0ef01533344,
-        type: 3}
-      propertyPath: StartBuilds.Array.data[3]
-      value: 
-      objectReference: {fileID: 7730061378370038646, guid: 819ec5a45a2bd0e44ac973f7e97e35a9,
-        type: 3}
-    - target: {fileID: 4709207934069220716, guid: 7881a78edc1b32c419d5c0ef01533344,
-        type: 3}
-      propertyPath: StartBuilds.Array.data[4]
-      value: 
-      objectReference: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7881a78edc1b32c419d5c0ef01533344, type: 3}
 --- !u!1 &2098525727
@@ -861,6 +838,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[10]._type
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[10]._prefab
+      value: 
+      objectReference: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
+        type: 3}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[9]._type
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466714, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _prefabInput.Array.data[9]._prefab
+      value: 
+      objectReference: {fileID: 6493288425784081815, guid: dc0c45c6a9274094fba0fcdcf6b155b2,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
 --- !u!1001 &9013790921480956279
