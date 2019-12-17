@@ -981,7 +981,7 @@ Change:
 				_behaviors[RemoverIndex] = _behaviors[i];
 				RemoverIndex++;
 			}
-			_healths.RemoveRange(RemoverIndex, _behaviors.Count - RemoverIndex);
+			_behaviors.RemoveRange(RemoverIndex, _behaviors.Count - RemoverIndex);
 			RemoverIndex = 0;
 			for(int i = 0; i < _paths.Count; i++)
 			{
@@ -993,7 +993,7 @@ Change:
 				if(_paths[i]._path.Length != element._path.Length)
 					goto Change;
 
-				for(int j = 0; i < _paths[i]._path.Length; i++)
+				for(int j = 0; j < _paths[i]._path.Length; j++)
 				{
 					if(_paths[i]._path[j] != element._path[j])
 						continue;
