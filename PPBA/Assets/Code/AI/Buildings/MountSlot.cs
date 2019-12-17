@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace PPBA
 {
-	[RequireComponent(typeof(Collider))]
 	public abstract class MountSlot : MonoBehaviour
 	{
 		//public
@@ -15,19 +14,6 @@ namespace PPBA
 		[SerializeField] [Tooltip("How much cover does the MountSlot offer a pawn?")] public float _coverScore = 0f;
 		public bool _isMounted => _mountingPawn != null;
 		[SerializeField] public Pawn _mountingPawn = null;
-		public List<Pawn> _activePawns//accessor to _closePawns
-		{
-			get
-			{
-				foreach(var it in _closePawns)
-				{
-					if(!it.gameObject.activeSelf)
-						_closePawns.Remove(it);//inactive pawns are removed here, the other option would be to go through the lists of all pawns whenever a pawn is disabled to remove it from the lists
-				}
-				return _closePawns;
-			}
-		}
-		public List<Pawn> _closePawns = new List<Pawn>();
 
 		#region Pawn Interaction
 		public bool GetIn(Pawn pawn)
@@ -77,28 +63,6 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 		}
 		#endregion
-
-		public void OnTriggerEnter(Collider other)
-		{
-			//Add relevant objects to closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp)
-					_closePawns.Add(temp);
-			}
-		}
-
-		public void OnTriggerExit(Collider other)
-		{
-			//Remove objects from closeLists
-			if(other.tag == "Pawn")
-			{
-				Pawn temp = other.gameObject.GetComponent<Pawn>();
-				if(temp && _closePawns.Contains(temp))
-					_closePawns.Remove(temp);
-			}
-		}
 
 		private void OnEnable()
 		{

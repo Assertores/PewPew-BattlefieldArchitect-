@@ -186,6 +186,11 @@ namespace PPBA
 		{
 			CheckOverlapSphere();
 
+			if(_isMounting)
+			{
+				Behavior_StayInCover.s_instance.Calculate(this);
+			}
+
 			if(null != _behaviors)
 			{
 				for(int i = 0; i < _behaviors.Length; i++)
@@ -205,13 +210,20 @@ namespace PPBA
 			int bestBehavior = 0;
 			float bestScore = 0;
 
-			if(_health <= 0)
+			if(_health <= 0)//early skip: death
 			{
 				Behavior_Die.s_instance.Execute(this);
 				return;
 			}
+			
+			Regenerate();
 
-			if(0 < _behaviors.Length)
+			if(_isMounting)//early skip: mounting
+			{
+				Behavior_StayInCover.s_instance.Execute(this);
+				return;
+			}
+			else if(0 < _behaviors.Length)
 			{
 				for(int i = 0; i < _behaviorScores.Length; i++)//determines best behavior
 				{
@@ -234,7 +246,6 @@ namespace PPBA
 			}
 
 			NavTick();
-			Regenerate();
 		}
 
 		public void WriteToGameState(int tick)//SERVER
