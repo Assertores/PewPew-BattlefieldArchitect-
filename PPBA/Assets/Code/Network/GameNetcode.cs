@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 //#define UNITY_SERVER
 namespace PPBA
@@ -45,16 +46,23 @@ namespace PPBA
 
 		private void Update()
 		{
-			if(!Listen())
+			Profiler.BeginSample("[Server] Listen");
+			bool b = Listen();
+			Profiler.EndSample();
+			if(!b)
 				return;
 			if(GlobalVariables.s_instance._clients.FindAll(x => x._isConnected == true).Count < _playerCount)
 				return;
 
+			Profiler.BeginSample("[Server] Simulate");
 			int tick = TickHandler.s_instance.Simulate();
+			Profiler.EndSample();
 			if(tick < 0)
 				return;
 
+			Profiler.BeginSample("[Server] Send");
 			Send(tick);
+			Profiler.EndSample();
 		}
 
 		bool Listen()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Profiling;
 
 //#define UNITY_SERVER
 namespace PPBA
@@ -53,6 +54,7 @@ namespace PPBA
 				return -2;
 			}
 
+			Profiler.BeginSample("[Server] Simulating all");
 			for(s_currentTick++; s_currentTick <= min; s_currentTick++)
 			{
 				s_interfaceInputState = new InputState();
@@ -73,24 +75,38 @@ namespace PPBA
 #if !UNITY_SERVER
 				s_interfaceGameState = GlobalVariables.s_instance._clients[0]._gameStates[s_currentTick];
 #endif
-
+				Profiler.BeginSample("[Server] SetUp");
 				s_SetUp?.Invoke(s_currentTick);
+				Profiler.EndSample();
+				Profiler.BeginSample("[Server] Input");
 				s_DoInput?.Invoke(s_currentTick);
+				Profiler.EndSample();
+				Profiler.BeginSample("[Server] Calc1");
 				s_EarlyCalc?.Invoke(s_currentTick);
+				Profiler.EndSample();
+				Profiler.BeginSample("[Server] Calc2");
 				s_LateCalc?.Invoke(s_currentTick);
+				Profiler.EndSample();
+				Profiler.BeginSample("[Server] Evaluation");
 				s_AIEvaluate?.Invoke(s_currentTick);
+				Profiler.EndSample();
+				Profiler.BeginSample("[Server] Tick");
 				s_DoTick?.Invoke(s_currentTick);
+				Profiler.EndSample();
 			}
 			s_currentTick--;
-
+			Profiler.EndSample();
+			Profiler.BeginSample("[Server] Gather Values");
 			s_interfaceGameState = new GameState();
 			s_interfaceInputState = new InputState();
 
 			s_GatherValues?.Invoke(s_currentTick);
+			Profiler.EndSample();
 
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
+			Profiler.BeginSample("[Server] Seperating GS");
 			//Debug.Log("[Server] Seperating Gamestate");
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
@@ -102,6 +118,7 @@ namespace PPBA
 
 				it._inputStates.FreeUpTo(s_currentTick);
 			}
+			Profiler.EndSample();
 
 			return s_currentTick;
 		}
@@ -199,12 +216,24 @@ namespace PPBA
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 
+			Profiler.BeginSample("[Client] SetUp");
 			s_SetUp?.Invoke(s_currentTick);
+			Profiler.EndSample();
+			Profiler.BeginSample("[Client] Input");
 			s_DoInput?.Invoke(s_currentTick);
+			Profiler.EndSample();
+			Profiler.BeginSample("[Client] Calc1");
 			s_EarlyCalc?.Invoke(s_currentTick);
+			Profiler.EndSample();
+			Profiler.BeginSample("[Client] Calc2");
 			s_LateCalc?.Invoke(s_currentTick);
+			Profiler.EndSample();
+			Profiler.BeginSample("[Client] Evaluation");
 			s_AIEvaluate?.Invoke(s_currentTick);
+			Profiler.EndSample();
+			Profiler.BeginSample("[Client] Tick");
 			s_DoTick?.Invoke(s_currentTick);
+			Profiler.EndSample();
 
 			s_interfaceInputState = new InputState();
 			s_interfaceGameState = new GameState();

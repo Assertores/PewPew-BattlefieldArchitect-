@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.ComponentModel;
 using System.Text;
+using UnityEngine.Profiling;
 
 namespace PPBA
 {
@@ -280,11 +281,13 @@ namespace PPBA
 			if(_messageHolder != null)
 				return _messageHolder;
 
+			Profiler.BeginSample("[GameState] Encrypt");
 			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
 			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
 
+			Profiler.BeginSample("[GameState] types");
 			if(_types.Count > 0)
 			{
 				msg.Clear();
@@ -299,6 +302,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] args");
 			if(_args.Count > 0)
 			{
 				msg.Clear();
@@ -312,6 +317,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] transforms");
 			if(_transforms.Count > 0)
 			{
 				msg.Clear();
@@ -328,6 +335,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] ammo");
 			if(_ammos.Count > 0)
 			{
 				msg.Clear();
@@ -342,6 +351,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] resources");
 			if(_resources.Count > 0)
 			{
 				msg.Clear();
@@ -355,6 +366,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] healths");
 			if(_healths.Count > 0)
 			{
 				msg.Clear();
@@ -369,6 +382,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] works");
 			if(_works.Count > 0)
 			{
 				msg.Clear();
@@ -382,6 +397,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] behaviors");
 			if(_behaviors.Count > 0)
 			{
 				msg.Clear();
@@ -396,6 +413,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] paths");
 			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
 			{
 				msg.Clear();
@@ -415,19 +434,27 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] heatMaps");
 			if(_heatMaps.Count > 0)
 			{
 				/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
 				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
 				foreach(var it in _heatMaps)
 				{
+					Vector2Int[] pos = it._mask.GetActiveBits();
+					if(pos.Length != it._values.Count)
+					{
+						Debug.LogError("Values and Bitfield don't fit together. " + it._id);
+						continue;
+					}
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
-						Vector2Int[] pos = it._mask.GetActiveBits();
+						
 						msg.AddRange(BitConverter.GetBytes(pos.Length));
 						for(int i = 0; i < pos.Length; i++)
 						{
@@ -449,6 +476,8 @@ namespace PPBA
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] denyedInput");
 			if(_denyedInputIDs.Count > 0)
 			{
 				msg.Clear();
@@ -461,6 +490,8 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] IDRanges");
 			if(_newIDRanges.Count > 0)
 			{
 				msg.Clear();
@@ -475,6 +506,7 @@ namespace PPBA
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
+			Profiler.EndSample();
 
 			if(_messageHolder.Count == 0)
 			{
@@ -497,6 +529,8 @@ namespace PPBA
 			}*/
 			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
+
+			Profiler.EndSample();
 			return _messageHolder;
 		}
 
@@ -511,6 +545,7 @@ namespace PPBA
 			if(_receivedMessages[packageNumber, 0])
 				return;
 
+			Profiler.BeginSample("[GameState] Decrypt");
 			_receivedMessages[packageNumber, 0] = true;
 
 
@@ -800,6 +835,7 @@ namespace PPBA
 				_isEncrypted = false;
 			}
 
+			Profiler.EndSample();
 			//Debug.Log("----- EOM -----");
 		}
 
@@ -814,137 +850,160 @@ namespace PPBA
 				return false;
 			}
 
-			//Debug.Log(myTick + ": " + _isDelta + ", " + _isEncrypted + ", " + _isLerped);
-			//Debug.Log(refTick + ": " + reference._isDelta + ", " + reference._isEncrypted + ", " + reference._isLerped);
+			Profiler.BeginSample("[GameState] Create Delta");
 
 			_refTick = refTick;
+			int RemoverIndex;
 
-			foreach(var it in reference._types)
+			RemoverIndex = 0;
+			for(int i = 0; i < _types.Count; i++)
 			{
-				GSC.type element = _types.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
+				GSC.type element = reference._types.Find(x => x._id == _types[i]._id);
 
-				if(it._type != element._type)
-					continue;
-				if(it._team != element._team)
-					continue;
+				if(null == element)
+					goto Change;
 
-				_types.Remove(element);
-			}
-			//Debug.Log(reference._args.Count + " | " + _args.Count);
-			foreach(var it in reference._args)
-			{
-				GSC.arg element = _args.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
+				if(_types[i]._type != element._type)
+					goto Change;
+				if(_types[i]._team != element._team)
+					goto Change;
 
-				//Debug.Log(it._arguments + " | " + element._arguments);
-
-				if(it._arguments != element._arguments)
-					continue;
-
-				//Debug.Log(element + " will be removed");
-
-				_args.Remove(element);
-			}
-			foreach(var it in reference._transforms)
-			{
-				GSC.transform element = _transforms.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._position != element._position)
-					continue;
-				if(it._angle != element._angle)
-					continue;
-
-				_transforms.Remove(element);
-			}
-			foreach(var it in reference._ammos)
-			{
-				GSC.ammo element = _ammos.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._bullets != element._bullets)
-					continue;
-				/*if(it._grenades != element._grenades)
-					continue;*/
-
-				_ammos.Remove(element);
-			}
-			foreach(var it in reference._resources)
-			{
-				GSC.resource element = _resources.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._resources != element._resources)
-					continue;
-
-				_resources.Remove(element);
-			}
-			foreach(var it in reference._healths)
-			{
-				GSC.health element = _healths.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._health != element._health)
-					continue;
-				if(it._morale != element._morale)
-					continue;
-
-				_healths.Remove(element);
-			}
-			foreach(var it in reference._behaviors)
-			{
-				GSC.behavior element = _behaviors.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._behavior != element._behavior)
-					continue;
-				if(it._target != element._target)
-					continue;
-
-				_behaviors.Remove(element);
-			}
-			foreach(var it in reference._paths)
-			{
-				GSC.path element = _paths.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._path.Length != element._path.Length)
-					continue;
-
-				/*
-				 * {
-				 * 	int i = 0;
-				 * 	for(; i < it._path.Count; i++)
-				 * 	{
-				 * 		if(it._path[i] != element._path[i])
-				 * 			break;
-				 * 	}
-				 * 	if(i < it._path.Count)
-				 * 		continue;
-				 * }
-				 */
-
-				for(int i = 0; i < it._path.Length; i++)
-				{
-					if(it._path[i] != element._path[i])
-						goto Failed;
-				}
-				goto Jump;
-Failed:
 				continue;
-Jump:
-
-				_paths.Remove(element);
+Change:
+				_types[RemoverIndex] = _types[i];
+				RemoverIndex++;
 			}
+			_types.RemoveRange(RemoverIndex, _types.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _args.Count; i++)
+			{
+				GSC.arg element = reference._args.Find(x => x._id == _args[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_args[i]._arguments != element._arguments)
+					goto Change;
+
+				continue;
+Change:
+				_args[RemoverIndex] = _args[i];
+				RemoverIndex++;
+			}
+			_args.RemoveRange(RemoverIndex, _args.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _transforms.Count; i++)
+			{
+				GSC.transform element = reference._transforms.Find(x => x._id == _transforms[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_transforms[i]._position != element._position)
+					goto Change;
+				if(_transforms[i]._angle != element._angle)
+					goto Change;
+
+				continue;
+Change:
+				_transforms[RemoverIndex] = _transforms[i];
+				RemoverIndex++;
+			}
+			_transforms.RemoveRange(RemoverIndex, _transforms.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _ammos.Count; i++)
+			{
+				GSC.ammo element = reference._ammos.Find(x => x._id == _ammos[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_ammos[i]._bullets != element._bullets)
+					goto Change;
+
+				continue;
+Change:
+				_ammos[RemoverIndex] = _ammos[i];
+				RemoverIndex++;
+			}
+			_ammos.RemoveRange(RemoverIndex, _ammos.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _resources.Count; i++)
+			{
+				GSC.resource element = reference._resources.Find(x => x._id == _resources[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_resources[i]._resources != element._resources)
+					goto Change;
+
+				continue;
+Change:
+				_resources[RemoverIndex] = _resources[i];
+				RemoverIndex++;
+			}
+			_resources.RemoveRange(RemoverIndex, _resources.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _healths.Count; i++)
+			{
+				GSC.health element = reference._healths.Find(x => x._id == _healths[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_healths[i]._health != element._health)
+					goto Change;
+				if(_healths[i]._morale != element._morale)
+					goto Change;
+
+				continue;
+Change:
+				_healths[RemoverIndex] = _healths[i];
+				RemoverIndex++;
+			}
+			_healths.RemoveRange(RemoverIndex, _healths.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _behaviors.Count; i++)
+			{
+				GSC.behavior element = reference._behaviors.Find(x => x._id == _behaviors[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_behaviors[i]._behavior != element._behavior)
+					goto Change;
+				if(_behaviors[i]._target != element._target)
+					goto Change;
+
+				continue;
+Change:
+				_behaviors[RemoverIndex] = _behaviors[i];
+				RemoverIndex++;
+			}
+			_behaviors.RemoveRange(RemoverIndex, _behaviors.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _paths.Count; i++)
+			{
+				GSC.path element = reference._paths.Find(x => x._id == _paths[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_paths[i]._path.Length != element._path.Length)
+					goto Change;
+
+				for(int j = 0; j < _paths[i]._path.Length; j++)
+				{
+					if(_paths[i]._path[j] != element._path[j])
+						continue;
+				}
+Change:
+				_paths[RemoverIndex] = _paths[i];
+				RemoverIndex++;
+			}
+			_paths.RemoveRange(RemoverIndex, _paths.Count - RemoverIndex);
+			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
 				//escape if reference tick dosn't have the heatmap
@@ -982,7 +1041,7 @@ Jump:
 					}
 
 					//wenn gleiches element existiert
-					if(refPos[j] == positions[i])
+					if(j < refPos.Length && refPos[j] == positions[i])
 					{
 						float value = it._values[i];
 
@@ -1021,8 +1080,11 @@ Jump:
 				_newIDRanges.AddRange(nextState._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
 			_newIDRanges.RemoveAll(x => reference._newIDRanges.Exists(y => y._id == x._id));
+			Profiler.EndSample();
 
 			_isDelta = true;
+
+			Profiler.EndSample();
 
 			return true;
 		}
@@ -1031,6 +1093,8 @@ Jump:
 		{
 			if(reference == default)
 				return false;
+
+			Profiler.BeginSample("[GameState] Dismantle Delta");
 
 			//_messageHolder = null;
 
@@ -1098,11 +1162,14 @@ Jump:
 
 			_isDelta = false;
 
+			Profiler.EndSample();
+
 			return true;
 		}
 
 		public static GameState Lerp(GameState start, GameState end, float lerpValue)
 		{
+			Profiler.BeginSample("[GameState] Lerp");
 			GameState value = new GameState();
 
 			foreach(var origin in start._types)
@@ -1218,6 +1285,7 @@ Jump:
 			value._isDelta = false;
 			value._isLerped = true;
 
+			Profiler.EndSample();
 			return value;
 		}
 
@@ -1270,10 +1338,12 @@ Jump:
 				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
 				packages[index] = tmp;
 			}
+			
 		}
 
 		int GetHash()
 		{
+			Profiler.BeginSample("[GameState] Hash");
 			int hash = 0;
 
 			for(int i = 0; i < _types.Count; i++)
@@ -1368,6 +1438,8 @@ Jump:
 			}
 
 			Debug.Log("Hash: " + hash);
+
+			Profiler.EndSample();
 
 			return hash;
 		}

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace PPBA
 {
@@ -126,8 +127,25 @@ namespace PPBA
 
 		public Vector2Int[] GetActiveBits()
 		{
+			Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
+			//*
+			for(int i = 0; i < _backingArray.Length; i++)
+			{
+				if(_backingArray[i] == 0)
+					continue;
 
+				for(int bit = 0; bit < 8; bit++)
+				{
+					if((_backingArray[i] & (1 << bit)) > 0)
+					{
+						Vector2Int pos = GetPositionOfBit(i * 8 + bit);
+						if(this[pos.x, pos.y])
+							value.Add(pos);
+					}
+				}
+			}
+			/*/
 			for(int y = 0; y < _fieldHight; y++)
 			{
 				for(int x = 0; x < _fieldWidth; x++)
@@ -136,7 +154,8 @@ namespace PPBA
 						value.Add(new Vector2Int(x, y));
 				}
 			}
-
+			//*/
+			Profiler.EndSample();
 			return value.ToArray();
 		}
 
@@ -188,5 +207,7 @@ namespace PPBA
 
 			return true;
 		}
+
+		Vector2Int GetPositionOfBit(int bit) => new Vector2Int(bit % _fieldWidth, bit / _fieldWidth);
 	}
 }
