@@ -852,137 +852,157 @@ namespace PPBA
 
 			Profiler.BeginSample("[GameState] Create Delta");
 
-			//Debug.Log(myTick + ": " + _isDelta + ", " + _isEncrypted + ", " + _isLerped);
-			//Debug.Log(refTick + ": " + reference._isDelta + ", " + reference._isEncrypted + ", " + reference._isLerped);
-
 			_refTick = refTick;
+			int RemoverIndex;
 
-			foreach(var it in reference._types)
+			RemoverIndex = 0;
+			for(int i = 0; i < _types.Count; i++)
 			{
-				GSC.type element = _types.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
+				GSC.type element = reference._types.Find(x => x._id == _types[i]._id);
 
-				if(it._type != element._type)
-					continue;
-				if(it._team != element._team)
-					continue;
+				if(null == element)
+					goto Change;
 
-				_types.Remove(element);
-			}
-			//Debug.Log(reference._args.Count + " | " + _args.Count);
-			foreach(var it in reference._args)
-			{
-				GSC.arg element = _args.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
+				if(_types[i]._type != element._type)
+					goto Change;
+				if(_types[i]._team != element._team)
+					goto Change;
 
-				//Debug.Log(it._arguments + " | " + element._arguments);
-
-				if(it._arguments != element._arguments)
-					continue;
-
-				//Debug.Log(element + " will be removed");
-
-				_args.Remove(element);
-			}
-			foreach(var it in reference._transforms)
-			{
-				GSC.transform element = _transforms.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._position != element._position)
-					continue;
-				if(it._angle != element._angle)
-					continue;
-
-				_transforms.Remove(element);
-			}
-			foreach(var it in reference._ammos)
-			{
-				GSC.ammo element = _ammos.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._bullets != element._bullets)
-					continue;
-				/*if(it._grenades != element._grenades)
-					continue;*/
-
-				_ammos.Remove(element);
-			}
-			foreach(var it in reference._resources)
-			{
-				GSC.resource element = _resources.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._resources != element._resources)
-					continue;
-
-				_resources.Remove(element);
-			}
-			foreach(var it in reference._healths)
-			{
-				GSC.health element = _healths.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._health != element._health)
-					continue;
-				if(it._morale != element._morale)
-					continue;
-
-				_healths.Remove(element);
-			}
-			foreach(var it in reference._behaviors)
-			{
-				GSC.behavior element = _behaviors.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._behavior != element._behavior)
-					continue;
-				if(it._target != element._target)
-					continue;
-
-				_behaviors.Remove(element);
-			}
-			foreach(var it in reference._paths)
-			{
-				GSC.path element = _paths.Find(x => x._id == it._id);
-				if(element == null)
-					continue;
-
-				if(it._path.Length != element._path.Length)
-					continue;
-
-				/*
-				 * {
-				 * 	int i = 0;
-				 * 	for(; i < it._path.Count; i++)
-				 * 	{
-				 * 		if(it._path[i] != element._path[i])
-				 * 			break;
-				 * 	}
-				 * 	if(i < it._path.Count)
-				 * 		continue;
-				 * }
-				 */
-
-				for(int i = 0; i < it._path.Length; i++)
-				{
-					if(it._path[i] != element._path[i])
-						goto Failed;
-				}
-				goto Jump;
-Failed:
 				continue;
-Jump:
-
-				_paths.Remove(element);
+Change:
+				_types[RemoverIndex] = _types[i];
+				RemoverIndex++;
 			}
+			_types.RemoveRange(RemoverIndex, _types.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _args.Count; i++)
+			{
+				GSC.arg element = reference._args.Find(x => x._id == _args[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_args[i]._arguments != element._arguments)
+					goto Change;
+
+				continue;
+Change:
+				_args[RemoverIndex] = _args[i];
+				RemoverIndex++;
+			}
+			_args.RemoveRange(RemoverIndex, _args.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _transforms.Count; i++)
+			{
+				GSC.transform element = reference._transforms.Find(x => x._id == _transforms[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_transforms[i]._position != element._position)
+					goto Change;
+				if(_transforms[i]._angle != element._angle)
+					goto Change;
+
+				continue;
+Change:
+				_transforms[RemoverIndex] = _transforms[i];
+				RemoverIndex++;
+			}
+			_transforms.RemoveRange(RemoverIndex, _transforms.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _ammos.Count; i++)
+			{
+				GSC.ammo element = reference._ammos.Find(x => x._id == _ammos[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_ammos[i]._bullets != element._bullets)
+					goto Change;
+
+				continue;
+Change:
+				_ammos[RemoverIndex] = _ammos[i];
+				RemoverIndex++;
+			}
+			_ammos.RemoveRange(RemoverIndex, _ammos.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _resources.Count; i++)
+			{
+				GSC.resource element = reference._resources.Find(x => x._id == _resources[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_resources[i]._resources != element._resources)
+					goto Change;
+
+				continue;
+Change:
+				_resources[RemoverIndex] = _resources[i];
+				RemoverIndex++;
+			}
+			_resources.RemoveRange(RemoverIndex, _resources.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _healths.Count; i++)
+			{
+				GSC.health element = reference._healths.Find(x => x._id == _healths[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_healths[i]._health != element._health)
+					goto Change;
+				if(_healths[i]._morale != element._morale)
+					goto Change;
+
+				continue;
+Change:
+				_healths[RemoverIndex] = _healths[i];
+				RemoverIndex++;
+			}
+			_healths.RemoveRange(RemoverIndex, _healths.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _behaviors.Count; i++)
+			{
+				GSC.behavior element = reference._behaviors.Find(x => x._id == _behaviors[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_behaviors[i]._behavior != element._behavior)
+					goto Change;
+				if(_behaviors[i]._target != element._target)
+					goto Change;
+
+				continue;
+Change:
+				_behaviors[RemoverIndex] = _behaviors[i];
+				RemoverIndex++;
+			}
+			_healths.RemoveRange(RemoverIndex, _behaviors.Count - RemoverIndex);
+			RemoverIndex = 0;
+			for(int i = 0; i < _paths.Count; i++)
+			{
+				GSC.path element = reference._paths.Find(x => x._id == _paths[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_paths[i]._path.Length != element._path.Length)
+					goto Change;
+
+				for(int j = 0; i < _paths[i]._path.Length; i++)
+				{
+					if(_paths[i]._path[j] != element._path[j])
+						continue;
+				}
+Change:
+				_paths[RemoverIndex] = _paths[i];
+				RemoverIndex++;
+			}
+			_paths.RemoveRange(RemoverIndex, _paths.Count - RemoverIndex);
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
