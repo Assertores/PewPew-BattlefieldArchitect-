@@ -153,7 +153,7 @@ namespace PPBA
 			public override string ToString()
 			{
 				StringBuilder value = new StringBuilder();
-				value.AppendLine("ID: " + _id.ToString("0000"));
+				value.Append("ID: " + _id.ToString("0000") + "| ");
 
 				Vector2Int[] points = _mask.GetActiveBits();
 				if(points.Length != _values.Count)
@@ -168,7 +168,7 @@ namespace PPBA
 					}
 					for(int i = 0; i < points.Length; i++)
 					{
-						value.Append(points[i] + " = " + _values[i]);
+						value.Append(points[i] + " = " + _values[i] + ", ");
 					}
 				}
 
@@ -222,9 +222,9 @@ namespace PPBA
 	[System.Serializable]
 	public class GameState
 	{
-		public GameState()
+		public GameState(bool isReceiverGameState = false)
 		{
-
+			_isEncrypted = isReceiverGameState;
 		}
 
 		/// <summary>
@@ -540,6 +540,7 @@ namespace PPBA
 			if(_receivedMessages.GetSize() == Vector2Int.zero)
 			{
 				//Debug.Log("[GameState] creating an bitfield ");
+				_isEncrypted = true;
 				_receivedMessages = new BitField2D(packageCount, 1);
 			}
 			if(_receivedMessages[packageNumber, 0])
