@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define LITTLE_ENDIAN
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,7 +54,11 @@ namespace PPBA
 				//--> in range <--
 
 				int bit = y * _fieldWidth + x;
+#if LITTLE_ENDIAN
+				return (_backingArray[bit / 8] & (1 << (7-(bit % 8)))) != 0;
+#else
 				return (_backingArray[bit / 8] & (1 << (bit % 8))) != 0;
+#endif
 			}
 			set
 			{
@@ -64,11 +70,19 @@ namespace PPBA
 				int bit = y * _fieldWidth + x;
 				if(value)
 				{
-					_backingArray[bit / 8] = (byte)(_backingArray[bit / 8] | (byte)(1 << (bit % 8)));
+#if LITTLE_ENDIAN
+					_backingArray[bit / 8] |= (byte)(1 << (7-(bit % 8)));
+#else
+					_backingArray[bit / 8] |= (byte)(1 << (bit % 8));
+#endif
 				}
 				else
 				{
-					_backingArray[bit / 8] = (byte)(_backingArray[bit / 8] & ~(byte)(1 << (bit % 8)));
+#if LITTLE_ENDIAN
+					_backingArray[bit / 8] &= (byte)~(1 << (7-(bit % 8)));
+#else
+					_backingArray[bit / 8] &= (byte)~(1 << (bit % 8));
+#endif
 				}
 			}
 		}
@@ -129,7 +143,6 @@ namespace PPBA
 		{
 			Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
-			//*
 			for(int i = 0; i < _backingArray.Length; i++)
 			{
 				if(_backingArray[i] == 0)
@@ -137,7 +150,11 @@ namespace PPBA
 
 				for(int bit = 0; bit < 8; bit++)
 				{
+#if LITTLE_ENDIAN
+					if((_backingArray[i] & (1 << (7-bit))) > 0)
+#else
 					if((_backingArray[i] & (1 << bit)) > 0)
+#endif
 					{
 						Vector2Int pos = GetPositionOfBit(i * 8 + bit);
 						if(this[pos.x, pos.y])
@@ -145,16 +162,6 @@ namespace PPBA
 					}
 				}
 			}
-			/*/
-			for(int y = 0; y < _fieldHight; y++)
-			{
-				for(int x = 0; x < _fieldWidth; x++)
-				{
-					if(this[x, y])
-						value.Add(new Vector2Int(x, y));
-				}
-			}
-			//*/
 			Profiler.EndSample();
 			return value.ToArray();
 		}
@@ -189,7 +196,11 @@ namespace PPBA
 				// (1 << overhang) == 2^overhang
 				// (1 << overhang) - 1 for overhang is 3 == bx00000111
 				// befor << (8 - overhang) for overhang is 3 == bx11100000
+#if LITTLE_ENDIAN
 				if(_backingArray[_backingArray.Length - 1] < ((1 << overhang) - 1) << (8 - overhang))
+#else
+				if(_backingArray[_backingArray.Length - 1] < (1 << overhang) - 1)
+#endif
 					return false;
 			}
 
