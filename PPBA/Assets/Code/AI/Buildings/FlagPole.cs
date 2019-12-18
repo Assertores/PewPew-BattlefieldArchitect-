@@ -249,10 +249,16 @@ namespace PPBA
 			TickHandler.s_LateCalc -= Calculate;
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
-			if(_team != null)
 				if(null != JobCenter.s_flagPoles[_team])
 					if(JobCenter.s_flagPoles[_team].Contains(this))
 						JobCenter.s_flagPoles[_team].Remove(this);
+		}
+		
+		private void OnDestroy()
+		{
+#if !UNITY_SERVER
+			TickHandler.s_DoInput -= ExtractFromGameState;
+#endif
 		}
 	}
 }
