@@ -7988,6 +7988,7 @@ GameObject:
   - component: {fileID: 7797191311377518056}
   - component: {fileID: 8822295596718978228}
   - component: {fileID: 6019409466473446127}
+  - component: {fileID: 1818483329482135998}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -8046,6 +8047,19 @@ MonoBehaviour:
   m_Area: 6
   m_IgnoreFromBuild: 0
   m_AffectedAgents: ffffffff
+--- !u!114 &1818483329482135998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688118483440170598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746460c91c3de024a821279eab8df674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _myBlueprint: {fileID: 3838177625828405710}
 --- !u!1 &3771085869635069527
 GameObject:
   m_ObjectHideFlags: 0

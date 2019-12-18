@@ -148,6 +148,14 @@ namespace PPBA
 				JobCenter.s_flagPoles[team].Add(newFlagPole);
 		}
 
+		public void Init()
+		{
+			ClearLists();
+
+			if(null != JobCenter.s_flagPoles[_team])
+				JobCenter.s_flagPoles[_team].Add(this);
+		}
+
 		#region Interfaces
 		#region INetElement
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -217,6 +225,8 @@ namespace PPBA
 		private void OnEnable()
 		{
 #if UNITY_SERVER
+			Init();
+
 			TickHandler.s_LateCalc += Calculate;
 			TickHandler.s_GatherValues += WriteToGameState;
 #endif

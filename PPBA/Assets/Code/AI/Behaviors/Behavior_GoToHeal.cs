@@ -36,15 +36,23 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			if(s_targetDictionary[pawn] != null)
-				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			if(!s_targetDictionary.ContainsKey(pawn) || s_targetDictionary[pawn] == null)
+			{
+				pawn.SetMoveTarget(pawn.transform.position);
+				return;
+			}
 
+			if(2f < Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position))
+				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			else
+			{
+				pawn.Heal(15);
+				pawn.SetMoveTarget(pawn.transform.position);
+			}
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
 		{
-			return 1;
-
 			switch(name)
 			{
 				case StringCollection.HEALTH:
@@ -62,18 +70,17 @@ namespace PPBA
 
 		protected float TargetAxisInputs(Pawn pawn, FlagPole flagPole, string name)
 		{
-			/*
-				switch(name)
-				{
-					case "Distance":
-					case "DistanceToTarget":
-						return Vector3.Distance(pawn.transform.position, flagPole.transform.position) / _maxDistance;
-					case "Score":
-						return flagPole._score;
-					default:
-						Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
-						*/
-			return 1;
+			switch(name)
+			{
+				case "Distance":
+				case "DistanceToTarget":
+					return Vector3.Distance(pawn.transform.position, flagPole.transform.position) / _maxDistance;
+				case "Score":
+					return flagPole._score;
+				default:
+					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+					return 1;
+			}
 		}
 		/*
 		public override float FindBestTarget(Pawn pawn)
@@ -135,7 +142,7 @@ namespace PPBA
 				return s_targetDictionary[pawn]._id;
 			else
 			*/
-				return -1;
+			return -1;
 		}
 
 		public override void RemoveFromTargetDict(Pawn pawn)
