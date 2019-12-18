@@ -1029,8 +1029,6 @@ Change:
 
 					List<float> merged = new List<float>(pos.Length + curPos.Length);
 
-					merged.AddRange(it._values);
-
 					int upper = 0;
 					int lower = 0;
 
@@ -1066,6 +1064,7 @@ Change:
 					}
 
 					it._mask += rev._mask;
+					pos = it._mask.GetActiveBits();
 					it._values = merged;
 
 					Debug.Log("After merge, mask: " + it._mask.GetActiveBits().Length + ", values: " + it._values.Count);
@@ -1106,6 +1105,7 @@ Change:
 						values.Add(it._values[curIndex]);
 					}
 
+					refIndex++;
 					curIndex++;
 				}
 				for(int itterator = curIndex; itterator < pos.Length; itterator++)
@@ -1408,7 +1408,7 @@ Change:
 			return value;
 		}
 
-		#region Helper Funktion
+#region Helper Funktion
 
 		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
 		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
@@ -1423,7 +1423,7 @@ Change:
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// packs the message into the next best package
