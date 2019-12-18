@@ -75,8 +75,8 @@ namespace PPBA
 				{
 					hm._values.Add(_heatMaps[i].GetPixel(positions[j].x, positions[j].y).r);
 				}
-				Debug.Log("Tick: " + tick + ", id: " + hm._id);
-				Debug.Log(hm.ToString());
+			//	Debug.Log("Tick: " + tick + ", id: " + hm._id);
+			//	Debug.Log(hm.ToString());
 				TickHandler.s_interfaceGameState._heatMaps.Add(hm);
 			}
 		}
