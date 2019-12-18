@@ -150,6 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7275411477570094863}
+  - component: {fileID: 6961223308760840635}
   m_Layer: 9
   m_Name: Logic
   m_TagString: Untagged
@@ -171,6 +172,18 @@ Transform:
   m_Father: {fileID: 7507454801724611220}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6961223308760840635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8918250502286280411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58873b449b0a6d344812f98177125efb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6406483280485046271
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -178,16 +191,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7243193423265182464}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
-        type: 3}
-      propertyPath: m_Name
-      value: New_Medcamp_LP
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b44524fc556e6584499da9beffbefe50,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -252,6 +255,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 100.000015
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
+        type: 3}
+      propertyPath: m_Name
+      value: New_Medcamp_LP
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: b44524fc556e6584499da9beffbefe50,
         type: 3}
