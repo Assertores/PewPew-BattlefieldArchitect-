@@ -454,7 +454,7 @@ namespace PPBA
 					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
-						
+
 						msg.AddRange(BitConverter.GetBytes(pos.Length));
 						for(int i = 0; i < pos.Length; i++)
 						{
@@ -756,7 +756,7 @@ namespace PPBA
 						value._mask = new BitField2D(space.x, space.y);
 
 						offset++;
-						if((GSC.DataType)msg[offset-1] == GSC.DataType.PIXELWISE)
+						if((GSC.DataType)msg[offset - 1] == GSC.DataType.PIXELWISE)
 						{
 							int size = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
@@ -1012,7 +1012,109 @@ Change:
 				if(null == refMap)
 					continue;
 
+				Vector2Int[] pos = it._mask.GetActiveBits();
+
 				//baking Bitfield
+				for(int i = refTick + 1; i < myTick; i++)
+				{
+					GameState nextState = references[i];
+					if(nextState == default)
+						continue;
+
+					GSC.heatMap rev = references[i]._heatMaps.Find(x => x._id == it._id);
+					if(null == rev)
+						continue;
+
+					Vector2Int[] curPos = rev._mask.GetActiveBits();
+
+					List<float> merged = new List<float>(pos.Length + curPos.Length);
+
+					merged.AddRange(it._values);
+
+					int upper = 0;
+					int lower = 0;
+
+					//merges until one list is at the end
+					while(upper < pos.Length || lower < curPos.Length)
+					{
+						if(pos[upper].y <= curPos[lower].y && pos[upper].x < curPos[lower].x)
+						{
+							merged.Add(it._values[upper]);
+							upper++;
+						}
+						else if(pos[upper] == curPos[lower])
+						{
+							merged.Add(it._values[upper]);
+							upper++;
+							lower++;
+						}
+						else
+						{
+							merged.Add(rev._values[lower]);
+							lower++;
+						}
+					}
+
+					//adds rest of the other list
+					if(upper < pos.Length)
+					{
+						float[] tmp = new float[pos.Length - upper];
+						Buffer.BlockCopy(pos, upper, tmp, 0, tmp.Length);
+						merged.AddRange(tmp);
+					}
+					else if(lower < curPos.Length)
+					{
+						float[] tmp = new float[curPos.Length - upper];
+						Buffer.BlockCopy(curPos, lower, tmp, 0, tmp.Length);
+						merged.AddRange(tmp);
+					}
+
+					it._mask += rev._mask;
+					it._values = merged;
+
+					Debug.Log("After merge, mask: " + it._mask.GetActiveBits().Length + ", values: " + it._values.Count);
+				}
+
+				Vector2Int[] refPos = refMap._mask.GetActiveBits();
+				List<float> values = new List<float>(pos.Length);
+
+				int curIndex = 0;
+				int refIndex = 0;
+
+				//remove duplicates until one list is at the end
+				while(curIndex < pos.Length || refIndex < refPos.Length)
+				{
+					//pixel finden
+					if(refPos[refIndex].y <= pos[curIndex].y && refPos[refIndex].x < pos[curIndex].x)
+					{
+						refIndex++;
+						continue;
+					}
+					if(pos[curIndex] != refPos[refIndex])
+					{
+						values.Add(it._values[curIndex]);
+						curIndex++;
+						continue;
+					}
+
+					//wenn gefunden und values gleich
+					//	pixel removen und value entfernen
+					//sonst
+					//	pixel behalten
+					if(it._values[curIndex] == refMap._values[refIndex])
+					{
+						it._mask[pos[curIndex].x, pos[curIndex].y] = false;
+					}
+					else
+					{
+						values.Add(it._values[curIndex]);
+					}
+
+					curIndex++;
+				}
+				it._values = values;
+				Debug.Log("Create Delta: " + it.ToString());
+#if Brocken
 				//problem: heatmap backing geht so garnicht
 				for(int i = refTick + 1; i < myTick; i++)
 				{
@@ -1030,15 +1132,10 @@ Change:
 				//getting values
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
 
-				Vector2Int[] positions = it._mask.GetActiveBits();
+				
 				List<float> values = new List<float>(positions.Length);
 
 				Debug.Log(positions.Length + " | " + refPos.Length);
-
-				//wenn gefunden und values gleich
-				//	pixel removen und value entfernen
-				//sonst
-				//	pixel behalten
 
 				for(int i = 0, j = 0; i < positions.Length; i++)
 				{
@@ -1074,6 +1171,7 @@ Change:
 				}
 				it._values = values;
 				Debug.Log("Create Delta: " + it.ToString());
+#endif
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
@@ -1359,7 +1457,7 @@ Change:
 				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
 				packages[index] = tmp;
 			}
-			
+
 		}
 
 		int GetHash()
