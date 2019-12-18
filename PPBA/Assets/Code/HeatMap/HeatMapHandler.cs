@@ -88,8 +88,11 @@ namespace PPBA
 				Vector2Int[] pos = it._mask.GetActiveBits();
 				for(int i = 0; i < pos.Length; i++)
 				{
-					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, new Color(it._values[i], 0, 0, 0));
+					var tmp = _heatMaps[it._id].GetPixel(pos[i].x, pos[i].y);
+					tmp.r = it._values[i];
+					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, tmp);
 				}
+				_heatMaps[it._id].Apply();
 
 				switch(it._id)
 				{
@@ -115,7 +118,7 @@ namespace PPBA
 
 		Texture2D ConvertTexture(RenderTexture rt)
 		{
-			Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+			Texture2D tex = new Texture2D(rt.width, rt.height);
 
 			// ofc you probably don't have a class that is called CameraController :P
 			//	Camera activeCamera = Camera.main;
