@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7672342016025803120}
-  - component: {fileID: 8245657030701366457}
   m_Layer: 9
   m_Name: Logic
   m_TagString: Untagged
@@ -31,25 +30,6 @@ Transform:
   m_Father: {fileID: 4219740302618107161}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8245657030701366457
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705899317296321507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2b6c711d02f0364699ece34948b1e33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _team: 0
-  _score: 1
-  _maxPawns: 10
-  _friendlyPawns: []
-  _overlapSphereLayerMask:
-    serializedVersion: 2
-    m_Bits: 2048
 --- !u!1 &2775001879537132401
 GameObject:
   m_ObjectHideFlags: 0

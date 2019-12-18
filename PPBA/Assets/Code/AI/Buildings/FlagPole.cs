@@ -6,7 +6,20 @@ namespace PPBA
 {
 	public class FlagPole : MonoBehaviour, INetElement
 	{
-		public IRefHolder _myRefHolder;
+		public IRefHolder _myRefHolder
+		{
+			get
+			{
+				if(null == _refHolderBackingField)
+					_refHolderBackingField = GetComponentInParent<IRefHolder>();
+
+				return _refHolderBackingField;
+			}
+		}
+
+		private IRefHolder _refHolderBackingField;
+
+		[SerializeField] private FlagHolder _myFlagHolder;
 
 		private class State
 		{
@@ -21,13 +34,10 @@ namespace PPBA
 		{
 			get
 			{
-				if(null == _myRefHolder)
-					_myRefHolder = GetComponentInParent<IRefHolder>();
-
-				if(null == _myRefHolder)
-					return 0;
-				else
+				if(null != _myRefHolder)
 					return _myRefHolder._team;
+				else
+					return 0;
 			}
 		}
 		public float _score = 1f;
@@ -94,8 +104,8 @@ namespace PPBA
 			else
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
-			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
-			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
+			_myFlagHolder.transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
+			_myFlagHolder.transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 		}
 		#endregion
 
@@ -186,7 +196,8 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_myRefHolder._team = temp._team;
+					if(_myRefHolder != null)
+						_myRefHolder._team = temp._team;
 				}
 			}
 			{
@@ -238,10 +249,10 @@ namespace PPBA
 			TickHandler.s_LateCalc -= Calculate;
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
-
-			if(null != JobCenter.s_flagPoles[_team])
-				if(JobCenter.s_flagPoles[_team].Contains(this))
-					JobCenter.s_flagPoles[_team].Remove(this);
+			if(_team != null)
+				if(null != JobCenter.s_flagPoles[_team])
+					if(JobCenter.s_flagPoles[_team].Contains(this))
+						JobCenter.s_flagPoles[_team].Remove(this);
 		}
 	}
 }

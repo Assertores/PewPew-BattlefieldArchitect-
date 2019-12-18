@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b6c711d02f0364699ece34948b1e33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 0
+  _myFlagHolder: {fileID: 1931648550861304276}
   _score: 1
   _maxPawns: 10
   _friendlyPawns: []
