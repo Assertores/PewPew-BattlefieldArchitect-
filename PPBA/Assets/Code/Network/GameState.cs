@@ -1056,17 +1056,13 @@ Change:
 					}
 
 					//adds rest of the other list
-					if(upper < pos.Length)
+					for(int itterator = upper; itterator < pos.Length; itterator++)
 					{
-						float[] tmp = new float[pos.Length - upper];
-						Buffer.BlockCopy(pos, upper, tmp, 0, tmp.Length);
-						merged.AddRange(tmp);
+						merged.Add(it._values[itterator]);
 					}
-					else if(lower < curPos.Length)
+					for(int itterator = lower; itterator < curPos.Length; itterator++)
 					{
-						float[] tmp = new float[curPos.Length - upper];
-						Buffer.BlockCopy(curPos, lower, tmp, 0, tmp.Length);
-						merged.AddRange(tmp);
+						merged.Add(rev._values[itterator]);
 					}
 
 					it._mask += rev._mask;
@@ -1112,11 +1108,9 @@ Change:
 
 					curIndex++;
 				}
-				if(curIndex < pos.Length)
+				for(int itterator = curIndex; itterator < pos.Length; itterator++)
 				{
-					float[] tmp = new float[pos.Length - curIndex];
-					Buffer.BlockCopy(pos, curIndex, tmp, 0, tmp.Length);
-					values.AddRange(tmp);
+					values.Add(it._values[itterator]);
 				}
 				it._values = values;
 				Debug.Log("Create Delta: " + it.ToString());
