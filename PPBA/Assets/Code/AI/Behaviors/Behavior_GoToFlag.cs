@@ -36,8 +36,10 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			if(s_targetDictionary[pawn] != null)
+			if(s_targetDictionary[pawn] != null && Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < 5f)
 				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			else
+				pawn.SetMoveTarget(pawn.transform.position);
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)

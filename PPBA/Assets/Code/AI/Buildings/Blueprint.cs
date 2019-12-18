@@ -67,7 +67,7 @@ namespace PPBA
 			get => (float)(_resourcesMax - _resources - _resourcesIncoming);
 		}
 
-		#region
+		#region Monobehavior
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
@@ -257,8 +257,26 @@ namespace PPBA
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			//	_material.SetFloat("_Clip", (float)_work / _workMax);
 			}
-
 		}
+
+		public void SetClipFull()
+		{
+			if(null != _material)
+			{
+				_PropertyBlock.SetFloat("_Clip", 1f);
+				_myRenderer.SetPropertyBlock(_PropertyBlock);
+			}
+		}
+
+		public void SetClipEmpty()
+		{
+			if(null != _material)
+			{
+				_PropertyBlock.SetFloat("_Clip", 0f);
+				_myRenderer.SetPropertyBlock(_PropertyBlock);
+			}
+		}
+
 
 		public void CalculateIncomingSupplies(int tick = 0)
 		{
@@ -281,12 +299,14 @@ namespace PPBA
 			_PropertyBlock = new MaterialPropertyBlock();
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
-
+			
 #if UNITY_SERVER
 			if(null != JobCenter.s_blueprints?[_team] && !JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Add(this);
 
 			TickHandler.s_GatherValues += WriteToGameState;
+#else
+			SetClipEmpty();
 #endif
 		}
 
