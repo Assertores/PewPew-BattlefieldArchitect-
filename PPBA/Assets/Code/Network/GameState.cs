@@ -445,7 +445,7 @@ namespace PPBA
 					Vector2Int[] pos = it._mask.GetActiveBits();
 					if(pos.Length != it._values.Count)
 					{
-						Debug.LogError("Values and Bitfield don't fit together. " + it._id);
+						Debug.LogError("Values and Bitfield don't fit together. " + it._id + " (" + pos.Length + ", " + it._values.Count + ")");
 						continue;
 					}
 					msg.Clear();
@@ -454,7 +454,7 @@ namespace PPBA
 					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
-						
+
 						msg.AddRange(BitConverter.GetBytes(pos.Length));
 						for(int i = 0; i < pos.Length; i++)
 						{
@@ -756,7 +756,7 @@ namespace PPBA
 						value._mask = new BitField2D(space.x, space.y);
 
 						offset++;
-						if((GSC.DataType)msg[offset-1] == GSC.DataType.PIXELWISE)
+						if((GSC.DataType)msg[offset - 1] == GSC.DataType.PIXELWISE)
 						{
 							int size = BitConverter.ToInt32(msg, offset);
 							offset += sizeof(int);
@@ -1006,12 +1006,116 @@ Change:
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
+				Debug.Log("PreDelta: " + it.ToString());
 				//escape if reference tick dosn't have the heatmap
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				if(null == refMap)
 					continue;
 
+				Vector2Int[] pos = it._mask.GetActiveBits();
+
 				//baking Bitfield
+				for(int i = refTick + 1; i < myTick; i++)
+				{
+					GameState nextState = references[i];
+					if(nextState == default)
+						continue;
+
+					GSC.heatMap rev = references[i]._heatMaps.Find(x => x._id == it._id);
+					if(null == rev)
+						continue;
+
+					Vector2Int[] curPos = rev._mask.GetActiveBits();
+
+					List<float> merged = new List<float>(pos.Length + curPos.Length);
+
+					merged.AddRange(it._values);
+
+					int upper = 0;
+					int lower = 0;
+
+					//merges until one list is at the end
+					while(upper < pos.Length && lower < curPos.Length)
+					{
+						if(pos[upper].y <= curPos[lower].y && pos[upper].x < curPos[lower].x)
+						{
+							merged.Add(it._values[upper]);
+							upper++;
+						}
+						else if(pos[upper] == curPos[lower])
+						{
+							merged.Add(it._values[upper]);
+							upper++;
+							lower++;
+						}
+						else
+						{
+							merged.Add(rev._values[lower]);
+							lower++;
+						}
+					}
+
+					//adds rest of the other list
+					for(int itterator = upper; itterator < pos.Length; itterator++)
+					{
+						merged.Add(it._values[itterator]);
+					}
+					for(int itterator = lower; itterator < curPos.Length; itterator++)
+					{
+						merged.Add(rev._values[itterator]);
+					}
+
+					it._mask += rev._mask;
+					it._values = merged;
+
+					Debug.Log("After merge, mask: " + it._mask.GetActiveBits().Length + ", values: " + it._values.Count);
+				}
+
+				Vector2Int[] refPos = refMap._mask.GetActiveBits();
+				List<float> values = new List<float>(pos.Length);
+
+				int curIndex = 0;
+				int refIndex = 0;
+
+				//remove duplicates until one list is at the end
+				while(curIndex < pos.Length && refIndex < refPos.Length)
+				{
+					//pixel finden
+					if(refPos[refIndex].y <= pos[curIndex].y && refPos[refIndex].x < pos[curIndex].x)
+					{
+						refIndex++;
+						continue;
+					}
+					if(pos[curIndex] != refPos[refIndex])
+					{
+						values.Add(it._values[curIndex]);
+						curIndex++;
+						continue;
+					}
+
+					//wenn gefunden und values gleich
+					//	pixel removen und value entfernen
+					//sonst
+					//	pixel behalten
+					if(it._values[curIndex] == refMap._values[refIndex])
+					{
+						it._mask[pos[curIndex].x, pos[curIndex].y] = false;
+					}
+					else
+					{
+						values.Add(it._values[curIndex]);
+					}
+
+					curIndex++;
+				}
+				for(int itterator = curIndex; itterator < pos.Length; itterator++)
+				{
+					values.Add(it._values[itterator]);
+				}
+				it._values = values;
+				Debug.Log("Create Delta: " + it.ToString());
+#if Brocken
+				//problem: heatmap backing geht so garnicht
 				for(int i = refTick + 1; i < myTick; i++)
 				{
 					GameState nextState = references[i];
@@ -1028,8 +1132,10 @@ Change:
 				//getting values
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
 
-				Vector2Int[] positions = it._mask.GetActiveBits();
+				
 				List<float> values = new List<float>(positions.Length);
+
+				Debug.Log(positions.Length + " | " + refPos.Length);
 
 				for(int i = 0, j = 0; i < positions.Length; i++)
 				{
@@ -1040,19 +1146,32 @@ Change:
 							break;
 					}
 
-					//wenn gleiches element existiert
-					if(j < refPos.Length && refPos[j] == positions[i])
-					{
-						float value = it._values[i];
+					Debug.Log(i + " - " + j);
+					Debug.Log("(" + positions[i] + ", " + refPos[j] + ")");
 
-						//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
-						if(refMap._values[j] == value)
-							it._mask[positions[i].x, positions[i].y] = false;
-						else
-							values.Add(value);
+					//wenn gleiches element existiert
+					if(j < refPos.Length)
+					{
+						if(refPos[j] == positions[i])
+						{
+							float value = it._values[i];
+
+							//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
+							if(refMap._values[j] == value)
+								it._mask[positions[i].x, positions[i].y] = false;
+							else
+								values.Add(value);
+						}
 					}
+					else
+					{
+						values.Add(it._values[i]);
+					}
+					
 				}
 				it._values = values;
+				Debug.Log("Create Delta: " + it.ToString());
+#endif
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
@@ -1338,7 +1457,7 @@ Change:
 				Buffer.BlockCopy(additionalMessage, 0, tmp, packages[index].Length, additionalMessage.Length);
 				packages[index] = tmp;
 			}
-			
+
 		}
 
 		int GetHash()
