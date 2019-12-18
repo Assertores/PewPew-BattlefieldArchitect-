@@ -98,11 +98,6 @@ namespace PPBA
 			return refsProp;
 		}
 
-		void Update()
-		{
-			print(_Soldiers.Count + " "+ _Soldiers.Keys);
-		}
-
 		// add soldies in List
 		public int AddSoldier(Transform pawn, int Team)
 		{

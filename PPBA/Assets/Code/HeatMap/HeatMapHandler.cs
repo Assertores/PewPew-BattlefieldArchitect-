@@ -115,7 +115,7 @@ namespace PPBA
 
 		Texture2D ConvertTexture(RenderTexture rt)
 		{
-			Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+			Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
 
 			// ofc you probably don't have a class that is called CameraController :P
 			//	Camera activeCamera = Camera.main;
