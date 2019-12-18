@@ -1035,7 +1035,7 @@ Change:
 					int lower = 0;
 
 					//merges until one list is at the end
-					while(upper < pos.Length || lower < curPos.Length)
+					while(upper < pos.Length && lower < curPos.Length)
 					{
 						if(pos[upper].y <= curPos[lower].y && pos[upper].x < curPos[lower].x)
 						{
@@ -1082,7 +1082,7 @@ Change:
 				int refIndex = 0;
 
 				//remove duplicates until one list is at the end
-				while(curIndex < pos.Length || refIndex < refPos.Length)
+				while(curIndex < pos.Length && refIndex < refPos.Length)
 				{
 					//pixel finden
 					if(refPos[refIndex].y <= pos[curIndex].y && refPos[refIndex].x < pos[curIndex].x)
@@ -1111,6 +1111,12 @@ Change:
 					}
 
 					curIndex++;
+				}
+				if(curIndex < pos.Length)
+				{
+					float[] tmp = new float[pos.Length - curIndex];
+					Buffer.BlockCopy(pos, curIndex, tmp, 0, tmp.Length);
+					values.AddRange(tmp);
 				}
 				it._values = values;
 				Debug.Log("Create Delta: " + it.ToString());
