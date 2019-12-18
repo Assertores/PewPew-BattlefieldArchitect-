@@ -84,7 +84,7 @@ namespace PPBA
 		void Update()
 		{
 #if !UNITY_SERVER
-			VisualizeLerpedStates();
+			//VisualizeLerpedStates();
 #endif
 		}
 
@@ -238,16 +238,16 @@ namespace PPBA
 #if UNITY_SERVER
 			Init();
 
-			TickHandler.s_LateCalc += Calculate;
-			TickHandler.s_GatherValues += WriteToGameState;
+			//TickHandler.s_LateCalc += Calculate;
+			//TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
 
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			TickHandler.s_LateCalc -= Calculate;
-			TickHandler.s_GatherValues -= WriteToGameState;
+			//TickHandler.s_LateCalc -= Calculate;
+			//TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 				if(null != JobCenter.s_flagPoles[_team])
 					if(JobCenter.s_flagPoles[_team].Contains(this))

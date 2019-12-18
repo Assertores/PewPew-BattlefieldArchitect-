@@ -152,6 +152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4219740302618107161}
   - component: {fileID: 1931648550861304276}
+  - component: {fileID: 7431019196508138139}
   m_Layer: 9
   m_Name: FlagPole
   m_TagString: Untagged
@@ -200,6 +201,18 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 0}
+--- !u!114 &7431019196508138139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985250074432113010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8372896231655002120
 GameObject:
   m_ObjectHideFlags: 0

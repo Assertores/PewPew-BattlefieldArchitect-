@@ -86,7 +86,7 @@ namespace PPBA
 
 		private void WriteToGameState(int tick = 0)
 		{
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			//TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 		}
 
 		private void ExtractFromGameState(int tick = 0)
