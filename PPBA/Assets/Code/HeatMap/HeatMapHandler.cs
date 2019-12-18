@@ -18,13 +18,13 @@ namespace PPBA
 
 		private void Start()
 		{
+			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
+			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
+
 #if UNITY_SERVER
 			TickHandler.s_EarlyCalc += CalculateMaps;
 			TickHandler.s_GatherValues += SaveMapToGameState;
 #else
-			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
-			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
-
 			TickHandler.s_DoInput += SetMap;
 #endif
 		}
@@ -45,12 +45,12 @@ namespace PPBA
 
 			//----- ----- ResourceMap ----- -----
 			value = ResourceMapCalculate.s_instance.RefreshCalcRes();
-			_heatMaps[0] = ConvertTexture(value.tex);
+			_heatMaps[0] = ConvertTexture(value.tex, 0);
 			_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
 			//----- ----- TerritoriumMap ----- -----
 			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
-			_heatMaps[1] = ConvertTexture(value.tex);
+			_heatMaps[1] = ConvertTexture(value.tex, 1);
 			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
 		}
@@ -116,9 +116,9 @@ namespace PPBA
 		/// <returns>size of the heatMap</returns>
 		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
 
-		Texture2D ConvertTexture(RenderTexture rt)
+		Texture2D ConvertTexture(RenderTexture rt, int id)
 		{
-			Texture2D tex = new Texture2D(rt.width, rt.height);
+			Texture2D tex = _heatMaps[id];
 
 			// ofc you probably don't have a class that is called CameraController :P
 			//	Camera activeCamera = Camera.main;
