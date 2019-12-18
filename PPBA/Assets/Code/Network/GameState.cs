@@ -1006,27 +1006,43 @@ Change:
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
+//DEBUG_HEATMAP
+#if DB_HM
 				Debug.Log("PreDelta: " + it.ToString());
+#endif
 				//escape if reference tick dosn't have the heatmap
 				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
 				if(null == refMap)
 					continue;
 
 				Vector2Int[] pos = it._mask.GetActiveBits();
+#if DB_HM
+				Debug.Log("===== ===== " + myTick + " ===== =====");
+#endif
 
 				//baking Bitfield
 				for(int i = refTick + 1; i < myTick; i++)
 				{
+#if DB_HM
+					Debug.Log("RefTick: " + i);
+#endif
 					GameState nextState = references[i];
 					if(nextState == default)
 						continue;
-
+#if DB_HM
+					Debug.Log("reference exists");
+#endif
 					GSC.heatMap rev = references[i]._heatMaps.Find(x => x._id == it._id);
 					if(null == rev)
 						continue;
-
+#if DB_HM
+					Debug.Log("heatmap exists");
+#endif
 					Vector2Int[] curPos = rev._mask.GetActiveBits();
-
+#if DB_HM
+					Debug.Log("ref poscount: " + curPos.Length);
+					Debug.Log("my poscount: " + pos.Length);
+#endif
 					List<float> merged = new List<float>(pos.Length + curPos.Length);
 
 					int upper = 0;
@@ -1037,17 +1053,26 @@ Change:
 					{
 						if(pos[upper].y <= curPos[lower].y && pos[upper].x < curPos[lower].x)
 						{
+#if DB_HM
+							Debug.Log("added original value (" + it._values[upper] + ") at pos: " + pos[upper]);
+#endif
 							merged.Add(it._values[upper]);
 							upper++;
 						}
 						else if(pos[upper] == curPos[lower])
 						{
+#if DB_HM
+							Debug.Log("equal original value (" + it._values[upper] + ") at pos: " + pos[upper]);
+#endif
 							merged.Add(it._values[upper]);
 							upper++;
 							lower++;
 						}
 						else
 						{
+#if DB_HM
+							Debug.Log("added new value (" + rev._values[lower] + ") at pos: " + curPos[lower]);
+#endif
 							merged.Add(rev._values[lower]);
 							lower++;
 						}
@@ -1056,10 +1081,16 @@ Change:
 					//adds rest of the other list
 					for(int itterator = upper; itterator < pos.Length; itterator++)
 					{
+#if DB_HM
+						Debug.Log("adding original remainer " + itterator);
+#endif
 						merged.Add(it._values[itterator]);
 					}
 					for(int itterator = lower; itterator < curPos.Length; itterator++)
 					{
+#if DB_HM
+						Debug.Log("adding reference remainer " + itterator);
+#endif
 						merged.Add(rev._values[itterator]);
 					}
 
@@ -1067,11 +1098,18 @@ Change:
 					pos = it._mask.GetActiveBits();
 					it._values = merged;
 
+#if DB_HM
 					Debug.Log("After merge, mask: " + it._mask.GetActiveBits().Length + ", values: " + it._values.Count);
+#endif
 				}
 
 				Vector2Int[] refPos = refMap._mask.GetActiveBits();
 				List<float> values = new List<float>(pos.Length);
+
+#if DB_HM
+				Debug.Log("Tick: " + myTick + "\n" + it.ToString());
+				Debug.Log("RefTick: " + refTick + "\n" + refMap.ToString());
+#endif
 
 				int curIndex = 0;
 				int refIndex = 0;
@@ -1082,11 +1120,17 @@ Change:
 					//pixel finden
 					if(refPos[refIndex].y <= pos[curIndex].y && refPos[refIndex].x < pos[curIndex].x)
 					{
+#if DB_HM
+						Debug.Log("refPos: " + refPos[refIndex] + " is smaler");
+#endif
 						refIndex++;
 						continue;
 					}
 					if(pos[curIndex] != refPos[refIndex])
 					{
+#if DB_HM
+						Debug.Log("positions: " + pos[curIndex] + " and " + refPos[refIndex] + " are not equal");
+#endif
 						values.Add(it._values[curIndex]);
 						curIndex++;
 						continue;
@@ -1098,22 +1142,36 @@ Change:
 					//	pixel behalten
 					if(it._values[curIndex] == refMap._values[refIndex])
 					{
+#if DB_HM
+						Debug.Log("values: " + pos[curIndex] + " and " + refPos[refIndex] + " are equal (" + it._values[curIndex] + ", " + refMap._values[refIndex] + ")");
+#endif
 						it._mask[pos[curIndex].x, pos[curIndex].y] = false;
 					}
 					else
 					{
+#if DB_HM
+						Debug.Log("values: " + pos[curIndex] + " and " + refPos[refIndex] + " are not equal (" + it._values[curIndex] + ", " + refMap._values[refIndex] + ")");
+#endif
 						values.Add(it._values[curIndex]);
 					}
 
 					refIndex++;
 					curIndex++;
 				}
+#if DB_HM
+				Debug.Log("indexe: " + curIndex + ", " + refIndex);
+#endif
 				for(int itterator = curIndex; itterator < pos.Length; itterator++)
 				{
+#if DB_HM
+					Debug.Log("adding original remainer2 " + itterator);
+#endif
 					values.Add(it._values[itterator]);
 				}
 				it._values = values;
+#if DB_HM
 				Debug.Log("Create Delta: " + it.ToString());
+#endif
 #if Brocken
 				//problem: heatmap backing geht so garnicht
 				for(int i = refTick + 1; i < myTick; i++)
