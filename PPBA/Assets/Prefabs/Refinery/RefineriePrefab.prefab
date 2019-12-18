@@ -520,6 +520,7 @@ MonoBehaviour:
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: ed67b3d204fbd0e4b9279775906dd164, type: 2}
+  _myRenderer: {fileID: 6234758349920477097}
 --- !u!1 &327256017668524203
 GameObject:
   m_ObjectHideFlags: 0

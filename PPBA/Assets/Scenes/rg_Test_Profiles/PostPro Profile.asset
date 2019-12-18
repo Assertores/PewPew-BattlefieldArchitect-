@@ -1394,7 +1394,7 @@ MonoBehaviour:
   active: 1
   enabled:
     overrideState: 1
-    value: 0
+    value: 1
   scale:
     overrideState: 1
     value: 2

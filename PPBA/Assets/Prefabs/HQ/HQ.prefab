@@ -235,7 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3f2d80b2b95164496b2d40e424f9a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 0
   _resources: 0
   _resourcesIncoming: 0
   _resourcesMax: 100
@@ -244,6 +243,7 @@ MonoBehaviour:
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: 5df7ac787a2861342b2e6cbd6c8512c5, type: 2}
+  _myRenderer: {fileID: 1478119482170625478}
 --- !u!1 &8959561800333315175
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,6 +288,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a0b90e99523d64bb9226415cd7612d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _suppliesPerTick: 1
+  _ammoPerTick: 1
   _resourceDepot: {fileID: 5712454156475713158}
 --- !u!114 &5712454156475713158
 MonoBehaviour:
@@ -301,7 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7863abe65f0204b4db7008903587c75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 0
   _health: 1000
   _maxHealth: 1000
   _resources: 0
