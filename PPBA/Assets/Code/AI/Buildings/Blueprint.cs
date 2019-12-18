@@ -51,6 +51,9 @@ namespace PPBA
 
 		//private
 		[SerializeField] private Material _material;
+		[SerializeField] private Renderer _myRenderer;
+		private MaterialPropertyBlock _PropertyBlock;
+
 		#endregion
 
 		public float _workDoable
@@ -248,7 +251,12 @@ namespace PPBA
 			_work = (int)Mathf.Lerp(_lastState._work, _nextState._work, lerpFactor);
 
 			if(null != _material)
-				_material.SetFloat("_Clip", (float)_work / _workMax);
+			{
+				_PropertyBlock.SetFloat("_Clip", (float)_work / _workMax);
+				_myRenderer.SetPropertyBlock(_PropertyBlock);
+			//	_material.SetFloat("_Clip", (float)_work / _workMax);
+			}
+
 		}
 
 		public void CalculateIncomingSupplies(int tick = 0)
@@ -269,6 +277,7 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+			_PropertyBlock = new MaterialPropertyBlock();
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
 

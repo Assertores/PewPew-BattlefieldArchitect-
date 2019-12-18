@@ -6,6 +6,8 @@ namespace PPBA
 {
 	public class FlagPole : MonoBehaviour, INetElement
 	{
+		public IRefHolder _myRefHolder;
+
 		private class State
 		{
 			public Vector3 _position;
@@ -15,7 +17,19 @@ namespace PPBA
 		public static float _radius = 15f;
 
 		public int _id { get; set; }
-		public int _team = 0;
+		public int _team
+		{
+			get
+			{
+				if(null == _myRefHolder)
+					_myRefHolder = GetComponentInParent<IRefHolder>();
+
+				if(null == _myRefHolder)
+					return 0;
+				else
+					return _myRefHolder._team;
+			}
+		}
 		public float _score = 1f;
 		public int _maxPawns = 10;
 
@@ -44,7 +58,7 @@ namespace PPBA
 		private State _lastState = new State();
 		private State _nextState = new State();
 
-		#region
+		#region Monobehaviour
 		private void Awake()
 		{
 #if !UNITY_SERVER
@@ -127,7 +141,7 @@ namespace PPBA
 		{
 			FlagPole newFlagPole = (FlagPole)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.FLAGPOLE]].GetNextObject(team);
 			newFlagPole.transform.position = spawnPoint;
-			newFlagPole._team = team;
+			//newFlagPole._team = team;
 			newFlagPole.ClearLists();
 
 			if(null != JobCenter.s_flagPoles[team])
@@ -164,7 +178,7 @@ namespace PPBA
 
 				if(null != temp)
 				{
-					_team = temp._team;
+					_myRefHolder._team = temp._team;
 				}
 			}
 			{

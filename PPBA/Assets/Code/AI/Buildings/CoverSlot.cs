@@ -55,7 +55,6 @@ namespace PPBA
 		public override void Execute()
 		{
 			//shoot
-			throw new System.NotImplementedException();
 		}
 
 		public override void WriteToGameState(int tick)

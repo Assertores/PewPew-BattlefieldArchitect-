@@ -38,12 +38,15 @@ namespace PPBA
 				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
 				{
 					s_timerDictionary[pawn]++;//increment timer
-					pawn.SetMoveTarget(pawn.transform.position);//stand still
+
+					if(!pawn._isMounting)
+						pawn.SetMoveTarget(pawn.transform.position);//stand still
 				}
 				else
 				{
 					s_timerDictionary[pawn] = 0;
-					pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+					if(!pawn._isMounting)
+						pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
 				}
 			}
 			else
@@ -81,7 +84,7 @@ namespace PPBA
 
 				if(null != lastTarget && lastTarget.isActiveAndEnabled)
 				{
-					bestScore = CalculateTargetScore(pawn, lastTarget) + 0.2f;
+					bestScore = CalculateTargetScore(pawn, lastTarget) + 0.2f;//add flat value to lastTarget (which is the current target)
 					hadTarget = true;
 				}
 			}
@@ -97,7 +100,7 @@ namespace PPBA
 				}
 			}
 
-			if(hadTarget && null != lastTarget && s_targetDictionary.ContainsKey(pawn) && lastTarget != s_targetDictionary[pawn])
+			if(!hadTarget || (null != lastTarget && s_targetDictionary.ContainsKey(pawn) && lastTarget != s_targetDictionary[pawn]))
 				s_timerDictionary[pawn] = 0;//reset timer if target was changed
 
 			return bestScore;
@@ -148,7 +151,7 @@ namespace PPBA
 			return 1;
 		}
 
-		protected float CalculateTargetScore(Pawn pawn, Pawn target)
+		public float CalculateTargetScore(Pawn pawn, Pawn target)
 		{
 			if(!CheckLos(pawn, target))//early skip when LOS is blocked by something other then cover
 				return 0;
@@ -161,7 +164,7 @@ namespace PPBA
 				{
 					//normal version
 					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
-					
+
 					//debug version
 					//float temp = Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, target)), 0f, 1f);
 					//Debug.Log("Pawn " + pawn._id + " target axis " + _targetAxes[i]._name + " evaluated to " + temp);
