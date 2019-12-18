@@ -63,7 +63,6 @@ GameObject:
   - component: {fileID: 7797191311377518056}
   - component: {fileID: 8822295596718978228}
   - component: {fileID: 6019409466473446127}
-  - component: {fileID: 3097147518464913015}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -122,19 +121,6 @@ MonoBehaviour:
   m_Area: 6
   m_IgnoreFromBuild: 0
   m_AffectedAgents: ffffffff
---- !u!114 &3097147518464913015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3688118483440170598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 746460c91c3de024a821279eab8df674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _myBlueprint: {fileID: 3838177625828405710}
 --- !u!1 &4800975661657982604
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,6 +133,7 @@ GameObject:
   - component: {fileID: 1045317909828317640}
   - component: {fileID: 1646919483722797084}
   - component: {fileID: -9031834214240992340}
+  - component: {fileID: 6617965542739019584}
   m_Layer: 9
   m_Name: RefineriePrefab
   m_TagString: Untagged
@@ -223,6 +210,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6617965542739019584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4800975661657982604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fbc253fd8c2f8e4d9ed9399eb21fe42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &3166693575374932166

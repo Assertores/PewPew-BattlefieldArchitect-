@@ -44,7 +44,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return "ID: " + _id.ToString("0000") + "| arguments: " + _arguments.ToString();
+				return "ID: " + _id.ToString("0000") + "| arguments: " + Convert.ToString((byte)_arguments, 2).PadLeft(8, '0');
 			}
 		}
 

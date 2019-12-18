@@ -39,6 +39,9 @@ namespace PPBA
 		[SerializeField] public int _work = 0;
 		[SerializeField] public int _workMax = 50;
 		[SerializeField] public float _interactRadius = 5f;
+
+		private bool _isFinished = false;
+		//public Arguments _arguments = new Arguments();
 		#endregion
 
 		#region References
@@ -73,6 +76,8 @@ namespace PPBA
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
+#else
+			TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
 
@@ -114,11 +119,13 @@ namespace PPBA
 			if(null != _myRefHolder)
 			{
 				_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
- 				ResourceMapCalculate.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
+				ResourceMapCalculate.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
 			}
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
 			transform.parent.GetChild(1)?.gameObject.SetActive(false);//deactivate child with blueprint
+
+			_isFinished = true;
 		}
 
 		public int GiveResources(int amount)
@@ -147,7 +154,8 @@ namespace PPBA
 				if(isActiveAndEnabled)
 					temp |= Arguments.ENABLED;
 
-				//if trigger needed, set flag here
+				if(_isFinished)
+					temp |= Arguments.TRIGGERBEHAVIOUR;
 
 				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
 				TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
@@ -171,25 +179,21 @@ namespace PPBA
 			{
 				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
 
-				if(null == temp || !temp._arguments.HasFlag(Arguments.ENABLED))
-				{
-					if(gameObject.activeSelf)
-						gameObject.SetActive(false);
+				if(null == temp)
 					return;
-				}
-				else
+
+				/*
+				if(!gameObject.activeSelf && temp._arguments.HasFlag(Arguments.ENABLED))
 				{
-					if(!gameObject.activeSelf)
-					{
-						gameObject.SetActive(true);
-						ResetToDefault(this, 0);
-					}
+					ResetToDefault(this);
+					gameObject.SetActive(true);
 				}
+				*/
 
 				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
-				{
-					// do trigger stuff
-				}
+					_isFinished = true;
+				else
+					_isFinished = false;
 			}
 			{
 				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
@@ -218,10 +222,9 @@ namespace PPBA
 			#endregion
 		}
 
-		private static void ResetToDefault(Blueprint blueprint, int team = 0)
+		private static void ResetToDefault(Blueprint blueprint)
 		{
-			//blueprint._arguments = new Arguments();
-			//blueprint._team = team;//not needed if object pools are per player
+			blueprint._isFinished = false;
 			blueprint._resources = 0;
 			blueprint._work = 0;
 
@@ -253,16 +256,24 @@ namespace PPBA
 			if(null != _material)
 			{
 				_myRenderer.GetPropertyBlock(_PropertyBlock);
-				_PropertyBlock.SetFloat("_Clip", (float)_work / _workMax);
+
+				if(_isFinished)
+					_PropertyBlock.SetFloat("_Clip", 1f);
+				else
+					_PropertyBlock.SetFloat("_Clip", (float)_work / _workMax);
+
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
-			//	_material.SetFloat("_Clip", (float)_work / _workMax);
+				//	_material.SetFloat("_Clip", (float)_work / _workMax);
 			}
+
+
 		}
 
 		public void SetClipFull()
 		{
 			if(null != _material)
 			{
+				_myRenderer.GetPropertyBlock(_PropertyBlock);
 				_PropertyBlock.SetFloat("_Clip", 1f);
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			}
@@ -272,6 +283,7 @@ namespace PPBA
 		{
 			if(null != _material)
 			{
+				_myRenderer.GetPropertyBlock(_PropertyBlock);
 				_PropertyBlock.SetFloat("_Clip", 0f);
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			}
@@ -296,17 +308,17 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+			ResetToDefault(this);
+
 			_PropertyBlock = new MaterialPropertyBlock();
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 			_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
-			
+
 #if UNITY_SERVER
 			if(null != JobCenter.s_blueprints?[_team] && !JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Add(this);
-
-			TickHandler.s_GatherValues += WriteToGameState;
 #else
-			SetClipEmpty();
+			//SetClipEmpty();
 #endif
 		}
 
@@ -315,7 +327,12 @@ namespace PPBA
 #if UNITY_SERVER
 			if(null != JobCenter.s_blueprints?[_team] && JobCenter.s_blueprints[_team].Contains(this))
 				JobCenter.s_blueprints[_team].Remove(this);
+#endif
+		}
 
+		private void OnDestroy()
+		{
+#if UNITY_SERVER
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}

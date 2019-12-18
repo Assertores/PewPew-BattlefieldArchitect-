@@ -64,6 +64,7 @@ GameObject:
   - component: {fileID: 8410890997195253141}
   - component: {fileID: -1804715878192648609}
   - component: {fileID: 2432861793620415984}
+  - component: {fileID: 8652301826117067124}
   m_Layer: 9
   m_Name: Stonewall_Middle
   m_TagString: Untagged
@@ -135,6 +136,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8652301826117067124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4608242534838623985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fbc253fd8c2f8e4d9ed9399eb21fe42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7956651625578190273
@@ -230,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8467200739574855430
 Transform:
   m_ObjectHideFlags: 0
