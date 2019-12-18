@@ -252,6 +252,7 @@ namespace PPBA
 
 			if(null != _material)
 			{
+				_myRenderer.GetPropertyBlock(_PropertyBlock);
 				_PropertyBlock.SetFloat("_Clip", (float)_work / _workMax);
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			//	_material.SetFloat("_Clip", (float)_work / _workMax);
