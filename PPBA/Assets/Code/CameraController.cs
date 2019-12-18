@@ -14,7 +14,7 @@ namespace PPBA
 		[SerializeField] float _CameraSpeed = 20f;
 		[SerializeField] float _RotateSpeed = 20f;
 		//[SerializeField] float _BorderThickness = 10f;
-		[SerializeField] Vector2 _panLimit = new Vector2(40f, 40f);
+		[SerializeField] Vector2 _panLimit = new Vector2(450, 450f);
 
 
 		void LateUpdate()
@@ -45,8 +45,8 @@ namespace PPBA
 			}
 			transform.Translate(pos, Space.Self);
 
-			//pos.x = Mathf.Clamp(transform.position.x, -_panLimit.x, _panLimit.x);
-			//pos.z = Mathf.Clamp(transform.position.z, -_panLimit.y, _panLimit.y);
+			pos.x = Mathf.Clamp(transform.position.x, -_panLimit.x, _panLimit.x);
+			pos.z = Mathf.Clamp(transform.position.z, -_panLimit.y, _panLimit.y);
 
 		}
 

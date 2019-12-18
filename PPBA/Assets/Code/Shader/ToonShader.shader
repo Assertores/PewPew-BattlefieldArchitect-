@@ -27,7 +27,7 @@
 		_Frequency("Frequency", Vector) = (0,0,0,0)
 		_Phase("Phase", Vector) = (0,0,0,0)
 
-		[PerRendererData]_Clip("Clip Height", Float) = 0.5
+		[PerRendererData]_Clip("Clip Height", Float) = 0.0
 		_Noise("Noise", Float) = 0.0
 		_NoiseScale("Noise Scale", Float) = 1.0
 		_BuildingHeight("BuildingHeight", Float)= 5.0
