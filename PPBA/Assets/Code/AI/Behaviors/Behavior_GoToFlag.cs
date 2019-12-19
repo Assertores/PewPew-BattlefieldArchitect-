@@ -90,7 +90,10 @@ namespace PPBA
 
 		public override float FindBestTarget(Pawn pawn)
 		{
-			float bestScore = 0;
+			float bestScore = 0f;
+
+			if(null == JobCenter.s_flagPoles || null == JobCenter.s_flagPoles[pawn._team])
+				return 0f;
 
 			foreach(FlagPole flagPole in JobCenter.s_flagPoles[pawn._team])
 			{

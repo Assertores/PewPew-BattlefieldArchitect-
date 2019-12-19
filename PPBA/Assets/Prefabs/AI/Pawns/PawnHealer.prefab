@@ -182,7 +182,7 @@ MonoBehaviour:
   _healthRegen: 0.01
   _moraleRegen: 1
   TerritoryMapId: 0
-  e_behaviors: 13010e0a0b0c110308
+  e_behaviors: 13010e0a0b0c11080f06
   _behaviorMultipliers:
   - 1
   - 10
@@ -190,6 +190,7 @@ MonoBehaviour:
   - 5
   - 5
   - 5
+  - 10
   - 10
   - 10
   - 10
