@@ -90,6 +90,7 @@ namespace PPBA
 
 		private void VisualizeLerpedStates()
 		{
+			/*
 			float lerpFactor;
 
 			if(null == _lastState || null == _nextState)
@@ -106,6 +107,7 @@ namespace PPBA
 
 			_myFlagHolder.transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			_myFlagHolder.transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
+			*/
 		}
 		#endregion
 
@@ -170,6 +172,7 @@ namespace PPBA
 		#region INetElement
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
+			/*
 			if(null != _nextState)
 				_lastState = _nextState;
 
@@ -211,10 +214,12 @@ namespace PPBA
 				}
 			}
 			#endregion
+			*/
 		}
 
 		public void WriteToGameState(int tick)
 		{
+			/*
 			{
 				Arguments temp = new Arguments();
 
@@ -229,6 +234,7 @@ namespace PPBA
 
 			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			*/
 		}
 		#endregion
 		#endregion

@@ -265,8 +265,6 @@ namespace PPBA
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 				//	_material.SetFloat("_Clip", (float)_work / _workMax);
 			}
-
-
 		}
 
 		public void SetClipFull()
