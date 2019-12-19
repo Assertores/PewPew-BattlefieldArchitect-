@@ -119,8 +119,8 @@ MonoBehaviour:
   _workMax: 50
   _interactRadius: 5
   _workers: []
-  _material: {fileID: 2100000, guid: 5df7ac787a2861342b2e6cbd6c8512c5, type: 2}
-  _myRenderer: {fileID: 0}
+  _material: {fileID: 2100000, guid: ab2d98a0de78acd40a3ad905a953ea22, type: 2}
+  _myRenderer: {fileID: 517795114932391561}
 --- !u!1 &8959561800333315175
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,6 +261,12 @@ PrefabInstance:
 --- !u!4 &787844022703705065 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 517323152654184249, guid: bb7835b8f6befff46b3b29f9793ecebd,
+    type: 3}
+  m_PrefabInstance: {fileID: 991668626000110800}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &517795114932391561 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 787160945479166553, guid: bb7835b8f6befff46b3b29f9793ecebd,
     type: 3}
   m_PrefabInstance: {fileID: 991668626000110800}
   m_PrefabAsset: {fileID: 0}
