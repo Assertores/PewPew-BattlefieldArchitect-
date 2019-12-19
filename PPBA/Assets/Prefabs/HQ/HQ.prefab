@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 2629620312372173525}
   - component: {fileID: 3301649464203582964}
   - component: {fileID: 5763944625188300945}
+  - component: {fileID: 3330430556421241066}
   m_Layer: 9
   m_Name: HQ
   m_TagString: Untagged
@@ -84,7 +85,7 @@ MonoBehaviour:
   _ObjectType: 10
   _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
     type: 3}
-  _blueprintPrefab: {fileID: 0}
+  _blueprintPrefab: {fileID: 5333057613725341048}
   _logicObject: {fileID: 8959561800333315175}
   BaseMaterial: {fileID: 0}
   _Positions: {x: 0, y: 0}
@@ -98,6 +99,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3330430556421241066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213009535242751257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fbc253fd8c2f8e4d9ed9399eb21fe42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3501257090858059738

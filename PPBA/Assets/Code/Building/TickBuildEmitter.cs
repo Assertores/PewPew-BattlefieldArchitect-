@@ -16,6 +16,10 @@ namespace PPBA
 			TickHandler.s_GatherValues += RegisterInput;
 #endif
 		}
+		private void OnDestroy()
+		{
+			TickHandler.s_DoInput -= ReactOnInput;
+		}
 
 		void RegisterInput(int tick)
 		{
@@ -41,7 +45,8 @@ namespace PPBA
 					//TickHandler.s_currentTick.
 					//TODO: eingabe war valide
 				}
-				Destroy(this.gameObject);
+				if(null != this.gameObject)
+					Destroy(this.gameObject);
 			}
 		}
 	}

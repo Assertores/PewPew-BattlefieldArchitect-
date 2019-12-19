@@ -83,6 +83,7 @@ namespace PPBA
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
+			/*
 			if(null != _nextState)
 				_lastState = _nextState;
 
@@ -129,10 +130,12 @@ namespace PPBA
 				}
 			}
 			#endregion
+				*/
 		}
 
 		public void WriteToGameState(int tick)
 		{
+			/*
 			{
 				Arguments temp = new Arguments();
 
@@ -151,6 +154,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
+			*/
 		}
 		#endregion
 
@@ -199,13 +203,18 @@ namespace PPBA
 		{
 			Cover newCover = (Cover)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.COVER]].GetNextObject(team);
 			ResetToDefault(newCover, team);
-			newCover.AddCoverSlotsToLists();
 			newCover.transform.position = spawnPoint;
+
+#if UNITY_SERVER
+			newCover.AddCoverSlotsToLists();
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			RemoveCoverSlotsFromLists();
+#endif
 			gameObject.SetActive(false);
 		}
 	}

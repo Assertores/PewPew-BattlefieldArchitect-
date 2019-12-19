@@ -216,7 +216,7 @@ namespace PPBA
 				Behavior_Die.s_instance.Execute(this);
 				return;
 			}
-			
+
 			Regenerate();
 
 			if(_isMounting)//early skip: mounting

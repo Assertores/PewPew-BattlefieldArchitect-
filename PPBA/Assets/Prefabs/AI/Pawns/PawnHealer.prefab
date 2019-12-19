@@ -179,9 +179,10 @@ MonoBehaviour:
   _ammoBackingField: 100
   _suppliesBackingField: 0
   _moraleBackingField: 100
-  _healthRegen: 1
+  _healthRegen: 0.01
   _moraleRegen: 1
-  e_behaviors: 13010e0a0b0c11
+  TerritoryMapId: 0
+  e_behaviors: 13010e0a0b0c110308
   _behaviorMultipliers:
   - 1
   - 10
@@ -189,6 +190,8 @@ MonoBehaviour:
   - 5
   - 5
   - 5
+  - 10
+  - 10
   - 10
   _behaviors: []
   _lastBehavior: {fileID: 0}

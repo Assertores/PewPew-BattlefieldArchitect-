@@ -26,6 +26,11 @@ namespace PPBA
 #endif
 		}
 
+		private void Update()
+		{
+			
+		}
+
 		void ServerGatherValue(int tick)
 		{
 			{
