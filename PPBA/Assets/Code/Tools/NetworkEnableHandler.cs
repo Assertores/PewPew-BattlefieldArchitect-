@@ -31,6 +31,7 @@ namespace PPBA
 			if(null == temp)
 			{
 				temp = new GSC.arg();
+				temp._id = _id;
 				TickHandler.s_interfaceGameState.Add(temp);
 			}
 
