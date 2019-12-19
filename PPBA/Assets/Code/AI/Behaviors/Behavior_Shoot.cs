@@ -13,7 +13,7 @@ namespace PPBA
 
 		//private
 		[SerializeField] [Tooltip("How long from starting the attack to shooting in ticks?")] private int _attackBuildUpTime = 8;
-		[SerializeField] [Tooltip("Max attack range")] private float _attackRange = 2f;
+		[SerializeField] [Tooltip("Max attack range")] private float _attackRange = 10f;
 
 		public Behavior_Shoot()
 		{
@@ -38,9 +38,7 @@ namespace PPBA
 				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
 				{
 					s_timerDictionary[pawn]++;//increment timer
-
-					if(!pawn._isMounting)
-						pawn.SetMoveTarget(pawn.transform.position);//stand still
+					pawn.SetMoveTarget(pawn.transform.position);//stand still
 				}
 				else
 				{

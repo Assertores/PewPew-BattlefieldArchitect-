@@ -26,6 +26,11 @@ namespace PPBA
 #endif
 		}
 
+		private void Update()
+		{
+			
+		}
+
 		void ServerGatherValue(int tick)
 		{
 			{
@@ -33,14 +38,14 @@ namespace PPBA
 				element._id = _id;
 				element._position = transform.position;
 				element._angle = transform.rotation.eulerAngles.y;
-				TickHandler.s_interfaceGameState._transforms.Add(element);
+				TickHandler.s_interfaceGameState.Add(element);
 			}
 		}
 
 		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus
 		void HandleGameStateEnableEvents(int tick)
 		{
-			GSC.arg args = TickHandler.s_interfaceGameState._args.Find(x => x._id == _id);
+			GSC.arg args = TickHandler.s_interfaceGameState.GetArg(_id);
 
 			if(args != null && args._arguments.HasFlag(Arguments.ENABLED))
 			{
@@ -48,7 +53,7 @@ namespace PPBA
 				{
 					gameObject.SetActive(true);
 
-					GSC.transform newTransform = TickHandler.s_interfaceGameState._transforms.Find(x => x._id == _id);
+					GSC.transform newTransform = TickHandler.s_interfaceGameState.GetTransform(_id);
 					if(newTransform != null)
 					{
 						transform.position = newTransform._position;

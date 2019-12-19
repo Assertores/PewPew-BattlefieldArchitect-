@@ -77,7 +77,7 @@ namespace PPBA
 				}
 			//	Debug.Log("Tick: " + tick + ", id: " + hm._id);
 			//	Debug.Log(hm.ToString());
-				TickHandler.s_interfaceGameState._heatMaps.Add(hm);
+				TickHandler.s_interfaceGameState.Add(hm);
 			}
 		}
 

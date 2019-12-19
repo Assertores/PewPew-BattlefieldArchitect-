@@ -99,19 +99,12 @@ namespace PPBA
 					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
 				case ObjectType.DEPOT:
+					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 					break;
 				case ObjectType.GUN_TURRET:
 					break;
 				case ObjectType.WALL:
 					ConstructWall();
-					break;
-				case ObjectType.WALL_BETWEEN:
-					break;
-				case ObjectType.PAWN_WARRIOR:
-					break;
-				case ObjectType.PAWN_HEALER:
-					break;
-				case ObjectType.PAWN_PIONEER:
 					break;
 				case ObjectType.COVER:
 					_currentPlaceableObject = Instantiate(PrefabBuildingType._GhostPrefabObj, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);

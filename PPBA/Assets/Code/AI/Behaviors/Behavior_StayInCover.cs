@@ -42,6 +42,8 @@ namespace PPBA
 					return pawn._isMounting ? pawn._mountSlot._coverScore : 0f;
 				case "IsMounting":
 					return pawn._isMounting ? 1f : 0f;
+				case StringCollection.AMMO:
+					return (float)pawn._ammo / pawn._maxAmmo;
 				default:
 					return 1f;
 			}

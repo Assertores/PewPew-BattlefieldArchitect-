@@ -549,38 +549,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[1]._curve.m_Curve.Array.data[1].time
-      value: 0.20083618
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].value
-      value: 0.90234375
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].inSlope
-      value: 0.09765625
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[0].outSlope
-      value: 0.09765625
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[1].inSlope
-      value: 0.09765625
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _pawnAxes.Array.data[2]._curve.m_Curve.Array.data[1].outSlope
-      value: 0.09765625
-      objectReference: {fileID: 0}
-    - target: {fileID: 1942481249, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
-      propertyPath: _attackBuildUpTime
-      value: 8
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b952cb98fda6e64182062bcbbc8f34f, type: 3}
 --- !u!4 &7515035437403473525 stripped

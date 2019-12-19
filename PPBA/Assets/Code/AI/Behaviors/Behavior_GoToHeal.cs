@@ -68,81 +68,58 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, FlagPole flagPole, string name)
+		protected float TargetAxisInputs(Pawn pawn, MediCamp mediCamp, string name)
 		{
 			switch(name)
 			{
 				case "Distance":
 				case "DistanceToTarget":
-					return Vector3.Distance(pawn.transform.position, flagPole.transform.position) / _maxDistance;
-				case "Score":
-					return flagPole._score;
+					return Vector3.Distance(pawn.transform.position, mediCamp.transform.position) / _maxDistance;
+				//case "Score":
+				//	return mediCamp._score;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
 		}
-		/*
-		public override float FindBestTarget(Pawn pawn)
-		{
-			throw new System.NotImplementedException();
-		}
 
-		public override int GetTargetID(Pawn pawn)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void RemoveFromTargetDict(Pawn pawn)
-		{
-			throw new System.NotImplementedException();
-		}
-		*/
 		protected float CalculateTargetScore(Pawn pawn, MediCamp mediCamp)
 		{
-			return 1f;
-			/*
-
 			float score = 1f;
 
-				for(int i = 0; i < _targetAxes.Length; i++)
+			for(int i = 0; i < _targetAxes.Length; i++)
+			{
+				if(_targetAxes[i]._isEnabled)
 				{
-					if(_targetAxes[i]._isEnabled)
-					{
-						score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, flagPole, _targetAxes[i]._name)), 0f, 1f);
-					}
+					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, mediCamp, _targetAxes[i]._name)), 0f, 1f);
 				}
+			}
 
-				return score;
-				*/
+			return score;
 		}
 
 		public override float FindBestTarget(Pawn pawn)
 		{
 			float bestScore = 0;
-			/*
-				foreach(FlagPole flagPole in JobCenter.s_flagPoles[pawn._team])
-				{
-					float tempScore = CalculateTargetScore(pawn, flagPole);
+			foreach(MediCamp mediCamp in JobCenter.s_mediCamp[pawn._team])
+			{
+				float tempScore = CalculateTargetScore(pawn, mediCamp);
 
-					if(bestScore < tempScore)
-					{
-						s_targetDictionary[pawn] = flagPole;
-						bestScore = tempScore;
-					}
+				if(bestScore < tempScore)
+				{
+					s_targetDictionary[pawn] = mediCamp;
+					bestScore = tempScore;
 				}
-				*/
+			}
 			return bestScore;
 		}
 
 		public override int GetTargetID(Pawn pawn)
 		{
-			/*
 			if(s_targetDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn])
 				return s_targetDictionary[pawn]._id;
 			else
-			*/
-			return -1;
+				return -1;
 		}
 
 		public override void RemoveFromTargetDict(Pawn pawn)

@@ -157,15 +157,15 @@ namespace PPBA
 				if(_isFinished)
 					temp |= Arguments.TRIGGERBEHAVIOUR;
 
-				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
-				TickHandler.s_interfaceGameState._works.Add(new GSC.work { _id = _id, _work = _work });
+				TickHandler.s_interfaceGameState.Add(new GSC.arg { _id = _id, _arguments = temp });
+				TickHandler.s_interfaceGameState.Add(new GSC.work { _id = _id, _work = _work });
 
 				if(!isActiveAndEnabled)
 					return;//if pawn is disabled, no other info is relevant
 			}
 
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _resources });
+			TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _resources });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -265,8 +265,6 @@ namespace PPBA
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 				//	_material.SetFloat("_Clip", (float)_work / _workMax);
 			}
-
-
 		}
 
 		public void SetClipFull()

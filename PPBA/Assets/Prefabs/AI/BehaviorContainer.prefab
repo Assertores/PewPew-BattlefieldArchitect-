@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 1580922640460329105}
   - component: {fileID: 128041602174902717}
   - component: {fileID: 1777836687972694027}
+  - component: {fileID: 7208135573250592816}
   m_Layer: 0
   m_Name: BehaviorContainer
   m_TagString: Untagged
@@ -137,7 +138,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.49996948
+        time: 0.20083618
         value: 1
         inSlope: 0
         outSlope: 0
@@ -154,10 +155,10 @@ MonoBehaviour:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.0011711121
-        value: 0.50097656
-        inSlope: 0.49960855
-        outSlope: 0.49960855
+        time: 0
+        value: 0.90234375
+        inSlope: 0.09765625
+        outSlope: 0.09765625
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
@@ -165,8 +166,8 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0.49960855
-        outSlope: 0.49960855
+        inSlope: 0.09765625
+        outSlope: 0.09765625
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
@@ -357,7 +358,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-  _attackBuildUpTime: 2
+  _attackBuildUpTime: 8
   _attackRange: 2
 --- !u!114 &971023362
 MonoBehaviour:
@@ -492,7 +493,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
   _maxDistance: 70
-  _mountDistance: 2
+  _mountDistance: 1
 --- !u!114 &7515035436285199964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1297,9 +1298,27 @@ MonoBehaviour:
     _name: Health
     _curve:
       serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 0
-      m_PostInfinity: 0
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.49884033
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
       m_RotationOrder: 0
   - _isEnabled: 1
     _name: Cover
@@ -1406,5 +1425,95 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-  _maxDistance: 7
-  _mountDistance: 0.15
+--- !u!114 &7208135573250592816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515035436285199966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112d86e8b6924614aba7c5cb36cfa79d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pawnAxes:
+  - _isEnabled: 1
+    _name: Health
+    _curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.32201406
+        value: 1
+        inSlope: -1.4745927
+        outSlope: -1.4745927
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.99884033
+        value: 0.0019569397
+        inSlope: -1.4745927
+        outSlope: -1.4745927
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+  - _isEnabled: 1
+    _name: Morale
+    _curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.107881896
+        outSlope: -0.107881896
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.99768066
+        value: 0.8923683
+        inSlope: -0.107881896
+        outSlope: -0.107881896
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+  _targetAxes:
+  - _isEnabled: 1
+    _name: Distance
+    _curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.20328598
+        outSlope: -0.20328598
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0011597
+        value: 0.7964783
+        inSlope: -0.20328598
+        outSlope: -0.20328598
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0

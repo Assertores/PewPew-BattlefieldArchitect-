@@ -57,5 +57,10 @@ namespace PPBA
 			return _ObjectType;
 		}
 		public Material GetMaterial() => BaseMaterial;
+
+		private void Update()
+		{
+			
+		}
 	}
 }
