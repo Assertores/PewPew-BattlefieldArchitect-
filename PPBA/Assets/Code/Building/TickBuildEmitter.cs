@@ -35,7 +35,7 @@ namespace PPBA
 			if(tick == _tick)
 			{
 				TickHandler.s_DoInput -= ReactOnInput;
-				
+
 				if(TickHandler.s_interfaceGameState._denyedInputIDs.Exists(x => x._id == _id))
 				{
 					//TODO: eingabe war invalide

@@ -260,21 +260,21 @@ namespace PPBA
 				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 					temp |= Arguments.TRIGGERBEHAVIOUR;
 
-				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
+				TickHandler.s_interfaceGameState.Add(new GSC.arg { _id = _id, _arguments = temp });
 
 				if(!isActiveAndEnabled)
 					return;//if pawn is disabled, no other info is relevant
 			}
 
-			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
-			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
-			TickHandler.s_interfaceGameState._resources.Add(new GSC.resource { _id = _id, _resources = _supplies });
+			TickHandler.s_interfaceGameState.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
+			TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			TickHandler.s_interfaceGameState.Add(new GSC.health { _id = _id, _health = _health, _morale = _morale });
+			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
+			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _supplies });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState._behaviors.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
-				TickHandler.s_interfaceGameState._paths.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+				TickHandler.s_interfaceGameState.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen

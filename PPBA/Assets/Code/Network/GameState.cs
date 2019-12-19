@@ -263,17 +263,26 @@ namespace PPBA
 		private List<byte[]> _messageHolder = null;
 		//int _hash = 0;
 
-		public List<GSC.type> _types = new List<GSC.type>();
-		public List<GSC.arg> _args = new List<GSC.arg>();
-		public List<GSC.transform> _transforms = new List<GSC.transform>();
-		public List<GSC.ammo> _ammos = new List<GSC.ammo>();
-		public List<GSC.resource> _resources = new List<GSC.resource>();
-		public List<GSC.health> _healths = new List<GSC.health>();
-		public List<GSC.work> _works = new List<GSC.work>();
-		public List<GSC.behavior> _behaviors = new List<GSC.behavior>();
-		public List<GSC.path> _paths = new List<GSC.path>();
-		public List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
+		private List<GSC.type> _types = new List<GSC.type>();
+		private List<GSC.arg> _args = new List<GSC.arg>();
+		private List<GSC.transform> _transforms = new List<GSC.transform>();
+		private List<GSC.ammo> _ammos = new List<GSC.ammo>();
+		private List<GSC.resource> _resources = new List<GSC.resource>();
+		private List<GSC.health> _healths = new List<GSC.health>();
+		private List<GSC.work> _works = new List<GSC.work>();
+		private List<GSC.behavior> _behaviors = new List<GSC.behavior>();
+		private List<GSC.path> _paths = new List<GSC.path>();
+		///<summary>
+		/// DO NOT USE
+		/// </summary>
+		public List<GSC.heatMap> _heatMaps { get; private set; } = new List<GSC.heatMap>();
+		///<summary>
+		/// DO NOT USE
+		/// </summary>
 		public List<GSC.input> _denyedInputIDs = new List<GSC.input>();
+		///<summary>
+		/// DO NOT USE
+		/// </summary>
 		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
@@ -1007,7 +1016,7 @@ Change:
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
-//DEBUG_HEATMAP
+				//DEBUG_HEATMAP
 #if DB_HM
 				Debug.Log("PreDelta: " + it.ToString());
 #endif
@@ -1467,7 +1476,7 @@ Change:
 			return value;
 		}
 
-#region Helper Funktion
+		#region Helper Funktion
 
 		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
 		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
@@ -1482,7 +1491,173 @@ Change:
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
-#endregion
+		public void Add(GSC.type element)
+		{
+			if(_types.Exists(x => x._id == element._id))
+				return;
+
+			_types.Add(element);
+		}
+
+		public void Add(GSC.arg element)
+		{
+			GSC.arg value = _args.Find(x => x._id == element._id);
+			if(null == value)
+			{
+				_args.Add(element);
+			}
+			else
+			{
+				value._arguments |= element._arguments;
+			}
+		}
+
+		public void Add(GSC.transform element)
+		{
+			if(_transforms.Exists(x => x._id == element._id))
+				return;
+
+			_transforms.Add(element);
+		}
+
+		public void Add(GSC.ammo element)
+		{
+			if(_ammos.Exists(x => x._id == element._id))
+				return;
+
+			_ammos.Add(element);
+		}
+
+		public void Add(GSC.resource element)
+		{
+			if(_resources.Exists(x => x._id == element._id))
+				return;
+
+			_resources.Add(element);
+		}
+		public void Add(GSC.health element)
+		{
+			if(_healths.Exists(x => x._id == element._id))
+				return;
+
+			_healths.Add(element);
+		}
+		public void Add(GSC.work element)
+		{
+			if(_works.Exists(x => x._id == element._id))
+				return;
+
+			_works.Add(element);
+		}
+		public void Add(GSC.behavior element)
+		{
+			if(_behaviors.Exists(x => x._id == element._id))
+				return;
+
+			_behaviors.Add(element);
+		}
+
+		public void Add(GSC.path element)
+		{
+			if(_paths.Exists(x => x._id == element._id))
+				return;
+
+			_paths.Add(element);
+		}
+		public void Add(GSC.heatMap element)
+		{
+			GSC.heatMap value = _heatMaps.Find(x => x._id == element._id);
+
+			if(null == value)
+			{
+				_heatMaps.Add(element);
+				return;
+			}
+
+			//===== ===== Merge ===== =====
+
+			Vector2Int[] oldPos = value._mask.GetActiveBits();
+			Vector2Int[] newPos = element._mask.GetActiveBits();
+#if DB_HM
+			Debug.Log("new poscount: " + newPos.Length);
+			Debug.Log("old poscount: " + oldPos.Length);
+#endif
+			List<float> merged = new List<float>(oldPos.Length + newPos.Length);
+
+			int upper = 0;
+			int lower = 0;
+
+			//merges until one list is at the end
+			while(upper < oldPos.Length && lower < newPos.Length)
+			{
+				if(oldPos[upper].y <= newPos[lower].y && oldPos[upper].x < newPos[lower].x)
+				{
+#if DB_HM
+					Debug.Log("added original value (" + value._values[upper] + ") at pos: " + oldPos[upper]);
+#endif
+					merged.Add(value._values[upper]);
+					upper++;
+				}
+				else if(oldPos[upper] == newPos[lower])
+				{
+#if DB_HM
+					Debug.Log("equal original value (" + value._values[upper] + ") at pos: " + oldPos[upper]);
+#endif
+					merged.Add(value._values[upper]);
+					upper++;
+					lower++;
+				}
+				else
+				{
+#if DB_HM
+					Debug.Log("added new value (" + element._values[lower] + ") at pos: " + newPos[lower]);
+#endif
+					merged.Add(element._values[lower]);
+					lower++;
+				}
+			}
+
+			//adds rest of the other list
+			for(int itterator = upper; itterator < oldPos.Length; itterator++)
+			{
+#if DB_HM
+				Debug.Log("adding original remainer " + itterator);
+#endif
+				merged.Add(value._values[itterator]);
+			}
+			for(int itterator = lower; itterator < newPos.Length; itterator++)
+			{
+#if DB_HM
+				Debug.Log("adding reference remainer " + itterator);
+#endif
+				merged.Add(element._values[itterator]);
+			}
+
+			value._mask += element._mask;
+			value._values = merged;
+
+#if DB_HM
+			Debug.Log("After merge, mask: " + value._mask.GetActiveBits().Length + ", values: " + value._values.Count);
+#endif
+		}
+
+		public void Add(GSC.input element)
+		{
+			if(_denyedInputIDs.Exists(x => x._id == element._id))
+				return;
+
+			_denyedInputIDs.Add(element);
+		}
+
+		public void Add(GSC.newIDRange element)
+		{
+			if(_newIDRanges.Exists(x => x._id == element._id))
+				return;
+
+			_newIDRanges.Add(element);
+		}
+
+		#endregion
 
 		/// <summary>
 		/// packs the message into the next best package

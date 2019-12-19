@@ -60,7 +60,7 @@ namespace PPBA
 			//new GSC.arg { _arguments = Arguments.ENABLED, _id = 0 };
 			//IDictionary team health trans mounting pawn
 
-			//TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			//TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 		}
 		#endregion
 
