@@ -463,7 +463,7 @@ MonoBehaviour:
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
-    Value: 0
+    Value: 24
     m_MaxSpeed: 0
     m_AccelTime: 0.1
     m_DecelTime: 0.1
