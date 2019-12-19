@@ -1494,7 +1494,10 @@ Change:
 		public void Add(GSC.type element)
 		{
 			if(_types.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Type allready exists: " + element.ToString());
 				return;
+			}
 
 			_types.Add(element);
 		}
@@ -1508,6 +1511,7 @@ Change:
 			}
 			else
 			{
+				Debug.LogWarning("Arg allready exists: " + element.ToString());
 				value._arguments |= element._arguments;
 			}
 		}
@@ -1515,7 +1519,10 @@ Change:
 		public void Add(GSC.transform element)
 		{
 			if(_transforms.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Transform allready exists: " + element.ToString());
 				return;
+			}
 
 			_transforms.Add(element);
 		}
@@ -1523,7 +1530,10 @@ Change:
 		public void Add(GSC.ammo element)
 		{
 			if(_ammos.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Ammo allready exists: " + element.ToString());
 				return;
+			}
 
 			_ammos.Add(element);
 		}
@@ -1531,28 +1541,40 @@ Change:
 		public void Add(GSC.resource element)
 		{
 			if(_resources.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Resource allready exists: " + element.ToString());
 				return;
+			}
 
 			_resources.Add(element);
 		}
 		public void Add(GSC.health element)
 		{
 			if(_healths.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Health allready exists: " + element.ToString());
 				return;
+			}
 
 			_healths.Add(element);
 		}
 		public void Add(GSC.work element)
 		{
 			if(_works.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Work allready exists: " + element.ToString());
 				return;
+			}
 
 			_works.Add(element);
 		}
 		public void Add(GSC.behavior element)
 		{
 			if(_behaviors.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Behaviour allready exists: " + element.ToString());
 				return;
+			}
 
 			_behaviors.Add(element);
 		}
@@ -1560,7 +1582,10 @@ Change:
 		public void Add(GSC.path element)
 		{
 			if(_paths.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Path allready exists: " + element.ToString());
 				return;
+			}
 
 			_paths.Add(element);
 		}
@@ -1573,6 +1598,8 @@ Change:
 				_heatMaps.Add(element);
 				return;
 			}
+
+			Debug.LogWarning("Heatmap allready exists: " + element.ToString());
 
 			//===== ===== Merge ===== =====
 
@@ -1644,7 +1671,10 @@ Change:
 		public void Add(GSC.input element)
 		{
 			if(_denyedInputIDs.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Input allready exists: " + element.ToString());
 				return;
+			}
 
 			_denyedInputIDs.Add(element);
 		}
@@ -1652,7 +1682,10 @@ Change:
 		public void Add(GSC.newIDRange element)
 		{
 			if(_newIDRanges.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("IDs allready exists: " + element.ToString());
 				return;
+			}
 
 			_newIDRanges.Add(element);
 		}
