@@ -106,6 +106,13 @@ namespace PPBA
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id">the id of the heatMap</param>
+		/// <returns>size of the heatMap</returns>
+		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
+
 #if Obsolide
 		void CalculateMaps(int tick)
 		{
