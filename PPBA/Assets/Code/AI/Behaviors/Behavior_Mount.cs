@@ -49,7 +49,7 @@ namespace PPBA
 
 			foreach(MountSlot slot in JobCenter.s_mountSlots[pawn._team])
 			{
-				if(slot._isMounted)
+				if(!slot.isActiveAndEnabled || slot._isMounted)
 					continue;
 
 				float tempScore = CalculateTargetScore(pawn, slot);
