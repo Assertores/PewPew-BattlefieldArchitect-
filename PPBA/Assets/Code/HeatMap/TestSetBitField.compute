@@ -1,0 +1,26 @@
+﻿#pragma kernel CSInit
+#pragma kernel CSMain
+
+RWStructuredBuffer<uint> bitField;
+RWTexture2D<float4> Result;
+
+[numthreads(1, 1, 1)]
+void CSInit(uint3 id : SV_DispatchThreadID)
+{
+	for (int i = 0; i < (8*8)/(8*4); i++)
+	{
+		bitField[i] = 0;
+	}
+}
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	int weightMap = 8;
+	if ((id.x == 0.0 && id.y == 0.0) ||
+		(id.x == 2.0 && id.y == 0.0) || 
+		(id.x == 7.0 && id.y == 7.0)) {
+		int bit = id.y * weightMap + id.x;
+		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+	}
+}
