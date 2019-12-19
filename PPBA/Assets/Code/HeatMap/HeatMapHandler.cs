@@ -50,12 +50,10 @@ namespace PPBA
 			value = ResourceMapCalculate.s_instance.GetValues();
 			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(0, ref value));
 			_heatMaps[0] = value.tex;
-			//_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 
 			value = TerritoriumMapCalculate.s_instance.GetValues();
 			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(1, ref value));
 			_heatMaps[1] = value.tex;
-			//_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
 		}
 
 		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
@@ -64,20 +62,15 @@ namespace PPBA
 
 			value._id = id;
 
-			//setting up current Bitfield
 			value._mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
 
 			Vector2Int[] positions = value._mask.GetActiveBits();
-
-			//saving values
 
 			value._values = new List<float>(positions.Length);
 			for(int j = 0; j < positions.Length; j++)
 			{
 				value._values.Add(input.tex.GetPixel(positions[j].x, positions[j].y).r);
 			}
-			//	Debug.Log("Tick: " + tick + ", id: " + hm._id);
-			//	Debug.Log(hm.ToString());
 
 			return value;
 		}
