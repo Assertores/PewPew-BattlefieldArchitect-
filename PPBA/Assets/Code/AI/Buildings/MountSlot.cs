@@ -12,7 +12,7 @@ namespace PPBA
 
 		[SerializeField] [Tooltip("How fit is the MountSlot right now?")] public float _score = 0;
 		[SerializeField] [Tooltip("How much cover does the MountSlot offer a pawn?")] public float _coverScore = 0f;
-		public bool _isMounted => _mountingPawn != null;
+		public bool _isMounted => _mountingPawn != null && _mountingPawn.isActiveAndEnabled;
 		[SerializeField] public Pawn _mountingPawn = null;
 
 		#region Pawn Interaction

@@ -30,7 +30,10 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			if(!s_targetDictionary.ContainsKey(pawn))//early skip if no target
+			{
+				pawn.SetMoveTarget(pawn.transform.position);
 				return;
+			}
 
 			if(pawn._isMounting)
 			{
@@ -39,7 +42,16 @@ namespace PPBA
 			}
 			else
 			{
+				if(s_targetDictionary[pawn]._isMounted)
+				{
+					pawn.SetMoveTarget(pawn.transform.position);
+					return;
+				}
+
 				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+
+				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < 0.1)
+					s_targetDictionary[pawn].GetIn(pawn);
 			}
 		}
 

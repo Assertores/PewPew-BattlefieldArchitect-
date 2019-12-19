@@ -189,7 +189,12 @@ namespace PPBA
 
 			if(_isMounting)
 			{
-				Behavior_StayInCover.s_instance.Calculate(this);
+				float tempScore = Behavior_StayInCover.s_instance.Calculate(this);
+
+				if(tempScore < 0.1f)
+					_mountSlot.GetOut(this);
+				else
+					return;
 			}
 
 			if(null != _behaviors)

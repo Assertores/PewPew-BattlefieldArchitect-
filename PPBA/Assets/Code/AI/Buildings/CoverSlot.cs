@@ -31,6 +31,8 @@ namespace PPBA
 		#region Tick
 		public override void CalculateScore(int tick = 0)
 		{
+			_score = 1f;
+
 			//how close to border
 			//how many enemy pawns
 
