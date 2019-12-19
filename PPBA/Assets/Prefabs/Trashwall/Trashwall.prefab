@@ -200,7 +200,7 @@ MonoBehaviour:
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: a046a3a6cea44e346bed0e6146dc1366, type: 2}
-  _myRenderer: {fileID: 0}
+  _myRenderer: {fileID: 4479120800688694564}
 --- !u!1 &7730061378370038646
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,6 +293,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6709774135978924389}
     m_Modifications:
+    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 1386764047220013527, guid: afa21fd1e4c406c4cb3c8d234f08489a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -348,16 +353,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa21fd1e4c406c4cb3c8d234f08489a, type: 3}
 --- !u!4 &7173247640328506071 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1386764047220013527, guid: afa21fd1e4c406c4cb3c8d234f08489a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8120755614170510080}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4479120800688694564 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5664315121577006628, guid: afa21fd1e4c406c4cb3c8d234f08489a,
     type: 3}
   m_PrefabInstance: {fileID: 8120755614170510080}
   m_PrefabAsset: {fileID: 0}
