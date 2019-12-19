@@ -154,7 +154,7 @@ namespace PPBA
 			gameObject.SetActive(false);
 		}
 
-		public void WriteToGameState(int tick)
+		public void WriteToGameState(int tick = 0)
 		{
 			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState._ammos.Add(new GSC.ammo { _id = _id, _bullets = _ammo });

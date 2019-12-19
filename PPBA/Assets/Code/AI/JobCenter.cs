@@ -38,6 +38,10 @@ namespace PPBA
 					s_coverSlots[i] = new List<CoverSlot>();
 				if(s_flagPoles[i] == null)
 					s_flagPoles[i] = new List<FlagPole>();
+				if(s_mediCamp[i] == null)
+					s_mediCamp[i] = new List<MediCamp>();
+				if(s_headQuarters[i] == null)
+					s_headQuarters[i] = new List<HeadQuarter>();
 			}
 		}
 

@@ -35,14 +35,6 @@ namespace PPBA
 				element._angle = transform.rotation.eulerAngles.y;
 				TickHandler.s_interfaceGameState._transforms.Add(element);
 			}
-			{
-				GSC.arg element = new GSC.arg();
-				element._id = _id;
-				if(gameObject.activeSelf)
-					element._arguments |= Arguments.ENABLED;
-
-				TickHandler.s_interfaceGameState._args.Add(element);
-			}
 		}
 
 		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus

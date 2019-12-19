@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7507454801724611220}
   - component: {fileID: 6773971951171986429}
+  - component: {fileID: 7716478408267068293}
   m_Layer: 9
   m_Name: MediCamp
   m_TagString: Untagged
@@ -142,6 +143,18 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 2100000, guid: df7d4738da70f1648a8a22ad8e2c7e85, type: 2}
+--- !u!114 &7716478408267068293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6493288425784081815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01833a8bd8fa64542b67d8653c56b090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8918250502286280411
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,7 +171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7275411477570094863
 Transform:
   m_ObjectHideFlags: 0
@@ -185,6 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58873b449b0a6d344812f98177125efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _myMediCampHolder: {fileID: 6773971951171986429}
 --- !u!1001 &6406483280485046271
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -192,6 +206,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7243193423265182464}
     m_Modifications:
+    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
+        type: 3}
+      propertyPath: m_Name
+      value: New_Medcamp_LP
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b44524fc556e6584499da9beffbefe50,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -256,16 +280,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 100.000015
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
-        type: 3}
-      propertyPath: m_Name
-      value: New_Medcamp_LP
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: b44524fc556e6584499da9beffbefe50,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: b44524fc556e6584499da9beffbefe50,
         type: 3}

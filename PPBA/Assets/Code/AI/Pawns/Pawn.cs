@@ -458,7 +458,7 @@ namespace PPBA
 				case Behaviors.GOTOCOVER:
 					break;
 				case Behaviors.GOTOHEAL:
-					return Behavior_GoAnywhere.s_instance;
+					return Behavior_GoToHeal.s_instance;
 				case Behaviors.FLEE:
 					break;
 				case Behaviors.GETSUPPLIES:
