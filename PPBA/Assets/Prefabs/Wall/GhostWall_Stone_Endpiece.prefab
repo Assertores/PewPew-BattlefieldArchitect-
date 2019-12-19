@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5771778708366922662}
   - component: {fileID: -731439545442786921}
   m_Layer: 9
-  m_Name: GhostWall_Endpiece
+  m_Name: GhostWall_Stone_Endpiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,7 +131,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1679223dae9f18f42aedc5db5d6434c7, type: 2}
+  - {fileID: 2100000, guid: cb13df1607cb5bc4f93443710812510b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
