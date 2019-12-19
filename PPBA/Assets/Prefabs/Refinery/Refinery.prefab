@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: -9031834214240992340}
   - component: {fileID: 6617965542739019584}
   m_Layer: 9
-  m_Name: RefineriePrefab
+  m_Name: Refinery
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,7 +150,7 @@ Transform:
   m_GameObject: {fileID: 4800975661657982604}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.3513, y: 4.3513, z: 4.3513}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6777395364623746892}
   - {fileID: 1300788822421326239}
