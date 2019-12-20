@@ -139,7 +139,7 @@ namespace PPBA
 
 		IEnumerator ConvertRenToTex2D(byte[] field , RenderTexture renTex)
 		{
-
+			HeatMap.bitfield = field;
 			Graphics.CopyTexture(renTex, _backingTex[1]);
 			yield return  null;
 		}
