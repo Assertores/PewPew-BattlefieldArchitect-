@@ -144,23 +144,7 @@ namespace PPBA
 			yield return  null;
 		}
 
-		private bool _changeMap = false;
 
-		public void SwitchMap()
-		{
-			_changeMap = !_changeMap;
-
-			int t = _changeMap ? 0 : 1;
-			_GroundMaterial.SetFloat("_MapChange", t);
-		}
-
-		public void SwitchMapTerrritorrium()
-		{
-			_changeMap = !_changeMap;
-
-			int t = _changeMap ? 0 : 2;
-			_GroundMaterial.SetFloat("_MapChange", t);
-		}
 
 
 		private Vector4[] RefineriesProperties()

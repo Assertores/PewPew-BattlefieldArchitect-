@@ -6,8 +6,10 @@ namespace PPBA
 {
 	public class UserInputController : Singleton<UserInputController>
 	{
+		private bool _changeMap = false;
 		public LayerMask ignore;
 		public Material TerrainMat;
+
 		public Vector3 GetWorldPoint()
 		{
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -41,7 +43,7 @@ namespace PPBA
 			Vector2 pixelUV;
 
 			RaycastHit hitInfo;
-			if(Physics.Raycast(Obj.position+ Vector3.up, Vector3.down, out hitInfo, 1000, ignore))
+			if(Physics.Raycast(Obj.position + Vector3.up, Vector3.down, out hitInfo, 1000, ignore))
 			{
 				pixelUV = hitInfo.textureCoord;
 				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
@@ -50,6 +52,12 @@ namespace PPBA
 			}
 			return Vector3.zero;
 		}
+
+		public void ChangeMap(int index)
+		{
+			TerrainMat.SetFloat("_MapChange", index);
+		}
+
 
 	}
 }
