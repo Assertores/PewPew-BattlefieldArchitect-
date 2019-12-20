@@ -7,14 +7,14 @@ namespace PPBA
 {
 	public struct HeatMapReturnValue
 	{
-		public RenderTexture tex;
+		public Texture2D tex;
 		public byte[] bitfield;
 	}
 
 	public class HeatMapHandler : Singleton<HeatMapHandler>
 	{
-		public Texture2D[] _heatMaps { get; private set; } = new Texture2D[2];
-		private BitField2D[] _bitFields = new BitField2D[2];
+		public Texture2D[] _heatMaps = new Texture2D[2];
+		//private BitField2D[] _bitFields = new BitField2D[2];
 
 		private void Start()
 		{
@@ -38,6 +38,82 @@ namespace PPBA
 #endif
 		}
 
+		void CalculateMaps(int tick)
+		{
+			ResourceMapCalculate.s_instance.StartCalculation();
+			TerritoriumMapCalculate.s_instance.StartCalculation();
+		}
+
+		void SaveMapToGameState(int tick)
+		{
+			HeatMapReturnValue value;
+			value = ResourceMapCalculate.s_instance.GetValues();
+			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(0, ref value));
+			_heatMaps[0] = value.tex;
+
+			value = TerritoriumMapCalculate.s_instance.GetValues();
+			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(1, ref value));
+			_heatMaps[1] = value.tex;
+		}
+
+		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
+		{
+			GSC.heatMap value = new GSC.heatMap();
+
+			value._id = id;
+
+			value._mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
+
+			Vector2Int[] positions = value._mask.GetActiveBits();
+
+			value._values = new List<float>(positions.Length);
+			for(int j = 0; j < positions.Length; j++)
+			{
+				value._values.Add(input.tex.GetPixel(positions[j].x, positions[j].y).r);
+			}
+
+			return value;
+		}
+
+		void SetMap(int tick)
+		{
+			foreach(var it in TickHandler.s_interfaceGameState._heatMaps)
+			{
+				Vector2Int[] pos = it._mask.GetActiveBits();
+				if(pos.Length != it._values.Count)
+					throw new System.ArgumentException();
+
+				for(int i = 0; i < pos.Length; i++)
+				{
+					var tmp = _heatMaps[it._id].GetPixel(pos[i].x, pos[i].y);
+					tmp.r = it._values[i];
+					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, tmp);
+				}
+				_heatMaps[it._id].Apply();
+
+				switch(it._id)
+				{
+					case 0:
+						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						break;
+					case 1:
+						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						break;
+					default:
+						Debug.LogError("Heatmap index not found");
+						break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id">the id of the heatMap</param>
+		/// <returns>size of the heatMap</returns>
+		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
+
+#if Obsolide
 		void CalculateMaps(int tick)
 		{
 			//----- ----- init ----- -----
@@ -143,5 +219,6 @@ namespace PPBA
 			return tex;
 
 		}
+#endif
 	}
 }
