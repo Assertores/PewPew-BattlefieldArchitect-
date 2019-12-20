@@ -6,12 +6,13 @@
 #pragma kernel CSNextEdge
 
 int PointSize;
-const int weightMap = 512;
+
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
 int stateSize;
 float2 state[50];
+Texture2D<float4> InputTexture;
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<uint> bitField;
@@ -34,49 +35,35 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
+	const int weightMap = 512;
 
-	float currentResources = Result[id.xy].r;
+	 //Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
 
-	for (int i = 0; i < PointSize; i++)
-	{
-		float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
+	float currentResources = InputTexture[id.xy].r;
 
-		float maxDis = coords[i].w;
+	//for (int i = 0; i < PointSize; i++)
+	//{
+		float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
 
-		if (dis > maxDis)
+		float maxDis = coords[0].w;
+
+		if (dis < maxDis)
 		{
-			continue;
+			//continue;
+
+	//	float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
+		float harvestFac = smoothstep(maxDis, 0.0, dis) * 0.1; // distfactor * coords[i].z;
+		float minValue = float(min(currentResources, harvestFac));
+		currentResources -= minValue;
+		//currentResources = saturate(currentResources);
+
+		InterlockedAdd(buffer[0], minValue * 1000.0);
+	//}
 		}
 
-		float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
-
-		//float4 curCol = InputTexture[id.xy].rgba;
-
-		//float minValue = float(min(curCol.r, harvestFac));
-		float minValue = float(min(currentResources, harvestFac));
-
-		//float newCol = curCol.r - minValue;
-		currentResources -= minValue;
-
-		//	float3 col = lerp(curCol.rgb, newCol, t);
-		//newCol = saturate(newCol);
-		currentResources = saturate(currentResources);
-
-		InterlockedAdd(buffer[i], minValue * 1000000.0);
-		/*
-		if (Result[id.xy] != float4(newCol.rrr, curCol.a))
-		{
-			int myIndex;
-			InterlockedAdd(resourcesIndex, 1, myIndex);
-			resourcesChanged[myIndex] = id.x;
-
-			Result[id.xy] = float4(newCol.rrr, curCol.a);
-		}*/
-	}
-
-	
-	if (Result[id.xy].r != currentResources)
+	if (InputTexture[id.xy].r != currentResources)
 	{
+
 		int bit = id.y * weightMap + id.x;
 		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 
@@ -88,6 +75,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
+	const int weightMap = 512;
 	float m_dist = 10; // minimun distance
 	float2 m_point; // minimum position
 

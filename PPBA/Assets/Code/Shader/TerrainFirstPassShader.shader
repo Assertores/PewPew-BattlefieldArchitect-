@@ -74,7 +74,8 @@ Shader "Custom/Terrain/Standard"
             int TerritourriumInt = step(2.0 , _MapChange);
 
 			fixed4 t = lerp(mixedDiffuse.rgba, _ColorResource, noiseMap.r);
-            fixed4 finalMap = lerp(t, territoriumMap, TerritourriumInt);
+
+			fixed4 finalMap = lerp(t, territoriumMap, TerritourriumInt);
 
 			fixed4 endCol = lerp(mixedDiffuse.rgba, finalMap, resourceInt);
 
