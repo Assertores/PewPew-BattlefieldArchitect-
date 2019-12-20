@@ -81,6 +81,10 @@ namespace PPBA
 
 		public void AddFabric(IRefHolder refHolder)
 		{
+			if(refHolder._Type != ObjectType.REFINERY)
+			{
+				return;
+			}
 			print("add fabric");
 			_Refinerys.Add(refHolder);
 		}
