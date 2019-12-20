@@ -35,7 +35,7 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	const int weightMap = 512;
+	const int weightMap = 256;
 
 	 //Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
 
@@ -75,7 +75,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
-	const int weightMap = 512;
+	const int weightMap = 256;
 	float m_dist = 10; // minimun distance
 	float2 m_point; // minimum position
 

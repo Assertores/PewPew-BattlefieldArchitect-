@@ -61,8 +61,8 @@ namespace PPBA
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 
-			_backingTex[0] = new Texture2D(512, 512, TextureFormat.ARGB32, false);
-			_backingTex[1] = new Texture2D(512, 512, TextureFormat.ARGB32, false);
+			_backingTex[0] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
+			_backingTex[1] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
 			Graphics.CopyTexture(_ResultTexture, _backingTex[0]);
 			Graphics.CopyTexture(_ResultTexture, _backingTex[1]);
 
@@ -71,7 +71,7 @@ namespace PPBA
 			HeatMap = new HeatMapReturnValue
 			{
 				tex = _backingTex[0],
-				bitfield = new byte[(512 * 512) / 8],
+				bitfield = new byte[(256 * 256) / 8],
 			};
 
 
@@ -100,8 +100,8 @@ namespace PPBA
 				yield return null;
 			}
 
-			_currentBitField = new byte[(512 * 512) / 8];
-			_bitField = new ComputeBuffer(((512 * 512) / 8 / sizeof(int)), sizeof(int));
+			_currentBitField = new byte[(256 * 256) / 8];
+			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);
 
@@ -109,7 +109,7 @@ namespace PPBA
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
 			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
 
-			_computeShader.Dispatch(_resourceCalcKernel, 512 / 8, 512 / 8, 1);
+			_computeShader.Dispatch(_resourceCalcKernel, 256 / 8, 256 / 8, 1);
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
