@@ -27,15 +27,27 @@ namespace PPBA
 		[SerializeField] private int _inputBuffer = 6;
 		[SerializeField] private TMPro.TextMeshProUGUI _debugText;
 
+#if !UNITY_SERVER
 		private void Start()
 		{
-#if !UNITY_SERVER
 			for(int i = 0; i < _inputBuffer; i++)
 			{
 				GlobalVariables.s_instance._clients[0]._inputStates[i] = new InputState();
 			}
-#endif
 		}
+
+		bool h_catchUpTick = false;
+		private void Update()
+		{
+			if(h_catchUpTick)
+				h_catchUpTick = !TickIt();
+		}
+
+		private void FixedUpdate()
+		{
+			h_catchUpTick = !TickIt();
+		}
+#endif
 
 		public int Simulate()
 		{
@@ -135,10 +147,8 @@ namespace PPBA
 			return s_currentTick;
 		}
 
-#if !UNITY_SERVER
-
 		UIPopUpWindowRefHolder h_popUp;
-		private void FixedUpdate()
+		private bool TickIt()
 		{
 			client me = GlobalVariables.s_instance._clients[0];
 
@@ -153,7 +163,7 @@ namespace PPBA
 				if(null == h_popUp)
 					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Network Pause");
 
-				return;
+				return false;
 			}
 
 			if(s_NetworkPause && me._gameStates.GetHighEnd() - s_currentTick <= _inputBuffer / 2)//not quite shure. feals right. might get stuck in an deadlock otherwise.
@@ -161,6 +171,7 @@ namespace PPBA
 #if DB_NET
 				Debug.Log("waiting for buffer refilling");
 #endif
+				return false;
 			}
 
 			if(null != h_popUp)
@@ -184,7 +195,7 @@ namespace PPBA
 				{
 					Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 					Debug.LogError("Reference Tick not Found");
-					return;//no idea how to fix this
+					return false;//no idea how to fix this
 				}
 
 				if(nextStateTick != s_currentTick)
@@ -261,8 +272,9 @@ namespace PPBA
 				_debugText.text = "Tick: " + s_currentTick + " -> " + me._gameStates.GetHighEnd() + " (" + me._inputStates.GetLowEnd() + ", " + me._inputStates.GetHighEnd() + ")";
 
 			s_currentTick++;
+
+			return true;
 		}
-#endif
 		public void DoReset()
 		{
 			s_currentTick = 0;
