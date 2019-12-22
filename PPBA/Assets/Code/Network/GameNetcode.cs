@@ -123,7 +123,8 @@ namespace PPBA
 
 			int startTick = BitConverter.ToInt32(data, offset);
 			offset += sizeof(int);
-			for(int tick = startTick; offset < data.Length; tick++)
+			int tick = startTick;
+			for(; offset < data.Length; tick++)
 			{
 				InputState tmp = new InputState();
 				offset = tmp.Decrypt(RemoteID, data, offset);
@@ -133,6 +134,9 @@ namespace PPBA
 
 			client._gameStates.FreeUpTo(startTick - 1);
 
+#if DB_NET
+			Debug.Log("Client: " + RemoteID + " has send ticks: " + startTick + " to " + (tick - 1));
+#endif
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -219,8 +223,10 @@ namespace PPBA
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
+#if DB_NET
 			if(tick % 20 == 0)
 				print("DeltaTick: " + tick + "\n" + client._gameStates[tick].ToString());
+#endif
 
 			for(byte i = 0; i < state.Count; i++)
 			{
