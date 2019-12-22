@@ -18,14 +18,14 @@ namespace PPBA
 		#region Variables
 		[SerializeField] bool _startInScene = false;
 
-		public string m_iP = "127.0.0.1";
-		public int m_serverPort = 11000;
+		public string _iP = "127.0.0.1";
+		public int _serverPort = 11000;
 		[SerializeField] int _playerCount = 1;
 		[SerializeField] int _myID = -1;
 
 		UdpClient socket;
 		IPEndPoint _ep;
-		[SerializeField] int m_maxPackageSize = 1470;
+		[SerializeField] int _maxPackageSize = 1470;
 		[SerializeField] float _serverTimeOut = 5.0f;
 		float _lastPackageTime = float.MaxValue;
 
@@ -37,7 +37,7 @@ namespace PPBA
 		void Start()
 		{
 			if(_startInScene)
-				ServerStart(m_serverPort, _playerCount);
+				ServerStart(_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
@@ -70,7 +70,7 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, m_serverPort);
+			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
 			byte[] data = socket.Receive(ref remoteEP);
 
 			MessageType messageType = (MessageType)data[0];
@@ -222,7 +222,7 @@ namespace PPBA
 				client._gameStates[tick].CreateDelta(client._gameStates, client._gameStates.GetLowEnd(), tick);
 
 			List<byte> msg = new List<byte>();
-			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
+			List<byte[]> state = client._gameStates[tick].Encrypt(_maxPackageSize);//if gamestate exiets max udp package size
 #if DB_NET
 			if(tick % 20 == 0)
 				print("DeltaTick: " + tick + "\n" + client._gameStates[tick].ToString());
@@ -260,7 +260,7 @@ namespace PPBA
 		void Start()
 		{
 			if(_startInScene)
-				ClientConnect(m_iP, m_serverPort);
+				ClientConnect(_iP, _serverPort);
 		}
 		private void OnDestroy()
 		{
@@ -451,7 +451,7 @@ namespace PPBA
 
 		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
-			m_serverPort = port;
+			_serverPort = port;
 			_playerCount = playerCount;
 			socket = new UdpClient(port);
 			socket.DontFragment = true;
