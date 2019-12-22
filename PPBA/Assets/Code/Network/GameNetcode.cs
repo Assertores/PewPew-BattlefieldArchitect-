@@ -101,9 +101,6 @@ namespace PPBA
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
 
-			if(!GlobalVariables.s_instance._clients.Exists(x => x._id == RemoteID))
-				return;
-
 			client client = GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID);
 			if(client == null)
 				return;
@@ -134,7 +131,8 @@ namespace PPBA
 				client._inputStates[tick] = tmp;
 			}
 
-			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 1);
+			client._gameStates.FreeUpTo(startTick - 1);
+
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -342,8 +340,9 @@ namespace PPBA
 
 		void HandleNewID(byte[] data)
 		{
-			GlobalVariables.s_instance._clients[0]._id = BitConverter.ToInt32(data, 1);
 			_myID = BitConverter.ToInt32(data, 1);
+			GlobalVariables.s_instance._clients[0]._id = _myID;
+			GlobalVariables.s_instance._clients[0]._isConnected = true;
 		}
 
 
