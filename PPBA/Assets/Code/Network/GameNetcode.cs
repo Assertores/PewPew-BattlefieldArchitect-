@@ -70,27 +70,30 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
-			byte[] data = socket.Receive(ref remoteEP);
-
-			MessageType messageType = (MessageType)data[0];
-			switch(messageType)
+			while(socket.Available > 0)
 			{
-				case MessageType.NON:
-					HandleNON(data, remoteEP);
-					break;
-				case MessageType.CONNECT:
-					HandleConnect(data, remoteEP);
-					break;
-				case MessageType.DISCONNECT:
-					HandleDisconnect(data, remoteEP);
-					break;
-				case MessageType.RECONNECT:
-					HandleReconnect(data, remoteEP);
-					break;
-				default:
-					Debug.Log("[Server] package type was not handled: " + messageType);
-					break;
+				IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
+				byte[] data = socket.Receive(ref remoteEP);
+
+				MessageType messageType = (MessageType)data[0];
+				switch(messageType)
+				{
+					case MessageType.NON:
+						HandleNON(data, remoteEP);
+						break;
+					case MessageType.CONNECT:
+						HandleConnect(data, remoteEP);
+						break;
+					case MessageType.DISCONNECT:
+						HandleDisconnect(data, remoteEP);
+						break;
+					case MessageType.RECONNECT:
+						HandleReconnect(data, remoteEP);
+						break;
+					default:
+						Debug.Log("[Server] package type was not handled: " + messageType);
+						break;
+				}
 			}
 
 			return true;
@@ -299,20 +302,23 @@ namespace PPBA
 			s_ServerIsTimedOut = false;
 			_lastPackageTime = Time.unscaledTime;
 
-			byte[] data = socket.Receive(ref _ep);
-
-			MessageType messageType = (MessageType)data[0];
-
-			switch(messageType)
+			while(socket.Available > 0)
 			{
-				case MessageType.NON:
-					HandleNON(data);
-					break;
-				case MessageType.NEWID:
-					HandleNewID(data);
-					break;
-				default:
-					break;
+				byte[] data = socket.Receive(ref _ep);
+
+				MessageType messageType = (MessageType)data[0];
+
+				switch(messageType)
+				{
+					case MessageType.NON:
+						HandleNON(data);
+						break;
+					case MessageType.NEWID:
+						HandleNewID(data);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
