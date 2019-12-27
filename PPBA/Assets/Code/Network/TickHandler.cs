@@ -36,16 +36,17 @@ namespace PPBA
 			}
 		}
 
-		bool h_catchUpTick = false;
+		int h_catchUpTick = 0;
 		private void Update()
 		{
-			if(h_catchUpTick)
-				h_catchUpTick = !TickIt();
+			if(h_catchUpTick > 0 && TickIt())
+				h_catchUpTick--;
 		}
 
 		private void FixedUpdate()
 		{
-			h_catchUpTick = !TickIt();
+			if(!TickIt())
+				h_catchUpTick++;
 		}
 #endif
 
