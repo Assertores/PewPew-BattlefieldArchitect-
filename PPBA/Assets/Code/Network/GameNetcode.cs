@@ -18,14 +18,14 @@ namespace PPBA
 		#region Variables
 		[SerializeField] bool _startInScene = false;
 
-		public string m_iP = "127.0.0.1";
-		public int m_serverPort = 11000;
+		public string _iP = "127.0.0.1";
+		public int _serverPort = 11000;
 		[SerializeField] int _playerCount = 1;
 		[SerializeField] int _myID = -1;
 
 		UdpClient socket;
 		IPEndPoint _ep;
-		[SerializeField] int m_maxPackageSize = 1470;
+		[SerializeField] int _maxPackageSize = 1470;
 		[SerializeField] float _serverTimeOut = 5.0f;
 		float _lastPackageTime = float.MaxValue;
 
@@ -37,7 +37,7 @@ namespace PPBA
 		void Start()
 		{
 			if(_startInScene)
-				ServerStart(m_serverPort, _playerCount);
+				ServerStart(_serverPort, _playerCount);
 		}
 		private void OnDestroy()
 		{
@@ -70,27 +70,30 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, m_serverPort);
-			byte[] data = socket.Receive(ref remoteEP);
-
-			MessageType messageType = (MessageType)data[0];
-			switch(messageType)
+			while(socket.Available > 0)
 			{
-				case MessageType.NON:
-					HandleNON(data, remoteEP);
-					break;
-				case MessageType.CONNECT:
-					HandleConnect(data, remoteEP);
-					break;
-				case MessageType.DISCONNECT:
-					HandleDisconnect(data, remoteEP);
-					break;
-				case MessageType.RECONNECT:
-					HandleReconnect(data, remoteEP);
-					break;
-				default:
-					Debug.Log("[Server] package type was not handled: " + messageType);
-					break;
+				IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
+				byte[] data = socket.Receive(ref remoteEP);
+
+				MessageType messageType = (MessageType)data[0];
+				switch(messageType)
+				{
+					case MessageType.NON:
+						HandleNON(data, remoteEP);
+						break;
+					case MessageType.CONNECT:
+						HandleConnect(data, remoteEP);
+						break;
+					case MessageType.DISCONNECT:
+						HandleDisconnect(data, remoteEP);
+						break;
+					case MessageType.RECONNECT:
+						HandleReconnect(data, remoteEP);
+						break;
+					default:
+						Debug.Log("[Server] package type was not handled: " + messageType);
+						break;
+				}
 			}
 
 			return true;
@@ -100,9 +103,6 @@ namespace PPBA
 		void HandleNON(byte[] data, IPEndPoint ep)
 		{
 			int RemoteID = BitConverter.ToInt32(data, 1);
-
-			if(!GlobalVariables.s_instance._clients.Exists(x => x._id == RemoteID))
-				return;
 
 			client client = GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID);
 			if(client == null)
@@ -126,7 +126,8 @@ namespace PPBA
 
 			int startTick = BitConverter.ToInt32(data, offset);
 			offset += sizeof(int);
-			for(int tick = startTick; offset < data.Length; tick++)
+			int tick = startTick;
+			for(; offset < data.Length; tick++)
 			{
 				InputState tmp = new InputState();
 				offset = tmp.Decrypt(RemoteID, data, offset);
@@ -134,7 +135,11 @@ namespace PPBA
 				client._inputStates[tick] = tmp;
 			}
 
-			GlobalVariables.s_instance._clients.Find(x => x._id == RemoteID)._gameStates.FreeUpTo(startTick - 1);
+			client._gameStates.FreeUpTo(startTick - 1);
+
+#if DB_NET
+			Debug.Log("Client: " + RemoteID + " has send ticks: " + startTick + " to " + (tick - 1));
+#endif
 		}
 
 		void HandleConnect(byte[] data, IPEndPoint ep)
@@ -220,9 +225,11 @@ namespace PPBA
 				client._gameStates[tick].CreateDelta(client._gameStates, client._gameStates.GetLowEnd(), tick);
 
 			List<byte> msg = new List<byte>();
-			List<byte[]> state = client._gameStates[tick].Encrypt(m_maxPackageSize);//if gamestate exiets max udp package size
+			List<byte[]> state = client._gameStates[tick].Encrypt(_maxPackageSize);//if gamestate exiets max udp package size
+#if DB_NET
 			if(tick % 20 == 0)
 				print("DeltaTick: " + tick + "\n" + client._gameStates[tick].ToString());
+#endif
 
 			for(byte i = 0; i < state.Count; i++)
 			{
@@ -256,7 +263,7 @@ namespace PPBA
 		void Start()
 		{
 			if(_startInScene)
-				ClientConnect(m_iP, m_serverPort);
+				ClientConnect(_iP, _serverPort);
 		}
 		private void OnDestroy()
 		{
@@ -295,20 +302,23 @@ namespace PPBA
 			s_ServerIsTimedOut = false;
 			_lastPackageTime = Time.unscaledTime;
 
-			byte[] data = socket.Receive(ref _ep);
-
-			MessageType messageType = (MessageType)data[0];
-
-			switch(messageType)
+			while(socket.Available > 0)
 			{
-				case MessageType.NON:
-					HandleNON(data);
-					break;
-				case MessageType.NEWID:
-					HandleNewID(data);
-					break;
-				default:
-					break;
+				byte[] data = socket.Receive(ref _ep);
+
+				MessageType messageType = (MessageType)data[0];
+
+				switch(messageType)
+				{
+					case MessageType.NON:
+						HandleNON(data);
+						break;
+					case MessageType.NEWID:
+						HandleNewID(data);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
@@ -342,8 +352,9 @@ namespace PPBA
 
 		void HandleNewID(byte[] data)
 		{
-			GlobalVariables.s_instance._clients[0]._id = BitConverter.ToInt32(data, 1);
 			_myID = BitConverter.ToInt32(data, 1);
+			GlobalVariables.s_instance._clients[0]._id = _myID;
+			GlobalVariables.s_instance._clients[0]._isConnected = true;
 		}
 
 
@@ -446,7 +457,7 @@ namespace PPBA
 
 		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
-			m_serverPort = port;
+			_serverPort = port;
 			_playerCount = playerCount;
 			socket = new UdpClient(port);
 			socket.DontFragment = true;

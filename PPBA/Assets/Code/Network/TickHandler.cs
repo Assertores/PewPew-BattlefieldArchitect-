@@ -25,25 +25,46 @@ namespace PPBA
 		public static int s_currentTick { get; private set; } = 0;
 		public static float s_currentTickTime = 0.0f; //referenced to Time.time
 		[SerializeField] private int _inputBuffer = 6;
+		[SerializeField] private TMPro.TextMeshProUGUI _debugText;
 
+#if !UNITY_SERVER
 		private void Start()
 		{
-#if !UNITY_SERVER
 			for(int i = 0; i < _inputBuffer; i++)
 			{
 				GlobalVariables.s_instance._clients[0]._inputStates[i] = new InputState();
 			}
-#endif
 		}
+
+		int h_catchUpTick = 0;
+		private void Update()
+		{
+			if(h_catchUpTick > 0 && TickIt())
+				h_catchUpTick--;
+		}
+
+		private void FixedUpdate()
+		{
+			if(!TickIt())
+				h_catchUpTick++;
+		}
+#endif
 
 		public int Simulate()
 		{
+			int minClientID = -1;
 			int min = int.MaxValue;
 			foreach(var it in GlobalVariables.s_instance._clients)
 			{
 				if(it._isConnected && it._inputStates.GetHighEnd() < min)//Game goes on if some clients disconnect
+				{
+					minClientID = it._id;
 					min = it._inputStates.GetHighEnd();
+				}
 			}
+#if DB_NET
+			Debug.Log("simulating up to: " + min + " with current tick beeing: " + s_currentTick);
+#endif
 
 			if(min == int.MaxValue)
 			{
@@ -93,6 +114,9 @@ namespace PPBA
 				Profiler.BeginSample("[Server] Tick");
 				s_DoTick?.Invoke(s_currentTick);
 				Profiler.EndSample();
+
+				if(null != _debugText)
+					_debugText.text = "Tick: " + s_currentTick + " -> " + minClientID;
 			}
 			s_currentTick--;
 			Profiler.EndSample();
@@ -103,8 +127,10 @@ namespace PPBA
 			s_GatherValues?.Invoke(s_currentTick);
 			Profiler.EndSample();
 
+#if DB_NET
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
+#endif
 
 			Profiler.BeginSample("[Server] Seperating GS");
 			foreach(var it in GlobalVariables.s_instance._clients)
@@ -122,10 +148,8 @@ namespace PPBA
 			return s_currentTick;
 		}
 
-#if !UNITY_SERVER
-
 		UIPopUpWindowRefHolder h_popUp;
-		private void FixedUpdate()
+		private bool TickIt()
 		{
 			client me = GlobalVariables.s_instance._clients[0];
 
@@ -133,18 +157,22 @@ namespace PPBA
 			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
 				s_NetworkPause = true;
+#if DB_NET
 				Debug.Log("Network Pause");
+#endif
 
 				if(null == h_popUp)
 					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Network Pause");
 
-				return;
+				return false;
 			}
 
 			if(s_NetworkPause && me._gameStates.GetHighEnd() - s_currentTick <= _inputBuffer / 2)//not quite shure. feals right. might get stuck in an deadlock otherwise.
 			{
+#if DB_NET
 				Debug.Log("waiting for buffer refilling");
-				return;
+#endif
+				return false;
 			}
 
 			if(null != h_popUp)
@@ -168,7 +196,7 @@ namespace PPBA
 				{
 					Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 					Debug.LogError("Reference Tick not Found");
-					return;//no idea how to fix this
+					return false;//no idea how to fix this
 				}
 
 				if(nextStateTick != s_currentTick)
@@ -241,9 +269,13 @@ namespace PPBA
 
 			me._inputStates[s_currentTick + _inputBuffer] = s_interfaceInputState;
 
+			if(null != _debugText)
+				_debugText.text = "Tick: " + s_currentTick + " -> " + me._gameStates.GetHighEnd() + " (" + me._inputStates.GetLowEnd() + ", " + me._inputStates.GetHighEnd() + ")";
+
 			s_currentTick++;
+
+			return true;
 		}
-#endif
 		public void DoReset()
 		{
 			s_currentTick = 0;
