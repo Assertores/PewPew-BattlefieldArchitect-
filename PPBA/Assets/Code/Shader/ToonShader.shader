@@ -8,6 +8,7 @@
 		_InsideColor("InsideColor", Color) = (1,1,1,1)
 		_MainTex("Texture", 2D) = "white" {}
 		_BumpMap("Bumpmap", 2D) = "bump" {}
+		_BumpMapValue("BumpmapValue", Float) = 1.0
 		_ParallaxMap ("Heightmap (A)", 2D) = "black" {}
 		_Parallax ("Height", Range (0.005, 0.08)) = 0.02
 		_Specular("Specular", 2D) = "black" {}
@@ -55,7 +56,7 @@
 
 			fixed4 _Color;
 			half3 _Emission;
-		//	fixed4 _Specular;
+			float _BumpMapValue;
 
 			float3 _ShadowTint;
 			float _StepWidth;
@@ -183,7 +184,9 @@
 
 				col *= _Color;
 				o.Albedo = col.rgb * color;
-				o.Normal = UnpackNormal(tex2D(_BumpMap, i.uv_MainTex));
+				//o.Normal = UnpackNormal(tex2D(_BumpMap, i.uv_BumpMap))* _BumpMapValue;
+				o.Normal = UnpackScaleNormal(tex2D(_BumpMap, i.uv_BumpMap), _BumpMapValue);
+
 
 				o.Specular = tex2D(_Specular, i.uv_MainTex);
 				float3 shadowColor = col.rgb * _ShadowTint;

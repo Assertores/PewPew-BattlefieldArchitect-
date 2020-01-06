@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: HQ_Material
-  m_Shader: {fileID: 4800000, guid: 82dacd50b9249b54cbdf9b5981c95efd, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 170bb923b3b869d4080facddaa6961e1, type: 3}
+  m_ShaderKeywords: _METALLICGLOSSMAP _NORMALMAP _PARALLAXMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: d137087843ab74c4ba1388aafbe1f409, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -52,7 +52,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 0fb09aff987cdc944992a45d804161a2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Specular:
@@ -61,26 +61,28 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BuildingHeight: 12.07
-    - _BumpScale: 1
+    - _BumpMapValue: 1
+    - _BumpScale: 0.9
     - _Clip: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _GlossMapScale: 0
+    - _Glossiness: 0.237
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.833
     - _Mode: 0
     - _Noise: 0
     - _NoiseScale: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _RimPower: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularFalloff: 1
     - _SpecularHighlights: 1
     - _SpecularSize: 0.1
     - _SrcBlend: 1
-    - _StepAmount: 2
+    - _StepAmount: 4
     - _StepWidth: 0.25
     - _UVSec: 0
     - _ZWrite: 1
@@ -92,4 +94,5 @@ Material:
     - _Frequency: {r: 0, g: 0, b: 0, a: 0}
     - _InsideColor: {r: 1, g: 1, b: 1, a: 1}
     - _Phase: {r: 0, g: 0, b: 0, a: 0}
-    - _ShadowTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 0}
+    - _ShadowTint: {r: 1, g: 1, b: 1, a: 1}

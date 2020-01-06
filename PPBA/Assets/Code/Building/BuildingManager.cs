@@ -5,20 +5,22 @@ namespace PPBA
 {
 	public class BuildingManager : Singleton<BuildingManager>
 	{
-		//public GameObject GhostRefinery;
-		public GameObject GhostWall;
-		public GameObject GhostWallBetween;
+		public Color _ghostGreenColor;
+		public Color _ghostRedColor;
 
-		private ObjectType _CurrentObjectType;
+		public GameObject _ghostWall;
+		public GameObject _ghostWallBetween;
+
+		private ObjectType _currentObjectType;
 		private GameObject _currentPlaceableObject;
-		private GameObject _CurrentBetweenObject;
+		private GameObject _currentBetweenObject;
 		private Vector3 _lastPole;
 		private bool _isBuilt = false;
 
-		private Dictionary<GameObject, ObjectType> _PlayedBuilts = new Dictionary<GameObject, ObjectType>();
+		private Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
 		public bool _canBuild = true;
 
-		public float _MouseWheelRotation;
+		public float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 
 		private void Update()
@@ -55,7 +57,7 @@ namespace PPBA
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
 
-						foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
+						foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 						{
 							Destroy(build.Key);
 						}
@@ -63,13 +65,13 @@ namespace PPBA
 					_currentPrefabIndex = 0;
 					_isBuilt = false;
 
-					foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
+					foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 					{
 						build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
 						// TODO : als einzelne objecte übertragen und aufm server WallBEtween setzen
 					}
 
-					_PlayedBuilts.Clear();
+					_placedBuiltings.Clear();
 
 				}
 			}
@@ -77,21 +79,21 @@ namespace PPBA
 
 		private void ReleaseIfClicked()
 		{
-			if(_CurrentObjectType != ObjectType.WALL)
+			if(_currentObjectType != ObjectType.WALL)
 			{
 				PlaceRefineryPrefab();
 			}
 
-			if(_CurrentObjectType == ObjectType.WALL)
+			if(_currentObjectType == ObjectType.WALL)
 			{
 				ConstructWall();
-				_CurrentBetweenObject = Instantiate(GhostWallBetween, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+				_currentBetweenObject = Instantiate(_ghostWallBetween, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 			}
 		}
 
 		public void HandleNewObject(IRefHolder PrefabBuildingType)
 		{
-			_CurrentObjectType = PrefabBuildingType._Type;
+			_currentObjectType = PrefabBuildingType._Type;
 
 			switch(PrefabBuildingType._Type)
 			{
@@ -129,7 +131,7 @@ namespace PPBA
 			_currentPlaceableObject = null;
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
-			_PlayedBuilts.Clear();
+			_placedBuiltings.Clear();
 			_canBuild = true;
 
 
@@ -142,11 +144,11 @@ namespace PPBA
 			_isBuilt = false;
 			_canBuild = true;
 
-			foreach(KeyValuePair<GameObject, ObjectType> build in _PlayedBuilts)
+			foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 			{
 				Destroy(build.Key);
 			}
-			_PlayedBuilts.Clear();
+			_placedBuiltings.Clear();
 		}
 
 		private void RotateCurrentObjectWithMouseWheel()
@@ -154,12 +156,12 @@ namespace PPBA
 			if(Input.GetKey(KeyCode.R))
 			{
 				//_MouseWheelRotation = Input.mouseScrollDelta.y;
-				_currentPlaceableObject.transform.Rotate(Vector3.up, _MouseWheelRotation * Time.deltaTime);
+				_currentPlaceableObject.transform.Rotate(Vector3.up, _mouseWheelRotation * Time.deltaTime);
 			}
 			if(Input.GetKey(KeyCode.T))
 			{
 				//_MouseWheelRotation = Input.mouseScrollDelta.y;
-				_currentPlaceableObject.transform.Rotate(Vector3.up, -_MouseWheelRotation * Time.deltaTime);
+				_currentPlaceableObject.transform.Rotate(Vector3.up, -_mouseWheelRotation * Time.deltaTime);
 			}
 		}
 
@@ -170,7 +172,7 @@ namespace PPBA
 
 		private void WallBuildingRoutine()
 		{
-			if(_CurrentBetweenObject == null)
+			if(_currentBetweenObject == null)
 			{
 				ConstructBetween();
 			}
@@ -183,22 +185,21 @@ namespace PPBA
 			//{
 			//	return;
 			//}
-			float length = GhostWallBetween.GetComponent<BoxCollider>().size.z;
+			float length = _ghostWallBetween.GetComponent<BoxCollider>().size.z;
 
 			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * length);
+			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * (length + 0.1f));
 			_currentPlaceableObject.transform.position = _lastPole + v3Pos;
 
 
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
 			Vector3 pos = dir2 * 0.5f + _lastPole;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
-			_CurrentBetweenObject.transform.position = pos;
-			_CurrentBetweenObject.transform.rotation = rotationObj;
+			_currentBetweenObject.transform.position = pos;
+			_currentBetweenObject.transform.rotation = rotationObj;
 
-			// todo länge des meshes einfügen
 			if(dis > length)
 			{
 				ConstructBetween();
@@ -212,8 +213,8 @@ namespace PPBA
 			Vector3 pos = dir2 * 0.5f + _lastPole;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
-			GameObject Obj = Instantiate(GhostWallBetween, pos, rotationObj);
-			_PlayedBuilts.Add(Obj, ObjectType.WALL_BETWEEN);
+			GameObject Obj = Instantiate(_ghostWallBetween, pos, rotationObj);
+			_placedBuiltings.Add(Obj, ObjectType.WALL_BETWEEN);
 		}
 
 		private void ConstructWall()
@@ -229,9 +230,9 @@ namespace PPBA
 
 			_isBuilt = true;
 			_currentPlaceableObject = null;
-			_currentPlaceableObject = Instantiate(GhostWall, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+			_currentPlaceableObject = Instantiate(_ghostWall, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
 			_currentPrefabIndex++;
-			_PlayedBuilts.Add(_currentPlaceableObject, ObjectType.WALL);
+			_placedBuiltings.Add(_currentPlaceableObject, ObjectType.WALL);
 		}
 
 

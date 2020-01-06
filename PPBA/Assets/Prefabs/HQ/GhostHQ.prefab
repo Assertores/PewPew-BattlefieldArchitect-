@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2629620312372173525}
   - component: {fileID: -403219021972848154}
+  - component: {fileID: 660628952984365754}
   m_Layer: 9
   m_Name: GhostHQ
   m_TagString: Untagged
@@ -45,6 +46,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 10
+--- !u!114 &660628952984365754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213009535242751257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18a34393a678bc4592b8dcc6fc6426e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _FaultBuildingLayer: 9
+  GhostMaterial: {fileID: 2100000, guid: cb13df1607cb5bc4f93443710812510b, type: 2}
 --- !u!1001 &2714064366481081986
 PrefabInstance:
   m_ObjectHideFlags: 0

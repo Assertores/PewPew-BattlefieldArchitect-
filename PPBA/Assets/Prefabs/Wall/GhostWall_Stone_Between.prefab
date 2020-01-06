@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3850693688127147683}
   - component: {fileID: 8561638946992733786}
-  - component: {fileID: 2452916615352634061}
   - component: {fileID: -7723499041232374126}
+  - component: {fileID: -3480134256134183783}
   m_Layer: 9
   m_Name: GhostWall_Stone_Between
   m_TagString: Untagged
@@ -47,20 +47,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.4, y: 1, z: 1}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &2452916615352634061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3850693688127147684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a18a34393a678bc4592b8dcc6fc6426e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _FaultBuildingLayer: 9
-  GhostMaterial: {fileID: 2100000, guid: 0465730f9bf26ad4c82ed26802d49103, type: 2}
 --- !u!114 &-7723499041232374126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +60,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 4
+--- !u!114 &-3480134256134183783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3850693688127147684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18a34393a678bc4592b8dcc6fc6426e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _FaultBuildingLayer: 9
+  GhostMaterial: {fileID: 2100000, guid: cb13df1607cb5bc4f93443710812510b, type: 2}
 --- !u!1001 &8639197814647456351
 PrefabInstance:
   m_ObjectHideFlags: 0

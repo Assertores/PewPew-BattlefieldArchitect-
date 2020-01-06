@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5029319476796695697}
   - component: {fileID: 1429388736935214810}
+  - component: {fileID: -273699239636706751}
   m_Layer: 9
   m_Name: GhostMediCamp
   m_TagString: Untagged
@@ -45,6 +46,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 11
+--- !u!114 &-273699239636706751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8644842402150925202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18a34393a678bc4592b8dcc6fc6426e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _FaultBuildingLayer: 9
+  GhostMaterial: {fileID: 2100000, guid: cb13df1607cb5bc4f93443710812510b, type: 2}
 --- !u!1001 &5008764457133811122
 PrefabInstance:
   m_ObjectHideFlags: 0

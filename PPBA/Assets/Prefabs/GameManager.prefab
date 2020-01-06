@@ -244,12 +244,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8491ff2a2a5dc4f4a8502d8f19cff98e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GhostWall: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
+  _ghostGreenColor: {r: 0, g: 0.6886792, b: 0.0013055059, a: 0.5254902}
+  _ghostRedColor: {r: 1, g: 0, b: 0, a: 0.48235294}
+  _ghostWall: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
     type: 3}
-  GhostWallBetween: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
+  _ghostWallBetween: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
     type: 3}
   _canBuild: 1
-  _MouseWheelRotation: 100
+  _mouseWheelRotation: 0
 --- !u!114 &6486173834760009002
 MonoBehaviour:
   m_ObjectHideFlags: 0
