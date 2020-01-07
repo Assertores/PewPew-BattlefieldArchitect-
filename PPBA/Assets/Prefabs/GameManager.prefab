@@ -251,7 +251,7 @@ MonoBehaviour:
   _ghostWallBetween: {fileID: 3850693688127147684, guid: d562d5a0d2ae1604c876d72db5d6e76d,
     type: 3}
   _canBuild: 1
-  _mouseWheelRotation: 0
+  _mouseWheelRotation: 120
 --- !u!114 &6486173834760009002
 MonoBehaviour:
   m_ObjectHideFlags: 0
