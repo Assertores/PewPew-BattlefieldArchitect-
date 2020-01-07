@@ -18,6 +18,7 @@ namespace PPBA
 		private bool _isBuilt = false;
 
 		private Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
+
 		public bool _canBuild = true;
 
 		public float _mouseWheelRotation;
@@ -62,17 +63,17 @@ namespace PPBA
 							Destroy(build.Key);
 						}
 					}
+					else
+					{
+						foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
+						{
+							build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
+						}
+					}
 					_currentPrefabIndex = 0;
 					_isBuilt = false;
-
-					foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
-					{
-						build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
-						// TODO : als einzelne objecte übertragen und aufm server WallBEtween setzen
-					}
-
+					_canBuild = true;
 					_placedBuiltings.Clear();
-
 				}
 			}
 		}
@@ -87,12 +88,15 @@ namespace PPBA
 			if(_currentObjectType == ObjectType.WALL)
 			{
 				ConstructWall();
-				_currentBetweenObject = Instantiate(_ghostWallBetween, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+				//_currentBetweenObject = Instantiate(_ghostWallBetween, UserInputController.s_instance.GetWorldPoint(), Quaternion.identity);
+				ConstructBetween();
+
 			}
 		}
 
 		public void HandleNewObject(IRefHolder PrefabBuildingType)
 		{
+			CancelBuilding();
 			_currentObjectType = PrefabBuildingType._Type;
 
 			switch(PrefabBuildingType._Type)
@@ -129,17 +133,22 @@ namespace PPBA
 		public void EndBuilding()
 		{
 			_currentPlaceableObject = null;
+			_currentBetweenObject = null;
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
 			_placedBuiltings.Clear();
 			_canBuild = true;
-
-
 		}
 
 		public void CancelBuilding()
 		{
 			Destroy(_currentPlaceableObject);
+
+			if(_currentBetweenObject != null)
+			{
+				_currentBetweenObject = null;
+			}
+
 			_currentPrefabIndex = 0;
 			_isBuilt = false;
 			_canBuild = true;
@@ -181,26 +190,27 @@ namespace PPBA
 			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - _lastPole);
 			float dis = dir.magnitude;
 
-			//if (dis < 1)
+			//if(dis < 1)
 			//{
 			//	return;
 			//}
 			float length = _ghostWallBetween.GetComponent<BoxCollider>().size.z;
 
+			// Wall Corner
 			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole);
 			v3Pos = Input.mousePosition - v3Pos;
 			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * (length + 0.1f));
+			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * (length + 0.5f));
 			_currentPlaceableObject.transform.position = _lastPole + v3Pos;
 
-
+			// Wall Between
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
 			Vector3 pos = dir2 * 0.5f + _lastPole;
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 			_currentBetweenObject.transform.position = pos;
 			_currentBetweenObject.transform.rotation = rotationObj;
 
-			if(dis > length)
+			if(dis > (length + 1f))
 			{
 				ConstructBetween();
 				ConstructWall();
@@ -214,6 +224,7 @@ namespace PPBA
 			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
 
 			GameObject Obj = Instantiate(_ghostWallBetween, pos, rotationObj);
+			_currentBetweenObject = Obj;
 			_placedBuiltings.Add(Obj, ObjectType.WALL_BETWEEN);
 		}
 

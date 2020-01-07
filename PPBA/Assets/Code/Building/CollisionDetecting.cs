@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using PPBA;
 
 public class CollisionDetecting : MonoBehaviour
@@ -17,27 +15,30 @@ public class CollisionDetecting : MonoBehaviour
 	{
 		GhostGreenColor = BuildingManager.s_instance._ghostGreenColor;
 		GhostRedColor = BuildingManager.s_instance._ghostRedColor;
+		GhostMaterial.SetColor("_Color", GhostGreenColor);
 	}
 
-	private void Update()
-	{
-		if(isCollision)
-		{
-			BuildingManager.s_instance._canBuild = false;
-			GhostMaterial.SetColor("_Color", GhostRedColor);
-		}
-		else
-		{
-			BuildingManager.s_instance._canBuild = true;
-			GhostMaterial.SetColor("_Color", GhostGreenColor);
-		}
-	}
-	
+	//private void Update()
+	//{
+	//	if(isCollision)
+	//	{
+	//		BuildingManager.s_instance._canBuild = false;
+	//		GhostMaterial.SetColor("_Color", GhostRedColor);
+	//	}
+	//	else
+	//	{
+	//		BuildingManager.s_instance._canBuild = true;
+	//		GhostMaterial.SetColor("_Color", GhostGreenColor);
+	//	}
+	//}
+
 	private void OnTriggerStay(Collider other)
 	{
 		if(other.gameObject.layer == _FaultBuildingLayer)
 		{
-			isCollision = true;
+			//isCollision = true;
+			BuildingManager.s_instance._canBuild = false;
+			GhostMaterial.SetColor("_Color", GhostRedColor);
 		}
 	}
 
@@ -45,7 +46,10 @@ public class CollisionDetecting : MonoBehaviour
 	{
 		if(other.gameObject.layer == _FaultBuildingLayer)
 		{
-			isCollision = false;
+			//isCollision = false;
+
+			BuildingManager.s_instance._canBuild = true;
+			GhostMaterial.SetColor("_Color", GhostGreenColor);
 		}
 	}
 

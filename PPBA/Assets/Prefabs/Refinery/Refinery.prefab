@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: -9031834214240992340}
   - component: {fileID: 6617965542739019584}
   - component: {fileID: 2867244122050559521}
+  - component: {fileID: -6659406027615875862}
   m_Layer: 9
   m_Name: Refinery
   m_TagString: Untagged
@@ -238,6 +239,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 10, y: 3.36, z: 10}
   m_Center: {x: 0, y: 1.48, z: 0}
+--- !u!54 &-6659406027615875862
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4800975661657982604}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1001 &8008248955556938267
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -245,11 +262,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4645440423556425737}
     m_Modifications:
-    - target: {fileID: 3641822461428455862, guid: 9f552a8d8b7f9984ea8411b0ac6fa330,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
-      objectReference: {fileID: 0}
     - target: {fileID: 3543531173082449239, guid: 9f552a8d8b7f9984ea8411b0ac6fa330,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -304,6 +316,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641822461428455862, guid: 9f552a8d8b7f9984ea8411b0ac6fa330,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f552a8d8b7f9984ea8411b0ac6fa330, type: 3}

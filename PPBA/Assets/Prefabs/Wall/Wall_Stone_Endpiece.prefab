@@ -65,8 +65,9 @@ GameObject:
   - component: {fileID: 6603631378473981604}
   - component: {fileID: -3295806300095209701}
   - component: {fileID: 583336912369246500}
+  - component: {fileID: -5456393056698518955}
   m_Layer: 0
-  m_Name: Stonewall_Endpiece
+  m_Name: Wall_Stone_Endpiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,7 +98,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4101390062667216111}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.25, y: 1, z: 0.35}
@@ -150,6 +151,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fbc253fd8c2f8e4d9ed9399eb21fe42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &-5456393056698518955
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4101390062667216111}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &7598523494403489759
 GameObject:
   m_ObjectHideFlags: 0
