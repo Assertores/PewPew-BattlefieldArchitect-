@@ -48,28 +48,28 @@ namespace PPBA
 		{
 			HeatMapReturnValue value;
 			value = ResourceMapCalculate.s_instance.GetValues();
-			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(0, ref value));
+
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
 			_heatMaps[0] = value.tex;
 
 			value = TerritoriumMapCalculate.s_instance.GetValues();
-			TickHandler.s_interfaceGameState._heatMaps.Add(HMRetToGSC(1, ref value));
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
 			_heatMaps[1] = value.tex;
 		}
 
-		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
+		GSC.heatMap[] HMRetToGSC(int id, ref HeatMapReturnValue input)
 		{
-			GSC.heatMap value = new GSC.heatMap();
+			BitField2D mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
+			Vector2Int[] pos = mask.GetActiveBits();
 
-			value._id = id;
 
-			value._mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
-
-			Vector2Int[] positions = value._mask.GetActiveBits();
-
-			value._values = new List<float>(positions.Length);
-			for(int j = 0; j < positions.Length; j++)
+			GSC.heatMap[] value = new GSC.heatMap[pos.Length];
+			for(int i = 0; i < value.Length; i++)
 			{
-				value._values.Add(input.tex.GetPixel(positions[j].x, positions[j].y).r);
+				value[i]._id = id;
+				value[i]._x = (byte)pos[i].x;
+				value[i]._y = (byte)pos[i].y;
+				value[i]._value = input.tex.GetPixel(pos[i].x, pos[i].y).r;
 			}
 
 			return value;
@@ -77,27 +77,21 @@ namespace PPBA
 
 		void SetMap(int tick)
 		{
-			foreach(var it in TickHandler.s_interfaceGameState._heatMaps)
+			for(int id = 0; id < _heatMaps.Length; id++)
 			{
-				Vector2Int[] pos = it._mask.GetActiveBits();
-				if(pos.Length != it._values.Count)
-					throw new System.ArgumentException();
-
-				for(int i = 0; i < pos.Length; i++)
+				foreach(var it in TickHandler.s_interfaceGameState.GetHeatMap(id))
 				{
-					var tmp = _heatMaps[it._id].GetPixel(pos[i].x, pos[i].y);
-					tmp.r = it._values[i];
-					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, tmp);
+					_heatMaps[id].SetPixel(it._x, it._y, new Color(it._value, 0, 0));
 				}
-				_heatMaps[it._id].Apply();
+				_heatMaps[id].Apply();
 
-				switch(it._id)
+				switch(id)
 				{
 					case 0:
-						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
 						break;
 					case 1:
-						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
+						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
 						break;
 					default:
 						Debug.LogError("Heatmap index not found");
