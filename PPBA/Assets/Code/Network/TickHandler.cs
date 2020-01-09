@@ -39,14 +39,14 @@ namespace PPBA
 		int h_catchUpTick = 0;
 		private void Update()
 		{
-			if(h_catchUpTick > 0 && TickIt())
-				h_catchUpTick--;
+			if(h_catchUpTick > s_currentTick)
+				TickIt();
 		}
 
 		private void FixedUpdate()
 		{
-			if(!TickIt())
-				h_catchUpTick++;
+			TickIt();
+			h_catchUpTick++;
 		}
 #endif
 
