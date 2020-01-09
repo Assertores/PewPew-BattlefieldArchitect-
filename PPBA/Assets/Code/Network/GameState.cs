@@ -144,19 +144,27 @@ namespace PPBA
 			}
 		}
 
-		[System.Serializable]
-		public class heatMap : gsc
+		public class heatMapElement
 		{
 			public byte _x;//Heatmap cant be bigger than 256
 			public byte _y;//Heatmap cant be bigger than 256
 			public float _value;
+		}
+
+		[System.Serializable]
+		public class heatMap : gsc
+		{
+			public List<heatMapElement> _values;
 
 			public override string ToString()
 			{
 				StringBuilder value = new StringBuilder();
 				value.Append("ID: " + _id.ToString("0000") + "| ");
 
-				//TODO: Reimpliment
+				foreach(var it in _values)
+				{
+					value.Append("(" + it._x + " | " + it._y + ") = " + it._value + ", ");
+				}
 
 				return value.ToString();
 			}
@@ -411,11 +419,30 @@ namespace PPBA
 			Profiler.BeginSample("[GameState] heatMaps");
 			if(_heatMaps.Count > 0)
 			{
-				/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
-				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
+				/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
 				foreach(var it in _heatMaps)
 				{
-					//TODO: Reimpliment
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.MAP);
+					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+
+					if(true)
+					{
+						msg.Add((byte)GSC.DataType.PIXELWISE);
+
+						msg.AddRange(BitConverter.GetBytes(it._values.Count));
+						foreach(var jt in it._values)
+						{
+							msg.Add(jt._x);
+							msg.Add(jt._y);
+							msg.AddRange(BitConverter.GetBytes(jt._value));
+						}
+					}
+					else
+					{
+						msg.Add((byte)GSC.DataType.BITMAPWISE);
+						//TODO: impliment bitfields
+					}
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
@@ -690,11 +717,45 @@ namespace PPBA
 						}
 						break;
 					}
-					/// byte Type, int ID, byte type, 32768 byte BitField, {float Values}[]
-					/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
+					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
 					case GSC.DataType.MAP:
 					{
-						//TODO: Reimpliment
+						GSC.heatMap value = new GSC.heatMap();
+						value._id = count;
+
+						GSC.DataType type = (GSC.DataType)msg[offset];
+
+						switch(type)
+						{
+							case GSC.DataType.PIXELWISE:
+								int size = BitConverter.ToInt32(msg, offset);
+								offset += sizeof(int);
+
+								for(int i = 0; i < size; i++)
+								{
+									GSC.heatMapElement element = new GSC.heatMapElement();
+
+									element._x = msg[offset];
+									offset++;
+
+									element._y = msg[offset];
+									offset++;
+
+									element._value = BitConverter.ToSingle(msg, offset);
+									offset += sizeof(float);
+
+									value._values.Add(element);
+								}
+								break;
+							case GSC.DataType.BITMAPWISE:
+								Debug.LogWarning("not implimented");//TODO: Reimpliment
+								break;
+							default:
+								Debug.LogError("unable to read map " + value._id + " as type " + type);
+								break;
+						}
+
+						_heatMaps.Add(value);
 						break;
 					}
 					case GSC.DataType.INPUTS:
@@ -722,6 +783,8 @@ namespace PPBA
 
 							value._type = (ObjectType)msg[offset];
 							offset++;
+
+							_newIDRanges.Add(value);
 						}
 						break;
 					}
@@ -904,10 +967,43 @@ Change:
 			}
 			_paths.RemoveRange(RemoverIndex, _paths.Count - RemoverIndex);
 			Profiler.BeginSample("[GameState] backing");
-			foreach(var it in _heatMaps)
+			RemoverIndex = 0;
+			for(int i = 0; i < _heatMaps.Count; i++)
 			{
-				//TODO: Reimplement
+				GSC.heatMap element = reference._heatMaps.Find(x => x._id == _heatMaps[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_heatMaps[i]._values.Count != element._values.Count)
+					goto Change;
+
+				int elemenetRemoverIndex = 0;
+				for(int j = 0; j < element._values.Count; j++)
+				{
+					GSC.heatMapElement elementElement = element._values.Find(x => x._x == _heatMaps[i]._values[j]._x && x._y == _heatMaps[i]._values[j]._y);
+					if(null == elementElement)
+						goto ChangeElement;
+					if(_heatMaps[i]._values[j]._value != elementElement._value)
+						goto ChangeElement;
+
+					continue;
+
+ChangeElement:
+					_heatMaps[i]._values[elemenetRemoverIndex] = _heatMaps[i]._values[j];
+					elemenetRemoverIndex++;
+				}
+				_heatMaps[i]._values.RemoveRange(elemenetRemoverIndex, _heatMaps[i]._values.Count - elemenetRemoverIndex);
+
+				if(_heatMaps[i]._values.Count > 0)
+					goto Change;
+
+				continue;
+Change:
+				_heatMaps[RemoverIndex] = _heatMaps[i];
+				RemoverIndex++;
 			}
+			_heatMaps.RemoveRange(RemoverIndex, _heatMaps.Count - RemoverIndex);
 			for(int i = refTick + 1; i < myTick; i++)
 			{
 				//Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
@@ -1008,8 +1104,6 @@ Change:
 
 				_paths.Add(it);
 			}
-
-			//TODO: Reimpliment
 
 			/*if(_hash != GetHash())
 			{
@@ -1129,10 +1223,9 @@ Change:
 					_path = (lerpValue < 0.5f) ? origin._path : target._path,
 				});
 			}
-			foreach(var it in start._heatMaps)
-			{
-				//TODO: reimpliment
-			}
+
+			value._heatMaps.AddRange(((lerpValue < 0.5f) ? start : end)._heatMaps);
+
 			value._denyedInputIDs = end._denyedInputIDs;
 			value._newIDRanges = end._newIDRanges;
 
@@ -1156,7 +1249,7 @@ Change:
 		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
 		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
 		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap[] GetHeatMap(int id) => _heatMaps.FindAll(x => x._id == id).ToArray();//TODO: Reimpliment
+		public GSC.heatMap[] GetHeatMap(int id) => _heatMaps.FindAll(x => x._id == id).ToArray();
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
@@ -1260,7 +1353,8 @@ Change:
 		}
 		public void Add(GSC.heatMap[] element)
 		{
-			//TODO: Reimpliment
+			//TODO: find duplicates
+			_heatMaps.AddRange(element);
 		}
 
 		public void Add(GSC.input element)
