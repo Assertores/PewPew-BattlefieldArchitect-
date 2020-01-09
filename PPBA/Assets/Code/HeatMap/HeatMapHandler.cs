@@ -57,19 +57,25 @@ namespace PPBA
 			_heatMaps[1] = value.tex;
 		}
 
-		GSC.heatMap[] HMRetToGSC(int id, ref HeatMapReturnValue input)
+		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
 		{
 			BitField2D mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
 			Vector2Int[] pos = mask.GetActiveBits();
 
 
-			GSC.heatMap[] value = new GSC.heatMap[pos.Length];
-			for(int i = 0; i < value.Length; i++)
+			GSC.heatMap value = new GSC.heatMap();
+			value._id = id;
+
+			value._values = new List<GSC.heatMapElement>(pos.Length);
+			for(int i = 0; i < pos.Length; i++)
 			{
-				value[i]._id = id;
-				value[i]._x = (byte)pos[i].x;
-				value[i]._y = (byte)pos[i].y;
-				value[i]._value = input.tex.GetPixel(pos[i].x, pos[i].y).r;
+				GSC.heatMapElement element = new GSC.heatMapElement();
+
+				element._x = (byte)pos[i].x;
+				element._y = (byte)pos[i].y;
+				element._value = input.tex.GetPixel(pos[i].x, pos[i].y).r;
+
+				value._values.Add(element);
 			}
 
 			return value;
@@ -79,7 +85,7 @@ namespace PPBA
 		{
 			for(int id = 0; id < _heatMaps.Length; id++)
 			{
-				foreach(var it in TickHandler.s_interfaceGameState.GetHeatMap(id))
+				foreach(var it in TickHandler.s_interfaceGameState.GetHeatMap(id)._values)
 				{
 					_heatMaps[id].SetPixel(it._x, it._y, new Color(it._value, 0, 0));
 				}

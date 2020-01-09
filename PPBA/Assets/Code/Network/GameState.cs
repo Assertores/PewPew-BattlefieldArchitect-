@@ -1249,7 +1249,7 @@ Change:
 		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
 		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
 		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap[] GetHeatMap(int id) => _heatMaps.FindAll(x => x._id == id).ToArray();
+		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
@@ -1351,10 +1351,15 @@ Change:
 
 			_paths.Add(element);
 		}
-		public void Add(GSC.heatMap[] element)
+		public void Add(GSC.heatMap element)
 		{
-			//TODO: find duplicates
-			_heatMaps.AddRange(element);
+			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
+			{
+				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
+				return;
+			}
+
+			_heatMaps.Add(element);
 		}
 
 		public void Add(GSC.input element)
