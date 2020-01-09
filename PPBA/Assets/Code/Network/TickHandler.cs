@@ -217,6 +217,9 @@ namespace PPBA
 				bool exists = false;
 				for(int i = nextState._refTick; i < nextStateTick; i++)
 				{
+					if(default == GlobalVariables.s_instance._clients[0]._gameStates[i])
+						continue;
+
 					foreach(var jt in GlobalVariables.s_instance._clients[0]._gameStates[i]._newIDRanges)
 					{
 						if(jt == default)
