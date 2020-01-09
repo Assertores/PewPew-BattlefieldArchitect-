@@ -75,6 +75,8 @@ namespace PPBA
 				element._y = (byte)pos[i].y;
 				element._value = input.tex.GetPixel(pos[i].x, pos[i].y).r;
 
+				Debug.Log("(" + element._x + " | " + element._y + ")" + element._value);
+
 				value._values.Add(element);
 			}
 
@@ -85,9 +87,16 @@ namespace PPBA
 		{
 			for(int id = 0; id < _heatMaps.Length; id++)
 			{
-				foreach(var it in TickHandler.s_interfaceGameState.GetHeatMap(id)._values)
+				GSC.heatMap map = TickHandler.s_interfaceGameState.GetHeatMap(id);
+				if(null == map || null == map._values)
+					continue;
+
+				var colorType = _heatMaps[id].GetPixel(0, 0);
+				foreach(var it in map._values)
 				{
-					_heatMaps[id].SetPixel(it._x, it._y, new Color(it._value, 0, 0));
+					colorType.r = it._value;
+					Debug.Log(it._value);
+					_heatMaps[id].SetPixel(it._x, it._y, colorType/*new Color(it._value, 0, 0)*/);
 				}
 				_heatMaps[id].Apply();
 

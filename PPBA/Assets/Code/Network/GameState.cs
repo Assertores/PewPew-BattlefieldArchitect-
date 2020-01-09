@@ -154,7 +154,7 @@ namespace PPBA
 		[System.Serializable]
 		public class heatMap : gsc
 		{
-			public List<heatMapElement> _values;
+			public List<heatMapElement> _values = new List<heatMapElement>();
 
 			public override string ToString()
 			{
@@ -724,6 +724,7 @@ namespace PPBA
 						value._id = count;
 
 						GSC.DataType type = (GSC.DataType)msg[offset];
+						offset++;
 
 						switch(type)
 						{
@@ -1351,6 +1352,7 @@ Change:
 
 			_paths.Add(element);
 		}
+
 		public void Add(GSC.heatMap element)
 		{
 			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
