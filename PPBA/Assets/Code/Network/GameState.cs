@@ -239,10 +239,7 @@ namespace PPBA
 		private List<GSC.work> _works = new List<GSC.work>();
 		private List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		private List<GSC.path> _paths = new List<GSC.path>();
-		///<summary>
-		/// DO NOT USE
-		/// </summary>
-		public List<GSC.heatMap> _heatMaps { get; private set; } = new List<GSC.heatMap>();//TODO: Reimpliment
+		private List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
@@ -1159,7 +1156,7 @@ Change:
 		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
 		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
 		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);//TODO: Reimpliment
+		public GSC.heatMap[] GetHeatMap(int id) => _heatMaps.FindAll(x => x._id == id).ToArray();//TODO: Reimpliment
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
@@ -1261,7 +1258,7 @@ Change:
 
 			_paths.Add(element);
 		}
-		public void Add(GSC.heatMap element)
+		public void Add(GSC.heatMap[] element)
 		{
 			//TODO: Reimpliment
 		}
