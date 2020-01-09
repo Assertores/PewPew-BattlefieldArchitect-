@@ -147,49 +147,16 @@ namespace PPBA
 		[System.Serializable]
 		public class heatMap : gsc
 		{
-			public BitField2D _mask = new BitField2D(0, 0);
-			public List<float> _values = new List<float>();
+			public byte _x;//Heatmap cant be bigger than 256
+			public byte _y;//Heatmap cant be bigger than 256
+			public float _value;
 
 			public override string ToString()
 			{
 				StringBuilder value = new StringBuilder();
 				value.Append("ID: " + _id.ToString("0000") + "| ");
 
-				Vector2Int[] points = _mask.GetActiveBits();
-				if(points.Length != _values.Count)
-				{
-					value.Append("mask and values don't match: mask " + points.Length + ", values " + _values.Count);
-				}
-				else
-				{
-					if(points.Length == 0)
-					{
-						value.Append("no points set");
-					}
-					for(int i = 0; i < points.Length; i++)
-					{
-						value.Append(points[i] + " = " + _values[i] + ", ");
-					}
-				}
-
-				/*Vector2Int size = _mask.GetSize();
-				int valueIndex = 0;
-				for(int y = 0; y < size.y; y++)
-				{
-					for(int x = 0; x < size.x; x++)
-					{
-						if(_mask[x, y])
-						{
-							value.Append(" " + _values[valueIndex].ToString("0.000") + " ");
-							valueIndex++;
-						}
-						else
-						{
-							value.Append(" XXXXX ");
-						}
-					}
-					value.AppendLine();
-				}*/
+				//TODO: Reimpliment
 
 				return value.ToString();
 			}
@@ -275,7 +242,7 @@ namespace PPBA
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
-		public List<GSC.heatMap> _heatMaps { get; private set; } = new List<GSC.heatMap>();
+		public List<GSC.heatMap> _heatMaps { get; private set; } = new List<GSC.heatMap>();//TODO: Reimpliment
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
@@ -451,36 +418,7 @@ namespace PPBA
 				/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
 				foreach(var it in _heatMaps)
 				{
-					Vector2Int[] pos = it._mask.GetActiveBits();
-					if(pos.Length != it._values.Count)
-					{
-						Debug.LogError("Values and Bitfield don't fit together. " + it._id + " (" + pos.Length + ", " + it._values.Count + ")");
-						continue;
-					}
-					msg.Clear();
-					msg.Add((byte)GSC.DataType.MAP);
-					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
-					if(it._mask.ToArray().Length > it._values.Count * sizeof(int) * 2)
-					{
-						msg.Add((byte)GSC.DataType.PIXELWISE);
-
-						msg.AddRange(BitConverter.GetBytes(pos.Length));
-						for(int i = 0; i < pos.Length; i++)
-						{
-							msg.AddRange(BitConverter.GetBytes(pos[i].x));
-							msg.AddRange(BitConverter.GetBytes(pos[i].y));
-							msg.AddRange(BitConverter.GetBytes(it._values[i]));
-						}
-					}
-					else
-					{
-						msg.Add((byte)GSC.DataType.BITMAPWISE);
-						msg.AddRange(it._mask.ToArray());
-						for(int i = 0; i < it._values.Count; i++)
-						{
-							msg.AddRange(BitConverter.GetBytes(it._values[i]));
-						}
-					}
+					//TODO: Reimpliment
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
@@ -759,52 +697,7 @@ namespace PPBA
 					/// byte Type, int ID, byte type, int pixelCount, {int x, int y, float value}[]
 					case GSC.DataType.MAP:
 					{
-						GSC.heatMap value = new GSC.heatMap();
-						value._id = count;//value overload
-
-						Vector2Int space = HeatMapHandler.s_instance.GetHeatMapSize(value._id);
-						value._mask = new BitField2D(space.x, space.y);
-
-						offset++;
-						if((GSC.DataType)msg[offset - 1] == GSC.DataType.PIXELWISE)
-						{
-							int size = BitConverter.ToInt32(msg, offset);
-							offset += sizeof(int);
-
-							for(int i = 0; i < size; i++)
-							{
-								value._mask[BitConverter.ToInt32(msg, offset), BitConverter.ToInt32(msg, offset + sizeof(int))] = true;
-								offset += 2 * sizeof(int);
-
-								value._values.Add(BitConverter.ToSingle(msg, offset));
-								offset += sizeof(float);
-							}
-						}
-						else
-						{
-							byte[] mask = value._mask.ToArray();
-							Buffer.BlockCopy(msg, offset, mask, 0, mask.Length);
-							offset += mask.Length;
-							Debug.Log(offset);
-
-							value._mask.FromArray(mask);
-
-							Debug.Log("id: " + value._id);
-							Debug.Log(value.ToString());
-
-							int size = value._mask.GetActiveBits().Length;
-							Debug.Log(size);
-
-							value._values = new List<float>(size);
-							for(int j = 0; j < size; j++)
-							{
-								value._values.Add(BitConverter.ToSingle(msg, offset));
-								offset += sizeof(float);
-								Debug.Log(value._values[value._values.Count - 1] + ", " + offset);
-							}
-						}
-
-						_heatMaps.Add(value);
+						//TODO: Reimpliment
 						break;
 					}
 					case GSC.DataType.INPUTS:
@@ -1016,230 +909,7 @@ Change:
 			Profiler.BeginSample("[GameState] backing");
 			foreach(var it in _heatMaps)
 			{
-				//DEBUG_HEATMAP
-#if DB_HM
-				Debug.Log("PreDelta: " + it.ToString());
-#endif
-				//escape if reference tick dosn't have the heatmap
-				GSC.heatMap refMap = reference._heatMaps.Find(x => x._id == it._id);
-				if(null == refMap)
-					continue;
-
-				Vector2Int[] pos = it._mask.GetActiveBits();
-#if DB_HM
-				Debug.Log("===== ===== " + myTick + " ===== =====");
-#endif
-
-				//baking Bitfield
-				for(int i = refTick + 1; i < myTick; i++)
-				{
-#if DB_HM
-					Debug.Log("RefTick: " + i);
-#endif
-					GameState nextState = references[i];
-					if(nextState == default)
-						continue;
-#if DB_HM
-					Debug.Log("reference exists");
-#endif
-					GSC.heatMap rev = references[i]._heatMaps.Find(x => x._id == it._id);
-					if(null == rev)
-						continue;
-#if DB_HM
-					Debug.Log("heatmap exists");
-#endif
-					Vector2Int[] curPos = rev._mask.GetActiveBits();
-#if DB_HM
-					Debug.Log("ref poscount: " + curPos.Length);
-					Debug.Log("my poscount: " + pos.Length);
-#endif
-					List<float> merged = new List<float>(pos.Length + curPos.Length);
-
-					int upper = 0;
-					int lower = 0;
-
-					//merges until one list is at the end
-					while(upper < pos.Length && lower < curPos.Length)
-					{
-						if(pos[upper].y <= curPos[lower].y && pos[upper].x < curPos[lower].x)
-						{
-#if DB_HM
-							Debug.Log("added original value (" + it._values[upper] + ") at pos: " + pos[upper]);
-#endif
-							merged.Add(it._values[upper]);
-							upper++;
-						}
-						else if(pos[upper] == curPos[lower])
-						{
-#if DB_HM
-							Debug.Log("equal original value (" + it._values[upper] + ") at pos: " + pos[upper]);
-#endif
-							merged.Add(it._values[upper]);
-							upper++;
-							lower++;
-						}
-						else
-						{
-#if DB_HM
-							Debug.Log("added new value (" + rev._values[lower] + ") at pos: " + curPos[lower]);
-#endif
-							merged.Add(rev._values[lower]);
-							lower++;
-						}
-					}
-
-					//adds rest of the other list
-					for(int itterator = upper; itterator < pos.Length; itterator++)
-					{
-#if DB_HM
-						Debug.Log("adding original remainer " + itterator);
-#endif
-						merged.Add(it._values[itterator]);
-					}
-					for(int itterator = lower; itterator < curPos.Length; itterator++)
-					{
-#if DB_HM
-						Debug.Log("adding reference remainer " + itterator);
-#endif
-						merged.Add(rev._values[itterator]);
-					}
-
-					it._mask += rev._mask;
-					pos = it._mask.GetActiveBits();
-					it._values = merged;
-
-#if DB_HM
-					Debug.Log("After merge, mask: " + it._mask.GetActiveBits().Length + ", values: " + it._values.Count);
-#endif
-				}
-
-				Vector2Int[] refPos = refMap._mask.GetActiveBits();
-				List<float> values = new List<float>(pos.Length);
-
-#if DB_HM
-				Debug.Log("Tick: " + myTick + "\n" + it.ToString());
-				Debug.Log("RefTick: " + refTick + "\n" + refMap.ToString());
-#endif
-
-				int curIndex = 0;
-				int refIndex = 0;
-
-				//remove duplicates until one list is at the end
-				while(curIndex < pos.Length && refIndex < refPos.Length)
-				{
-					//pixel finden
-					if(refPos[refIndex].y <= pos[curIndex].y && refPos[refIndex].x < pos[curIndex].x)
-					{
-#if DB_HM
-						Debug.Log("refPos: " + refPos[refIndex] + " is smaler");
-#endif
-						refIndex++;
-						continue;
-					}
-					if(pos[curIndex] != refPos[refIndex])
-					{
-#if DB_HM
-						Debug.Log("positions: " + pos[curIndex] + " and " + refPos[refIndex] + " are not equal");
-#endif
-						values.Add(it._values[curIndex]);
-						curIndex++;
-						continue;
-					}
-
-					//wenn gefunden und values gleich
-					//	pixel removen und value entfernen
-					//sonst
-					//	pixel behalten
-					if(it._values[curIndex] == refMap._values[refIndex])
-					{
-#if DB_HM
-						Debug.Log("values: " + pos[curIndex] + " and " + refPos[refIndex] + " are equal (" + it._values[curIndex] + ", " + refMap._values[refIndex] + ")");
-#endif
-						it._mask[pos[curIndex].x, pos[curIndex].y] = false;
-					}
-					else
-					{
-#if DB_HM
-						Debug.Log("values: " + pos[curIndex] + " and " + refPos[refIndex] + " are not equal (" + it._values[curIndex] + ", " + refMap._values[refIndex] + ")");
-#endif
-						values.Add(it._values[curIndex]);
-					}
-
-					refIndex++;
-					curIndex++;
-				}
-#if DB_HM
-				Debug.Log("indexe: " + curIndex + ", " + refIndex);
-#endif
-				for(int itterator = curIndex; itterator < pos.Length; itterator++)
-				{
-#if DB_HM
-					Debug.Log("adding original remainer2 " + itterator);
-#endif
-					values.Add(it._values[itterator]);
-				}
-				it._values = values;
-#if DB_HM
-				Debug.Log("Create Delta: " + it.ToString());
-#endif
-#if Brocken
-				//problem: heatmap backing geht so garnicht
-				for(int i = refTick + 1; i < myTick; i++)
-				{
-					GameState nextState = references[i];
-					if(nextState == default)
-						continue;
-
-					BitField2D tmp = references[i]._heatMaps.Find(x => x._id == it._id)?._mask;
-					if(null == tmp)
-						continue;
-
-					it._mask += references[i]._heatMaps.Find(x => x._id == it._id)._mask;
-				}
-
-				//getting values
-				Vector2Int[] refPos = refMap._mask.GetActiveBits();
-
-				
-				List<float> values = new List<float>(positions.Length);
-
-				Debug.Log(positions.Length + " | " + refPos.Length);
-
-				for(int i = 0, j = 0; i < positions.Length; i++)
-				{
-					//finde gleiches element (hör auf zu suchen, wenn es größer ist)
-					for(; j < refPos.Length; j++)
-					{
-						if(refPos[j].y >= positions[i].y && refPos[j].x >= positions[i].x)
-							break;
-					}
-
-					Debug.Log(i + " - " + j);
-					Debug.Log("(" + positions[i] + ", " + refPos[j] + ")");
-
-					//wenn gleiches element existiert
-					if(j < refPos.Length)
-					{
-						if(refPos[j] == positions[i])
-						{
-							float value = it._values[i];
-
-							//ist der float wert in _value von refMap an dem index des gleichen elements gleich zu dem value in der map
-							if(refMap._values[j] == value)
-								it._mask[positions[i].x, positions[i].y] = false;
-							else
-								values.Add(value);
-						}
-					}
-					else
-					{
-						values.Add(it._values[i]);
-					}
-					
-				}
-				it._values = values;
-				Debug.Log("Create Delta: " + it.ToString());
-#endif
+				//TODO: Reimplement
 			}
 			for(int i = refTick + 1; i < myTick; i++)
 			{
@@ -1341,6 +1011,8 @@ Change:
 
 				_paths.Add(it);
 			}
+
+			//TODO: Reimpliment
 
 			/*if(_hash != GetHash())
 			{
@@ -1462,7 +1134,7 @@ Change:
 			}
 			foreach(var it in start._heatMaps)
 			{
-				value._heatMaps.Add((lerpValue < 0.5f) ? it : end._heatMaps.Find(x => x._id == it._id));
+				//TODO: reimpliment
 			}
 			value._denyedInputIDs = end._denyedInputIDs;
 			value._newIDRanges = end._newIDRanges;
@@ -1487,7 +1159,7 @@ Change:
 		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
 		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
 		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
+		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);//TODO: Reimpliment
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
 
@@ -1591,83 +1263,7 @@ Change:
 		}
 		public void Add(GSC.heatMap element)
 		{
-#if Obsolete
-			GSC.heatMap value = _heatMaps.Find(x => x._id == element._id);
-
-			if(null == value)
-			{
-				_heatMaps.Add(element);
-				return;
-			}
-
-			Debug.LogWarning("Heatmap allready exists: " + element.ToString());
-
-			//===== ===== Merge ===== =====
-
-			Vector2Int[] oldPos = value._mask.GetActiveBits();
-			Vector2Int[] newPos = element._mask.GetActiveBits();
-#if DB_HM
-			Debug.Log("new poscount: " + newPos.Length);
-			Debug.Log("old poscount: " + oldPos.Length);
-#endif
-			List<float> merged = new List<float>(oldPos.Length + newPos.Length);
-
-			int upper = 0;
-			int lower = 0;
-
-			//merges until one list is at the end
-			while(upper < oldPos.Length && lower < newPos.Length)
-			{
-				if(oldPos[upper].y <= newPos[lower].y && oldPos[upper].x < newPos[lower].x)
-				{
-#if DB_HM
-					Debug.Log("added original value (" + value._values[upper] + ") at pos: " + oldPos[upper]);
-#endif
-					merged.Add(value._values[upper]);
-					upper++;
-				}
-				else if(oldPos[upper] == newPos[lower])
-				{
-#if DB_HM
-					Debug.Log("equal original value (" + value._values[upper] + ") at pos: " + oldPos[upper]);
-#endif
-					merged.Add(value._values[upper]);
-					upper++;
-					lower++;
-				}
-				else
-				{
-#if DB_HM
-					Debug.Log("added new value (" + element._values[lower] + ") at pos: " + newPos[lower]);
-#endif
-					merged.Add(element._values[lower]);
-					lower++;
-				}
-			}
-
-			//adds rest of the other list
-			for(int itterator = upper; itterator < oldPos.Length; itterator++)
-			{
-#if DB_HM
-				Debug.Log("adding original remainer " + itterator);
-#endif
-				merged.Add(value._values[itterator]);
-			}
-			for(int itterator = lower; itterator < newPos.Length; itterator++)
-			{
-#if DB_HM
-				Debug.Log("adding reference remainer " + itterator);
-#endif
-				merged.Add(element._values[itterator]);
-			}
-
-			value._mask += element._mask;
-			value._values = merged;
-
-#if DB_HM
-			Debug.Log("After merge, mask: " + value._mask.GetActiveBits().Length + ", values: " + value._values.Count);
-#endif
-#endif
+			//TODO: Reimpliment
 		}
 
 		public void Add(GSC.input element)
