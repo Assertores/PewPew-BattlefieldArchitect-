@@ -1591,6 +1591,7 @@ Change:
 		}
 		public void Add(GSC.heatMap element)
 		{
+#if Obsolete
 			GSC.heatMap value = _heatMaps.Find(x => x._id == element._id);
 
 			if(null == value)
@@ -1665,6 +1666,7 @@ Change:
 
 #if DB_HM
 			Debug.Log("After merge, mask: " + value._mask.GetActiveBits().Length + ", values: " + value._values.Count);
+#endif
 #endif
 		}
 
