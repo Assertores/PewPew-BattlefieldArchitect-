@@ -816,9 +816,9 @@ namespace PPBA
 			Profiler.BeginSample("[GameState] Create Delta");
 
 			_refTick = refTick;
-			int RemoverIndex;
+			int removerIndex;
 
-			RemoverIndex = 0;
+			removerIndex = 0;
 			for(int i = 0; i < _types.Count; i++)
 			{
 				GSC.type element = reference._types.Find(x => x._id == _types[i]._id);
@@ -833,11 +833,11 @@ namespace PPBA
 
 				continue;
 Change:
-				_types[RemoverIndex] = _types[i];
-				RemoverIndex++;
+				_types[removerIndex] = _types[i];
+				removerIndex++;
 			}
-			_types.RemoveRange(RemoverIndex, _types.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_types.RemoveRange(removerIndex, _types.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _args.Count; i++)
 			{
 				GSC.arg element = reference._args.Find(x => x._id == _args[i]._id);
@@ -850,11 +850,11 @@ Change:
 
 				continue;
 Change:
-				_args[RemoverIndex] = _args[i];
-				RemoverIndex++;
+				_args[removerIndex] = _args[i];
+				removerIndex++;
 			}
-			_args.RemoveRange(RemoverIndex, _args.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_args.RemoveRange(removerIndex, _args.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _transforms.Count; i++)
 			{
 				GSC.transform element = reference._transforms.Find(x => x._id == _transforms[i]._id);
@@ -869,11 +869,11 @@ Change:
 
 				continue;
 Change:
-				_transforms[RemoverIndex] = _transforms[i];
-				RemoverIndex++;
+				_transforms[removerIndex] = _transforms[i];
+				removerIndex++;
 			}
-			_transforms.RemoveRange(RemoverIndex, _transforms.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_transforms.RemoveRange(removerIndex, _transforms.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _ammos.Count; i++)
 			{
 				GSC.ammo element = reference._ammos.Find(x => x._id == _ammos[i]._id);
@@ -886,11 +886,11 @@ Change:
 
 				continue;
 Change:
-				_ammos[RemoverIndex] = _ammos[i];
-				RemoverIndex++;
+				_ammos[removerIndex] = _ammos[i];
+				removerIndex++;
 			}
-			_ammos.RemoveRange(RemoverIndex, _ammos.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_ammos.RemoveRange(removerIndex, _ammos.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _resources.Count; i++)
 			{
 				GSC.resource element = reference._resources.Find(x => x._id == _resources[i]._id);
@@ -903,11 +903,11 @@ Change:
 
 				continue;
 Change:
-				_resources[RemoverIndex] = _resources[i];
-				RemoverIndex++;
+				_resources[removerIndex] = _resources[i];
+				removerIndex++;
 			}
-			_resources.RemoveRange(RemoverIndex, _resources.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_resources.RemoveRange(removerIndex, _resources.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _healths.Count; i++)
 			{
 				GSC.health element = reference._healths.Find(x => x._id == _healths[i]._id);
@@ -922,11 +922,11 @@ Change:
 
 				continue;
 Change:
-				_healths[RemoverIndex] = _healths[i];
-				RemoverIndex++;
+				_healths[removerIndex] = _healths[i];
+				removerIndex++;
 			}
-			_healths.RemoveRange(RemoverIndex, _healths.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_healths.RemoveRange(removerIndex, _healths.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _behaviors.Count; i++)
 			{
 				GSC.behavior element = reference._behaviors.Find(x => x._id == _behaviors[i]._id);
@@ -941,11 +941,11 @@ Change:
 
 				continue;
 Change:
-				_behaviors[RemoverIndex] = _behaviors[i];
-				RemoverIndex++;
+				_behaviors[removerIndex] = _behaviors[i];
+				removerIndex++;
 			}
-			_behaviors.RemoveRange(RemoverIndex, _behaviors.Count - RemoverIndex);
-			RemoverIndex = 0;
+			_behaviors.RemoveRange(removerIndex, _behaviors.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _paths.Count; i++)
 			{
 				GSC.path element = reference._paths.Find(x => x._id == _paths[i]._id);
@@ -962,12 +962,12 @@ Change:
 						continue;
 				}
 Change:
-				_paths[RemoverIndex] = _paths[i];
-				RemoverIndex++;
+				_paths[removerIndex] = _paths[i];
+				removerIndex++;
 			}
-			_paths.RemoveRange(RemoverIndex, _paths.Count - RemoverIndex);
+			_paths.RemoveRange(removerIndex, _paths.Count - removerIndex);
 			Profiler.BeginSample("[GameState] backing");
-			RemoverIndex = 0;
+			removerIndex = 0;
 			for(int i = 0; i < _heatMaps.Count; i++)
 			{
 				GSC.heatMap element = reference._heatMaps.Find(x => x._id == _heatMaps[i]._id);
@@ -1000,10 +1000,10 @@ ChangeElement:
 
 				continue;
 Change:
-				_heatMaps[RemoverIndex] = _heatMaps[i];
-				RemoverIndex++;
+				_heatMaps[removerIndex] = _heatMaps[i];
+				removerIndex++;
 			}
-			_heatMaps.RemoveRange(RemoverIndex, _heatMaps.Count - RemoverIndex);
+			_heatMaps.RemoveRange(removerIndex, _heatMaps.Count - removerIndex);
 			for(int i = refTick + 1; i < myTick; i++)
 			{
 				//Debug.Log("[GameState] searching for denyed inputs in tick: " + i);
