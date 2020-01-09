@@ -2,7 +2,7 @@
 using UnityEngine;
 using PPBA;
 
-public class RefineryRefHolder : MonoBehaviour, IRefHolder
+public class TestHeatMapHolder : MonoBehaviour, IRefHolder
 {
 
 	public AudioClip _BuildingSound;
@@ -37,7 +37,7 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 	/// get the Properties for RessourceCalculate or set die Postion on die Textur
 	/// </summary>
 	public Vector4 GetShaderProperties
-	{		
+	{
 		get { return new Vector4(_Positions.x, _Positions.y, _HarvestIntensity, _HarvestRadius); }
 		set { _Positions = value; }
 	}
@@ -63,8 +63,4 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 	}
 
 	public Material GetMaterial() => BaseMaterial;
-
 }
-
-
-

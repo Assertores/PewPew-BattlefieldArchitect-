@@ -37,7 +37,7 @@ namespace PPBA
 		private int[] _ResourceValues;
 
 		private byte[] _currentBitField;
-		
+
 		void Start()
 		{
 			if(_GroundMaterial == null)
@@ -46,11 +46,12 @@ namespace PPBA
 				return;
 			}
 
-			Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_NoiseMap")) as Texture2D;
+			//Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_NoiseMap")) as Texture2D;
+			Texture2D resourceTexture = _original;
 			_resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
 			_resourceCalcKernel2 = _computeShader.FindKernel("CSInit");
 
-			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.ARGB32)
+			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.RFloat)
 			{
 				enableRandomWrite = true
 			};
@@ -58,8 +59,8 @@ namespace PPBA
 			_ResultTexture.Create();
 			Graphics.Blit(resourceTexture, _ResultTexture);
 
-			_backingTex[0] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
-			_backingTex[1] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
+			_backingTex[0] = new Texture2D(256, 256, TextureFormat.RFloat, false);
+			_backingTex[1] = new Texture2D(256, 256, TextureFormat.RFloat, false);
 			Graphics.CopyTexture(_ResultTexture, _backingTex[0]);
 			Graphics.CopyTexture(_ResultTexture, _backingTex[1]);
 
@@ -81,7 +82,7 @@ namespace PPBA
 
 		public void AddFabric(IRefHolder refHolder)
 		{
-			if(refHolder._Type != ObjectType.REFINERY)
+			if(refHolder._Type != ObjectType.REFINERY && !_Refinerys.Contains(refHolder))
 			{
 				return;
 			}
@@ -94,10 +95,10 @@ namespace PPBA
 			print("start calculation!!!");
 			if(isRunning || !s_instance.HasRefinerys())
 			{
+				print("stop calculate ... is running now or has no ref");
 				return;
 			}
 
-			print("after calculation is Runnning");
 			StartCoroutine(RefreshCalcRes());
 		}
 
@@ -108,14 +109,16 @@ namespace PPBA
 
 			_currentBitField = new byte[(256 * 256) / 8];
 			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
-			_ResourceValues = new int[_Refinerys.Count];
-			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
+			//_ResourceValues = new int[_Refinerys.Count];
+			_ResourceValues = new int[5];
+			//_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
+			_buffer = new ComputeBuffer(5, sizeof(int));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
 			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
-			
+
 			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
 			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
@@ -124,15 +127,16 @@ namespace PPBA
 			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
 			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 8, 256 / 8, 1);
 
+			//yield return new WaitForSeconds(1);
+
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
 			_bitField = null;
 			_buffer.GetData(_ResourceValues);
 			_buffer.Release();
 			_buffer = null;
-					   
-			yield return new WaitForSeconds(1);
-		//	yield return new WaitForEndOfFrame();
+
+			//	yield return new WaitForEndOfFrame();
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
 			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _ResultTexture));
@@ -141,11 +145,11 @@ namespace PPBA
 			print("end of function");
 		}
 
-		IEnumerator ConvertRenToTex2D(byte[] field , RenderTexture renTex)
+		IEnumerator ConvertRenToTex2D(byte[] field, RenderTexture renTex)
 		{
 			HeatMap.bitfield = field;
 			Graphics.CopyTexture(renTex, _backingTex[1]);
-			yield return  null;
+			yield return null;
 		}
 
 
@@ -175,7 +179,7 @@ namespace PPBA
 
 		public bool HasRefinerys()
 		{
-			print("refinerys cound "+ _Refinerys.Count + (_Refinerys.Count != 0));
+			print("refinerys cound " + _Refinerys.Count + (_Refinerys.Count != 0));
 
 			return _Refinerys.Count != 0;
 		}

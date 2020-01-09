@@ -55,6 +55,11 @@ namespace PPBA
 
 				if(Input.GetMouseButtonUp(0) && _isBuilt && _currentPrefabIndex > 2)
 				{
+					if(_placedBuiltings.ContainsKey(_currentPlaceableObject))
+					{
+						_placedBuiltings.Remove(_currentPlaceableObject);
+					}
+
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
 
@@ -70,10 +75,9 @@ namespace PPBA
 							build.Key.GetComponent<TickBuildEmitter>().AddToGatherValue();
 						}
 					}
-					_currentPrefabIndex = 0;
-					_isBuilt = false;
-					_canBuild = true;
-					_placedBuiltings.Clear();
+
+					Destroy(_currentPlaceableObject);
+					EndBuilding();
 				}
 			}
 		}

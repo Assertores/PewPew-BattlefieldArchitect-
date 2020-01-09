@@ -12,115 +12,112 @@ int SoldiersSize;
 float4 Soldiers[50];
 int stateSize;
 float2 state[50];
-Texture2D<float4> InputTexture;
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<uint> bitField;
 
+Texture2D<float4> InputTexture;
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
-//Texture2D<float4> InputTexture;
-
 
 [numthreads(1, 1, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-	for (int i = 0; i < 50; i++)
-	{
-		buffer[i] = 0;
+    for (int i = 0; i < 50; i++)
+    {
+        buffer[i] = 0;
 
-	}
+    }
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	const int weightMap = 256;
+    const int weightMap = 256;
 
 	 //Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
 
-	float currentResources = InputTexture[id.xy].r;
+    float currentResources = InputTexture[id.xy].r;
 
-	//for (int i = 0; i < PointSize; i++)
-	//{
-		float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
+    for (int i = 0; i < PointSize; i++)
+    {
+        float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
 
-		float maxDis = coords[0].w;
+        float maxDis = coords[0].w;
 
-		if (dis < maxDis)
-		{
-			//continue;
+        if (dis > maxDis)
+        {
+            continue;
+        }
+    
+        float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
+        float minValue = float(min(currentResources, harvestFac));
+        currentResources -= minValue;
+        currentResources = saturate(currentResources);
 
-	//	float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
-		float harvestFac = smoothstep(maxDis, 0.0, dis) * 0.1; // distfactor * coords[i].z;
-		float minValue = float(min(currentResources, harvestFac));
-		currentResources -= minValue;
-		//currentResources = saturate(currentResources);
+        InterlockedAdd(buffer[i], minValue * 1000.0);
+    
+        if (InputTexture[id.xy].r != currentResources)
+        {
+            int bit = id.y * weightMap + id.x;
+            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 
-		InterlockedAdd(buffer[0], minValue * 1000.0);
-	//}
-		}
+            Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+        }
 
-	if (InputTexture[id.xy].r != currentResources)
-	{
-
-		int bit = id.y * weightMap + id.x;
-		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-
-		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-	}
+    }
 }
 
 
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
-	const int weightMap = 256;
-	float m_dist = 10; // minimun distance
-	float2 m_point; // minimum position
+    const int weightMap = 256;
+    float m_dist = 10; // minimun distance
+    float2 m_point; // minimum position
 
 	// Iterate through the points positions
-	for (int i = 0; i < SoldiersSize; i++)
-	{
-		float dist = distance(id.xy, Soldiers[i].xy);
+    for (int i = 0; i < SoldiersSize; i++)
+    {
+        float dist = distance(id.xy, Soldiers[i].xy);
 
-		if (dist > m_dist)
-			continue;
+        if (dist > m_dist)
+            continue;
 
-		if (dist < m_dist)
-		{
+        if (dist < m_dist)
+        {
 			// Keep the closer distance
-			m_dist = dist;
+            m_dist = dist;
 
 			// Kepp the position of the closer point
-			m_point = Soldiers[i].xy;
-		}
+            m_point = Soldiers[i].xy;
+        }
 
-		if (Soldiers[i].z == 0)
-		{
-			m_point = float3(1, 0, 0);
-		}
-		if (Soldiers[i].z == 1)
-		{
-			m_point = float3(2, 0, 0);
-		}
-		if (Soldiers[i].z == 2)
-		{
-			m_point = float3(3, 0, 0);
-		}
-		if (Soldiers[i].z == 3)
-		{
-			m_point = float3(4, 0, 0);
-		}
+        if (Soldiers[i].z == 0)
+        {
+            m_point = float3(1, 0, 0);
+        }
+        if (Soldiers[i].z == 1)
+        {
+            m_point = float3(2, 0, 0);
+        }
+        if (Soldiers[i].z == 2)
+        {
+            m_point = float3(3, 0, 0);
+        }
+        if (Soldiers[i].z == 3)
+        {
+            m_point = float3(4, 0, 0);
+        }
 
-		if (TerritoriumResult[id.xy].r != m_point.r)
-		{
-			int bit = id.y * weightMap + id.x;
-			InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+        if (TerritoriumResult[id.xy].r != m_point.r)
+        {
+            int bit = id.y * weightMap + id.x;
+            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 
-			TerritoriumResult[id.xy] = float4(m_point, 0, 1);
-		}
-	}
+            TerritoriumResult[id.xy] = float4(m_point, 0, 1);
+        }
+    }
 }
 
 
@@ -129,63 +126,71 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 8, 1)]
 void CSNextEdge(uint3 id : SV_DispatchThreadID)
 {
-	//===== ===== relevance test ===== =====
-	bool imIn = false;
-	for (int q = 0; !imIn || q < SoldiersSize; q++)
-	{
-		if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
-			imIn = true;
-	}
-	if (!imIn)
-		return;
+	////===== ===== relevance test ===== =====
+ //   bool imIn = false;
+ //   for (int q = 0; !imIn || q < SoldiersSize; q++)
+ //   {
+ //       if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
+ //           imIn = true;
+ //   }
+ //   if (!imIn)
+ //       return;
 
-	//===== ===== init ===== =====
-	float myTeam = TerritoriumResult[id.xy].x;
-	float2 found;
+	////===== ===== init ===== =====
+ //   float myTeam = TerritoriumResult[id.xy].x;
+ //   float2 found;
 
-	float foundDist = 3.402823466e+38F;
+ //   float foundDist = 3.402823466e+38F;
 
-	int maxIndex = 4000000;
+ //   int maxIndex = 4000000;
 
-	//===== ===== serach ===== =====
-	for (int column = 1; column * column < foundDist; column++)
-	{
-		int rowLength = min(column, maxIndex);
-		for (int row = 0; row <= rowLength; row++)
-		{
-			float2 pos;
-			bool valueIsDifferent = false;
+	////===== ===== serach ===== =====
+ //   for (int column = 1; column * column < foundDist; column++)
+ //   {
+ //       int rowLength = min(column, maxIndex);
+ //       for (int row = 0; row <= rowLength; row++)
+ //       {
+ //           float2 pos;
+ //           bool valueIsDifferent = false;
 
-			pos = id.xy + float2(column, row);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(-column, row);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(column, -row);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(-column, -row);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(row, column);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(-row, column);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(row, -column);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
-			pos = id.xy + float2(-row, -column);
-			if (myTeam != TerritoriumResult[pos].r) valueIsDifferent = true;
+ //           pos = id.xy + float2(column, row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-column, row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(column, -row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-column, -row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(row, column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-row, column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(row, -column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-row, -column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
 
-			if (valueIsDifferent)
-			{
-				int dist = column * column + row * row;
-				if (foundDist > dist)
-				{
-					found = pos;
-					maxIndex = row;
-					foundDist = dist;
-				}
-			}
-		}
+ //           if (valueIsDifferent)
+ //           {
+ //               int dist = column * column + row * row;
+ //               if (foundDist > dist)
+ //               {
+ //                   found = pos;
+ //                   maxIndex = row;
+ //                   foundDist = dist;
+ //               }
+ //           }
+ //       }
 
-		//===== ===== result ===== =====
-		TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
-	}
+	//	//===== ===== result ===== =====
+ //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
+ //   }
 }

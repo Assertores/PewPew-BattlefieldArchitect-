@@ -9,7 +9,7 @@ public class CollisionDetecting : MonoBehaviour
 	private Color GhostGreenColor;
 	private Color GhostRedColor;
 
-	private bool isCollision = false;
+	//private bool isCollision = false;
 
 	private void Start()
 	{

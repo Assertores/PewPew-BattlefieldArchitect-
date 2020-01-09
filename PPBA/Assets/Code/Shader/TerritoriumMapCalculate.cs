@@ -48,7 +48,8 @@ namespace PPBA
 				return;
 			}
 
-			Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_TerritorriumMap")) as Texture2D;
+			Texture2D resourceTexture = _original;
+			//Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_TerritorriumMap")) as Texture2D;
 			_resourceCalcKernel = _computeShader.FindKernel("CSTerritorium");
 
 			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.ARGB32)
