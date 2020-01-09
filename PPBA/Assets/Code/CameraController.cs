@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Cinemachine;
+﻿using UnityEngine;
 
 namespace PPBA
 {
@@ -29,24 +26,24 @@ namespace PPBA
 			{
 				//pos += _CameraSpeed * Vector3.forward * Time.deltaTime;
 				//pos += _CameraSpeed * Camera.main.transform.forward * Time.deltaTime;
-				pos += _CameraSpeed * Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up) * Time.deltaTime;
+				pos += (Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up) * Time.deltaTime) * (_CameraSpeed +5);
 			}
 			if(Input.GetKey(KeyCode.S) /*|| mousePos.y <= _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * -Camera.main.transform.forward * Time.deltaTime;
-				pos += _CameraSpeed * Vector3.ProjectOnPlane(-Camera.main.transform.forward, Vector3.up) * Time.deltaTime;
+				pos += (Vector3.ProjectOnPlane(-Camera.main.transform.forward, Vector3.up) * Time.deltaTime) * (_CameraSpeed + 5);
 
 			}
 			if(Input.GetKey(KeyCode.D) /*|| mousePos.x >= Screen.width - _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * Camera.main.transform.right * Time.deltaTime;
-				pos += _CameraSpeed * Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up) * Time.deltaTime;
+				pos += (Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up) * Time.deltaTime) * (_CameraSpeed );
 
 			}
 			if(Input.GetKey(KeyCode.A) /*|| mousePos.x <= _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * -Camera.main.transform.right* Time.deltaTime;
-				pos += _CameraSpeed * Vector3.ProjectOnPlane(-Camera.main.transform.right, Vector3.up) * Time.deltaTime;
+				pos += (Vector3.ProjectOnPlane(-Camera.main.transform.right, Vector3.up) * Time.deltaTime) * (_CameraSpeed );
 
 			}
 
@@ -56,7 +53,7 @@ namespace PPBA
 			pos.x = Mathf.Clamp(pos.x, -_panLimit.x, _panLimit.x);
 			pos.z = Mathf.Clamp(pos.z, -_panLimit.y, _panLimit.y);
 
-			transform.position = pos;
+			transform.position = pos ;
 		}
 
 	}
