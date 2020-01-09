@@ -82,6 +82,8 @@ namespace PPBA
 		private LineRenderer _lineRenderer;
 		[SerializeField] private HealthBarController _healthBarController;
 		[SerializeField] private Material _material;
+		[SerializeField] private Renderer _myRenderer;
+		private MaterialPropertyBlock _PropertyBlock;
 
 		//targets and target lists
 		public List<Pawn> _closePawns = new List<Pawn>();
@@ -822,33 +824,46 @@ namespace PPBA
 			switch(team)
 			{
 				case 0:
-					color = Color.magenta;
+					color = Color.green;
 					break;
 				case 1:
 					color = Color.blue;
 					break;
 				case 2:
-					color = Color.green;
+					color = Color.yellow;
 					break;
 				case 3:
-					color = Color.yellow;
+					color = Color.red;
 					break;
 				default:
 					color = Color.gray;
 					break;
 			}
 
+			if(null == _myRenderer)
+				_myRenderer = transform.GetChild(0)?.GetChild(1)?.GetComponent<Renderer>();
+
 			if(null == _material)
-				_material = transform.GetChild(0).GetComponent<Material>();
+				_material = transform.GetChild(0)?.GetChild(1)?.GetComponent<Material>();
 
 			if(null != _material)
-				_material.color = color;
+			{
+				if(null != _myRenderer)
+				{
+					_myRenderer.GetPropertyBlock(_PropertyBlock);
+					_PropertyBlock.SetColor("_Emission", color);
+					_myRenderer.SetPropertyBlock(_PropertyBlock);
+				}
+			}
 			else
 				Debug.LogWarning("Pawn still couldn't get a material");
 		}
 
 		private void OnEnable()
 		{
+			_PropertyBlock = new MaterialPropertyBlock();
+			SetMaterialColor(_team);
+
 #if UNITY_SERVER
 			TickHandler.s_SetUp += ClearFlags;
 			TickHandler.s_AIEvaluate += Evaluate;

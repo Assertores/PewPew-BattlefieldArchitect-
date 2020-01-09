@@ -1,4 +1,4 @@
-﻿Shader "Custom/BuildingShader"
+﻿Shader "Custom/Soldier_Shader"
 {
 	Properties
 	{
@@ -12,15 +12,16 @@
 		_Parallax("Height", Range(0.005, 0.08)) = 0.02
 		_Specular("Specular", 2D) = "black" {}
 		//	_Specular("Specular Color", Color) = (1,1,1,1)
-		_EmissionMap("EmissionMap", 2D) = "black" {}
+		_EmissionMap("EmissionMap", 2D) = "white" {}
 		[PerRendererData][HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
+		//[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
 
 		[Header(Noise Parameters)]
 		_Amplitude("Amplitude", Vector) = (0,0,0,0)
 		_Frequency("Frequency", Vector) = (0,0,0,0)
 		_Phase("Phase", Vector) = (0,0,0,0)
 
-		[PerRendererData]_Clip("Clip Height", Float) = 0.0
+		_Clip("Clip Height", Float) = 0.0
 		_Noise("Noise", Float) = 0.0
 		_NoiseScale("Noise Scale", Float) = 1.0
 		_BuildingHeight("BuildingHeight", Float) = 5.0
@@ -77,6 +78,7 @@
 
 		  void surf(Input i, inout SurfaceOutput o)
 		  {
+			  //TO-DO: DISSOLVE RAUSWERFEN
 			  half h = tex2D(_ParallaxMap, i.uv_ParallaxMap).w;
 			  float2 offset = ParallaxOffset(h, _Parallax, i.viewDir);
 

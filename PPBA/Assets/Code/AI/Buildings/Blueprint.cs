@@ -273,6 +273,7 @@ namespace PPBA
 			{
 				_myRenderer.GetPropertyBlock(_PropertyBlock);
 				_PropertyBlock.SetFloat("_Clip", 1f);
+				_PropertyBlock.SetColor("_Emission", Color.green);
 				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			}
 		}
