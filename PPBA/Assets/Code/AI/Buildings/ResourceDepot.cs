@@ -41,6 +41,7 @@ namespace PPBA
 
 		void Start()
 		{
+			UiInventory.s_instance.AddLastBuildings();
 
 		}
 

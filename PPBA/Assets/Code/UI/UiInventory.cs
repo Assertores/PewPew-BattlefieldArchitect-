@@ -12,11 +12,11 @@ namespace PPBA
 		public GameObject inventoryPanel;
 		public GameObject inventoryTiles;
 		private Button button;
-
+		private bool _isAll = false;
 
 		public List<Image> guiItemImages = new List<Image>();
 		public Dictionary<GameObject, int> items = new Dictionary<GameObject, int>();
-		 
+
 
 		private void Start()
 		{
@@ -50,8 +50,9 @@ namespace PPBA
 				if(items.Count < guiItemImages.Count)
 				{
 					items.Add(ip, 1);
-					button.onClick.AddListener(delegate { BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()); }); // weißt button function zu
-					//button.onClick.AddListener(delegate { BuildingController.s_instance.HandleNewObject(ip.GetComponent<IUIElement>().); }); // weißt button function zu
+					button.onClick.AddListener(delegate
+					{ BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()); }); // weißt button function zu
+																									 //button.onClick.AddListener(delegate { BuildingController.s_instance.HandleNewObject(ip.GetComponent<IUIElement>().); }); // weißt button function zu
 				}
 				else
 				{
@@ -128,9 +129,15 @@ namespace PPBA
 
 		public void AddLastBuildings()
 		{
-			for(int i = 0; i < NormalBuilds.Length; i++)
+			if(!_isAll)
 			{
-				AddItem(NormalBuilds[i]);
+				_isAll = true;
+				RemoveStartBuildings();
+
+				for(int i = 0; i < NormalBuilds.Length; i++)
+				{
+					AddItem(NormalBuilds[i]);
+				}
 			}
 		}
 
