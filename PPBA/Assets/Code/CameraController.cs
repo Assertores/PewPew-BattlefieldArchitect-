@@ -26,24 +26,24 @@ namespace PPBA
 			{
 				//pos += _CameraSpeed * Vector3.forward * Time.deltaTime;
 				//pos += _CameraSpeed * Camera.main.transform.forward * Time.deltaTime;
-				pos += (Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up) * Time.deltaTime) * (_CameraSpeed +5);
+				pos += ((Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up)).normalized * Time.deltaTime) * (_CameraSpeed);
 			}
 			if(Input.GetKey(KeyCode.S) /*|| mousePos.y <= _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * -Camera.main.transform.forward * Time.deltaTime;
-				pos += (Vector3.ProjectOnPlane(-Camera.main.transform.forward, Vector3.up) * Time.deltaTime) * (_CameraSpeed + 5);
+				pos += ((Vector3.ProjectOnPlane(-Camera.main.transform.forward, Vector3.up)).normalized * Time.deltaTime) * (_CameraSpeed);
 
 			}
 			if(Input.GetKey(KeyCode.D) /*|| mousePos.x >= Screen.width - _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * Camera.main.transform.right * Time.deltaTime;
-				pos += (Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up) * Time.deltaTime) * (_CameraSpeed );
+				pos += ((Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up)).normalized * Time.deltaTime) * (_CameraSpeed );
 
 			}
 			if(Input.GetKey(KeyCode.A) /*|| mousePos.x <= _BorderThickness*/)
 			{
 				//pos += _CameraSpeed * -Camera.main.transform.right* Time.deltaTime;
-				pos += (Vector3.ProjectOnPlane(-Camera.main.transform.right, Vector3.up) * Time.deltaTime) * (_CameraSpeed );
+				pos += ((Vector3.ProjectOnPlane(-Camera.main.transform.right, Vector3.up)).normalized * Time.deltaTime) * (_CameraSpeed );
 
 			}
 

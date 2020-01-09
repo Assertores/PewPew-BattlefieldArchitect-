@@ -8,6 +8,7 @@ namespace PPBA
 	public class UiInventory : Singleton<UiInventory>
 	{
 		public GameObject[] StartBuilds;
+		public GameObject[] NormalBuilds;
 		public GameObject inventoryPanel;
 		public GameObject inventoryTiles;
 		private Button button;
@@ -15,7 +16,7 @@ namespace PPBA
 
 		public List<Image> guiItemImages = new List<Image>();
 		public Dictionary<GameObject, int> items = new Dictionary<GameObject, int>();
-
+		 
 
 		private void Start()
 		{
@@ -122,6 +123,23 @@ namespace PPBA
 			for(int i = 0; i < StartBuilds.Length; i++)
 			{
 				AddItem(StartBuilds[i]);
+			}
+		}
+
+		public void AddLastBuildings()
+		{
+			for(int i = 0; i < NormalBuilds.Length; i++)
+			{
+				AddItem(NormalBuilds[i]);
+			}
+		}
+
+		public void RemoveStartBuildings()
+		{
+			print("remove buildings in UIinventory");
+			for(int i = 0; i < StartBuilds.Length; i++)
+			{
+				RemoveItem(StartBuilds[i]);
 			}
 		}
 	}

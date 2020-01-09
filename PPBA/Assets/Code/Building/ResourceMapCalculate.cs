@@ -109,10 +109,10 @@ namespace PPBA
 
 			_currentBitField = new byte[(256 * 256) / 8];
 			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
-			//_ResourceValues = new int[_Refinerys.Count];
-			_ResourceValues = new int[5];
-			//_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
-			_buffer = new ComputeBuffer(5, sizeof(int));
+			_ResourceValues = new int[_Refinerys.Count];
+			//_ResourceValues = new int[5];
+			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
+			//_buffer = new ComputeBuffer(5, sizeof(int));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
 			_computeShader.SetVectorArray("coords", RefineriesProperties());

@@ -36,11 +36,19 @@ namespace PPBA
 		{
 			return _ObjectType;
 		}
+
 		public Material GetMaterial() => BaseMaterial;
 
 		private void OnEnable()
 		{
 			_logicObject.SetActive(true);
 		}
+
+		public void HQisBuiding()
+		{
+			UiInventory.s_instance.AddLastBuildings();
+			UiInventory.s_instance.RemoveStartBuildings();
+		}
+
 	}
 }

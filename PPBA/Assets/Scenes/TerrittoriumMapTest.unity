@@ -227,11 +227,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe7b549774edf5444b2db89cc6e05e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 1
-  index: 1
-  pos1: {fileID: 1989700201}
-  pos2: {fileID: 715684718}
-  speed: 6.75
 --- !u!135 &283269892
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -372,10 +367,39 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1250242365, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173834488494120, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835104257564, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486173835291466712, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1693805406, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
       propertyPath: _original
       value: 
-      objectReference: {fileID: 2800000, guid: 122d3ff00f653564580e2e63789c1ddf, type: 3}
+      objectReference: {fileID: 2800000, guid: 4c31e107df7b24943bf541ecae83f23f, type: 3}
+    - target: {fileID: 6486173834488494122, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8786372384473513634, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
 --- !u!1 &436674033
@@ -749,11 +773,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe7b549774edf5444b2db89cc6e05e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
-  index: 0
-  pos1: {fileID: 716317835}
-  pos2: {fileID: 436674034}
-  speed: 6.75
 --- !u!135 &1380680997
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -827,6 +846,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1749931925 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6486173834488494120, guid: c82e5328b372c5448a2dbf241e1f2439,
+    type: 3}
+  m_PrefabInstance: {fileID: 411116634}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1749931930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1749931925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34fb5ba1bbcb25544b3183875431584c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _BuildingSound: {fileID: 0}
+  _ImageUI: {fileID: 0}
+  _TextField: {fileID: 0}
+  _ObjectType: 0
+  _GhostPrefab: {fileID: 0}
+  _blueprintPrefab: {fileID: 0}
+  _HarvestRadius: 20
+  _HarvestIntensity: 0.001
+  _Positions: {x: 128, y: 128}
+  _BuildingTime: 0
+  _BuildingCosts: 0
+  _CurrentResources: 0
+  _LivePoints: 0
+  _MaxLivePoints: 0
+  BaseMaterial: {fileID: 0}
 --- !u!1 &1989700200
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,3 +909,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2043644516 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1693805404, guid: c82e5328b372c5448a2dbf241e1f2439,
+    type: 3}
+  m_PrefabInstance: {fileID: 411116634}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2043644521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043644516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34fb5ba1bbcb25544b3183875431584c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _BuildingSound: {fileID: 0}
+  _ImageUI: {fileID: 0}
+  _TextField: {fileID: 0}
+  _ObjectType: 0
+  _GhostPrefab: {fileID: 0}
+  _blueprintPrefab: {fileID: 0}
+  _HarvestRadius: 5
+  _HarvestIntensity: 0.0001
+  _Positions: {x: 256, y: 256}
+  _BuildingTime: 0
+  _BuildingCosts: 0
+  _CurrentResources: 0
+  _LivePoints: 0
+  _MaxLivePoints: 0
+  BaseMaterial: {fileID: 0}
