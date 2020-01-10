@@ -20,7 +20,11 @@ namespace PPBA
 
 		private bool isRunning = false;
 
-		public HeatMapReturnValue GetValues() => HeatMap;
+		public HeatMapReturnValue GetValues()
+		{
+			HeatMap.tex = _backingTex[0];
+			return HeatMap;
+		}
 		private HeatMapReturnValue HeatMap;
 
 		Texture2D[] _backingTex = new Texture2D[2];
