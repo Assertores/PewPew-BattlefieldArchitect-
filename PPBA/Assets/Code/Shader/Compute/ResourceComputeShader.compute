@@ -30,6 +30,11 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 
     }
 
+	for (int i = 0; i < ((256 * 256) / 8); i++)
+	{
+		bitField[i] = 0;
+	}
+
 	for (int j = 0; j < (256*256); j++)
 	{
 		redValue[i] = 0;
@@ -43,6 +48,9 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	   
 
     float currentResources = InputTexture[id.xy].r;
+
+	if (currentResources == 0)
+		return;
 
     for (int i = 0; i < PointSize; i++)
     {
@@ -61,18 +69,18 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         currentResources = saturate(currentResources);
 
         InterlockedAdd(buffer[i], minValue * 1000.0);
-		redValue[id.y * weightMap + id.x] = currentResources;
-		
-		    
-        if (InputTexture[id.xy].r != currentResources)
-        {
-			int bit = id.y * weightMap + id.x;
-            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-            Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-
-        }
-
     }
+
+
+	redValue[id.y * weightMap + id.x] = currentResources;
+
+	if (InputTexture[id.xy].r != currentResources)
+	{
+		int bit = id.y * weightMap + id.x;
+		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+
+	}
 }
 
 
