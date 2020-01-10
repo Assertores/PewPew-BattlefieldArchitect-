@@ -1355,6 +1355,7 @@ Change:
 
 		public void Add(GSC.heatMap element)
 		{
+			return;
 			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
 			{
 				Debug.LogWarning("HeatMap allready exists: " + element.ToString());

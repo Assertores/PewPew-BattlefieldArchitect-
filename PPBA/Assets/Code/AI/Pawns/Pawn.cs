@@ -30,7 +30,20 @@ namespace PPBA
 
 		public int _id { get; set; }
 		public Arguments _arguments = new Arguments();
-		[SerializeField] public int _team = 0;
+		//[SerializeField] public int _team = 0;
+		private int _teamBackingField;
+		[SerializeField]
+		public int _team
+		{
+			get => _teamBackingField;
+			set
+			{
+				if(value != _teamBackingField)
+					SetMaterialColor(value);
+
+				_teamBackingField = value;
+			}
+		}
 
 		//[SerializeField] public float _health = 100;
 		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
@@ -179,6 +192,7 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
+			//SetMaterialColor(_team);
 			_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			ShowNavPath();
 		}
@@ -794,7 +808,7 @@ namespace PPBA
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
 
-#if UNITY_SERVER			
+#if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
 			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
 #endif
@@ -813,7 +827,7 @@ namespace PPBA
 				case 2:
 					return ObjectType.PAWN_WARRIOR;
 				default:
-					return ObjectType.PAWN_WARRIOR;
+					return ObjectType.PAWN_HEALER;
 			}
 		}
 
@@ -843,20 +857,20 @@ namespace PPBA
 			if(null == _myRenderer)
 				_myRenderer = transform.GetChild(0)?.GetChild(1)?.GetComponent<Renderer>();
 
-			if(null == _material)
-				_material = transform.GetChild(0)?.GetChild(1)?.GetComponent<Material>();
+			//if(null == _material)
+			//_material = transform.GetChild(0)?.GetChild(1)?.GetComponent<Material>();
 
-			if(null != _material)
+			//if(null != _material)
+			//{
+			if(null != _myRenderer)
 			{
-				if(null != _myRenderer)
-				{
-					_myRenderer.GetPropertyBlock(_PropertyBlock);
-					_PropertyBlock.SetColor("_Emission", color);
-					_myRenderer.SetPropertyBlock(_PropertyBlock);
-				}
+				_myRenderer.GetPropertyBlock(_PropertyBlock);
+				_PropertyBlock.SetColor("_Emission", color);
+				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			}
+			//}
 			else
-				Debug.LogWarning("Pawn still couldn't get a material");
+				Debug.LogWarning("Pawn still couldn't get a renderer");
 		}
 
 		private void OnEnable()
@@ -887,9 +901,9 @@ namespace PPBA
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
 
-			
+
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
-		//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
+			//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
 #endif
 		}
 
@@ -899,6 +913,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-#endregion
+		#endregion
 	}
 }
