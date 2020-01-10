@@ -28,11 +28,11 @@ namespace PPBA
 		public HeatMapReturnValue GetValues() => HeatMap;
 		private HeatMapReturnValue HeatMap;
 
-		Texture2D[] _backingTex = new Texture2D[2];
+		float[][] _backingTex = new float[2][];
 
-		Texture2D Swap()
+		float[] Swap()
 		{
-			Texture2D tmp = _backingTex[0];
+			float[] tmp = _backingTex[0];
 			_backingTex[0] = _backingTex[1];
 			_backingTex[1] = tmp;
 			return _backingTex[0];
@@ -62,10 +62,8 @@ namespace PPBA
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 
-			_backingTex[0] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
-			_backingTex[1] = new Texture2D(256, 256, TextureFormat.ARGB32, false);
-			Graphics.CopyTexture(_ResultTexture, _backingTex[0]);
-			Graphics.CopyTexture(_ResultTexture, _backingTex[1]);
+			_backingTex[0] = new float[256 * 256];
+			_backingTex[1] = new float[256 * 256];
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 
@@ -121,14 +119,14 @@ namespace PPBA
 
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
 
-			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _ResultTexture));
+			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, new float[1]));
 			Swap(); // change Texture2d
 
 		}
 
-		IEnumerator ConvertRenToTex2D(byte[] field, RenderTexture renTex)
+		IEnumerator ConvertRenToTex2D(byte[] field, float[] renTex)
 		{
-			Graphics.CopyTexture(renTex, _backingTex[1]);
+			_backingTex[1] = renTex;
 			yield return null;
 		}
 

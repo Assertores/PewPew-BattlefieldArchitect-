@@ -10,6 +10,7 @@ namespace PPBA
 		public Material _GroundMaterial;
 		[SerializeField] Texture2D _original;
 
+		private Texture2D inputTex;
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
 		private ComputeBuffer _RedValueBuffer;
@@ -28,11 +29,11 @@ namespace PPBA
 		}
 		private HeatMapReturnValue HeatMap;
 
-		Texture2D[] _backingTex = new Texture2D[2];
+		float[][] _backingTex = new float[2][];
 
-		Texture2D Swap()
+		float[] Swap()
 		{
-			Texture2D tmp = _backingTex[0];
+			float[] tmp = _backingTex[0];
 			_backingTex[0] = _backingTex[1];
 			_backingTex[1] = tmp;
 			return _backingTex[0];
@@ -65,11 +66,11 @@ namespace PPBA
 			_ResultTexture.Create();
 			Graphics.Blit(resourceTexture, _ResultTexture);
 
-			_backingTex[0] = new Texture2D(256, 256, TextureFormat.RFloat, false);
-			_backingTex[1] = new Texture2D(256, 256, TextureFormat.RFloat, false);
+			inputTex = new Texture2D(256,256, TextureFormat.RFloat, false);
+			Graphics.CopyTexture(_ResultTexture, inputTex);
 
-			Graphics.CopyTexture(_ResultTexture, _backingTex[0]);
-			Graphics.CopyTexture(_ResultTexture, _backingTex[1]);
+			_backingTex[0] = new float[256 * 256];
+			_backingTex[1] = new float[256 * 256];
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
@@ -133,7 +134,7 @@ namespace PPBA
 			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "redValue", _RedValueBuffer);
 			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
-			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _backingTex[0]);
+			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", inputTex);
 
 			_computeShader.Dispatch(_resourceCalcKernel2, 256 / 8, 256 / 8, 1); // prüfen ob er hier wartet
 			yield return new WaitForSeconds(0.1f);
@@ -154,21 +155,19 @@ namespace PPBA
 
 			//	yield return new WaitForEndOfFrame();
 			//	_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
-			print(_backingTex[0].GetPixel(255, 255));
 
-			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _ResultTexture));
+			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _RedValues, _ResultTexture));
 			Swap(); // change Texture2d
-			_GroundMaterial.SetTexture("_NoiseMap", _backingTex[0]);
-
 
 			isRunning = false;
 			print("end of function");
 		}
 
-		IEnumerator ConvertRenToTex2D(byte[] field, RenderTexture renTex)
+		IEnumerator ConvertRenToTex2D(byte[] field, float[] renTex, RenderTexture tex)
 		{
+			Graphics.CopyTexture(tex, inputTex);
 			HeatMap.bitfield = field;
-			Graphics.CopyTexture(renTex, _backingTex[1]);
+			_backingTex[1] = renTex;
 			yield return null;
 		}
 
