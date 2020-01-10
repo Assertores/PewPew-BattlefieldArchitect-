@@ -41,7 +41,7 @@ namespace PPBA
 		void CalculateMaps(int tick)
 		{
 			ResourceMapCalculate.s_instance.StartCalculation();
-			TerritoriumMapCalculate.s_instance.StartCalculation();
+			//TerritoriumMapCalculate.s_instance.StartCalculation();
 		}
 
 		void SaveMapToGameState(int tick)
@@ -52,8 +52,8 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
 			//_heatMaps[0] = value.tex;
 
-			value = TerritoriumMapCalculate.s_instance.GetValues();
-			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
+			//value = TerritoriumMapCalculate.s_instance.GetValues();
+			//TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
 			//_heatMaps[1] = value.tex;
 		}
 
@@ -74,8 +74,6 @@ namespace PPBA
 				element._x = (byte)pos[i].x;
 				element._y = (byte)pos[i].y;
 				element._value = input.tex[pos[i].x + 256 * pos[i].y];//TODO: make dynamic
-
-				Debug.Log("(" + element._x + " | " + element._y + ")" + element._value);
 
 				value._values.Add(element);
 			}
