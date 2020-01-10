@@ -720,8 +720,12 @@ namespace PPBA
 					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
 					case GSC.DataType.MAP:
 					{
-						GSC.heatMap value = new GSC.heatMap();
-						value._id = count;
+						GSC.heatMap value = _heatMaps.Find(x => x._id == count);
+						if(null == value)
+						{
+							value = new GSC.heatMap();
+							value._id = count;
+						}
 
 						GSC.DataType type = (GSC.DataType)msg[offset];
 						offset++;
@@ -971,6 +975,8 @@ Change:
 			removerIndex = 0;
 			for(int i = 0; i < _heatMaps.Count; i++)
 			{
+				//TODO: add heatmaps in between to delta
+
 				GSC.heatMap element = reference._heatMaps.Find(x => x._id == _heatMaps[i]._id);
 
 				if(null == element)
