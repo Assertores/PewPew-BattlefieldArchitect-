@@ -129,6 +129,7 @@ namespace PPBA
 
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
 			_computeShader.SetBuffer(_resourceCalcKernel2, "redValue", _RedValueBuffer);
+			_computeShader.SetBuffer(_resourceCalcKernel2, "bitField", _bitField);
 
 			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
