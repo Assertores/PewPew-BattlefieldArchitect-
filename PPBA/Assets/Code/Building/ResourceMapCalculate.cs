@@ -12,6 +12,7 @@ namespace PPBA
 
 		private RenderTexture _ResultTexture;
 		private ComputeBuffer _buffer;
+		private ComputeBuffer _RedValueBuffer;
 		private ComputeBuffer _bitField;
 
 		private int _resourceCalcKernel1;
@@ -39,6 +40,7 @@ namespace PPBA
 
 		[SerializeField]
 		private int[] _ResourceValues;
+		private float[] _RedValues;
 
 		private byte[] _currentBitField;
 
@@ -65,6 +67,7 @@ namespace PPBA
 
 			_backingTex[0] = new Texture2D(256, 256, TextureFormat.RFloat, false);
 			_backingTex[1] = new Texture2D(256, 256, TextureFormat.RFloat, false);
+
 			Graphics.CopyTexture(_ResultTexture, _backingTex[0]);
 			Graphics.CopyTexture(_ResultTexture, _backingTex[1]);
 
@@ -114,24 +117,29 @@ namespace PPBA
 			_currentBitField = new byte[(256 * 256) / 8];
 			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
 			_ResourceValues = new int[_Refinerys.Count];
-			//_ResourceValues = new int[5];
+			_RedValues = new float[256 * 256];
+
 			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
-			//_buffer = new ComputeBuffer(5, sizeof(int));
+
+			_RedValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
 
 			_computeShader.SetInt("PointSize", _Refinerys.Count);
 			_computeShader.SetVectorArray("coords", RefineriesProperties());
 
 			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
+			_computeShader.SetBuffer(_resourceCalcKernel2, "redValue", _RedValueBuffer);
 
 			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
+			_computeShader.SetBuffer(_resourceCalcKernel1, "redValue", _RedValueBuffer);
 			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", _backingTex[0]);
 
-			_computeShader.Dispatch(_resourceCalcKernel2, 50, 1, 1); // prüfen ob er hier wartet
+			_computeShader.Dispatch(_resourceCalcKernel2, 256 / 8, 256 / 8, 1); // prüfen ob er hier wartet
+			yield return new WaitForSeconds(0.1f);
 			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 8, 256 / 8, 1);
+			yield return new WaitForSeconds(0.1f);
 
-			//yield return new WaitForSeconds(1);
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
@@ -140,11 +148,19 @@ namespace PPBA
 			_buffer.Release();
 			_buffer = null;
 
+			_RedValueBuffer.GetData(_RedValues);
+			_RedValueBuffer.Release();
+			_RedValueBuffer = null;
+
 			//	yield return new WaitForEndOfFrame();
-			_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
+			//	_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
+			print(_backingTex[0].GetPixel(255, 255));
 
 			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _ResultTexture));
 			Swap(); // change Texture2d
+			_GroundMaterial.SetTexture("_NoiseMap", _backingTex[0]);
+
+
 			isRunning = false;
 			print("end of function");
 		}

@@ -14,13 +14,14 @@ int stateSize;
 float2 state[50];
 
 RWStructuredBuffer<int> buffer;
+RWStructuredBuffer<float> redValue;
 RWStructuredBuffer<uint> bitField;
 
 Texture2D<float4> InputTexture;
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
 
-[numthreads(1, 1, 1)]
+[numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
     for (int i = 0; i < 50; i++)
@@ -28,14 +29,18 @@ void CSInit(uint3 id : SV_DispatchThreadID)
         buffer[i] = 0;
 
     }
+
+	for (int j = 0; j < (256*256); j++)
+	{
+		redValue[i] = 0;
+	}
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
-
-	 //Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0);
+	   
 
     float currentResources = InputTexture[id.xy].r;
 
@@ -56,13 +61,15 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         currentResources = saturate(currentResources);
 
         InterlockedAdd(buffer[i], minValue * 1000.0);
-    
+		redValue[id.y * weightMap + id.x] = currentResources;
+		
+		    
         if (InputTexture[id.xy].r != currentResources)
         {
-            int bit = id.y * weightMap + id.x;
+			int bit = id.y * weightMap + id.x;
             InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-
             Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+
         }
 
     }
