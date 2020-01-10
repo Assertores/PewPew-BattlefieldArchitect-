@@ -37,11 +37,15 @@ namespace PPBA
 
 			if(pawn._isMounting)
 			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
+
 				pawn._mountSlot.Execute();
 				pawn.SetMoveTarget(pawn._mountSlot.transform.position);
 			}
 			else
 			{
+				pawn._currentAnimation = PawnAnimations.RUN;
+
 				if(s_targetDictionary[pawn]._isMounted)
 				{
 					pawn.SetMoveTarget(pawn.transform.position);

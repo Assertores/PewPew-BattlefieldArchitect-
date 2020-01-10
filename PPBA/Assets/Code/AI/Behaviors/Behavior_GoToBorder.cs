@@ -36,7 +36,7 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-
+			pawn._currentAnimation = PawnAnimations.RUN;
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)

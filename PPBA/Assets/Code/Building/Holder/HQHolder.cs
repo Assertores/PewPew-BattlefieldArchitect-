@@ -15,7 +15,6 @@ namespace PPBA
 		[SerializeField] private GameObject _blueprintPrefab;
 		[SerializeField] private GameObject _logicObject;
 
-		[HideInInspector] public int _team { get; set; }
 		[HideInInspector] public Sprite _Image { get => _ImageUI; }
 		[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 		[HideInInspector] public ObjectType _Type { get => _ObjectType; }
@@ -23,6 +22,31 @@ namespace PPBA
 		[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
 
 		[SerializeField] Material BaseMaterial;
+		[SerializeField] private Renderer _myRenderer;
+		private MaterialPropertyBlock _PropertyBlock;
+
+		private void Awake()
+		{
+			if(null == _myRenderer)
+			{
+				Renderer temp = transform.GetChild(0).GetChild(0).GetComponent<Renderer>();
+				if(null != temp)
+					_myRenderer = temp;
+			}
+		}
+
+		private int _teamBackingField;
+		[HideInInspector]
+		public int _team
+		{
+			get => _teamBackingField; set
+			{
+				if(_teamBackingField != value)
+					BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
+
+				_teamBackingField = value;
+			}
+		}
 
 		public Vector2 _Positions;
 
@@ -42,6 +66,8 @@ namespace PPBA
 		private void OnEnable()
 		{
 			_logicObject.SetActive(true);
+			_PropertyBlock = new MaterialPropertyBlock();
+			BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, _team);
 		}
 
 		public void HQisBuiding()
@@ -49,6 +75,5 @@ namespace PPBA
 			UiInventory.s_instance.AddLastBuildings();
 			UiInventory.s_instance.RemoveStartBuildings();
 		}
-
 	}
 }

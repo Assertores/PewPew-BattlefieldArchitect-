@@ -38,14 +38,19 @@ namespace PPBA
 		{
 			if(!s_targetDictionary.ContainsKey(pawn) || s_targetDictionary[pawn] == null)
 			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
 				pawn.SetMoveTarget(pawn.transform.position);
 				return;
 			}
 
 			if(2f < Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position))
+			{
+				pawn._currentAnimation = PawnAnimations.RUN;
 				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			}
 			else
 			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
 				pawn.Heal(15);
 				pawn.SetMoveTarget(pawn.transform.position);
 			}

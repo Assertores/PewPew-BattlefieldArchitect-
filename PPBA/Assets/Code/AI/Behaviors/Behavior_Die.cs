@@ -33,6 +33,8 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
+			pawn._currentAnimation = PawnAnimations.DIE;
+
 			pawn.SetMoveTarget(pawn.transform.position);
 
 			foreach(Pawn p in pawn._activePawns)

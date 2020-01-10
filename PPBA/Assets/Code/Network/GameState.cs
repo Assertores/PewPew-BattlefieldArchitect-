@@ -192,6 +192,17 @@ namespace PPBA
 				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
+
+		[System.Serializable]
+		public class animation : gsc
+		{
+			public PawnAnimations _animation;
+
+			public override string ToString()
+			{
+				return _id.ToString("0000") + "| " + _animation.ToString();
+			}
+		}
 	}
 
 	[System.Serializable]
@@ -248,6 +259,7 @@ namespace PPBA
 		private List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		private List<GSC.path> _paths = new List<GSC.path>();
 		private List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
+		private List<GSC.animation> _animations = new List<GSC.animation>();
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
@@ -1259,6 +1271,7 @@ Change:
 		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
+		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
@@ -1361,6 +1374,7 @@ Change:
 
 		public void Add(GSC.heatMap element)
 		{
+			return;
 			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
 			{
 				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
@@ -1390,6 +1404,17 @@ Change:
 			}
 
 			_newIDRanges.Add(element);
+		}
+
+		public void Add(GSC.animation element)
+		{
+			if(_animations.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Animation already exists: " + element.ToString());
+				return;
+			}
+
+			_animations.Add(element);
 		}
 
 		#endregion

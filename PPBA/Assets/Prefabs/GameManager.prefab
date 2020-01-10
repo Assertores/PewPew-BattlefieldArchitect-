@@ -371,6 +371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6486173835291466713}
   - component: {fileID: 6486173835291466714}
+  - component: {fileID: 2930157555248396052}
   m_Layer: 0
   m_Name: GlobalValues
   m_TagString: Untagged
@@ -438,9 +439,27 @@ MonoBehaviour:
     _prefab: {fileID: 6493288425784081815, guid: dc0c45c6a9274094fba0fcdcf6b155b2,
       type: 3}
   _initialObjectPoolSize: 50
+  _teamColors:
+  - {r: 0, g: 1, b: 0.97092533, a: 0}
+  - {r: 1, g: 0.5615011, b: 0, a: 0}
+  - {r: 0.78751564, g: 0, b: 1, a: 0}
+  - {r: 0.09418379, g: 0.6320754, b: 0, a: 0}
+  - {r: 0.94698536, g: 1, b: 0, a: 0}
   _prefabs:
   - {fileID: 4800975661657982604, guid: 3ff70d4284f14ea428043df02ba6ad2c, type: 3}
   - {fileID: 3850693688127147684, guid: 90b953c0e881bf043af5f575b34d14ee, type: 3}
+--- !u!114 &2930157555248396052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6486173835291466712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58befac7ca82bde49be4b13fcc8d3bab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &977002099
 PrefabInstance:
   m_ObjectHideFlags: 0

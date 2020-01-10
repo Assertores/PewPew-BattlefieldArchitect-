@@ -22,6 +22,7 @@ namespace PPBA
 			public int _supplies;
 			public Vector3[] _navPathCorners;
 			public Behaviors _behavior;
+			public PawnAnimations _animation;
 		}
 
 		#region Variables
@@ -30,7 +31,20 @@ namespace PPBA
 
 		public int _id { get; set; }
 		public Arguments _arguments = new Arguments();
-		[SerializeField] public int _team = 0;
+		//[SerializeField] public int _team = 0;
+		private int _teamBackingField;
+		[SerializeField]
+		public int _team
+		{
+			get => _teamBackingField;
+			set
+			{
+				if(value != _teamBackingField)
+					SetMaterialColor(value);
+
+				_teamBackingField = value;
+			}
+		}
 
 		//[SerializeField] public float _health = 100;
 		[SerializeField] public float _health { get => _healthBackingField; set => _healthBackingField = Mathf.Clamp(value, 0, _maxHealth); }
@@ -52,6 +66,8 @@ namespace PPBA
 		[SerializeField] public int _maxSupplies = 10;
 
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
+
+		public PawnAnimations _currentAnimation = PawnAnimations.IDLE;
 
 		//protected
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
@@ -77,6 +93,7 @@ namespace PPBA
 		public Behaviors _clientBehavior = Behaviors.IDLE;
 
 		//Components
+		public PawnAnimationController _animationController;
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
 		private LineRenderer _lineRenderer;
@@ -140,6 +157,7 @@ namespace PPBA
 			_navMeshPath = new NavMeshPath();
 			_lineRenderer = GetComponent<LineRenderer>();
 			//_material = transform.GetChild(0).GetComponent<Material>();
+			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
 
 			//Initialisation
 			InitiateBehaviors();
@@ -179,6 +197,7 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
+			_animationController.SetAnimatorBools(_currentAnimation);
 			_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			ShowNavPath();
 		}
@@ -282,6 +301,7 @@ namespace PPBA
 				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+			TickHandler.s_interfaceGameState.Add(new GSC.animation { _id = _id, _animation = _currentAnimation });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -376,6 +396,14 @@ namespace PPBA
 					_nextState._navPathCorners = temp._path;
 				}
 			}
+			{
+				GSC.animation temp = TickHandler.s_interfaceGameState.GetAnimation(_id);
+
+				if(null != temp)
+				{
+					_nextState._animation = temp._animation;
+				}
+			}
 			#endregion
 		}
 
@@ -403,6 +431,7 @@ namespace PPBA
 			_supplies = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
+			_currentAnimation = _nextState._animation;
 		}
 
 		/*
@@ -794,7 +823,7 @@ namespace PPBA
 			newPawn.transform.position = spawnPoint;
 			newPawn._moveTarget = spawnPoint;
 
-#if UNITY_SERVER			
+#if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
 			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
 #endif
@@ -813,7 +842,7 @@ namespace PPBA
 				case 2:
 					return ObjectType.PAWN_WARRIOR;
 				default:
-					return ObjectType.PAWN_WARRIOR;
+					return ObjectType.PAWN_HEALER;
 			}
 		}
 
@@ -821,42 +850,45 @@ namespace PPBA
 		{
 			Color color;
 
-			switch(team)
-			{
-				case 0:
-					color = Color.green;
-					break;
-				case 1:
-					color = Color.blue;
-					break;
-				case 2:
-					color = Color.yellow;
-					break;
-				case 3:
-					color = Color.red;
-					break;
-				default:
-					color = Color.gray;
-					break;
-			}
+			if(team < GlobalVariables.s_instance._teamColors.Length)
+				color = GlobalVariables.s_instance._teamColors[team];
+			else
+				switch(team)
+				{
+					case 0:
+						color = Color.green;
+						break;
+					case 1:
+						color = Color.blue;
+						break;
+					case 2:
+						color = Color.yellow;
+						break;
+					case 3:
+						color = Color.red;
+						break;
+					default:
+						color = Color.gray;
+						break;
+				}
 
 			if(null == _myRenderer)
 				_myRenderer = transform.GetChild(0)?.GetChild(1)?.GetComponent<Renderer>();
 
-			if(null == _material)
-				_material = transform.GetChild(0)?.GetChild(1)?.GetComponent<Material>();
+			//if(null == _material)
+			//_material = transform.GetChild(0)?.GetChild(1)?.GetComponent<Material>();
 
-			if(null != _material)
+			//if(null != _material)
+			//{
+			if(null != _myRenderer)
 			{
-				if(null != _myRenderer)
-				{
-					_myRenderer.GetPropertyBlock(_PropertyBlock);
-					_PropertyBlock.SetColor("_Emission", color);
-					_myRenderer.SetPropertyBlock(_PropertyBlock);
-				}
+				_myRenderer.GetPropertyBlock(_PropertyBlock);
+				_PropertyBlock.SetColor("_Emission", color);
+				_myRenderer.SetPropertyBlock(_PropertyBlock);
 			}
+			//}
 			else
-				Debug.LogWarning("Pawn still couldn't get a material");
+				Debug.LogWarning("Pawn still couldn't get a renderer");
 		}
 
 		private void OnEnable()
@@ -887,9 +919,9 @@ namespace PPBA
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
 
-			
+
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
-		//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
+			//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
 #endif
 		}
 
@@ -899,6 +931,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-#endregion
+		#endregion
 	}
 }

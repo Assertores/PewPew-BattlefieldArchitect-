@@ -36,10 +36,18 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
+			pawn._animationController.SetAnimatorBools(PawnAnimations.RUN);
+
 			if(s_targetDictionary[pawn] != null && Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < 5f)
+			{
+				pawn._currentAnimation = PawnAnimations.RUN;
 				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+			}
 			else
+			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
 				pawn.SetMoveTarget(pawn.transform.position);
+			}
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
