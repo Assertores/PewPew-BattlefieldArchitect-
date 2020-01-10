@@ -28,6 +28,8 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
+			pawn._currentAnimation = PawnAnimations.RUN;
+
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)

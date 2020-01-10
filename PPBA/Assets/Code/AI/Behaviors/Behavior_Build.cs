@@ -34,7 +34,10 @@ namespace PPBA
 				{
 					s_targetDictionary[pawn].DoWork();
 					targetPosition = pawn.transform.position;
+					pawn._currentAnimation = PawnAnimations.BUILD;
 				}
+				else
+					pawn._currentAnimation = PawnAnimations.RUN;
 
 				pawn.SetMoveTarget(targetPosition);
 			}

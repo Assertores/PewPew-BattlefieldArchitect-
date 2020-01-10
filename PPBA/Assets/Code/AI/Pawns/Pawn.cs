@@ -22,6 +22,7 @@ namespace PPBA
 			public int _supplies;
 			public Vector3[] _navPathCorners;
 			public Behaviors _behavior;
+			public PawnAnimations _animation;
 		}
 
 		#region Variables
@@ -66,6 +67,8 @@ namespace PPBA
 
 		[HideInInspector] public bool _isNavPathDirty = true;//refresh every tick
 
+		public PawnAnimations _currentAnimation = PawnAnimations.IDLE;
+
 		//protected
 		[SerializeField] [Range(1f, 10f)] private float _moveSpeed = 1f;
 		[SerializeField] protected float _healthBackingField = 100;
@@ -90,6 +93,7 @@ namespace PPBA
 		public Behaviors _clientBehavior = Behaviors.IDLE;
 
 		//Components
+		public PawnAnimationController _animationController;
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
 		private LineRenderer _lineRenderer;
@@ -153,6 +157,7 @@ namespace PPBA
 			_navMeshPath = new NavMeshPath();
 			_lineRenderer = GetComponent<LineRenderer>();
 			//_material = transform.GetChild(0).GetComponent<Material>();
+			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
 
 			//Initialisation
 			InitiateBehaviors();
@@ -192,7 +197,7 @@ namespace PPBA
 #if !UNITY_SERVER
 			VisualizeLerpedStates();
 #endif
-			//SetMaterialColor(_team);
+			_animationController.SetAnimatorBools(_currentAnimation);
 			_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			ShowNavPath();
 		}
@@ -296,6 +301,7 @@ namespace PPBA
 				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
+			TickHandler.s_interfaceGameState.Add(new GSC.animation { _id = _id, _animation = _currentAnimation });
 		}
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
@@ -390,6 +396,14 @@ namespace PPBA
 					_nextState._navPathCorners = temp._path;
 				}
 			}
+			{
+				GSC.animation temp = TickHandler.s_interfaceGameState.GetAnimation(_id);
+
+				if(null != temp)
+				{
+					_nextState._animation = temp._animation;
+				}
+			}
 			#endregion
 		}
 
@@ -417,6 +431,7 @@ namespace PPBA
 			_supplies = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
+			_currentAnimation = _nextState._animation;
 		}
 
 		/*

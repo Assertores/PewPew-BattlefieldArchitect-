@@ -40,9 +40,15 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			if(s_targetDictionary.ContainsKey(pawn))
+			{
+				pawn._currentAnimation = PawnAnimations.RUN;
 				pawn.SetMoveTarget(s_targetDictionary[pawn]);
+			}
 			else
+			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
 				pawn.SetMoveTarget(pawn.transform.position);
+			}
 
 			//pawn.SetMoveTarget(new Vector3(-135f, 0f, 11f));
 		}

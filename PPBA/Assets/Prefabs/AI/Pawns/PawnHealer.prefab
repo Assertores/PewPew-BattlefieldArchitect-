@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1025715346529498047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6157465799973984446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa1b4fbd9d6d584b9410e2a82ac10b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8532531223116004335
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,7 +170,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _arguments: 0
-  _team: 0
   _maxHealth: 100
   _maxAmmo: 5
   _maxMorale: 100
@@ -738,25 +749,13 @@ PrefabInstance:
     - target: {fileID: -6057140222963153312, guid: 74e5c077e5aa7e7499b336aa782c73af,
         type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed by
-        Humanoid clips.\n\tTransform 'mixamorig:Hips'\n\tTransform 'mixamorig:LeftFoot'\n\tTransform
-        'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftToeBase'\n\tTransform 'mixamorig:RightArm'\n\tTransform
-        'mixamorig:LeftLeg'\n\tTransform 'mixamorig:LeftShoulder'\n\tTransform 'mixamorig:RightFoot'\n\tTransform
-        'mixamorig:Head'\n\tTransform 'mixamorig:LeftUpLeg'\n\tand more ...\n\tFrom
-        animation clip 'Build'\n\tFrom animation clip 'Death'\n\tFrom animation clip
-        'Idle'\n\tFrom animation clip 'RifleRun'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: -6057140222963153312, guid: 74e5c077e5aa7e7499b336aa782c73af,
         type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -6572749442327141208, guid: 74e5c077e5aa7e7499b336aa782c73af,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 5bdf99d61f10b524b9a39c81eb6f92ed, type: 2}
     - target: {fileID: 6475341992876109301, guid: 74e5c077e5aa7e7499b336aa782c73af,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -767,8 +766,19 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.005976795
       objectReference: {fileID: 0}
+    - target: {fileID: -6572749442327141208, guid: 74e5c077e5aa7e7499b336aa782c73af,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5bdf99d61f10b524b9a39c81eb6f92ed, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74e5c077e5aa7e7499b336aa782c73af, type: 3}
+--- !u!1 &6157465799973984446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 74e5c077e5aa7e7499b336aa782c73af,
+    type: 3}
+  m_PrefabInstance: {fileID: 2761370208753910199}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7145223994009332397 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 74e5c077e5aa7e7499b336aa782c73af,

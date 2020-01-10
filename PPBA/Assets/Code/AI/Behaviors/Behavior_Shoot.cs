@@ -37,6 +37,7 @@ namespace PPBA
 			{
 				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
 				{
+					pawn._currentAnimation = PawnAnimations.IDLE;
 					s_timerDictionary[pawn]++;//increment timer
 					pawn.SetMoveTarget(pawn.transform.position);//stand still
 				}
@@ -44,7 +45,10 @@ namespace PPBA
 				{
 					s_timerDictionary[pawn] = 0;
 					if(!pawn._isMounting)
+					{
+						pawn._currentAnimation = PawnAnimations.RUN;
 						pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+					}
 				}
 			}
 			else

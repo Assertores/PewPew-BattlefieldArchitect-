@@ -33,7 +33,11 @@ namespace PPBA
 
 		}
 
-		public override void Execute(Pawn pawn) => pawn.SetMoveTarget(pawn.transform.position);
+		public override void Execute(Pawn pawn)
+		{
+			pawn._currentAnimation = PawnAnimations.IDLE;
+			pawn.SetMoveTarget(pawn.transform.position);
+		}
 
 		public override float FindBestTarget(Pawn pawn) => _fixedScore;
 

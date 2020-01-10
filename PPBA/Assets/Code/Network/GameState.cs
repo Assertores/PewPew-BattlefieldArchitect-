@@ -192,6 +192,17 @@ namespace PPBA
 				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
+
+		[System.Serializable]
+		public class animation : gsc
+		{
+			public PawnAnimations _animation;
+
+			public override string ToString()
+			{
+				return _id.ToString("0000") + " " + _animation.ToString();
+			}
+		}
 	}
 
 	[System.Serializable]
@@ -256,6 +267,7 @@ namespace PPBA
 		/// DO NOT USE
 		/// </summary>
 		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
+		private List<GSC.animation> _animations = new List<GSC.animation>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -1253,6 +1265,7 @@ Change:
 		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
+		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
@@ -1385,6 +1398,17 @@ Change:
 			}
 
 			_newIDRanges.Add(element);
+		}
+
+		public void Add(GSC.animation element)
+		{
+			if(_animations.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Animation already exists: " + element.ToString());
+				return;
+			}
+
+			_animations.Add(element);
 		}
 
 		#endregion
