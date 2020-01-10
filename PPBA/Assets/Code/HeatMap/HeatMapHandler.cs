@@ -7,7 +7,7 @@ namespace PPBA
 {
 	public struct HeatMapReturnValue
 	{
-		public Texture2D tex;
+		public float[] tex;
 		public byte[] bitfield;
 	}
 
@@ -50,16 +50,16 @@ namespace PPBA
 			value = ResourceMapCalculate.s_instance.GetValues();
 
 			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			_heatMaps[0] = value.tex;
+			//_heatMaps[0] = value.tex;
 
 			value = TerritoriumMapCalculate.s_instance.GetValues();
 			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			_heatMaps[1] = value.tex;
+			//_heatMaps[1] = value.tex;
 		}
 
 		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
 		{
-			BitField2D mask = new BitField2D(input.tex.width, input.tex.height, input.bitfield);
+			BitField2D mask = new BitField2D(256, 256, input.bitfield);//TODO: make dynamic
 			Vector2Int[] pos = mask.GetActiveBits();
 
 
@@ -73,7 +73,7 @@ namespace PPBA
 
 				element._x = (byte)pos[i].x;
 				element._y = (byte)pos[i].y;
-				element._value = input.tex.GetPixel(pos[i].x, pos[i].y).r;
+				element._value = input.tex[pos[i].x + 256 * pos[i].y];//TODO: make dynamic
 
 				Debug.Log("(" + element._x + " | " + element._y + ")" + element._value);
 
