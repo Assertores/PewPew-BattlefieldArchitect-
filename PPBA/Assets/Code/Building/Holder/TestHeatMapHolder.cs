@@ -24,8 +24,32 @@ public class TestHeatMapHolder : MonoBehaviour, IRefHolder
 	public float _MaxLivePoints;
 
 	[SerializeField] Material BaseMaterial;
+	[SerializeField] private Renderer _myRenderer;
+	private MaterialPropertyBlock _PropertyBlock;
 
-	[HideInInspector] public int _team { get; set; }
+	private void Awake()
+	{
+		if(null == _myRenderer)
+		{
+			Renderer temp = transform.GetChild(0).GetChild(0).GetComponent<Renderer>();
+			if(null != temp)
+				_myRenderer = temp;
+		}
+	}
+
+	private int _teamBackingField;
+	[HideInInspector]
+	public int _team
+	{
+		get => _teamBackingField; set
+		{
+			if(_teamBackingField != value)
+				BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
+
+			_teamBackingField = value;
+		}
+	}
+
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
@@ -63,4 +87,10 @@ public class TestHeatMapHolder : MonoBehaviour, IRefHolder
 	}
 
 	public Material GetMaterial() => BaseMaterial;
+
+	private void OnEnable()
+	{
+		_PropertyBlock = new MaterialPropertyBlock();
+		BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, _team);
+	}
 }

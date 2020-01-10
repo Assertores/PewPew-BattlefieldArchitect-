@@ -57,7 +57,9 @@ namespace PPBA
 		[SerializeField] private BuildAssignment[] _prefabInput;
 		[SerializeField] [Range(1, 100)] private int _initialObjectPoolSize = 100;
 
+		[SerializeField] public Color[] _teamColors;
 		[HideInInspector] public GameObject[] _prefabs;
+
 
 		#endregion
 		#region MonoBehaviour

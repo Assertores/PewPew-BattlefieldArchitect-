@@ -850,24 +850,27 @@ namespace PPBA
 		{
 			Color color;
 
-			switch(team)
-			{
-				case 0:
-					color = Color.green;
-					break;
-				case 1:
-					color = Color.blue;
-					break;
-				case 2:
-					color = Color.yellow;
-					break;
-				case 3:
-					color = Color.red;
-					break;
-				default:
-					color = Color.gray;
-					break;
-			}
+			if(team < GlobalVariables.s_instance._teamColors.Length)
+				color = GlobalVariables.s_instance._teamColors[team];
+			else
+				switch(team)
+				{
+					case 0:
+						color = Color.green;
+						break;
+					case 1:
+						color = Color.blue;
+						break;
+					case 2:
+						color = Color.yellow;
+						break;
+					case 3:
+						color = Color.red;
+						break;
+					default:
+						color = Color.gray;
+						break;
+				}
 
 			if(null == _myRenderer)
 				_myRenderer = transform.GetChild(0)?.GetChild(1)?.GetComponent<Renderer>();

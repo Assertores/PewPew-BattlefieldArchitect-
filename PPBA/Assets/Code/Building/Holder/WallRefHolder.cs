@@ -21,7 +21,6 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 	public float _LivePoints;
 	public float _MaxLivePoints;
 
-	[HideInInspector] public int _team { get; set; }
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
@@ -29,6 +28,32 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 	[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
 
 	[SerializeField] Material BaseMaterial;
+	[SerializeField] private Renderer _myRenderer;
+	private MaterialPropertyBlock _PropertyBlock;
+
+	private void Awake()
+	{
+		if(null == _myRenderer)
+		{
+			//Renderer temp = transform.GetChild(0).GetChild(0).GetComponent<Renderer>();
+			Renderer temp = GetComponentInChildren<Renderer>();
+			if(null != temp)
+				_myRenderer = temp;
+		}
+	}
+
+	private int _teamBackingField;
+	[HideInInspector]
+	public int _team
+	{
+		get => _teamBackingField; set
+		{
+			if(_teamBackingField != value)
+				BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
+
+			_teamBackingField = value;
+		}
+	}
 
 	public Vector4 GetShaderProperties
 	{
@@ -57,6 +82,11 @@ public class WallRefHolder : MonoBehaviour, IRefHolder
 	}
 
 	public Material GetMaterial() => BaseMaterial;
-}
 
+	private void OnEnable()
+	{
+		_PropertyBlock = new MaterialPropertyBlock();
+		BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, _team);
+	}
+}
 

@@ -200,7 +200,7 @@ namespace PPBA
 
 			public override string ToString()
 			{
-				return _id.ToString("0000") + " " + _animation.ToString();
+				return _id.ToString("0000") + "| " + _animation.ToString();
 			}
 		}
 	}
@@ -259,6 +259,7 @@ namespace PPBA
 		private List<GSC.behavior> _behaviors = new List<GSC.behavior>();
 		private List<GSC.path> _paths = new List<GSC.path>();
 		private List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
+		private List<GSC.animation> _animations = new List<GSC.animation>();
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
@@ -267,7 +268,6 @@ namespace PPBA
 		/// DO NOT USE
 		/// </summary>
 		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
-		private List<GSC.animation> _animations = new List<GSC.animation>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
