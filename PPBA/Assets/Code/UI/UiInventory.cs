@@ -15,7 +15,19 @@ namespace PPBA
 		private bool _isAll = false;
 
 		public List<Image> guiItemImages = new List<Image>();
+
 		public Dictionary<GameObject, int> items = new Dictionary<GameObject, int>();
+
+		private void Update()
+		{
+			if(Input.GetKeyDown(KeyCode.M))
+			{
+				foreach(KeyValuePair<GameObject, int> item in items)
+				{		
+					print(item.Key.name);
+				}
+			}
+		}
 
 
 		private void Start()
@@ -50,9 +62,8 @@ namespace PPBA
 				if(items.Count < guiItemImages.Count)
 				{
 					items.Add(ip, 1);
-					button.onClick.AddListener(delegate
-					{ BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()); }); // weißt button function zu
-																									 //button.onClick.AddListener(delegate { BuildingController.s_instance.HandleNewObject(ip.GetComponent<IUIElement>().); }); // weißt button function zu
+					//	button.onClick.AddListener(delegate
+					//	{ BuildingManager.s_instance.HandleNewObject(ip.GetComponent<IRefHolder>()); }); // weißt button function zu
 				}
 				else
 				{
@@ -104,6 +115,10 @@ namespace PPBA
 				guiItemImages[index].enabled = true;
 				guiItemImages[index].sprite = current.Key.GetComponent<IRefHolder>()._Image;
 				guiItemImages[index].GetComponentInChildren<TextMeshProUGUI>().text = current.Value.ToString();
+
+				guiItemImages[index].GetComponentInParent<Button>()?.onClick.AddListener(delegate
+				{ BuildingManager.s_instance.HandleNewObject(current.Key.GetComponent<IRefHolder>()); }); // weißt button function zu
+
 				index++;
 			}
 		}
@@ -143,8 +158,13 @@ namespace PPBA
 
 		public void RemoveStartBuildings()
 		{
-			print("remove buildings in UIinventory");
-			for(int i = 0; i < StartBuilds.Length; i++)
+			//foreach(KeyValuePair<GameObject, int> item in items)
+			//{
+			//	RemoveItem(item.Key);
+			//}
+			//print("remove buildings in UIinventory");
+
+			for(int i = 0; i < items.Count; i++)
 			{
 				RemoveItem(StartBuilds[i]);
 			}
