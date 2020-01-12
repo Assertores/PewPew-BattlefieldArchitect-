@@ -18,7 +18,7 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
 
 		public class gsc
 		{
@@ -119,6 +119,17 @@ namespace PPBA
 		}
 
 		[System.Serializable]
+		public class animation : gsc
+		{
+			public PawnAnimations _animation;
+
+			public override string ToString()
+			{
+				return _id.ToString("0000") + "| " + _animation.ToString();
+			}
+		}
+
+		[System.Serializable]
 		public class path : gsc
 		{
 			public Vector3[] _path = new Vector3[0];
@@ -192,17 +203,6 @@ namespace PPBA
 				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
-
-		[System.Serializable]
-		public class animation : gsc
-		{
-			public PawnAnimations _animation;
-
-			public override string ToString()
-			{
-				return _id.ToString("0000") + "| " + _animation.ToString();
-			}
-		}
 	}
 
 	[System.Serializable]
@@ -234,6 +234,7 @@ namespace PPBA
 			_healths.AddRange(original._healths.ToArray());
 			_works.AddRange(original._works.ToArray());
 			_behaviors.AddRange(original._behaviors.ToArray());
+			_animations.AddRange(original._animations.ToArray());
 			_paths.AddRange(original._paths.ToArray());
 			_heatMaps.AddRange(original._heatMaps.ToArray());
 			_denyedInputIDs.AddRange(original._denyedInputIDs.ToArray());
@@ -257,9 +258,9 @@ namespace PPBA
 		private List<GSC.health> _healths = new List<GSC.health>();
 		private List<GSC.work> _works = new List<GSC.work>();
 		private List<GSC.behavior> _behaviors = new List<GSC.behavior>();
+		private List<GSC.animation> _animations = new List<GSC.animation>();
 		private List<GSC.path> _paths = new List<GSC.path>();
 		private List<GSC.heatMap> _heatMaps = new List<GSC.heatMap>();
-		private List<GSC.animation> _animations = new List<GSC.animation>();
 		///<summary>
 		/// DO NOT USE
 		/// </summary>
@@ -402,6 +403,21 @@ namespace PPBA
 					msg.AddRange(BitConverter.GetBytes(it._id));
 					msg.Add((byte)it._behavior);
 					msg.AddRange(BitConverter.GetBytes(it._target));
+				}
+
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+			}
+			Profiler.EndSample();
+			Profiler.BeginSample("[GameState] animations");
+			if(_animations.Count > 0)
+			{
+				msg.Clear();
+				msg.Add((byte)GSC.DataType.ANIMATIONS);
+				msg.AddRange(BitConverter.GetBytes(_animations.Count));
+				foreach(var it in _animations)
+				{
+					msg.AddRange(BitConverter.GetBytes(it._id));
+					msg.Add((byte)it._animation);
 				}
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
@@ -701,6 +717,23 @@ namespace PPBA
 						}
 						break;
 					}
+					case GSC.DataType.ANIMATIONS:
+					{
+						_animations = new List<GSC.animation>(count);
+						for(int i = 0; i < count; i++)
+						{
+							GSC.animation value = new GSC.animation();
+
+							value._id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._animation = (PawnAnimations)msg[offset];
+							offset++;
+
+							_animations.Add(value);
+						}
+						break;
+					}
 					case GSC.DataType.PATH:
 					{
 						_paths = new List<GSC.path>(count);
@@ -963,6 +996,23 @@ Change:
 			}
 			_behaviors.RemoveRange(removerIndex, _behaviors.Count - removerIndex);
 			removerIndex = 0;
+			for(int i = 0; i < _animations.Count; i++)
+			{
+				GSC.animation element = reference._animations.Find(x => x._id == _animations[i]._id);
+
+				if(null == element)
+					goto Change;
+
+				if(_animations[i]._animation != element._animation)
+					goto Change;
+
+				continue;
+Change:
+				_animations[removerIndex] = _animations[i];
+				removerIndex++;
+			}
+			_animations.RemoveRange(removerIndex, _animations.Count - removerIndex);
+			removerIndex = 0;
 			for(int i = 0; i < _paths.Count; i++)
 			{
 				GSC.path element = reference._paths.Find(x => x._id == _paths[i]._id);
@@ -1116,6 +1166,13 @@ Change:
 
 				_behaviors.Add(it);
 			}
+			foreach(var it in reference._animations)
+			{
+				if(_animations.Exists(x => x._id == it._id))
+					continue;
+
+				_animations.Add(it);
+			}
 			foreach(var it in reference._paths)
 			{
 				if(_paths.Exists(x => x._id == it._id))
@@ -1230,6 +1287,18 @@ Change:
 					_target = (lerpValue < 0.5f) ? origin._target : target._target,
 				});
 			}
+			foreach(var origin in start._animations)
+			{
+				GSC.animation target = end._animations.Find(x => x._id == origin._id);
+				if(target == default)
+					continue;
+
+				value._animations.Add(new GSC.animation
+				{
+					_id = origin._id,
+					_animation = (lerpValue < 0.5f) ? origin._animation : target._animation,
+				});
+			}
 			foreach(var origin in start._paths)
 			{
 				GSC.path target = end._paths.Find(x => x._id == origin._id);
@@ -1267,11 +1336,11 @@ Change:
 		public GSC.health GetHealth(int id) => _healths.Find(x => x._id == id);
 		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
 		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
+		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
 		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
 		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
-		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
@@ -1330,6 +1399,7 @@ Change:
 
 			_resources.Add(element);
 		}
+
 		public void Add(GSC.health element)
 		{
 			if(_healths.Exists(x => x._id == element._id))
@@ -1340,6 +1410,7 @@ Change:
 
 			_healths.Add(element);
 		}
+
 		public void Add(GSC.work element)
 		{
 			if(_works.Exists(x => x._id == element._id))
@@ -1350,6 +1421,7 @@ Change:
 
 			_works.Add(element);
 		}
+
 		public void Add(GSC.behavior element)
 		{
 			if(_behaviors.Exists(x => x._id == element._id))
@@ -1359,6 +1431,17 @@ Change:
 			}
 
 			_behaviors.Add(element);
+		}
+
+		public void Add(GSC.animation element)
+		{
+			if(_animations.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Animation already exists: " + element.ToString());
+				return;
+			}
+
+			_animations.Add(element);
 		}
 
 		public void Add(GSC.path element)
@@ -1374,7 +1457,7 @@ Change:
 
 		public void Add(GSC.heatMap element)
 		{
-			return;
+			return;//remove this to reimpliment HeatMap transmition
 			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
 			{
 				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
@@ -1405,18 +1488,6 @@ Change:
 
 			_newIDRanges.Add(element);
 		}
-
-		public void Add(GSC.animation element)
-		{
-			if(_animations.Exists(x => x._id == element._id))
-			{
-				Debug.LogWarning("Animation already exists: " + element.ToString());
-				return;
-			}
-
-			_animations.Add(element);
-		}
-
 		#endregion
 
 		/// <summary>

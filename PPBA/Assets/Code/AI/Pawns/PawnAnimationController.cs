@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public enum PawnAnimations { IDLE, RUN, BUILD, DIE }
+	public enum PawnAnimations : byte { IDLE, RUN, BUILD, DIE }
 
 	public class PawnAnimationController : MonoBehaviour
 	{
