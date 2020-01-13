@@ -158,6 +158,7 @@ namespace PPBA
 			//Get references
 			_navMeshPath = new NavMeshPath();
 			_lineRenderer = GetComponent<LineRenderer>();
+			_healthBarController = GetComponentInChildren<HealthBarController>();
 			_shootLineController = GetComponentInChildren<ShootLineController>();
 			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
 

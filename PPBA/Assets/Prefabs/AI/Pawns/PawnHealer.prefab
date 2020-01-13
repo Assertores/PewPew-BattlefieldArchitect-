@@ -217,9 +217,9 @@ MonoBehaviour:
   e_behaviors: 13010e0a0b0c11080f
   _behaviorMultipliers:
   - 1
-  - 9
-  - 8
   - 6
+  - 5
+  - 5
   - 6
   - 6
   - 10
@@ -229,7 +229,7 @@ MonoBehaviour:
   _lastBehavior: {fileID: 0}
   _behaviorScores: []
   _clientBehavior: 0
-  _animationController: {fileID: 0}
+  _animationController: {fileID: 1025715346529498047}
   _clientNavPathCorners: []
   _shootLineController: {fileID: 0}
   _healthBarController: {fileID: 6350925231370483310}
