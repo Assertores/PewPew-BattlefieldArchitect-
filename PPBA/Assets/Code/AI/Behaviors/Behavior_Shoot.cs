@@ -134,7 +134,8 @@ namespace PPBA
 			switch(name)
 			{
 				case "Distance":
-					return Vector3.Distance(target.transform.position, pawn.transform.position) / pawn._attackDistance;
+					//return Vector3.Distance(target.transform.position, pawn.transform.position) / pawn._attackDistance;//gate 2 change
+					return Vector3.Distance(target.transform.position, pawn.transform.position) / 100f;
 				case "Health":
 					return target._health / target._maxHealth;
 				case "Cover":
