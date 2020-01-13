@@ -46,7 +46,9 @@ namespace PPBA
 		private void FixedUpdate()
 		{
 			TickIt();
-			h_catchUpTick++;
+
+			if(s_currentTick > 2)
+				h_catchUpTick++;
 		}
 #endif
 
