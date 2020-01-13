@@ -50,8 +50,6 @@ namespace PPBA
 			if(temp._id != _id)
 				return;
 
-			print("set team to " + temp._team + " (" + tick + ")");
-
 			refHolder._team = temp._team;
 		}
 	}
