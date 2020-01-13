@@ -40,7 +40,7 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 	private int _teamBackingField;
 	[HideInInspector] public int _team { get => _teamBackingField; set
 		{
-			if(_teamBackingField != value)
+			if(_teamBackingField != value && null != _myRenderer && null != _PropertyBlock)
 				BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
 
 			_teamBackingField = value;

@@ -14,6 +14,7 @@ namespace PPBA
 	{
 		protected class State
 		{
+			public Arguments _arguments;
 			public Vector3 _position;
 			public float _angle; //in degrees
 			public float _health;
@@ -96,7 +97,8 @@ namespace PPBA
 		public PawnAnimationController _animationController;
 		public NavMeshPath _navMeshPath;
 		public Vector3[] _clientNavPathCorners;
-		private LineRenderer _lineRenderer;
+		private LineRenderer _lineRenderer;//displays path
+		public ShootLineController _shootLineController;
 		[SerializeField] private HealthBarController _healthBarController;
 		[SerializeField] private Material _material;
 		[SerializeField] private Renderer _myRenderer;
@@ -156,7 +158,7 @@ namespace PPBA
 			//Get references
 			_navMeshPath = new NavMeshPath();
 			_lineRenderer = GetComponent<LineRenderer>();
-			//_material = transform.GetChild(0).GetComponent<Material>();
+			_shootLineController = GetComponentInChildren<ShootLineController>();
 			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
 
 			//Initialisation
@@ -323,6 +325,8 @@ namespace PPBA
 				}
 				else
 				{
+					_nextState._arguments = temp._arguments;
+
 					if(!gameObject.activeSelf)
 					{
 						gameObject.SetActive(true);
@@ -332,7 +336,7 @@ namespace PPBA
 
 				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
 				{
-					// do trigger stuff
+					//_nextState._arguments |= Arguments.TRIGGERBEHAVIOUR;
 				}
 			}
 			{
@@ -423,6 +427,11 @@ namespace PPBA
 			else
 				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
 
+			_arguments = _nextState._arguments;
+
+			if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				_shootLineController.SetShootLine(_shootLineController.transform.position, _shootLineController.transform.position + Vector3.forward * 3f);
+
 			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
@@ -433,32 +442,6 @@ namespace PPBA
 			_clientBehavior = _nextState._behavior;
 			_currentAnimation = _nextState._animation;
 		}
-
-		/*
-		void HandleGameStateEnableEvents(int tick)
-		{
-			Arguments args = TickHandler.s_interfaceGameState._args.Find(x => x._id == _id)._arguments;
-			if(args.HasFlag(Arguments.ENABLED))
-			{
-				if(!this.gameObject.activeSelf)
-				{
-					_holder.gameObject.SetActive(true);
-
-					GSC.transform newTransform = TickHandler.s_interfaceGameState._transforms.Find(x => x._id == _id);
-
-					_holder.transform.position = newTransform._position;
-					_holder.transform.rotation = Quaternion.Euler(0, newTransform._angle, 0);
-				}
-			}
-			else
-			{
-				if(this.gameObject.activeSelf)
-				{
-					_holder.gameObject.SetActive(false);
-				}
-			}
-		}
-		*/
 		#endregion
 
 		#region Initialisation

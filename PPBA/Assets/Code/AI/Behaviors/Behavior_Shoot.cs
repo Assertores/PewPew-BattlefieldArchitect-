@@ -218,6 +218,8 @@ namespace PPBA
 			{
 				if(target._isMounting)
 				{
+					//pawn._shootLineController.SetShootLine(pawn.transform.position, target._mountSlot.transform.position);
+
 					if(Random.Range(0f, 1f) < target._mountSlot.GetCoverScore(pawn.transform.position))//roll to hit cover
 					{
 						target._mountSlot.GetHit(RollDamage(pawn));
@@ -225,6 +227,7 @@ namespace PPBA
 					}
 				}
 
+				//pawn._shootLineController.SetShootLine(pawn.transform.position, target.transform.position);
 				target.TakeDamage(RollDamage(pawn));//target hit succesfully
 				Debug.Log("Target " + target.name + " has " + target._health + " left.");
 			}

@@ -41,7 +41,7 @@ namespace PPBA
 		{
 			get => _teamBackingField; set
 			{
-				if(_teamBackingField != value)
+				if(_teamBackingField != value && null != _myRenderer && null != _PropertyBlock)
 					BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
 
 				_teamBackingField = value;
