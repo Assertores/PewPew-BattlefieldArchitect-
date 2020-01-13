@@ -13,7 +13,7 @@
 		_Parallax ("Height", Range (0.005, 0.08)) = 0.02
 		_Specular("Specular", 2D) = "black" {}
 	//	_Specular("Specular Color", Color) = (1,1,1,1)
-		[HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
+		[PerRendererData][HDR] _Emission("Emission", color) = (0 ,0 ,0 , 1)
 
 		[Header(Lighting Parameters)]
 		_ShadowTint("Shadow Color", Color) = (0.5, 0.5, 0.5, 1)

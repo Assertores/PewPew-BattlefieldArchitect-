@@ -229,7 +229,7 @@ MonoBehaviour:
   _lastBehavior: {fileID: 0}
   _behaviorScores: []
   _clientBehavior: 0
-  _animationController: {fileID: 0}
+  _animationController: {fileID: 1025715346529498047}
   _clientNavPathCorners: []
   _shootLineController: {fileID: 0}
   _healthBarController: {fileID: 6350925231370483310}
