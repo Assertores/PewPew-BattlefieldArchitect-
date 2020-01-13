@@ -161,15 +161,14 @@ namespace PPBA
 
 		void ActivateBuildingMenu(int tick)
 		{
-			if(!gameObject.activeSelf)
-				return;
-			if(_team != GlobalVariables.s_instance._clients[0]._id)
+			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
+
+			if(TickHandler.s_interfaceGameState.GetType(_id)?._team != GlobalVariables.s_instance._clients[0]._id)
 				return;
 
-			print(tick);
+			print(tick + "\n" + TickHandler.s_interfaceGameState.ToString());
 			print("_team and global ID " + _team + ", " + GlobalVariables.s_instance._clients[0]._id);
 			print((GetComponentInParent<IRefHolder>() as MonoBehaviour).name);
-			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
 
 			UiInventory.s_instance.AddLastBuildings();
 		}
