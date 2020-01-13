@@ -41,7 +41,10 @@ namespace PPBA
 
 		void Start()
 		{
-		//	UiInventory.s_instance.AddLastBuildings();
+			if(_team != GlobalVariables.s_instance._clients[0]._id)
+				return;
+
+			UiInventory.s_instance.AddLastBuildings();
 
 		}
 
