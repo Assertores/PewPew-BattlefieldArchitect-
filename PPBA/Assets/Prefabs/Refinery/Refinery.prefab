@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 6617965542739019584}
   - component: {fileID: 2867244122050559521}
   - component: {fileID: -6659406027615875862}
+  - component: {fileID: 7598450032488205613}
   m_Layer: 9
   m_Name: Refinery
   m_TagString: Untagged
@@ -188,6 +189,7 @@ MonoBehaviour:
   _LivePoints: 20
   _MaxLivePoints: 20
   BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!114 &1646919483722797084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,6 +257,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &7598450032488205613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4800975661657982604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b464cbbb5f2a645852b5c73514bc6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8008248955556938267
 PrefabInstance:
   m_ObjectHideFlags: 0

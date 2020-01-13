@@ -72,8 +72,11 @@ namespace PPBA
 
 		public void HQisBuiding()
 		{
-			UiInventory.s_instance.AddLastBuildings();
-			UiInventory.s_instance.RemoveStartBuildings();
+			//if(_team != GlobalVariables.s_instance._clients[0]._id)
+			//	return;
+
+			//UiInventory.s_instance.AddLastBuildings();
+			//UiInventory.s_instance.RemoveStartBuildings();
 		}
 	}
 }
