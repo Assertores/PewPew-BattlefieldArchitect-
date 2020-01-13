@@ -116,7 +116,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 0}
+  _ImageUI: {fileID: 3286163911610860551, guid: fc00a32907e32ab4a9ed9f88f62289ea,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 3
   _GhostPrefab: {fileID: 0}
@@ -127,6 +128,7 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!114 &-3295806300095209701
 MonoBehaviour:
   m_ObjectHideFlags: 0

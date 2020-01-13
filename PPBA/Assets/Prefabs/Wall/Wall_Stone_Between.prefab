@@ -116,7 +116,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 0}
+  _ImageUI: {fileID: 3286163911610860551, guid: fc00a32907e32ab4a9ed9f88f62289ea,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 4
   _GhostPrefab: {fileID: 0}
@@ -127,6 +128,7 @@ MonoBehaviour:
   _LivePoints: 100
   _MaxLivePoints: 100
   BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!114 &2432861793620415984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +206,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 695979811854626018}
     m_Modifications:
+    - target: {fileID: 2638803951139961412, guid: 3cdfa53fe56fb554586dfb81052af588,
+        type: 3}
+      propertyPath: m_Name
+      value: Model_Between
+      objectReference: {fileID: 0}
     - target: {fileID: 919663872991375644, guid: 3cdfa53fe56fb554586dfb81052af588,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -258,11 +265,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2638803951139961412, guid: 3cdfa53fe56fb554586dfb81052af588,
-        type: 3}
-      propertyPath: m_Name
-      value: Model_Between
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3cdfa53fe56fb554586dfb81052af588, type: 3}

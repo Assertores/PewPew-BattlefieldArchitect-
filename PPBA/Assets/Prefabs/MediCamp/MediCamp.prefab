@@ -104,7 +104,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 21300000, guid: e3f638b727091b4428770f86b1c2257c, type: 3}
+  _ImageUI: {fileID: 3286163911610860551, guid: 8c856c3d09e8df44da5bbdb2027e9d57,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 11
   _GhostPrefab: {fileID: 8644842402150925202, guid: 201c1d354d50c5f47872f3ec3484673a,

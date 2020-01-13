@@ -252,7 +252,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _BuildingSound: {fileID: 0}
-  _ImageUI: {fileID: 21300000, guid: 2730b375be882f94bbc135367c997a10, type: 3}
+  _ImageUI: {fileID: 3286163911610860551, guid: fc00a32907e32ab4a9ed9f88f62289ea,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 8
   _GhostPrefab: {fileID: 4057149508026447006, guid: 15715eaacd2f26040b8ac3938107affa,
@@ -264,6 +265,7 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 2100000, guid: a046a3a6cea44e346bed0e6146dc1366, type: 2}
+  _myRenderer: {fileID: 0}
 --- !u!114 &3179471067333822429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,6 +326,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6709774135978924389}
     m_Modifications:
+    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 1386764047220013527, guid: afa21fd1e4c406c4cb3c8d234f08489a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -378,11 +385,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa21fd1e4c406c4cb3c8d234f08489a, type: 3}
