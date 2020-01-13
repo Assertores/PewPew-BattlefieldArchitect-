@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WallEndPieceMaterial
-  m_Shader: {fileID: 4800000, guid: 82dacd50b9249b54cbdf9b5981c95efd, type: 3}
+  m_Shader: {fileID: 4800000, guid: 170bb923b3b869d4080facddaa6961e1, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -61,6 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BuildingHeight: 1.26
+    - _BumpMapValue: 1
     - _BumpScale: 1
     - _Clip: 1
     - _Cutoff: 0.5
