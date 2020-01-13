@@ -62,7 +62,7 @@ namespace PPBA
 
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
-
+						print("!!!_canBuild");
 						foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 						{
 							Destroy(build.Key);
@@ -190,42 +190,54 @@ namespace PPBA
 				ConstructBetween();
 			}
 
-			float _angle = 0;
-			Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - _lastPole);
-			float dis = dir.magnitude;
+			float dis = 0;
+			float length = 0;
 
-			//if(dis < 1)
-			//{
-			//	return;
-			//}
-			float length = _ghostWallBetween.GetComponent<BoxCollider>().size.z;
-
-			// Wall Corner
-			Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole);
-			v3Pos = Input.mousePosition - v3Pos;
-			_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
-			v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * (length + 0.5f));
-			_currentPlaceableObject.transform.position = _lastPole + v3Pos;
-
-			// Wall Between
-			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
-			Vector3 pos = dir2 * 0.5f + _lastPole;
-			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
-			_currentBetweenObject.transform.position = pos;
-			_currentBetweenObject.transform.rotation = rotationObj;
-
-			if(dis > (length + 1f))
+			int x = 0;
+			
+			do
 			{
-				ConstructBetween();
-				ConstructWall();
-			}
+				x++;
+
+				float _angle = 0;
+				Vector3 dir = (UserInputController.s_instance.GetWorldPoint() - _lastPole);
+				dis = dir.magnitude;
+
+				//if(dis < 1)
+				//{
+				//	return;
+				//}
+				length = _ghostWallBetween.GetComponent<BoxCollider>().size.z;
+
+				// Wall Corner
+				Vector3 v3Pos = Camera.main.WorldToScreenPoint(_lastPole);
+				v3Pos = Input.mousePosition - v3Pos;
+				_angle = Mathf.Atan2(v3Pos.y, v3Pos.x) * Mathf.Rad2Deg;
+				v3Pos = Quaternion.AngleAxis(-_angle, Vector3.up) * (Camera.main.transform.right * (length + 0.5f));
+				_currentPlaceableObject.transform.position = _lastPole + v3Pos;
+
+				// Wall Between
+				Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
+				Vector3 pos = dir2 * 0.5f + _lastPole;
+				Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+				_currentBetweenObject.transform.position = pos;
+				_currentBetweenObject.transform.rotation = rotationObj;
+
+
+				if(dis > (length + 1f))
+				{
+					ConstructBetween();
+					ConstructWall();
+				}
+
+			} while(dis > (length + 1f) && x < 10);
 		}
 
 		private void ConstructBetween()
 		{
 			Vector3 dir2 = (_currentPlaceableObject.transform.position - _lastPole);
 			Vector3 pos = dir2 * 0.5f + _lastPole;
-			Quaternion rotationObj = Quaternion.LookRotation(dir2, Vector3.up);
+			Quaternion rotationObj = Quaternion.LookRotation(-dir2, Vector3.up);
 
 			GameObject Obj = Instantiate(_ghostWallBetween, pos, rotationObj);
 			_currentBetweenObject = Obj;

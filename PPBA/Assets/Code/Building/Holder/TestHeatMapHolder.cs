@@ -29,12 +29,12 @@ public class TestHeatMapHolder : MonoBehaviour, IRefHolder
 
 	private void Awake()
 	{
-		if(null == _myRenderer)
-		{
-			Renderer temp = transform.GetChild(0).GetChild(0).GetComponent<Renderer>();
-			if(null != temp)
-				_myRenderer = temp;
-		}
+		//if(null == _myRenderer)
+		//{
+		//	//Renderer temp = transform.GetChild(0).GetChild(0).GetComponent<Renderer>();
+		//	//if(null != temp)
+		//	//	_myRenderer = temp;
+		//}
 	}
 
 	private int _teamBackingField;
@@ -90,7 +90,7 @@ public class TestHeatMapHolder : MonoBehaviour, IRefHolder
 
 	private void OnEnable()
 	{
-		_PropertyBlock = new MaterialPropertyBlock();
-		BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, _team);
+		//_PropertyBlock = new MaterialPropertyBlock();
+		//BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, _team);
 	}
 }
