@@ -156,6 +156,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState.Add(new GSC.health { _id = _id, _health = _health, _morale = _score });
+			TickHandler.s_interfaceGameState.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 		}
 
 		void ActivateBuildingMenu(int tick)
@@ -164,6 +165,10 @@ namespace PPBA
 				return;
 			if(_team != GlobalVariables.s_instance._clients[0]._id)
 				return;
+
+			print(tick);
+			print("_team and global ID " + _team + ", " + GlobalVariables.s_instance._clients[0]._id);
+			print((GetComponentInParent<IRefHolder>() as MonoBehaviour).name);
 			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
 
 			UiInventory.s_instance.AddLastBuildings();

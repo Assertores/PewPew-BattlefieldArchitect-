@@ -10,7 +10,7 @@ namespace PPBA
 
 		public int _id { get; set; }
 
-		void Start()
+		void OnEnable()
 		{
 			refHolder = GetComponent<IRefHolder>();
 
@@ -27,7 +27,7 @@ namespace PPBA
 			TickHandler.s_DoInput += ReadFromGameState;
 #endif
 		}
-		private void OnDestroy()
+		private void OnDisable()
 		{
 #if UNITY_SERVER
 			TickHandler.s_GatherValues -= WriteToGameState;
@@ -49,6 +49,8 @@ namespace PPBA
 				return;
 			if(temp._id != _id)
 				return;
+
+			print("set team to " + temp._team + " (" + tick + ")");
 
 			refHolder._team = temp._team;
 		}
