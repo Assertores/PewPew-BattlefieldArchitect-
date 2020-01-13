@@ -25,7 +25,7 @@ namespace PPBA
 		private void SpawnPawn(int tick = 0)
 		{
 			if(TickHandler.s_currentTick % 100 == 50)
-				Pawn.Spawn(ObjectType.PAWN_HEALER, transform.position, _resourceDepot._team);
+				Pawn.Spawn(Pawn.RandomPawnType(), transform.position, _resourceDepot._team);
 		}
 
 		private void OnEnable()
