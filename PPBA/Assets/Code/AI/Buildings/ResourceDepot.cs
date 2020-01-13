@@ -39,19 +39,7 @@ namespace PPBA
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 		}
 
-		void Start()
-		{
-			if(_team != GlobalVariables.s_instance._clients[0]._id)
-				return;
-
-			UiInventory.s_instance.AddLastBuildings();
-
-		}
-
-		void Update()
-		{
-
-		}
+		
 
 		public void CalculateScore(int tick = 0)
 		{
@@ -143,6 +131,8 @@ namespace PPBA
 
 			TickHandler.s_LateCalc += CalculateScore;
 			TickHandler.s_GatherValues += WriteToGameState;
+#else
+			TickHandler.s_EarlyCalc += ActivateBuildingMenu;
 #endif
 		}
 
@@ -154,6 +144,8 @@ namespace PPBA
 
 			TickHandler.s_LateCalc -= CalculateScore;
 			TickHandler.s_GatherValues -= WriteToGameState;
+#else
+			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
 #endif
 			gameObject.SetActive(false);
 		}
@@ -164,6 +156,17 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState.Add(new GSC.health { _id = _id, _health = _health, _morale = _score });
+		}
+
+		void ActivateBuildingMenu(int tick)
+		{
+			if(!gameObject.activeSelf)
+				return;
+			if(_team != GlobalVariables.s_instance._clients[0]._id)
+				return;
+			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
+
+			UiInventory.s_instance.AddLastBuildings();
 		}
 		#endregion
 	}
