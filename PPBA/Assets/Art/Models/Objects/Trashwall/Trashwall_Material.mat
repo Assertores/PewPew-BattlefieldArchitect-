@@ -77,7 +77,7 @@ Material:
     - _Noise: 0
     - _NoiseScale: 1
     - _OcclusionStrength: 1
-    - _Parallax: 0.02
+    - _Parallax: 0.005
     - _SecondOutlineWidth: 0.004
     - _SmoothnessTextureChannel: 0
     - _SpecularFalloff: 1
