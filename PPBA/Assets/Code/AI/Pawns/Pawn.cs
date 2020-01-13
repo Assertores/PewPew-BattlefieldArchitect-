@@ -148,6 +148,7 @@ namespace PPBA
 			}
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
+		public Vector3 _behaviorTarget = Vector3.zero;
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null && _mountSlot.isActiveAndEnabled;
 		#endregion
@@ -391,6 +392,13 @@ namespace PPBA
 				{
 					_nextState._behavior = temp._behavior;
 					_clientBehavior = temp._behavior;
+
+					GSC.transform foo = TickHandler.s_interfaceGameState.GetTransform(temp._target);
+
+					if(null != foo && null != foo._position)
+					{
+						_behaviorTarget = foo._position;
+					}
 				}
 			}
 			{
@@ -431,7 +439,7 @@ namespace PPBA
 			_arguments = _nextState._arguments;
 
 			if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
-				_shootLineController.SetShootLine(_shootLineController.transform.position, _shootLineController.transform.position + Vector3.forward * 3f);
+				_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
 
 			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
