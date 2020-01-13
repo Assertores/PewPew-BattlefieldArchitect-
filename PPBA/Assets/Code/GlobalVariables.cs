@@ -101,6 +101,7 @@ namespace PPBA
 			ObjectPool.CreatePool<TrashWallHolder>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<MediCampHolder>(ObjectType.MEDICAMP, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<DepotHolder>(ObjectType.DEPOT, _initialObjectPoolSize, transform); //über netzwerk getracked
 						
 			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();

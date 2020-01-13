@@ -210,6 +210,7 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!1 &6486173834760009001
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,7 +434,10 @@ MonoBehaviour:
     _prefab: {fileID: 4985250074432113010, guid: 0aeb093dd47710440a6374e6656db180,
       type: 3}
   - _type: 10
-    _prefab: {fileID: 2213009535242751257, guid: 49f511dfb44867144a4645271e214b4e,
+    _prefab: {fileID: 4675645993054075009, guid: c0ed64018950d0d4ba9e33bcd9dfc37e,
+      type: 3}
+  - _type: 11
+    _prefab: {fileID: 6493288425784081815, guid: dc0c45c6a9274094fba0fcdcf6b155b2,
       type: 3}
   - _type: 11
     _prefab: {fileID: 6493288425784081815, guid: dc0c45c6a9274094fba0fcdcf6b155b2,

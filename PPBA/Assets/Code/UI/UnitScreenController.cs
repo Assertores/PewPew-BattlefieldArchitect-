@@ -72,15 +72,16 @@ namespace PPBA
 
 		public void OpenUnitPanel()
 		{
+			print("open!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			//opens
-			_unitPanel.DOAnchorPos(new Vector2(-_unitPanel.rect.x, 400), 0.25f);
+			_unitPanel.DOAnchorPos(new Vector2(0, -400), 0.25f);
 			_activePanel.InitialiseUnitPanel();
 		}
 
 		private void CloseUnitPanel()
 		{
 			//closes
-			_unitPanel.DOAnchorPos(new Vector2(-_unitPanel.rect.x, 0), 0.25f);
+			_unitPanel.DOAnchorPos(new Vector2(0, 0), 0.25f);
 			_activePanel = null;
 		}
 
