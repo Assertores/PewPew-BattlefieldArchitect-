@@ -214,7 +214,7 @@ MonoBehaviour:
   _healthRegen: 1
   _moraleRegen: 1
   TerritoryMapId: 0
-  e_behaviors: 13010e0a0b0c11080f
+  e_behaviors: 13010e0a0b0c11080f03
   _behaviorMultipliers:
   - 1
   - 10
@@ -223,6 +223,7 @@ MonoBehaviour:
   - 3
   - 4
   - 10
+  - 7
   - 7
   - 7
   _behaviors: []
@@ -238,6 +239,7 @@ MonoBehaviour:
   _closePawns: []
   _closeCoverSlots: []
   _moveTarget: {x: 0, y: 0, z: 0}
+  _behaviorTarget: {x: 0, y: 0, z: 0}
   _mountSlot: {fileID: 0}
   _overlapSphereLayerMask:
     serializedVersion: 2

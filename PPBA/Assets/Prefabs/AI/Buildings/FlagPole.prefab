@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myFlagHolder: {fileID: 1931648550861304276}
   _score: 1
-  _maxPawns: 10
+  _maxPawns: 2
   _friendlyPawns: []
   _overlapSphereLayerMask:
     serializedVersion: 2

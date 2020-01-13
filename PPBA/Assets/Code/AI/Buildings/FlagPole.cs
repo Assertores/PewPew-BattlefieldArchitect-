@@ -27,7 +27,7 @@ namespace PPBA
 			public float _angle;
 		}
 
-		public static float _radius = 15f;
+		public static float _radius = 3f;
 
 		public int _id { get; set; }
 		public int _team
@@ -244,7 +244,7 @@ namespace PPBA
 #if UNITY_SERVER
 			Init();
 
-			//TickHandler.s_LateCalc += Calculate;
+			TickHandler.s_LateCalc += Calculate;
 			//TickHandler.s_GatherValues += WriteToGameState;
 #endif
 		}
@@ -252,10 +252,10 @@ namespace PPBA
 		private void OnDisable()
 		{
 #if UNITY_SERVER
-			//TickHandler.s_LateCalc -= Calculate;
+			TickHandler.s_LateCalc -= Calculate;
 			//TickHandler.s_GatherValues -= WriteToGameState;
 #endif
-				if(null != JobCenter.s_flagPoles[_team])
+			if(null != JobCenter.s_flagPoles[_team])
 					if(JobCenter.s_flagPoles[_team].Contains(this))
 						JobCenter.s_flagPoles[_team].Remove(this);
 		}
