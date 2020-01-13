@@ -66,6 +66,7 @@ GameObject:
   - component: {fileID: 1905397054423874543}
   - component: {fileID: 601556712463223517}
   - component: {fileID: -4267654592118872686}
+  - component: {fileID: 3231875279622792652}
   m_Layer: 9
   m_Name: MediCamp
   m_TagString: Untagged
@@ -115,6 +116,7 @@ MonoBehaviour:
   _LivePoints: 0
   _MaxLivePoints: 0
   BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!114 &7716478408267068293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +170,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &3231875279622792652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6493288425784081815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b464cbbb5f2a645852b5c73514bc6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8918250502286280411
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,6 +233,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7507454801724611220}
     m_Modifications:
+    - target: {fileID: 2847573181604728383, guid: f0405b84a811fab419b56f4ab0f7d7a0,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 7769597733781911595, guid: f0405b84a811fab419b56f4ab0f7d7a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -273,11 +292,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847573181604728383, guid: f0405b84a811fab419b56f4ab0f7d7a0,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0405b84a811fab419b56f4ab0f7d7a0, type: 3}
