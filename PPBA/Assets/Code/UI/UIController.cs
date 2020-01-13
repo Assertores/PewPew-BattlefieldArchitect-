@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using DG.Tweening;
-
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class UIController : MonoBehaviour
 {
 	public RectTransform MainBuildPanel;
 	public RectTransform buildUI_1;
 	public RectTransform buildUI_2;
+
+	[SerializeField] private Button _b1;
 
 	private bool _isOpen1 = false;
 	private bool _isOpen2 = false;
@@ -49,6 +52,10 @@ public class UIController : MonoBehaviour
 		}
 
 		_isOpen1 = !_isOpen1;
+		if(_isOpen1)
+			_b1.Select();
+		else
+			EventSystem.current.SetSelectedGameObject(null);
 
 		if (!_isOpen1 && !_isOpen2)
 		{

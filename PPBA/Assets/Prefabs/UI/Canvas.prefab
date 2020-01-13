@@ -1094,8 +1094,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 185.2002, y: -57.285156}
-  m_SizeDelta: {x: 370.40002, y: 114.57007}
+  m_AnchoredPosition: {x: 63.5, y: -57.285156}
+  m_SizeDelta: {x: 131.17, y: 114.57007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3144815779140022042
 CanvasRenderer:
@@ -1123,9 +1123,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Sprite: {fileID: 3286163911610860551, guid: 9ca219d56e2c4a24a8fa7f09d4174cd9,
+    type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1151,7 +1152,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1162,8 +1163,10 @@ MonoBehaviour:
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 3286163911610860551, guid: 675f5e34866f79c439cc675cf7ff75bb,
+      type: 3}
+    m_SelectedSprite: {fileID: 3286163911610860551, guid: 675f5e34866f79c439cc675cf7ff75bb,
+      type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -1588,7 +1591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3144815779673359579
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2020,7 +2023,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3144815780484154964
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2531,6 +2534,7 @@ MonoBehaviour:
   MainBuildPanel: {fileID: 3144815779379328832}
   buildUI_1: {fileID: 3144815779539599412}
   buildUI_2: {fileID: 3144815779641417403}
+  _b1: {fileID: 3144815779140022044}
 --- !u!1 &3952849353716683667
 GameObject:
   m_ObjectHideFlags: 0
