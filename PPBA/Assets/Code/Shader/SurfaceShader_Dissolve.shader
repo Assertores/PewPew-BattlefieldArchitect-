@@ -21,6 +21,7 @@
 		_Phase("Phase", Vector) = (0,0,0,0)
 
 		[PerRendererData]_Clip("Clip Height", Float) = 0.0
+		//_Clip("Clip Height", Float) = 0.0
 		_Noise("Noise", Float) = 0.0
 		_NoiseScale("Noise Scale", Float) = 1.0
 		_BuildingHeight("BuildingHeight", Float) = 5.0
@@ -31,7 +32,7 @@
 	{
 		Tags { "RenderType" = "Opaque" }
 		CGPROGRAM
-		#pragma surface surf Lambert
+		#pragma surface surf Lambert vertex:vert
 		#pragma target 3.0
 		#include "UnityStandardUtils.cginc" 
 		#include "Includes/SimplexNoise3D.cginc"
@@ -44,6 +45,7 @@
 			float2 uv_MainTex;
 			float2 uv_BumpMap;
 			float2 uv_ParallaxMap;
+			float3 localPos;
 			half frontFace : VFACE;
 		};
 
@@ -74,6 +76,11 @@
 		  float _BuildingHeight;
 		  float _Parallax;
 
+		  void vert(inout appdata_full v, out Input o) 
+		  {
+			  UNITY_INITIALIZE_OUTPUT(Input, o);
+			  o.localPos = v.vertex.xyz;
+		  }
 
 		  void surf(Input i, inout SurfaceOutput o)
 		  {
@@ -83,12 +90,13 @@
 			  i.uv_MainTex += offset;
 			  i.uv_BumpMap += offset;
 
-			  float3 p = i.worldPos;
+			  float3 p = i.localPos * 100;
+			  //float3 p = i.localPos;
 			  float3 s = _NoiseScale * p;
 			  float noise = snoise(s);
 			  noise *= _Noise;
 			  float3 n = sin((noise + p.xyz) * _Frequency.xyz + _Phase.xyz + noise) * _Amplitude.xyz;
-			  float d = p.y + length(n);
+			  float d = p.z + length(n);
 			  noise = d;
 
 			  float tmp = _Clip * _BuildingHeight;
@@ -104,7 +112,7 @@
 			  fixed4 col = tex2D(_MainTex, i.uv_MainTex);
 
 			  col *= _Color;
-			  o.Albedo = col.rgb /** color*/;
+			  o.Albedo = col.rgb;
 			  //o.Normal = UnpackNormal(tex2D(_BumpMap, i.uv_BumpMap)) /** _BumpMapValue*/;
 			  o.Normal = UnpackScaleNormal(tex2D(_BumpMap, i.uv_BumpMap), _BumpMapValue);
 
