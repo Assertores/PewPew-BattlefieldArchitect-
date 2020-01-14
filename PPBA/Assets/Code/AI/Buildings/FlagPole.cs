@@ -27,7 +27,7 @@ namespace PPBA
 			public float _angle;
 		}
 
-		public static float _radius = 3f;
+		public static float _radius = 2f;
 
 		public int _id { get; set; }
 		public int _team
