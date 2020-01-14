@@ -14,6 +14,7 @@ namespace PPBA
 		[SerializeField] private ObjectType _ObjectType;
 		[SerializeField] private GameObject _GhostPrefab;
 		[SerializeField] private GameObject _blueprintPrefab;
+		private FlagPole _flagPole;
 
 		public float _BuildingTime;
 		public float _BuildingCosts;
@@ -40,6 +41,9 @@ namespace PPBA
 				if(null != temp)
 					_myRenderer = temp;
 			}
+
+			if(null == _flagPole)
+				_flagPole = GetComponentInChildren<FlagPole>();
 		}
 
 		private int _teamBackingField;
@@ -52,6 +56,9 @@ namespace PPBA
 					BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
 
 				_teamBackingField = value;
+
+				if(null != _flagPole)
+					JobCenter.ChangeTeamList(JobCenter.s_flagPoles, _flagPole, value);
 			}
 		}
 
