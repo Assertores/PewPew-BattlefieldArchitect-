@@ -220,8 +220,8 @@ MonoBehaviour:
   _ammoBackingField: 100
   _suppliesBackingField: 0
   _moraleBackingField: 100
-  _healthRegen: 1
-  _moraleRegen: 1
+  _healthRegen: 0.1
+  _moraleRegen: 0.05
   TerritoryMapId: 0
   e_behaviors: 13010e0a0b0c11080f03
   _behaviorMultipliers:
@@ -330,11 +330,6 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7624653420067495288, guid: 3d9eab8741f1cdb4e9b2bdf326638994,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 160576129b8d9774f984d5ffdffd2b66, type: 2}
     - target: {fileID: 6475341992876109301, guid: 3d9eab8741f1cdb4e9b2bdf326638994,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -345,6 +340,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.005976795
       objectReference: {fileID: 0}
+    - target: {fileID: 7624653420067495288, guid: 3d9eab8741f1cdb4e9b2bdf326638994,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 160576129b8d9774f984d5ffdffd2b66, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d9eab8741f1cdb4e9b2bdf326638994, type: 3}
 --- !u!1 &7206833694655706748 stripped

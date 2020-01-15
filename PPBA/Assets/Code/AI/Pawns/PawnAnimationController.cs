@@ -30,38 +30,38 @@ namespace PPBA
 
 		public void SetAnimatorBools(PawnAnimations animation)
 		{
-			_animator.SetBool("IsRun", false);
-			_animator.SetBool("IsBuild", false);
-			_animator.SetBool("IsIdle", false);
-
 			switch(animation)
 			{
 				case PawnAnimations.IDLE:
 					_animator.SetBool("IsRun", false);
 					_animator.SetBool("IsBuild", false);
 					_animator.SetBool("IsIdle", true);
-					break;
+					_animator.SetBool("IsDead", false);
+					return;
 				case PawnAnimations.RUN:
 					_animator.SetBool("IsRun", true);
 					_animator.SetBool("IsBuild", false);
 					_animator.SetBool("IsIdle", false);
-					break;
+					_animator.SetBool("IsDead", false);
+					return;
 				case PawnAnimations.BUILD:
 					_animator.SetBool("IsRun", false);
 					_animator.SetBool("IsBuild", true);
 					_animator.SetBool("IsIdle", false);
-					break;
+					_animator.SetBool("IsDead", false);
+					return;
 				case PawnAnimations.DIE:
 					_animator.SetBool("IsRun", false);
 					_animator.SetBool("IsBuild", false);
 					_animator.SetBool("IsIdle", false);
 					_animator.SetBool("IsDead", true);
-					break;
+					return;
 				default:
 					_animator.SetBool("IsRun", false);
 					_animator.SetBool("IsBuild", false);
 					_animator.SetBool("IsIdle", true);
-					break;
+					_animator.SetBool("IsDead", false);
+					return;
 			}
 		}
 	}

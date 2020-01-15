@@ -37,7 +37,8 @@ namespace PPBA
 		public void SetShootLine(Vector3 shooter, Vector3 target)
 		{
 			_lineRenderer.positionCount = 2;
-			_lineRenderer.SetPositions(new Vector3[] { shooter, target });
+			//_lineRenderer.SetPositions(new Vector3[] { shooter, target });
+			_lineRenderer.SetPositions(new Vector3[] { shooter, new Vector3(target.x, target.y + 0.5f, target.z) });
 			_lineTicker = 0f;
 			_lineRenderer.enabled = true;
 		}
