@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 128041602174902717}
   - component: {fileID: 1777836687972694027}
   - component: {fileID: 7208135573250592816}
+  - component: {fileID: 847850050161172286}
   m_Layer: 0
   m_Name: BehaviorContainer
   m_TagString: Untagged
@@ -752,30 +753,21 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: 5.573523
-        outSlope: 5.573523
+        value: 1
+        inSlope: -0.20571724
+        outSlope: -0.20571724
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.17758173
-        value: 0.98975587
-        inSlope: 0.094731875
-        outSlope: 0.094731875
-        tangentMode: 0
+        time: 0.99884033
+        value: 0.79452133
+        inSlope: -0.20571724
+        outSlope: -0.20571724
+        tangentMode: 34
         weightedMode: 0
-        inWeight: 0.24354774
-        outWeight: 0.088955484
-      - serializedVersion: 3
-        time: 1
-        value: 0.5996742
-        inSlope: -0.25105372
-        outSlope: -0.25105372
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.099454895
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -1517,3 +1509,19 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
+--- !u!114 &847850050161172286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515035436285199966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eb43ae990203824dbe049c7d9726da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pawnAxes: []
+  _targetAxes: []
+  _attackBuildUpTime: 8
+  _attackRange: 10

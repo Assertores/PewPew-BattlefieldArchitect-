@@ -147,7 +147,7 @@ namespace PPBA
 				return _closeCoverSlots;
 			}
 		}
-  public List<IDestroyableBuilding> _closeBuildings = new List<IDestroyableBuilding>();
+		public List<IDestroyableBuilding> _closeBuildings = new List<IDestroyableBuilding>();
 		public List<IDestroyableBuilding> _activeBuildings
 		{
 			get
@@ -495,6 +495,8 @@ namespace PPBA
 					return Behavior_Idle.s_instance;
 				case Behaviors.SHOOT:
 					return Behavior_Shoot.s_instance;
+				case Behaviors.SHOOTATBUILDING:
+					return Behavior_ShootAtBuilding.s_instance;
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
@@ -747,10 +749,44 @@ namespace PPBA
 						Cover cover = c.GetComponent<Cover>();
 						if(cover)
 						{
+							_closeBuildings.Add(cover);
+
 							foreach(CoverSlot slot in cover._coverSlots)
 							{
 								_closeCoverSlots.Add(slot);
 							}
+						}
+						continue;
+					case StringCollection.DEPOT:
+						continue;
+					case StringCollection.FLAGPOLE:
+						continue;
+					case StringCollection.HQ:
+						HeadQuarter hq = c.transform.GetChild(2)?.GetComponent<HeadQuarter>();
+						if(hq)
+						{
+							_closeBuildings.Add(hq._resourceDepot);
+						}
+						continue;
+					case StringCollection.MEDICAMP:
+						MediCamp mediCamp = c.transform.GetChild(2)?.GetComponent<MediCamp>();
+						if(mediCamp)
+						{
+							_closeBuildings.Add(mediCamp);
+						}
+						continue;
+					case StringCollection.REFINERY:
+						IDestroyableBuilding refinery = c.transform.GetChild(2)?.GetComponent<IDestroyableBuilding>();
+						if(null != refinery)
+						{
+							_closeBuildings.Add(refinery);
+						}
+						continue;
+					case StringCollection.WALL:
+						IDestroyableBuilding wall = c.transform.GetChild(2)?.GetComponent<IDestroyableBuilding>();
+						if(null != wall)
+						{
+							_closeBuildings.Add(wall);
 						}
 						continue;
 					default:
@@ -794,6 +830,7 @@ namespace PPBA
 		{
 			_closePawns.Clear();
 			_closeCoverSlots.Clear();
+			_closeBuildings.Clear();
 		}
 
 		/// <summary>

@@ -13,7 +13,7 @@ namespace PPBA
 		#endregion
 
 		#region References
-		[SerializeField] private ResourceDepot _resourceDepot;
+		[SerializeField] public ResourceDepot _resourceDepot;
 		#endregion
 
 		private void CarePackage(int tick = 0)

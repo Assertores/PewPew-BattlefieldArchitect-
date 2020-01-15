@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Pawn
   - Cover
+  - Depot
+  - Flagpole
+  - Hq
+  - Medicamp
+  - Refinery
+  - Wall
   layers:
   - Default
   - TransparentFX

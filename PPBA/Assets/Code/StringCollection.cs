@@ -6,8 +6,16 @@ namespace PPBA
 {
 	public static class StringCollection
 	{
-		//public const string TEST = "test";
+		//buildings
 		public const string COVER = "Cover";
+		public const string DEPOT = "Depot";
+		public const string FLAGPOLE = "Flagpole";
+		public const string HQ = "Hq";
+		public const string MEDICAMP = "Medicamp";
+		public const string REFINERY = "Refinery";
+		public const string WALL = "Wall";
+
+		//public const string TEST = "test";
 		public const string HEALTH = "Health";
 		public const string AMMO = "Ammo";
 		public const string MORALE = "Morale";
