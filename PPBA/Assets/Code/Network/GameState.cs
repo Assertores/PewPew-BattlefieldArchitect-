@@ -16,6 +16,12 @@ namespace PPBA
 		TRIGGERBEHAVIOUR = 2,//2^1
 	};
 
+	struct HeatMapMessageElement
+	{
+		public BitField2D _mask;
+		public List<float> _values;
+	}
+
 	namespace GSC //Game State Component
 	{
 		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
@@ -288,9 +294,7 @@ namespace PPBA
 					/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 					foreach(var it in _heatMaps)
 					{
-						msg.Clear();
-						msg.Add((byte)GSC.DataType.MAP);
-						msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+
 
 						byte xMin = byte.MaxValue;
 						byte xSize = byte.MinValue;
@@ -309,6 +313,9 @@ namespace PPBA
 
 						if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
 						{
+							msg.Clear();
+							msg.Add((byte)GSC.DataType.MAP);
+							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 							msg.Add((byte)GSC.DataType.PIXELWISE);
 
 							int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
@@ -342,6 +349,8 @@ namespace PPBA
 								msg.Add(it._values[i]._y);
 								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
 							}
+
+							HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 #if Obsolete
 
 						msg.AddRange(BitConverter.GetBytes(it._values.Count));
@@ -367,6 +376,58 @@ namespace PPBA
 						}
 						else
 						{
+							int xFieldCount = Mathf.CeilToInt((float)xSize / 64);
+							int yFieldCount = Mathf.CeilToInt((float)ySize / 64);
+
+							int bFWidth = Mathf.CeilToInt((float)xSize / xFieldCount);
+							int bFHeight = Mathf.CeilToInt((float)ySize / yFieldCount);
+
+							HeatMapMessageElement[,] messageHandler = new HeatMapMessageElement[xFieldCount, yFieldCount];
+							for(int x = 0; x < xFieldCount; x++)
+							{
+								for(int y = 0; y < yFieldCount; y++)
+								{
+									messageHandler[x, y]._mask = new BitField2D(bFWidth, bFHeight);
+									messageHandler[x, y]._values = new List<float>();
+								}
+							}
+							foreach(var jt in it._values)
+							{
+								messageHandler[(jt._x - xMin) / bFWidth, (jt._y - yMin) / bFHeight]._mask[(jt._x - xMin) % bFWidth, (jt._y - yMin) % bFHeight] = true;
+								messageHandler[(jt._x - xMin) / bFWidth, (jt._y - yMin) / bFHeight]._values.Add(jt._value);
+							}
+
+							for(int x = 0; x < xFieldCount; x++)
+							{
+								for(int y = 0; y < yFieldCount; y++)
+								{
+									if(messageHandler[x, y]._values.Count == 0)
+										continue;
+
+									msg.Clear();
+									msg.Add((byte)GSC.DataType.MAP);
+									msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+									msg.Add((byte)GSC.DataType.BITMAPWISE);
+
+									msg.Add((byte)(xMin + x * bFWidth));
+									msg.Add((byte)(yMin + y * bFHeight));
+									msg.Add((byte)bFWidth);
+									msg.Add((byte)bFHeight);
+
+									msg.AddRange(messageHandler[x, y]._mask.ToArray());
+									for(int i = 0; i < messageHandler[x, y]._values.Count; i++)
+									{
+										msg.AddRange(BitConverter.GetBytes(messageHandler[x, y]._values[i]));
+									}
+
+									HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+								}
+							}
+
+#if Obsolete
+							msg.Clear();
+							msg.Add((byte)GSC.DataType.MAP);
+							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 							msg.Add((byte)GSC.DataType.BITMAPWISE);
 
 							msg.Add(xMin);
@@ -386,9 +447,10 @@ namespace PPBA
 							{
 								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
 							}
+#endif
 						}
 
-						HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+						
 					}
 				}
 				Profiler.EndSample();
@@ -1477,7 +1539,7 @@ Change:
 			return value;
 		}
 
-		#region Helper Funktion
+#region Helper Funktion
 
 		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
 		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
@@ -1654,7 +1716,7 @@ Change:
 
 			_newIDRanges.Add(element);
 		}
-		#endregion
+#endregion
 
 		/// <summary>
 		/// packs the message into the next best package
