@@ -448,28 +448,107 @@ namespace PPBA
 			if(_heatMaps.Count > 0)
 			{
 				/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
+				/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 				foreach(var it in _heatMaps)
 				{
 					msg.Clear();
 					msg.Add((byte)GSC.DataType.MAP);
 					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 
-					if(true)
+					byte xMin = byte.MaxValue;
+					byte xSize = byte.MinValue;
+					byte yMin = byte.MaxValue;
+					byte ySize = byte.MinValue;
+
+					foreach(var jt in it._values)
+					{
+						xMin = xMin < jt._x ? xMin : jt._x;
+						xSize = jt._x < xSize ? jt._x : xSize;
+						yMin = yMin < jt._y ? yMin : jt._y;
+						ySize = jt._y < ySize ? jt._y : ySize;
+					}
+					xSize -= xMin;
+					ySize -= yMin;
+
+					if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
 					{
 						msg.Add((byte)GSC.DataType.PIXELWISE);
 
-						msg.AddRange(BitConverter.GetBytes(it._values.Count));
-						foreach(var jt in it._values)
+						int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
+
+						int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
+
+						for(int i = 0; i < packageCount - 1; i++)
 						{
-							msg.Add(jt._x);
-							msg.Add(jt._y);
-							msg.AddRange(BitConverter.GetBytes(jt._value));
+							msg.AddRange(BitConverter.GetBytes(maxElementCount));
+
+							for(int j = i * maxElementCount; j < i * maxElementCount + maxElementCount; j++)
+							{
+								msg.Add(it._values[j]._x);
+								msg.Add(it._values[j]._y);
+								msg.AddRange(BitConverter.GetBytes(it._values[j]._value));
+							}
+
+							HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+
+							msg.Clear();
+							msg.Add((byte)GSC.DataType.MAP);
+							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+							msg.Add((byte)GSC.DataType.PIXELWISE);
 						}
+
+						msg.AddRange(BitConverter.GetBytes(it._values.Count % maxElementCount));//should be the same value as the for loop count
+
+						for(int i = (packageCount - 1) * maxElementCount; i < it._values.Count; i++)
+						{
+							msg.Add(it._values[i]._x);
+							msg.Add(it._values[i]._y);
+							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+						}
+#if Obsolete
+
+						msg.AddRange(BitConverter.GetBytes(it._values.Count));
+						for(int i = 0; i < it._values.Count; i++)
+						{
+							msg.Add(it._values[i]._x);
+							msg.Add(it._values[i]._y);
+							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+
+							if(i %)
+							{
+								HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+
+								msg.Clear();
+								msg.Add((byte)GSC.DataType.MAP);
+								msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+								msg.Add((byte)GSC.DataType.PIXELWISE);
+
+								msg.AddRange(BitConverter.GetBytes(it._values.Count));
+							}
+						}
+#endif
 					}
 					else
 					{
 						msg.Add((byte)GSC.DataType.BITMAPWISE);
-						//TODO: impliment bitfields
+
+						msg.Add(xMin);
+						msg.Add(yMin);
+						msg.Add(xSize);
+						msg.Add(ySize);
+
+						BitField2D mask = new BitField2D(xSize, ySize);
+						foreach(var jt in it._values)
+						{
+							mask[jt._x, jt._y] = true;
+						}
+
+						msg.AddRange(mask.ToArray());
+
+						for(int i = 0; i < it._values.Count; i++)
+						{
+							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+						}
 					}
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
@@ -762,7 +841,6 @@ namespace PPBA
 						}
 						break;
 					}
-					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
 					case GSC.DataType.MAP:
 					{
 						GSC.heatMap value = _heatMaps.Find(x => x._id == count);
@@ -777,6 +855,7 @@ namespace PPBA
 
 						switch(type)
 						{
+							/// byte Type, int ID, byte type| int pixelCount, {byte x, byte y, float value}[]
 							case GSC.DataType.PIXELWISE:
 								int size = BitConverter.ToInt32(msg, offset);
 								offset += sizeof(int);
@@ -797,8 +876,41 @@ namespace PPBA
 									value._values.Add(element);
 								}
 								break;
+							/// byte Type, int ID, byte type| byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 							case GSC.DataType.BITMAPWISE:
-								Debug.LogWarning("not implimented");//TODO: Reimpliment
+								byte x = msg[offset];
+								offset++;
+
+								byte y = msg[offset];
+								offset++;
+
+								byte w = msg[offset];
+								offset++;
+
+								byte h = msg[offset];
+								offset++;
+
+								BitField2D mask = new BitField2D(w, h);
+
+								byte[] field = mask.ToArray();
+								Buffer.BlockCopy(msg, offset, field, 0, field.Length);
+								offset += field.Length;
+								mask.FromArray(field);
+
+								Vector2Int[] pos = mask.GetActiveBits();
+								float[] values = new float[pos.Length];
+
+								Buffer.BlockCopy(msg, offset, values, 0, values.Length * sizeof(float));
+
+								for(int i = 0; i < pos.Length; i++)
+								{
+									GSC.heatMapElement element = new GSC.heatMapElement();
+									element._x = (byte)(pos[i].x + x);
+									element._y = (byte)(pos[i].y + y);
+									element._value = values[i];
+
+									value._values.Add(element);
+								}
 								break;
 							default:
 								Debug.LogError("unable to read map " + value._id + " as type " + type);
