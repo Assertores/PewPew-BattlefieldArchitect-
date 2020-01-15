@@ -18,6 +18,7 @@ RWStructuredBuffer<float> redValue;
 RWStructuredBuffer<uint> bitField;
 
 Texture2D<float4> InputTexture;
+Texture2D<float4> InputTextureTerritorium;
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
 
@@ -26,13 +27,13 @@ void CSInit(uint3 id : SV_DispatchThreadID)
 {
     for (int i = 0; i < 50; i++)
     {
-        buffer[i] = 0;
 
+        buffer[i] = 0;
     }
 
-	for (int i = 0; i < ((256 * 256) / 8); i++)
+	for (int p = 0; p < ((256 * 256) / 8); p++)
 	{
-		bitField[i] = 0;
+		bitField[p] = 0;
 	}
 
 	for (int j = 0; j < (256*256); j++)
@@ -90,6 +91,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     float m_dist = 10; // minimun distance
     float2 m_point; // minimum position
+    float3 col = float3(0, 0, 0);; // minimum position
 
 	// Iterate through the points positions
     for (int i = 0; i < SoldiersSize; i++)
@@ -108,31 +110,37 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
             m_point = Soldiers[i].xy;
         }
 
+
         if (Soldiers[i].z == 0)
         {
-            m_point = float3(1, 0, 0);
+			col = float3(1, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
-            m_point = float3(2, 0, 0);
+			col = float3(0, 1, 0);
         }
         if (Soldiers[i].z == 2)
         {
-            m_point = float3(3, 0, 0);
+			col = float3(0, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-            m_point = float3(4, 0, 0);
+			col = float3(0.5, 0.5, 0);
         }
 
-        if (TerritoriumResult[id.xy].r != m_point.r)
-        {
-            int bit = id.y * weightMap + id.x;
-            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
+		col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
 
-            TerritoriumResult[id.xy] = float4(m_point, 0, 1);
-        }
-    }
+		TerritoriumResult[id.xy] = float4(col, 1);
+		
+		//if (TerritoriumResult[id.xy].r != m_point.r)
+  //      {
+  //          int bit = id.y * weightMap + id.x;
+  //          InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+
+  //          TerritoriumResult[id.xy] = float4(m_point, 0, 1);
+  //      }
+	}
 }
 
 
