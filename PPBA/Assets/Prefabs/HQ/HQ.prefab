@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1811249732424111616}
   m_Layer: 9
   m_Name: HQ
-  m_TagString: Untagged
+  m_TagString: Hq
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Size: {x: 30.58, y: 12, z: 29.35}
   m_Center: {x: 0, y: 0, z: 0}
-  m_Area: 3
+  m_Area: 4
   m_AffectedAgents: ffffffff
 --- !u!1 &8959561800333315175
 GameObject:

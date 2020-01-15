@@ -54,7 +54,9 @@ namespace PPBA
 
 		void Update()
 		{
-
+#if true
+			LogPolesPerTeam();
+#endif
 		}
 		#endregion
 
@@ -72,6 +74,21 @@ namespace PPBA
 
 			if(!isInRightTeam)
 				list[newTeam].Add(item);
+		}
+
+		private void LogPolesPerTeam()
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				string temp = "poles team " + i.ToString() + ": ";
+
+				foreach(var pole in s_flagPoles[i])
+				{
+					temp += " " + pole._id.ToString() + ",";
+				}
+
+				Debug.Log(temp);
+			}
 		}
 	}
 }

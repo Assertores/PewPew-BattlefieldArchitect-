@@ -14,7 +14,7 @@ namespace PPBA
 		[SerializeField] private ObjectType _ObjectType;
 		[SerializeField] private GameObject _GhostPrefab;
 		[SerializeField] private GameObject _blueprintPrefab;
-		private FlagPole _flagPole;
+		public FlagPole _flagPole;
 
 		public float _BuildingTime;
 		public float _BuildingCosts;

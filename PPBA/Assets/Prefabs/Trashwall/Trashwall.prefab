@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: -2513134681148833387}
   m_Layer: 9
   m_Name: Trashwall
-  m_TagString: Untagged
+  m_TagString: Cover
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

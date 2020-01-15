@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 3231875279622792652}
   m_Layer: 9
   m_Name: MediCamp
-  m_TagString: Untagged
+  m_TagString: Medicamp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -227,6 +227,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _myMediCampHolder: {fileID: 6773971951171986429}
+  _health: 1000
+  _maxHealth: 1000
 --- !u!1001 &1105591873674316587
 PrefabInstance:
   m_ObjectHideFlags: 0

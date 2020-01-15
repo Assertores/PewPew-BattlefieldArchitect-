@@ -156,7 +156,7 @@ namespace PPBA
 			//newFlagPole._team = team;
 			newFlagPole.ClearLists();
 
-			if(null != JobCenter.s_flagPoles[team])
+			if(null != JobCenter.s_flagPoles[team] && !JobCenter.s_flagPoles[team].Contains(newFlagPole))
 				JobCenter.s_flagPoles[team].Add(newFlagPole);
 		}
 
@@ -164,8 +164,8 @@ namespace PPBA
 		{
 			ClearLists();
 
-			if(null != JobCenter.s_flagPoles[_team])
-				JobCenter.s_flagPoles[_team].Add(this);
+			//if(null != JobCenter.s_flagPoles[_team] && !JobCenter.s_flagPoles[_team].Contains(this))
+				//JobCenter.s_flagPoles[_team].Add(this);
 		}
 
 		#region Interfaces

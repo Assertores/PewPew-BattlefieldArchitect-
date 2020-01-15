@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class ResourceDepot : MonoBehaviour, INetElement
+	public class ResourceDepot : MonoBehaviour, INetElement, IDestroyableBuilding
 	{
 		[SerializeField] public int _id { get; set; }
 		public int _team
@@ -37,9 +37,7 @@ namespace PPBA
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
-		}
-
-		
+		}		
 
 		public void CalculateScore(int tick = 0)
 		{
@@ -57,6 +55,25 @@ namespace PPBA
 
 			_score = Mathf.Clamp(_score, 0f, 1f);
 		}
+
+		#region IDestroyableBuilding
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				Die();
+			}
+		}
+
+		private void Die() => transform.parent.gameObject.SetActive(false);
+		public Transform GetTransform() => transform;
+		public float GetHealth() => _health;
+		public float GetMaxHealth() => _maxHealth;
+		public int GetTeam() => _team;
+		#endregion
 
 		#region Give Or Take
 		public int TakeResources(int amount)
@@ -123,9 +140,18 @@ namespace PPBA
 		#endregion
 
 		#region Initialisation
+		private void ResetToDefault()
+		{
+			_health = _maxHealth;
+			_ammo = 0;
+			_resources = 0;
+		}
+
 		private void OnEnable()
 		{
 #if UNITY_SERVER
+			ResetToDefault();
+
 			if(null != JobCenter.s_resourceDepots?[_team] && !JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Add(this);
 
