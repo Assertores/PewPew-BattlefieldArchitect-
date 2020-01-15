@@ -17,6 +17,7 @@ namespace PPBA
 		public static List<MediCamp>[] s_mediCamp = new List<MediCamp>[10];		
 		public static List<HeadQuarter>[] s_headQuarters = new List<HeadQuarter>[10];
 
+		#region Monobehaviour
 		void Awake()
 		{
 			if(s_instance == null)
@@ -54,6 +55,23 @@ namespace PPBA
 		void Update()
 		{
 
+		}
+		#endregion
+
+		public static void ChangeTeamList<T>(List<T>[] list, T item, int newTeam)
+		{
+			bool isInRightTeam = false;
+
+			for(int i = 0; i < list.Length; i++)
+			{
+				if(i == newTeam && list[i].Contains(item))
+					isInRightTeam = true;
+				else if(list[i].Contains(item))
+					list[i].Remove(item);
+			}
+
+			if(!isInRightTeam)
+				list[newTeam].Add(item);
 		}
 	}
 }

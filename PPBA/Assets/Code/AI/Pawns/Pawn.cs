@@ -590,10 +590,8 @@ namespace PPBA
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
-				Vector3 moveVec;
-				float tempDistance;
-				tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
-				moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
+				float tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
+				Vector3 moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
 				transform.position = moveVec;
 				walkedDistance += tempDistance;
 			}
@@ -601,7 +599,6 @@ namespace PPBA
 			if(2 < i)//<=> pawn has moved over a corner
 			{
 				_isNavPathDirty = true;
-				//RecalculateNavPath();//could be solved more elegantly performancewise, but not without copying the _navMeshPath.corners array and doing admin myself
 			}
 
 			if(i - 1 < _navMeshPath.corners.Length)
@@ -614,7 +611,6 @@ namespace PPBA
 			{
 				_moveTarget = newTarget;
 				_isNavPathDirty = true;
-				//RecalculateNavPath();
 			}
 		}
 
