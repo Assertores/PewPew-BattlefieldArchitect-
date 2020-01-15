@@ -69,6 +69,10 @@ namespace PPBA
 		}
 
 		private void Die() => transform.parent.gameObject.SetActive(false);
+		public Transform GetTransform() => transform;
+		public float GetHealth() => _health;
+		public float GetMaxHealth() => _maxHealth;
+		public int GetTeam() => _team;
 		#endregion
 
 		#region Give Or Take

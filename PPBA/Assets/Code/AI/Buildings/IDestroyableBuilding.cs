@@ -6,6 +6,12 @@ namespace PPBA
 {
 	public interface IDestroyableBuilding
 	{
-		public void TakeDamage(int amount);
+		int _id { get; set; }
+
+		void TakeDamage(int amount);
+		Transform GetTransform();
+		float GetHealth();
+		float GetMaxHealth();
+		int GetTeam();
 	}
 }

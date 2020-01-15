@@ -120,6 +120,10 @@ namespace PPBA
 				Die();
 			}
 		}
+		public Transform GetTransform() => transform;
+		public float GetHealth() => _health;
+		public float GetMaxHealth() => _maxHealth;
+		public int GetTeam() => _team;
 		#endregion
 		#endregion
 

@@ -7,7 +7,7 @@ using TMPro;
 
 namespace PPBA
 {
-	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
+	public enum Behaviors : byte { IDLE, SHOOT, SHOOTATBUILDING, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
 
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
@@ -145,6 +145,27 @@ namespace PPBA
 				}
 
 				return _closeCoverSlots;
+			}
+		}
+  public List<IDestroyableBuilding> _closeBuildings = new List<IDestroyableBuilding>();
+		public List<IDestroyableBuilding> _activeBuildings
+		{
+			get
+			{
+				List<IDestroyableBuilding> offBuildings = new List<IDestroyableBuilding>();
+
+				foreach(var it in _closeBuildings)
+				{
+					if(!it.GetTransform().gameObject.activeSelf)
+						offBuildings.Add(it);
+				}
+
+				foreach(var it in offBuildings)
+				{
+					_closeBuildings.Remove(it);
+				}
+
+				return _closeBuildings;
 			}
 		}
 		public Vector3 _moveTarget;//let the behaviors set this
@@ -303,7 +324,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _supplies });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 			TickHandler.s_interfaceGameState.Add(new GSC.animation { _id = _id, _animation = _currentAnimation });
