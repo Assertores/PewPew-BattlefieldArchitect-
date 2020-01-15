@@ -279,232 +279,69 @@ namespace PPBA
 			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
-			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
-
-			Profiler.BeginSample("[GameState] types");
-			if(_types.Count > 0)
+			//HeatMaps
 			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.TYPE);
-				msg.AddRange(BitConverter.GetBytes(_types.Count));
-				foreach(var it in _types)
+				Profiler.BeginSample("[GameState] heatMaps");
+				if(_heatMaps.Count > 0)
 				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add(it._type);
-					msg.Add(it._team);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] args");
-			if(_args.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.ARGUMENT);
-				msg.AddRange(BitConverter.GetBytes(_args.Count));
-				foreach(var it in _args)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._arguments);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] transforms");
-			if(_transforms.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.TRANSFORM);
-				msg.AddRange(BitConverter.GetBytes(_transforms.Count));
-				foreach(var it in _transforms)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._position.x));
-					msg.AddRange(BitConverter.GetBytes(it._position.y));
-					msg.AddRange(BitConverter.GetBytes(it._position.z));
-					msg.AddRange(BitConverter.GetBytes(it._angle));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] ammo");
-			if(_ammos.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.AMMO);
-				msg.AddRange(BitConverter.GetBytes(_ammos.Count));
-				foreach(var it in _ammos)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._bullets));
-					//msg.AddRange(BitConverter.GetBytes(it._grenades));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] resources");
-			if(_resources.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.RESOURCE);
-				msg.AddRange(BitConverter.GetBytes(_resources.Count));
-				foreach(var it in _resources)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._resources));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] healths");
-			if(_healths.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.HEALTH);
-				msg.AddRange(BitConverter.GetBytes(_healths.Count));
-				foreach(var it in _healths)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._health));
-					msg.AddRange(BitConverter.GetBytes(it._morale));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] works");
-			if(_works.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.WORK);
-				msg.AddRange(BitConverter.GetBytes(_works.Count));
-				foreach(var it in _works)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._work));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] behaviors");
-			if(_behaviors.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.BEHAVIOUR);
-				msg.AddRange(BitConverter.GetBytes(_behaviors.Count));
-				foreach(var it in _behaviors)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._behavior);
-					msg.AddRange(BitConverter.GetBytes(it._target));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] animations");
-			if(_animations.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.ANIMATIONS);
-				msg.AddRange(BitConverter.GetBytes(_animations.Count));
-				foreach(var it in _animations)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._animation);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] paths");
-			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.PATH);
-				msg.AddRange(BitConverter.GetBytes(_paths.Count));
-				foreach(var it in _paths)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._path.Length));
-					for(int i = 0; i < it._path.Length; i++)
+					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
+					/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
+					foreach(var it in _heatMaps)
 					{
-						msg.AddRange(BitConverter.GetBytes(it._path[i].x));
-						msg.AddRange(BitConverter.GetBytes(it._path[i].y));
-						msg.AddRange(BitConverter.GetBytes(it._path[i].z));
-					}
-				}
+						msg.Clear();
+						msg.Add((byte)GSC.DataType.MAP);
+						msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] heatMaps");
-			if(_heatMaps.Count > 0)
-			{
-				/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
-				/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
-				foreach(var it in _heatMaps)
-				{
-					msg.Clear();
-					msg.Add((byte)GSC.DataType.MAP);
-					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+						byte xMin = byte.MaxValue;
+						byte xSize = byte.MinValue;
+						byte yMin = byte.MaxValue;
+						byte ySize = byte.MinValue;
 
-					byte xMin = byte.MaxValue;
-					byte xSize = byte.MinValue;
-					byte yMin = byte.MaxValue;
-					byte ySize = byte.MinValue;
-
-					foreach(var jt in it._values)
-					{
-						xMin = xMin < jt._x ? xMin : jt._x;
-						xSize = jt._x < xSize ? jt._x : xSize;
-						yMin = yMin < jt._y ? yMin : jt._y;
-						ySize = jt._y < ySize ? jt._y : ySize;
-					}
-					xSize -= xMin;
-					ySize -= yMin;
-
-					if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
-					{
-						msg.Add((byte)GSC.DataType.PIXELWISE);
-
-						int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
-
-						int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
-
-						for(int i = 0; i < packageCount - 1; i++)
+						foreach(var jt in it._values)
 						{
-							msg.AddRange(BitConverter.GetBytes(maxElementCount));
+							xMin = xMin < jt._x ? xMin : jt._x;
+							xSize = jt._x < xSize ? jt._x : xSize;
+							yMin = yMin < jt._y ? yMin : jt._y;
+							ySize = jt._y < ySize ? jt._y : ySize;
+						}
+						xSize -= xMin;
+						ySize -= yMin;
 
-							for(int j = i * maxElementCount; j < i * maxElementCount + maxElementCount; j++)
+						if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
+						{
+							msg.Add((byte)GSC.DataType.PIXELWISE);
+
+							int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
+
+							int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
+
+							for(int i = 0; i < packageCount - 1; i++)
 							{
-								msg.Add(it._values[j]._x);
-								msg.Add(it._values[j]._y);
-								msg.AddRange(BitConverter.GetBytes(it._values[j]._value));
+								msg.AddRange(BitConverter.GetBytes(maxElementCount));
+
+								for(int j = i * maxElementCount; j < i * maxElementCount + maxElementCount; j++)
+								{
+									msg.Add(it._values[j]._x);
+									msg.Add(it._values[j]._y);
+									msg.AddRange(BitConverter.GetBytes(it._values[j]._value));
+								}
+
+								HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+
+								msg.Clear();
+								msg.Add((byte)GSC.DataType.MAP);
+								msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+								msg.Add((byte)GSC.DataType.PIXELWISE);
 							}
 
-							HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+							msg.AddRange(BitConverter.GetBytes(it._values.Count % maxElementCount));//should be the same value as the for loop count
 
-							msg.Clear();
-							msg.Add((byte)GSC.DataType.MAP);
-							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
-							msg.Add((byte)GSC.DataType.PIXELWISE);
-						}
-
-						msg.AddRange(BitConverter.GetBytes(it._values.Count % maxElementCount));//should be the same value as the for loop count
-
-						for(int i = (packageCount - 1) * maxElementCount; i < it._values.Count; i++)
-						{
-							msg.Add(it._values[i]._x);
-							msg.Add(it._values[i]._y);
-							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
-						}
+							for(int i = (packageCount - 1) * maxElementCount; i < it._values.Count; i++)
+							{
+								msg.Add(it._values[i]._x);
+								msg.Add(it._values[i]._y);
+								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+							}
 #if Obsolete
 
 						msg.AddRange(BitConverter.GetBytes(it._values.Count));
@@ -527,84 +364,272 @@ namespace PPBA
 							}
 						}
 #endif
-					}
-					else
-					{
-						msg.Add((byte)GSC.DataType.BITMAPWISE);
-
-						msg.Add(xMin);
-						msg.Add(yMin);
-						msg.Add(xSize);
-						msg.Add(ySize);
-
-						BitField2D mask = new BitField2D(xSize, ySize);
-						foreach(var jt in it._values)
+						}
+						else
 						{
-							mask[jt._x, jt._y] = true;
+							msg.Add((byte)GSC.DataType.BITMAPWISE);
+
+							msg.Add(xMin);
+							msg.Add(yMin);
+							msg.Add(xSize);
+							msg.Add(ySize);
+
+							BitField2D mask = new BitField2D(xSize, ySize);
+							foreach(var jt in it._values)
+							{
+								mask[jt._x, jt._y] = true;
+							}
+
+							msg.AddRange(mask.ToArray());
+
+							for(int i = 0; i < it._values.Count; i++)
+							{
+								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+							}
 						}
 
-						msg.AddRange(mask.ToArray());
-
-						for(int i = 0; i < it._values.Count; i++)
+						HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+					}
+				}
+				Profiler.EndSample();
+			}
+			//Paths
+			{
+				Profiler.BeginSample("[GameState] paths");
+				if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.PATH);
+					msg.AddRange(BitConverter.GetBytes(_paths.Count));
+					foreach(var it in _paths)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._path.Length));
+						for(int i = 0; i < it._path.Length; i++)
 						{
-							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+							msg.AddRange(BitConverter.GetBytes(it._path[i].x));
+							msg.AddRange(BitConverter.GetBytes(it._path[i].y));
+							msg.AddRange(BitConverter.GetBytes(it._path[i].z));
 						}
 					}
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
+				Profiler.EndSample();
 			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] denyedInput");
-			if(_denyedInputIDs.Count > 0)
+			//Args
 			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.INPUTS);
-				msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
-				foreach(var it in _denyedInputIDs)
+				Profiler.BeginSample("[GameState] args");
+				if(_args.Count > 0)
 				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-				}
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.ARGUMENT);
+					msg.AddRange(BitConverter.GetBytes(_args.Count));
+					foreach(var it in _args)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._arguments);
+					}
 
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
 			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] IDRanges");
-			if(_newIDRanges.Count > 0)
+			//Transforms
 			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.RANGE);
-				msg.AddRange(BitConverter.GetBytes(_newIDRanges.Count));
-				foreach(var it in _newIDRanges)
+				Profiler.BeginSample("[GameState] transforms");
+				if(_transforms.Count > 0)
 				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._range));
-					msg.Add((byte)it._type);
-				}
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.TRANSFORM);
+					msg.AddRange(BitConverter.GetBytes(_transforms.Count));
+					foreach(var it in _transforms)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._position.x));
+						msg.AddRange(BitConverter.GetBytes(it._position.y));
+						msg.AddRange(BitConverter.GetBytes(it._position.z));
+						msg.AddRange(BitConverter.GetBytes(it._angle));
+					}
 
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
 			}
-			Profiler.EndSample();
+			//Resources
+			{
+				Profiler.BeginSample("[GameState] resources");
+				if(_resources.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.RESOURCE);
+					msg.AddRange(BitConverter.GetBytes(_resources.Count));
+					foreach(var it in _resources)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._resources));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Animation
+			{
+				Profiler.BeginSample("[GameState] animations");
+				if(_animations.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.ANIMATIONS);
+					msg.AddRange(BitConverter.GetBytes(_animations.Count));
+					foreach(var it in _animations)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._animation);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+
+			//Behaviours
+			{
+				Profiler.BeginSample("[GameState] behaviors");
+				if(_behaviors.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.BEHAVIOUR);
+					msg.AddRange(BitConverter.GetBytes(_behaviors.Count));
+					foreach(var it in _behaviors)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._behavior);
+						msg.AddRange(BitConverter.GetBytes(it._target));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Health
+			{
+				Profiler.BeginSample("[GameState] healths");
+				if(_healths.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.HEALTH);
+					msg.AddRange(BitConverter.GetBytes(_healths.Count));
+					foreach(var it in _healths)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._health));
+						msg.AddRange(BitConverter.GetBytes(it._morale));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Ammos
+			{
+				Profiler.BeginSample("[GameState] ammo");
+				if(_ammos.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.AMMO);
+					msg.AddRange(BitConverter.GetBytes(_ammos.Count));
+					foreach(var it in _ammos)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._bullets));
+						//msg.AddRange(BitConverter.GetBytes(it._grenades));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Works
+			{
+				Profiler.BeginSample("[GameState] works");
+				if(_works.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.WORK);
+					msg.AddRange(BitConverter.GetBytes(_works.Count));
+					foreach(var it in _works)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._work));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+
+			//Types
+			{
+				Profiler.BeginSample("[GameState] types");
+				if(_types.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.TYPE);
+					msg.AddRange(BitConverter.GetBytes(_types.Count));
+					foreach(var it in _types)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add(it._type);
+						msg.Add(it._team);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Range
+			{
+				Profiler.BeginSample("[GameState] IDRanges");
+				if(_newIDRanges.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.RANGE);
+					msg.AddRange(BitConverter.GetBytes(_newIDRanges.Count));
+					foreach(var it in _newIDRanges)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._range));
+						msg.Add((byte)it._type);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
+			//Input
+			{
+				Profiler.BeginSample("[GameState] denyedInput");
+				if(_denyedInputIDs.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.INPUTS);
+					msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
+					foreach(var it in _denyedInputIDs)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				Profiler.EndSample();
+			}
 
 			if(_messageHolder.Count == 0)
 			{
 				_messageHolder.Add(new byte[0]);
 			}
 
-			/*{
-				_types.Clear();
-				_args.Clear();
-				_transforms.Clear();
-				_ammos.Clear();
-				_resources.Clear();
-				_healths.Clear();
-				_works.Clear();
-				_behaviors.Clear();
-				_paths.Clear();
-				_heatMaps.Clear();
-				_denyedInputIDs.Clear();
-				_newIDRanges.Clear();
-			}*/
 			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
 
@@ -1149,7 +1174,6 @@ Change:
 			removerIndex = 0;
 			for(int i = 0; i < _heatMaps.Count; i++)
 			{
-				//TODO: add heatmaps in between to delta
 
 				GSC.heatMap lastDelta = null;
 				for(int j = myTick - 1; null == lastDelta && j > refTick; j--)
@@ -1586,7 +1610,7 @@ Change:
 		{
 			GSC.heatMap target = _heatMaps.Find(x => x._id == element._id);
 
-			if(null == target)//TODO: merge heatmaps
+			if(null == target)
 			{
 				_heatMaps.Add(element);
 			}
