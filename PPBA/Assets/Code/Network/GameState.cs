@@ -1151,6 +1151,21 @@ Change:
 			{
 				//TODO: add heatmaps in between to delta
 
+				GSC.heatMap lastDelta = null;
+				for(int j = myTick - 1; null == lastDelta && j > refTick; j--)
+					lastDelta = references[j]._heatMaps.Find(x => x._id == _heatMaps[i]._id);
+
+				if(lastDelta != null)
+				{
+					Add(lastDelta, false);
+					//foreach(var it in lastDelta._values)
+					//{
+					//	if(!_heatMaps[i]._values.Exists(x => x._x == it._x && x._y == it._y)){
+					//		_heatMaps[i]._values.Add(it);
+					//	}
+					//}
+				}
+
 				GSC.heatMap element = reference._heatMaps.Find(x => x._id == _heatMaps[i]._id);
 
 				if(null == element)
@@ -1567,16 +1582,31 @@ Change:
 			_paths.Add(element);
 		}
 
-		public void Add(GSC.heatMap element)
+		public void Add(GSC.heatMap element, bool isMoreSignificant = true)
 		{
-			return;//remove this to reimpliment HeatMap transmition
-			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
+			GSC.heatMap target = _heatMaps.Find(x => x._id == element._id);
+
+			if(null == target)//TODO: merge heatmaps
+			{
+				_heatMaps.Add(element);
+			}
+			else
 			{
 				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
-				return;
-			}
 
-			_heatMaps.Add(element);
+				foreach(var it in element._values)
+				{
+					GSC.heatMapElement tmp = target._values.Find(x => x._x == it._x && x._y == it._y);
+					if(null == tmp)
+					{
+						element._values.Add(it);
+					}
+					else
+					{
+						tmp._value = isMoreSignificant ? it._value : tmp._value;
+					}
+				}
+			}
 		}
 
 		public void Add(GSC.input element)
