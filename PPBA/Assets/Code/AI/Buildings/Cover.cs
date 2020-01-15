@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Cover : MonoBehaviour, INetElement, IPanelInfo
+	public class Cover : MonoBehaviour, INetElement, IPanelInfo, IDestroyableBuilding
 	{
 		protected class State
 		{
@@ -53,16 +53,6 @@ namespace PPBA
 
 		}
 
-		public void TakeDamage(int amount)
-		{
-			_health -= amount;
-			//set "i got hurt" flag to send to the client
-
-			if(_health <= 0)
-			{
-				Die();
-			}
-		}
 
 		private void OnValidate()
 		{
@@ -118,11 +108,23 @@ namespace PPBA
 			}
 		}
 		#endregion
+
+		#region IDestroyableBuilding
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				Die();
+			}
+		}
+		#endregion
 		#endregion
 
-		private static void ResetToDefault(Cover cover, int team)
+		private static void ResetToDefault(Cover cover)
 		{
-			cover._team = team;
 			cover._health = cover._maxHealth;
 		}
 
@@ -146,7 +148,7 @@ namespace PPBA
 		public static void Spawn(Vector3 spawnPoint, int team)
 		{
 			Cover newCover = (Cover)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.COVER]].GetNextObject(team);
-			ResetToDefault(newCover, team);
+			ResetToDefault(newCover);
 			newCover.transform.position = spawnPoint;
 
 #if UNITY_SERVER
@@ -158,6 +160,11 @@ namespace PPBA
 		{
 			Debug.Log("Cover " + _id + " of team " + _team + " got destroyed.");
 			transform.parent.gameObject.SetActive(false);
+		}
+
+		private void OnEnable()
+		{
+			ResetToDefault(this);
 		}
 
 		private void OnDisable()

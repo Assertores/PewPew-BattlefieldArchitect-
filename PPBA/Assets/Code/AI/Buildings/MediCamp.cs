@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class MediCamp : MonoBehaviour, INetElement
+	public class MediCamp : MonoBehaviour, INetElement, IDestroyableBuilding
 	{
 		[SerializeField] private MediCampHolder _myMediCampHolder;
 
 		public int _id { get; set; }
+		[SerializeField] public float _health = 1000;
+		[SerializeField] private float _maxHealth = 1000;
 
 		private class State
 		{
@@ -19,7 +21,7 @@ namespace PPBA
 		private State _lastState = new State();
 		private State _nextState = new State();
 
-		[SerializeField] public static float _interactRadius = 2f;
+		[SerializeField] public static float _interactRadius = 1.5f;
 
 		private int _team => _myMediCampHolder._team;
 
@@ -57,8 +59,7 @@ namespace PPBA
 			//TickHandler.s_LateCalc -= Calculate;
 			TickHandler.s_GatherValues -= WriteToGameState;
 
-			if(null != JobCenter.s_mediCamp[_team])
-				if(JobCenter.s_mediCamp[_team].Contains(this))
+			if(null != JobCenter.s_mediCamp[_team] && JobCenter.s_mediCamp[_team].Contains(this))
 					JobCenter.s_mediCamp[_team].Remove(this);
 #endif
 
@@ -76,6 +77,7 @@ namespace PPBA
 		public void Init()
 		{
 			//ClearLists();
+			_health = _maxHealth;
 
 			if(null != JobCenter.s_mediCamp[_team])
 				JobCenter.s_mediCamp[_team].Add(this);
@@ -93,6 +95,21 @@ namespace PPBA
 		{
 
 		}
+		#endregion
+
+		#region IDestroyableBuilding
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				Die();
+			}
+		}
+
+		private void Die() => transform.parent.gameObject.SetActive(false);
 		#endregion
 	}
 }
