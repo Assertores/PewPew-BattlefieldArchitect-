@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-//#define UNITY_SERVER
 namespace PPBA
 {
 	enum StatusType : byte { AWAITINGPLAYERS, STARTGAME, ENDGAME }
@@ -27,11 +26,7 @@ namespace PPBA
 		int _winner = -1;
 		bool isReady = false;
 
-		public void StartServer(int port, int maxPlayers)
-		{
-			Server(port, maxPlayers);
-			isReady = true;
-		}
+		
 
 		public void SetWinningConndition(int winner)
 		{
@@ -139,10 +134,7 @@ namespace PPBA
 			DontDestroyOnLoad(this);
 		}
 
-		public void StartClient(string ip, int port)
-		{
-			Client(ip, port);
-		}
+		
 
 		async void Client(string ip, int port)
 		{
@@ -192,5 +184,20 @@ namespace PPBA
 			}
 		}
 #endif
+
+		public void StartServer(int port, int maxPlayers)
+		{
+#if UNITY_SERVER
+			Server(port, maxPlayers);
+			isReady = true;
+#endif
+		}
+
+		public void StartClient(string ip, int port)
+		{
+#if !UNITY_SERVER
+			Client(ip, port);
+#endif
+		}
 	}
 }
