@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PPBA
 {
@@ -25,8 +26,6 @@ namespace PPBA
 		bool isGameStarted = false;
 		int _winner = -1;
 		bool isReady = false;
-
-		
 
 		public void SetWinningConndition(int winner)
 		{
@@ -134,8 +133,6 @@ namespace PPBA
 			DontDestroyOnLoad(this);
 		}
 
-		
-
 		async void Client(string ip, int port)
 		{
 			client = new TcpClient();
@@ -145,7 +142,7 @@ namespace PPBA
 			if(!client.Connected)
 				return;
 
-			//change to LoadingScreen
+			SceneManager.LoadScene(StringCollection.LOADINGSCENE);
 
 			NetworkStream ns = client.GetStream();
 
@@ -169,12 +166,18 @@ namespace PPBA
 				switch((StatusType)bytes[0])
 				{
 					case StatusType.AWAITINGPLAYERS:
+						if(!LoadingScreenRefHolder.Exists() || LoadingScreenRefHolder.s_instance.text == null)
+						{
+							Debug.LogError("Reference for Loading Screen not set");
+							continue;
+						}
+						LoadingScreenRefHolder.s_instance.text.text = bytes[1] + " of " + bytes[2] + " players are connected";
 						break;
 					case StatusType.STARTGAME:
-						//change to GameScene
+						SceneManager.LoadScene(StringCollection.GAME);
 						break;
 					case StatusType.ENDGAME:
-						//change to main Menu
+						SceneManager.LoadScene(StringCollection.MAINMENU);
 						Destroy(this);
 						break;
 					default:
