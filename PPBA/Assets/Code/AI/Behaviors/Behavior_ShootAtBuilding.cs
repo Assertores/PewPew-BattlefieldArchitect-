@@ -142,7 +142,7 @@ namespace PPBA
 				case "DistanceToMyBase":
 					HeadQuarter headQuarter = JobCenter.s_headQuarters[pawn._team]?.Find((x) => x.isActiveAndEnabled);
 					if(null != headQuarter)
-						return Vector3.Distance(s_targetDictionary[pawn].GetTransform().position, headQuarter.transform.position) / 100f;
+						return Vector3.Distance(target.GetTransform().position, headQuarter.transform.position) / 100f;
 					else
 						return 0.5f;
 				case "IsMyTarget":

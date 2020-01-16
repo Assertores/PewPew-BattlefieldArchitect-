@@ -7,7 +7,7 @@ using TMPro;
 
 namespace PPBA
 {
-	public enum Behaviors : byte { IDLE, SHOOT, SHOOTATBUILDING, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
+	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE, SHOOTATBUILDING };
 
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
@@ -747,7 +747,7 @@ namespace PPBA
 							continue;
 
 						Cover cover = c.GetComponent<Cover>();
-						if(cover)
+						if(null != cover)
 						{
 							_closeBuildings.Add(cover);
 
@@ -763,14 +763,14 @@ namespace PPBA
 						continue;
 					case StringCollection.HQ:
 						HeadQuarter hq = c.transform.GetChild(2)?.GetComponent<HeadQuarter>();
-						if(hq)
+						if(null != hq)
 						{
 							_closeBuildings.Add(hq._resourceDepot);
 						}
 						continue;
 					case StringCollection.MEDICAMP:
 						MediCamp mediCamp = c.transform.GetChild(2)?.GetComponent<MediCamp>();
-						if(mediCamp)
+						if(null != mediCamp)
 						{
 							_closeBuildings.Add(mediCamp);
 						}

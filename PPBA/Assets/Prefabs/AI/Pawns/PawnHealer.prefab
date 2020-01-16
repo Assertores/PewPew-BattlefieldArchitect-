@@ -223,7 +223,7 @@ MonoBehaviour:
   _healthRegen: 0.1
   _moraleRegen: 0.1
   TerritoryMapId: 0
-  e_behaviors: 13010e0a0b0c11080f03
+  e_behaviors: 13010e0a0b0c11080f0314
   _behaviorMultipliers:
   - 1
   - 6
@@ -234,6 +234,7 @@ MonoBehaviour:
   - 10
   - 10
   - 5
+  - 4
   - 4
   _behaviors: []
   _lastBehavior: {fileID: 0}
