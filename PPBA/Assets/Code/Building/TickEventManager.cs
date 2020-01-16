@@ -15,6 +15,7 @@ namespace PPBA
 			TickHandler.s_GatherValues += ReturnDenyedInputs;
 #endif
 		}
+
 		private void OnDestroy()
 		{
 #if UNITY_SERVER
@@ -40,6 +41,7 @@ namespace PPBA
 				element.transform.position = it._pos;
 				element.transform.rotation = Quaternion.Euler(0, it._angle, 0);
 			}
+
 			foreach(var it in TickHandler.s_interfaceInputState._combinedObjs)
 			{
 				if(null == GlobalVariables.s_instance._prefabs[(int)it._type] || !ObjectPool.s_objectPools.ContainsKey(GlobalVariables.s_instance._prefabs[(int)it._type]))

@@ -17,6 +17,7 @@ namespace PPBA
 			TickHandler.s_GatherValues += ServerGatherValue;
 #endif
 		}
+
 		private void OnDestroy()
 		{
 #if !UNITY_SERVER
@@ -28,7 +29,7 @@ namespace PPBA
 
 		private void Update()
 		{
-			
+
 		}
 
 		void ServerGatherValue(int tick)
@@ -58,6 +59,13 @@ namespace PPBA
 					{
 						transform.position = newTransform._position;
 						transform.rotation = Quaternion.Euler(0, newTransform._angle, 0);
+
+						if(GlobalVariables.s_instance._clients[0]._id == GetComponent<IRefHolder>()._team)
+						{
+							IRefHolder typ = GetComponent<IRefHolder>();
+							BuildingManager.s_instance.AddBuildToHolder(typ);
+							BuildingManager.s_instance._InfoPanelEvent(typ._Type);
+						}
 					}
 				}
 			}
