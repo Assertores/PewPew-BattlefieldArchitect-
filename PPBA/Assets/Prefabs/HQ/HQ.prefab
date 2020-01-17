@@ -242,6 +242,7 @@ GameObject:
   - component: {fileID: 1783365622691638973}
   - component: {fileID: 3014266743380257577}
   - component: {fileID: 4827032239982738832}
+  - component: {fileID: 9173606034856071815}
   m_Layer: 9
   m_Name: Logic
   m_TagString: Untagged
@@ -312,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Size: {x: 27.73, y: 3, z: 14.2}
+  m_Size: {x: 27.73, y: 5, z: 14.2}
   m_Center: {x: 0, y: 1, z: -7.1}
   m_Area: 3
   m_AffectedAgents: ffffffff
@@ -328,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Size: {x: 12.34, y: 3, z: 14.75}
+  m_Size: {x: 12.34, y: 5, z: 14.75}
   m_Center: {x: 7.7, y: 1, z: 7.04}
   m_Area: 3
   m_AffectedAgents: ffffffff
@@ -344,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Size: {x: 10.07, y: 3, z: 2.8}
+  m_Size: {x: 10.07, y: 5, z: 2.8}
   m_Center: {x: -9.23, y: 1, z: 12.77}
   m_Area: 3
   m_AffectedAgents: ffffffff
@@ -360,10 +361,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Size: {x: 2.33, y: 3, z: 8.42}
+  m_Size: {x: 2.33, y: 5, z: 8.42}
   m_Center: {x: -13.53, y: 1, z: 7.17}
   m_Area: 3
   m_AffectedAgents: ffffffff
+--- !u!114 &9173606034856071815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8959561800333315175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0474b3c7d838d97428d786ac7b1bbf88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &991668626000110800
 PrefabInstance:
   m_ObjectHideFlags: 0

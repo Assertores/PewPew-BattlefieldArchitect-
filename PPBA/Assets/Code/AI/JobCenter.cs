@@ -54,7 +54,7 @@ namespace PPBA
 
 		void Update()
 		{
-#if true
+#if false
 			LogPolesPerTeam();
 #endif
 		}

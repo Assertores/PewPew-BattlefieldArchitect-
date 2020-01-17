@@ -607,12 +607,13 @@ namespace PPBA
 			}
 
 			float maxDistance = _moveSpeed * Time.fixedDeltaTime * 2f / GetNavAreaCost();//Why the (* 2f): NavAreaCosts below 1 give a warning, hence I double the costs in inspector and half them here.
-			float walkedDistance = 0f;
+			float walkedDistance = 0.5f;
 			float nextCornerDistance;
 
 			int i = 1;
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
+				walkedDistance -= 0.5f;
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
 				float tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
 				Vector3 moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
@@ -621,9 +622,7 @@ namespace PPBA
 			}
 
 			if(2 < i)//<=> pawn has moved over a corner
-			{
 				_isNavPathDirty = true;
-			}
 
 			if(i - 1 < _navMeshPath.corners.Length)
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
@@ -897,7 +896,7 @@ namespace PPBA
 		{
 			Color color;
 
-			if(team < GlobalVariables.s_instance._teamColors.Length)
+			if(null != GlobalVariables.s_instance._teamColors && team < GlobalVariables.s_instance._teamColors.Length)
 				color = GlobalVariables.s_instance._teamColors[team];
 			else
 				switch(team)
