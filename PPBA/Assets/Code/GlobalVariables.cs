@@ -90,6 +90,7 @@ namespace PPBA
 				_prefabs[(int)it._type] = it._prefab;
 			}
 
+#if UNITY_SERVER
 			//ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
 
 			ObjectPool.CreatePool<RefineryRefHolder>(ObjectType.REFINERY, _initialObjectPoolSize, transform); //über netzwerk getracked
@@ -104,9 +105,28 @@ namespace PPBA
 			ObjectPool.CreatePool<MediCampHolder>(ObjectType.MEDICAMP, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<DepotHolder>(ObjectType.DEPOT, _initialObjectPoolSize, transform); //über netzwerk getracked
-						
+
 			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
+#else
+			//ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
+
+			ObjectPool.CreatePool<RefineryRefHolder>(ObjectType.REFINERY, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL_BETWEEN, 0, transform); //über netzwerk getracked
+																												  //ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, 100, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_WARRIOR, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_HEALER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_PIONEER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<HQHolder>(ObjectType.HQ, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<TrashWallHolder>(ObjectType.COVER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<MediCampHolder>(ObjectType.MEDICAMP, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<DepotHolder>(ObjectType.DEPOT, 0, transform); //über netzwerk getracked
+
+			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
+			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
+#endif
 		}
 
 		#endregion
