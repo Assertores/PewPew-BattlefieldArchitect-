@@ -322,6 +322,9 @@ namespace PPBA
 
 							int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
 
+							if(packageCount == 0)
+								continue;
+
 							for(int i = 0; i < packageCount - 1; i++)
 							{
 								msg.AddRange(BitConverter.GetBytes(maxElementCount));
@@ -1239,7 +1242,16 @@ Change:
 
 				GSC.heatMap lastDelta = null;
 				for(int j = myTick - 1; null == lastDelta && j > refTick; j--)
+				{
+					if(j < references.GetLowEnd() || j > references.GetHighEnd())
+						continue;
+					if(references[j] == default)
+						continue;
+					if(references[j]._heatMaps == null)
+						continue;
+
 					lastDelta = references[j]._heatMaps.Find(x => x._id == _heatMaps[i]._id);
+				}
 
 				if(lastDelta != null)
 				{
