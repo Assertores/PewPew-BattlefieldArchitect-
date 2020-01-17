@@ -421,7 +421,6 @@ namespace PPBA
 
 		void AddNewIDsToGameState(int tick)
 		{
-			return;//TODO: check funktionality
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
