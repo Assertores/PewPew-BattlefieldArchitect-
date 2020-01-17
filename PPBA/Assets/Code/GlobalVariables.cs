@@ -44,7 +44,9 @@ namespace PPBA
 	public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		#region Variables
-
+		/// <summary>
+		/// on Client side: the 0 element is always available and always yourself.
+		/// </summary>
 		public List<client> _clients = new List<client>();
 
 		[Tooltip("deactivate this bool to signivy that this variables where set by us")]

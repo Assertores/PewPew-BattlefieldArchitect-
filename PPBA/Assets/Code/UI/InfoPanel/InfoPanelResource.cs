@@ -8,7 +8,7 @@ namespace PPBA
 	{
 		public ObjectType _Typ;
 		public TextMeshProUGUI text;
-
+		[SerializeField] float RefreshRate = 1;
 		/// <summary>
 		/// bool is for resources update 
 		/// </summary>
@@ -63,7 +63,8 @@ namespace PPBA
 		{
 			while(true)
 			{
-				yield return new WaitForSeconds(3);
+				text.text =  ResourceDepot._resourceTotal[GlobalVariables.s_instance._clients[0]._id].ToString();
+				yield return new WaitForSeconds(RefreshRate);
 			//	float res = JobCenter.GetResourceTotal(GlobalVariables.s_instance._clients[0]._id);
 			//	if(null != text)
 					//text.text = res.ToString();
