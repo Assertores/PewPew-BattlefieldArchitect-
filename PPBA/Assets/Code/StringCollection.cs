@@ -29,5 +29,6 @@ namespace PPBA
 
 		public const string MAINMENU = "MainMenu";
 		public const string GAME = "Game";
+		public const string LOADINGSCENE = "LoadingScene";
 	}
 }
