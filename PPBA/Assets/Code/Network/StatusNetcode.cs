@@ -171,13 +171,37 @@ namespace PPBA
 				client.Close();
 		}
 
+		bool h_isInStartUp = false;
 		async void Listen(NetworkStream ns)
 		{
 			byte[] bytes = new byte[1024];
 
 			while(true)
 			{
-				await ns.ReadAsync(bytes, 0, bytes.Length);
+				if(!client.Connected)
+				{
+					SceneManager.LoadScene(StringCollection.MAINMENU);
+					Destroy(this);
+					return;
+				}
+
+				try
+				{
+					var retValue = await ns.ReadAsync(bytes, 0, bytes.Length);
+					if(retValue <= 0)
+					{
+						SceneManager.LoadScene(StringCollection.MAINMENU);
+						Destroy(this);
+						return;
+					}
+				}
+				catch(Exception e)
+				{
+					Debug.LogException(e);
+					SceneManager.LoadScene(StringCollection.MAINMENU);
+					Destroy(this);
+					return;
+				}
 
 				switch((StatusType)bytes[0])
 				{
@@ -190,13 +214,18 @@ namespace PPBA
 						LoadingScreenRefHolder.s_instance.text.text = bytes[1] + " of " + bytes[2] + " players are connected";
 						break;
 					case StatusType.STARTGAME:
-						SceneManager.sceneLoaded += OnClientLoadFinished;
-						SceneManager.LoadScene(StringCollection.GAME);
+						if(!h_isInStartUp)
+						{
+							h_isInStartUp = true;
+							SceneManager.sceneLoaded += OnClientLoadFinished;
+							print("Loading into Game Scene");
+							SceneManager.LoadScene(StringCollection.GAME);
+						}
 						break;
 					case StatusType.ENDGAME:
 						SceneManager.LoadScene(StringCollection.MAINMENU);
 						Destroy(this);
-						break;
+						return;
 					default:
 						Debug.LogWarning("Message not readable: " + (StatusType)bytes[0]);
 						break;
@@ -211,6 +240,8 @@ namespace PPBA
 				SceneManager.sceneLoaded -= OnClientLoadFinished;
 
 				GameNetcode.s_instance.ClientConnect(_ip, _port);
+
+				h_isInStartUp = false;
 			}
 		}
 #endif
