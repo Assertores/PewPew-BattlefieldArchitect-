@@ -163,7 +163,14 @@ namespace PPBA
 
 			client = new TcpClient();
 
-			await client.ConnectAsync(ip, port);
+			try
+			{
+				await client.ConnectAsync(ip, port);
+			}
+			catch(Exception e)
+			{
+				return;
+			}
 
 			if(!client.Connected)
 				return;
