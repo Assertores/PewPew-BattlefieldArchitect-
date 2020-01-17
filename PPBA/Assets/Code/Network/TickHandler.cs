@@ -192,52 +192,63 @@ namespace PPBA
 			}
 			nextStateTick--;//nextStateTick++ will be executed once to often
 
-			if(nextState._refTick != 0)
+			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 			{
-				if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
-				{
-					Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
-					Debug.LogError("Reference Tick not Found");
-					return false;//no idea how to fix this
-				}
-
-				if(nextStateTick != s_currentTick)
-				{
-					nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
-				}
-				else
-				{
-
-					nextState.DismantleDelta(me._gameStates[nextState._refTick]);
-				}
-
-				me._gameStates.FreeUpTo(nextState._refTick - 1);
+				Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
+				Debug.LogError("Reference Tick not Found");
+				return false;//no idea how to fix this
 			}
 
+
+			if(nextStateTick != s_currentTick)
+			{
+				nextState = GameState.Lerp(me._gameStates[nextState._refTick], nextState, (s_currentTick - nextState._refTick) / (nextStateTick - nextState._refTick));
+				me._gameStates[s_currentTick] = nextState;
+			}
+			else if(nextState._refTick != 0)
+			{
+
+				nextState.DismantleDelta(me._gameStates[nextState._refTick]);
+			}
+
+			me._gameStates.FreeUpTo(nextState._refTick - 1);
+
+#if DB_OP
+			Debug.Log("===== ===== TICK: " + s_currentTick + " ===== =====");
+#endif
 			foreach(var it in nextState._newIDRanges)
 			{
+#if DB_OP
+				Debug.Log("testing op: " + it._type);
+#endif
 				bool exists = false;
-				for(int i = nextState._refTick; i < nextStateTick; i++)
+				for(int i = nextState._refTick; i < s_currentTick; i++)
 				{
-					if(default == GlobalVariables.s_instance._clients[0]._gameStates[i])
+#if DB_OP
+					Debug.Log("for tick " + i);
+#endif
+					if(default == me._gameStates[i])
 						continue;
 
-					foreach(var jt in GlobalVariables.s_instance._clients[0]._gameStates[i]._newIDRanges)
+#if DB_OP
+					Debug.Log("tick " + i + " exists");
+#endif
+
+					if(me._gameStates[i]._newIDRanges.Exists(x => x._id == it._id))
 					{
-						if(jt == default)
-							continue;
-						if(jt._id == it._id)
-						{
-							exists = true;
-							break;
-						}
-					}
-					if(exists)
+						exists = true;
 						break;
+					}
 				}
 
+#if DB_OP
+				Debug.Log("ids " + it._id + " in op " + it._type + " do exist? " + exists);
+#endif
+
 				if(!exists)
+				{
 					ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+				}
 			}
 
 			s_interfaceGameState = nextState;
