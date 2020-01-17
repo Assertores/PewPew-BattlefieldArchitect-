@@ -14,7 +14,7 @@ namespace PPBA
 		public static List<MountSlot>[] s_mountSlots = new List<MountSlot>[10];
 		public static List<CoverSlot>[] s_coverSlots = new List<CoverSlot>[10];
 		public static List<FlagPole>[] s_flagPoles = new List<FlagPole>[10];
-		public static List<MediCamp>[] s_mediCamp = new List<MediCamp>[10];		
+		public static List<MediCamp>[] s_mediCamp = new List<MediCamp>[10];
 		public static List<HeadQuarter>[] s_headQuarters = new List<HeadQuarter>[10];
 
 		#region Monobehaviour
@@ -49,7 +49,7 @@ namespace PPBA
 
 		void Start()
 		{
-   
+
 		}
 
 		void Update()
@@ -88,6 +88,32 @@ namespace PPBA
 				}
 
 				Debug.Log(temp);
+			}
+		}
+
+		public static void CheckWinCon()
+		{
+			bool[] areWinners = new bool[s_headQuarters.Length];
+			int alivePlayers = 0;
+
+			for(int i = 0; i < s_headQuarters.Length; i++)
+			{
+				if(0 < s_headQuarters[i].Count)
+				{
+					alivePlayers++;
+					areWinners[i] = true;
+				}
+				else
+					areWinners[i] = false;
+			}
+
+			if(alivePlayers == 1)
+			{
+				for(int i = 0; i < areWinners.Length; i++)
+				{
+					if(areWinners[i])
+						StatusNetcode.s_instance.SetWinningConndition(i);
+				}
 			}
 		}
 	}
