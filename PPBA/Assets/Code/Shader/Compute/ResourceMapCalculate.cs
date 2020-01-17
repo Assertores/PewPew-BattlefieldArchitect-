@@ -110,6 +110,20 @@ namespace PPBA
 			StartCoroutine(RefreshCalcRes());
 		}
 
+		public void EarlyCalulation(float[] redValue)
+		{
+			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
+			_buffer = new ComputeBuffer(_Refinerys.Count, sizeof(int));
+			_RedValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
+
+			_computeShader.SetBuffer(_resourceCalcKernel2, "buffer", _buffer);
+			_computeShader.SetBuffer(_resourceCalcKernel2, "redValue", _RedValueBuffer);
+			_computeShader.SetBuffer(_resourceCalcKernel2, "bitField", _bitField);
+
+			_computeShader.Dispatch(_resourceCalcKernel2, 256 / 16, 256 / 16, 1); // prüfen ob er hier wartet
+
+		}
+
 		public IEnumerator RefreshCalcRes()
 		{
 			isRunning = true;
@@ -137,11 +151,11 @@ namespace PPBA
 			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _ResultTexture);
 			_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", inputTex);
 
-			_computeShader.Dispatch(_resourceCalcKernel2, 256 / 8, 256 / 8, 1); // prüfen ob er hier wartet
-			yield return new WaitForSeconds(0.1f);
-			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 8, 256 / 8, 1);
-			yield return new WaitForSeconds(0.1f);
-
+			_computeShader.Dispatch(_resourceCalcKernel2, 256 / 16, 256 / 16, 1); // prüfen ob er hier wartet
+			yield return new WaitForSeconds(0.01f);
+			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 16, 256 / 16, 1);
+			yield return new WaitForSeconds(0.01f);
+			
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
@@ -154,7 +168,7 @@ namespace PPBA
 			_RedValueBuffer.Release();
 			_RedValueBuffer = null;
 
-			//	yield return new WaitForEndOfFrame();
+			//yield return new WaitForEndOfFrame();
 			//	_GroundMaterial.SetTexture("_NoiseMap", _ResultTexture);
 
 			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, _RedValues, _ResultTexture));
@@ -166,7 +180,7 @@ namespace PPBA
 
 		IEnumerator ConvertRenToTex2D(byte[] field, float[] renTex, RenderTexture tex)
 		{
-			Graphics.CopyTexture(tex, inputTex);
+			//Graphics.CopyTexture(tex, inputTex);
 			HeatMap.bitfield = field;
 			_backingTex[1] = renTex;
 			yield return null;
@@ -199,7 +213,7 @@ namespace PPBA
 
 		public bool HasRefinerys()
 		{
-			print("refinerys cound " + _Refinerys.Count + (_Refinerys.Count != 0));
+			//print("refinerys cound " + _Refinerys.Count + (_Refinerys.Count != 0));
 
 			return _Refinerys.Count != 0;
 		}

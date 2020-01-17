@@ -5,16 +5,20 @@
 		[Header(Base Parameters)]
 		_Color("Tint", Color) = (1, 1, 1, 1)
 		_InsideColor("InsideColor", Color) = (1,1,1,1)
+
 		_MainTex("Texture", 2D) = "white" {}
+
 		_BumpMap("Bumpmap", 2D) = "bump" {}
 		_BumpMapValue("BumpmapValue", Float) = 1.0
+
 		_ParallaxMap("Heightmap", 2D) = "black" {}
 		_Parallax("Height", Range(0.005, 0.08)) = 0.02
-		_AmbientMap("AO_Map (R)", 2D) = "black" {}
+
+		_AmbientMap("AO_Map (R)", 2D) = "white" {}
 		_AmbientValue("AO_Value", Float) = 0.0
+
 		_Specular("Specular", 2D) = "black" {}
 		//	_Specular("Specular Color", Color) = (1,1,1,1)
-
 		_Glossiness("Smoothness", Range(0,1)) = 0.5
 		//_Metallic("Metallic", Range(0,1)) = 0.0
 
@@ -28,9 +32,9 @@
 
 		[PerRendererData]_Clip("Clip Height", Float) = 0.0
 			//_Clip("Clip Height", Float) = 0.0
-			_Noise("Noise", Float) = 0.0
-			_NoiseScale("Noise Scale", Float) = 1.0
-			_BuildingHeight("BuildingHeight", Float) = 5.0
+		_Noise("Noise", Float) = 0.0
+		_NoiseScale("Noise Scale", Float) = 1.0
+		_BuildingHeight("BuildingHeight", Float) = 5.0
 
 	}
 
@@ -42,7 +46,6 @@
 			#pragma surface surf StandardSpecular	 vertex:vert
 			
 			#pragma target 3.0
-			#pragma shader_feature _USEMETALLICMAP_ON
 	//		#include "UnityCG.cginc"
 			#include "UnityStandardUtils.cginc" 
 			#include "Includes/SimplexNoise3D.cginc"
@@ -74,10 +77,7 @@
 			  half _Glossiness;
 			  half _Metallic;
 			  half _AmbientValue;
-			  //float _StepWidth;
-			  //float _StepAmount;
-			  //float _SpecularSize;
-			  //float _SpecularFalloff;
+			  float _Parallax;
 
 				// Noise
 			  fixed4 _InsideColor;
@@ -88,9 +88,6 @@
 			  float _Noise;
 			  float _NoiseScale;
 			  float _BuildingHeight;
-			  float _Parallax;
-
-
 
 
 			  void vert(inout appdata_full v, out Input o)

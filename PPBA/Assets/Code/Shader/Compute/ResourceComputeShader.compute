@@ -10,8 +10,9 @@ int PointSize;
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
-int stateSize;
-float2 state[50];
+//int stateSize;
+//float2 state[50];
+float InputRedValue[256 * 256];
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<float> redValue;
@@ -22,7 +23,7 @@ Texture2D<float4> InputTextureTerritorium;
 RWTexture2D<float4> Result;
 RWTexture2D<float4> TerritoriumResult;
 
-[numthreads(8, 8, 1)]
+[numthreads(16, 16, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
     for (int i = 0; i < 50; i++)
@@ -31,27 +32,28 @@ void CSInit(uint3 id : SV_DispatchThreadID)
         buffer[i] = 0;
     }
 
-	for (int p = 0; p < ((256 * 256) / 8); p++)
-	{
-		bitField[p] = 0;
-	}
+    for (int p = 0; p < ((256 * 256) / 8); p++)
+    {
+        bitField[p] = 0;
+    }
 
-	for (int j = 0; j < (256*256); j++)
-	{
-		redValue[i] = 0;
-	}
+    for (int j = 0; j < (256 * 256); j++)
+    {
+        redValue[i] = 0;
+    }
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
 	   
+    float currentResources = Result[id.xy].r;
 
-    float currentResources = InputTexture[id.xy].r;
+    float minValue;
 
-	if (currentResources == 0)
-		return;
+    if (currentResources == 0)
+        return;
 
     for (int i = 0; i < PointSize; i++)
     {
@@ -64,24 +66,23 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             continue;
         }
     
-        float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
+        float harvestFac = smoothstep(maxDis, 0, dis) * coords[i].z; // distfactor * coords[i].z;
+        //float harvestFac = /*step( 0.0, dis) **/ coords[i].z; // distfactor * coords[i].z;
         float minValue = float(min(currentResources, harvestFac));
         currentResources -= minValue;
         currentResources = saturate(currentResources);
 
         InterlockedAdd(buffer[i], minValue * 1000.0);
     }
+    
+    redValue[id.y * weightMap + id.x] = currentResources;
 
-
-	redValue[id.y * weightMap + id.x] = currentResources;
-
-	if (InputTexture[id.xy].r != currentResources)
-	{
-		int bit = id.y * weightMap + id.x;
-		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-
-	}
+    if (InputTexture[id.xy].r != currentResources)
+    {
+        int bit = id.y * weightMap + id.x;
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+        Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+    }
 }
 
 
@@ -113,25 +114,25 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         if (Soldiers[i].z == 0)
         {
-			col = float3(1, 0, 0);
+            col = float3(1, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
-			col = float3(0, 1, 0);
+            col = float3(0, 1, 0);
         }
         if (Soldiers[i].z == 2)
         {
-			col = float3(0, 0, 1);
+            col = float3(0, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-			col = float3(0.5, 0.5, 0);
+            col = float3(0.5, 0.5, 0);
         }
 
 		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
-		col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+		//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
 
-		TerritoriumResult[id.xy] = float4(col, 1);
+        TerritoriumResult[id.xy] = float4(col, 1);
 		
 		//if (TerritoriumResult[id.xy].r != m_point.r)
   //      {
@@ -140,11 +141,8 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
   //          TerritoriumResult[id.xy] = float4(m_point, 0, 1);
   //      }
-	}
+    }
 }
-
-
-
 
 [numthreads(8, 8, 1)]
 void CSNextEdge(uint3 id : SV_DispatchThreadID)
@@ -217,3 +215,15 @@ void CSNextEdge(uint3 id : SV_DispatchThreadID)
  //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
  //   }
 }
+    
+[numthreads(8, 8, 1)]
+
+    void CSBitFieldToTexture(uint3 id : SV_DispatchThreadID)
+    {
+        const int weightMap = 256;
+	   
+        Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
+}
+    
+    
+
