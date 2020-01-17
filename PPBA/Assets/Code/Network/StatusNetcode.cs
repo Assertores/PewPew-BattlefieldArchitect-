@@ -40,7 +40,18 @@ namespace PPBA
 
 			while(!isGameStarted)
 			{
-				TcpClient remote = await listener.AcceptTcpClientAsync();
+				TcpClient remote;
+				try
+				{
+					remote = await listener.AcceptTcpClientAsync();
+				}
+				catch(Exception e)
+				{
+					SceneManager.LoadScene(StringCollection.MAINMENU);
+					Destroy(this);
+					return;
+				}
+
 
 				NetworkStream ns = remote.GetStream();
 
@@ -52,7 +63,7 @@ namespace PPBA
 		{
 			if(!isReady)
 				return;
-			
+
 			if(!isGameStarted)
 			{
 				if(connections.Count < _maxPlayers)
