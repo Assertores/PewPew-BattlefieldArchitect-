@@ -107,10 +107,20 @@ namespace PPBA
 			{
 				if(_winner >= 0)
 				{
-					byte[] msg = new byte[] { (byte)StatusType.ENDGAME, (byte)_winner };
+					List<byte> msg = new List<byte>();
+					msg.Add((byte)StatusType.ENDGAME);
+					msg.Add((byte)_winner);
+					msg.Add((byte)GlobalVariables.s_instance._clients.Count);
+					foreach(var it in GlobalVariables.s_instance._clients)
+					{
+						msg.Add((byte)it._id);
+						msg.AddRange(BitConverter.GetBytes(0));//totalAI;
+						msg.AddRange(BitConverter.GetBytes(0));//totalResources;
+					}
+
 					foreach(var it in connections)
 					{
-						it.stream.Write(msg, 0, msg.Length);
+						it.stream.Write(msg.ToArray(), 0, msg.Count);
 						try
 						{
 							it.stream.Flush();//exeption if client not exists
@@ -174,7 +184,7 @@ namespace PPBA
 		bool h_isInStartUp = false;
 		async void Listen(NetworkStream ns)
 		{
-			byte[] bytes = new byte[1024];
+			byte[] data = new byte[1024];
 
 			while(true)
 			{
@@ -187,7 +197,7 @@ namespace PPBA
 
 				try
 				{
-					var retValue = await ns.ReadAsync(bytes, 0, bytes.Length);
+					var retValue = await ns.ReadAsync(data, 0, data.Length);
 					if(retValue <= 0)
 					{
 						SceneManager.LoadScene(StringCollection.MAINMENU);
@@ -203,7 +213,7 @@ namespace PPBA
 					return;
 				}
 
-				switch((StatusType)bytes[0])
+				switch((StatusType)data[0])
 				{
 					case StatusType.AWAITINGPLAYERS:
 						if(!LoadingScreenRefHolder.Exists() || LoadingScreenRefHolder.s_instance.text == null)
@@ -211,7 +221,7 @@ namespace PPBA
 							Debug.LogError("Reference for Loading Screen not set");
 							continue;
 						}
-						LoadingScreenRefHolder.s_instance.text.text = bytes[1] + " of " + bytes[2] + " players are connected";
+						LoadingScreenRefHolder.s_instance.text.text = data[1] + " of " + data[2] + " players are connected";
 						break;
 					case StatusType.STARTGAME:
 						if(!h_isInStartUp)
@@ -223,11 +233,21 @@ namespace PPBA
 						}
 						break;
 					case StatusType.ENDGAME:
-						SceneManager.LoadScene(StringCollection.MAINMENU);
+						int winner = data[1];
+						Tuple<int, int, int>[] stats = new Tuple<int, int, int>[data[2]];
+						int offset = 3;
+						for(int i = 0; i < stats.Length; i++)
+						{
+							stats[i] = new Tuple<int, int, int>(data[offset], BitConverter.ToInt32(data, offset + 1), BitConverter.ToInt32(data, offset + 1 + sizeof(int)));
+							offset += 1 + 2 * sizeof(int);
+						}
+
+						GameToEndScreen.s_instance.Execute(GlobalVariables.s_instance._clients[0]._id == winner, stats);
+
 						Destroy(this);
 						return;
 					default:
-						Debug.LogWarning("Message not readable: " + (StatusType)bytes[0]);
+						Debug.LogWarning("Message not readable: " + (StatusType)data[0]);
 						break;
 				}
 			}
