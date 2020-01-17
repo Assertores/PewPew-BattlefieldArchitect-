@@ -2293,7 +2293,7 @@ MonoBehaviour:
   _unitCamera: {fileID: 3144815779422002289}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2560
 --- !u!1 &3144815780811736927
 GameObject:
   m_ObjectHideFlags: 0
