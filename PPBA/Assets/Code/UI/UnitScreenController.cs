@@ -164,9 +164,17 @@ namespace PPBA
 
 			RaycastHit hitInfo;
 			if(Physics.Raycast(ray, out hitInfo, 1000, _layerMask))
-				return hitInfo.transform.GetComponent<IPanelInfo>();
+			{
+				print("hit something");
+				return hitInfo.transform.GetComponentInChildren<IPanelInfo>();
+
+			}
 			else
+			{
+				print("hit nothing");
 				return null;
+
+			}
 		}
 	}
 }
