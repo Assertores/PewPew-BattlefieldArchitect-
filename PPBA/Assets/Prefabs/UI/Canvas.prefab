@@ -2752,8 +2752,9 @@ GameObject:
   - component: {fileID: 6216858309215024288}
   - component: {fileID: 7853261099116297367}
   - component: {fileID: 2170937049983993774}
+  - component: {fileID: 1934763106}
   m_Layer: 5
-  m_Name: UnitCamera
+  m_Name: MiniMapCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2811,6 +2812,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &1934763106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724770825233325971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3927be59fe9bf3045ab131eea6bd035c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  miniMapCam: {fileID: 0}
+  _MovingObject: {fileID: 0}
 --- !u!1 &6885751799820611421
 GameObject:
   m_ObjectHideFlags: 0
@@ -3283,26 +3298,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c654db1b59ee87a4db229f3161665b23, type: 3}
 --- !u!224 &5572850186403882060 stripped
@@ -3553,26 +3548,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c654db1b59ee87a4db229f3161665b23, type: 3}
 --- !u!224 &1038221387289908338 stripped
@@ -3698,24 +3673,9 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
+    - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
+      propertyPath: selfUpdate
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -3842,26 +3802,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 458345519924493912, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c654db1b59ee87a4db229f3161665b23, type: 3}

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -8,12 +7,24 @@ namespace PPBA
 	public class InfoPanelResource : MonoBehaviour
 	{
 		public ObjectType _Typ;
-		public TextMeshProUGUI text; 
+		public TextMeshProUGUI text;
+
+		/// <summary>
+		/// bool is for resources update 
+		/// </summary>
+		public bool selfUpdate = false;
 
 		// Start is called before the first frame update
 		void Start()
 		{
-			BuildingManager.s_instance._InfoPanelEvent += RefreshPanel;
+			if(!selfUpdate)
+			{
+				BuildingManager.s_instance._InfoPanelEvent += RefreshPanel;
+			}
+			else
+			{
+				StartCoroutine(RefreshResources());
+			}
 		}
 
 		private void RefreshPanel(ObjectType _type)
@@ -22,6 +33,9 @@ namespace PPBA
 			{
 				return;
 			}
+
+			if(null == text)
+				return;
 
 			switch(_type)
 			{
@@ -44,5 +58,17 @@ namespace PPBA
 					break;
 			}
 		}
+
+		IEnumerator RefreshResources()
+		{
+			while(true)
+			{
+				yield return new WaitForSeconds(3);
+			//	float res = JobCenter.GetResourceTotal(GlobalVariables.s_instance._clients[0]._id);
+			//	if(null != text)
+					//text.text = res.ToString();
+			}
+		}
+
 	}
 }
