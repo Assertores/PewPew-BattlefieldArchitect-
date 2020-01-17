@@ -114,8 +114,8 @@ namespace PPBA
 					foreach(var it in GlobalVariables.s_instance._clients)
 					{
 						msg.Add((byte)it._id);
-						msg.AddRange(BitConverter.GetBytes(0));//totalAI;
-						msg.AddRange(BitConverter.GetBytes(0));//totalResources;
+						msg.AddRange(BitConverter.GetBytes(it._totalAICount));
+						msg.AddRange(BitConverter.GetBytes(it._totalResources));
 					}
 
 					foreach(var it in connections)

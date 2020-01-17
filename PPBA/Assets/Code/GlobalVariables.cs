@@ -18,6 +18,8 @@ namespace PPBA
 		public IPEndPoint _ep;
 		public RingBuffer_InputState _inputStates = new RingBuffer_InputState(); //public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
 		public RingBuffer_GameState _gameStates = new RingBuffer_GameState(); //public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
+		public int _totalAICount;
+		public int _totalResources;
 
 		public client()
 		{

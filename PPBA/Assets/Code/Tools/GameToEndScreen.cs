@@ -31,4 +31,6 @@ namespace PPBA
 
 				Destroy(this.gameObject);
 			}
+		}
+	}
 }
