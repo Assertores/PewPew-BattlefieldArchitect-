@@ -127,6 +127,8 @@ namespace PPBA
 
 #else
 		TcpClient client = null;
+		string _ip;
+		int _port;
 
 		private void Start()
 		{
@@ -135,6 +137,9 @@ namespace PPBA
 
 		async void Client(string ip, int port)
 		{
+			_ip = ip;
+			_port = port;
+
 			client = new TcpClient();
 
 			await client.ConnectAsync(ip, port);
@@ -174,6 +179,7 @@ namespace PPBA
 						LoadingScreenRefHolder.s_instance.text.text = bytes[1] + " of " + bytes[2] + " players are connected";
 						break;
 					case StatusType.STARTGAME:
+						SceneManager.sceneLoaded += OnClientLoadFinished;
 						SceneManager.LoadScene(StringCollection.GAME);
 						break;
 					case StatusType.ENDGAME:
@@ -184,6 +190,16 @@ namespace PPBA
 						Debug.LogWarning("Message not readable: " + (StatusType)bytes[0]);
 						break;
 				}
+			}
+		}
+
+		void OnClientLoadFinished(Scene scene, LoadSceneMode mode)
+		{
+			if(scene.name == StringCollection.GAME && scene.isLoaded)
+			{
+				SceneManager.sceneLoaded -= OnClientLoadFinished;
+
+				GameNetcode.s_instance.ClientConnect(_ip, _port);
 			}
 		}
 #endif
