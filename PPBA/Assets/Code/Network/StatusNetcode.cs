@@ -27,10 +27,7 @@ namespace PPBA
 		int _winner = -1;
 		bool isReady = false;
 
-		public void SetWinningConndition(int winner)
-		{
-			_winner = winner;
-		}
+		
 
 		async void Server(int port, int maxPlayers)
 		{
@@ -285,6 +282,13 @@ namespace PPBA
 		{
 #if !UNITY_SERVER
 			Client(ip, port);
+#endif
+		}
+
+		public void SetWinningConndition(int winner)
+		{
+#if UNITY_SERVER
+			_winner = winner;
 #endif
 		}
 	}
