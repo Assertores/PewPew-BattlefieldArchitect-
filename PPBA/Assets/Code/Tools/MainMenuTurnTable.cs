@@ -6,7 +6,7 @@ namespace PPBA
 {
 	public class MainMenuTurnTable : MonoBehaviour
 	{
-		[SerializeField] float _turnSpeed;
+		[SerializeField] AnimationClip _rotation;
 		[SerializeField] float _timeBetweenJups;
 		[SerializeField] float _translation;
 		[SerializeField] AnimationCurve _jump;
@@ -22,6 +22,10 @@ namespace PPBA
 				Transform it = transform.GetChild(i);
 				it.rotation = Quaternion.Euler(0, _jumpAngle / 2 * i, 0);
 				it.Translate(it.forward * _translation);
+				/*Animation anim = it.gameObject.AddComponent<Animation>();
+				anim.clip = _rotation;
+				anim.Stop();
+				anim.Play();*/
 			}
 		}
 
@@ -31,10 +35,6 @@ namespace PPBA
 		// Update is called once per frame
 		void Update()
 		{
-			foreach(Transform it in transform)
-			{
-				it.Rotate(Vector3.up, _turnSpeed * Time.deltaTime);
-			}
 
 			if(h_inJump || Time.time > h_lastJump + _timeBetweenJups)
 			{
