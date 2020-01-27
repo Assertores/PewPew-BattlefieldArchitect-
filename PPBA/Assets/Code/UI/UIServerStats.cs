@@ -104,6 +104,7 @@ namespace PPBA
 				{
 					RectTransform element = (RectTransform)(Instantiate(_itemPrefab, _content).transform);
 					element.anchoredPosition = new Vector2(i * itemWidth, 0);
+					items.Add(element.GetComponent<UIServerStatsItemRefHolder>());
 				}
 
 				_content.sizeDelta = new Vector2(items.Count * itemWidth, _content.sizeDelta.y);
