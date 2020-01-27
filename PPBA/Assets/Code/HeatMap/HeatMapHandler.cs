@@ -59,6 +59,12 @@ namespace PPBA
 		}
 
 		Dictionary<Vector2Int, Vector3> h_cashValues = new Dictionary<Vector2Int, Vector3>();
+
+		/// <summary>
+		/// calculates position and distance to nearest boarder
+		/// </summary>
+		/// <param name="worldPos">your world position</param>
+		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>
 		public Vector3 BorderValues(Vector3 worldPos)
 		{
 			Vector2 retPos = worldPos * _ppu[1];
