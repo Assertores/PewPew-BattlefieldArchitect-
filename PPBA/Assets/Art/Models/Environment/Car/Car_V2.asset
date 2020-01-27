@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Car_V2
+  m_EditorClassIdentifier: Assembly-CSharp:PPBA:RanTex
+  _ranTexs:
+  - _albedo: {fileID: 2800000, guid: 6f2574918efc34343a228fa0ab5d07b2, type: 3}
+    _hight: {fileID: 2800000, guid: d02dd75043fb1f04297fdc2673e9b264, type: 3}
+  - _albedo: {fileID: 2800000, guid: 59e7f61120d5d1244b024a4b38856a56, type: 3}
+    _hight: {fileID: 2800000, guid: f8270f4ec6f82a7438be68e30e98f38e, type: 3}
+  - _albedo: {fileID: 2800000, guid: 6728be642bb11a14a88f43b7fce02dbd, type: 3}
+    _hight: {fileID: 2800000, guid: 900ecf55556d3814fb49e5a82fd99ea0, type: 3}
+  - _albedo: {fileID: 2800000, guid: 0ffd7949f36935e4fb71f1547ff1f829, type: 3}
+    _hight: {fileID: 2800000, guid: d8a8537701eb7e34ca268e4d0255fb5b, type: 3}
