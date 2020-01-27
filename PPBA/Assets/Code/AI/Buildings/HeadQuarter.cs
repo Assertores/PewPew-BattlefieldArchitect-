@@ -49,7 +49,10 @@ namespace PPBA
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
 					JobCenter.s_headQuarters[_resourceDepot._team].Remove(this);
+
+			JobCenter.CheckWinCon();
 #endif
+
 		}
 	}
 }
