@@ -13,7 +13,7 @@ namespace PPBA
 		[SerializeField] GameObject _itemPrefab;
 		float itemWidth;
 
-		List<UIServerStatsItemRefHolder> items;
+		List<UIServerStatsItemRefHolder> items = new List<UIServerStatsItemRefHolder>();
 		void Awake()
 		{
 			if(!_currentTick)
