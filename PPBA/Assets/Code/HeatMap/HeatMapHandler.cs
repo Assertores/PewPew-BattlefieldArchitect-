@@ -74,7 +74,7 @@ namespace PPBA
 
 			int maxIndex = int.MaxValue;
 
-			float myTeam = GetHMValue(1, texPos.x, texPos.y);
+			int myTeam = (int)GetHMValue(1, texPos.x, texPos.y);
 
 			for(int column = 1; column * column < foundDist; column++)
 			{
@@ -87,35 +87,35 @@ namespace PPBA
 					#region Check 8 positions
 
 					pos = texPos + new Vector2Int(column, row);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(-column, row);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(column, -row);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(-column, -row);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(row, column);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(-row, column);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(row, -column);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					pos = texPos + new Vector2Int(-row, -column);
-					if(!valueIsDifferent && myTeam != GetHMValue(1, pos.x, pos.y))
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
 					#endregion
