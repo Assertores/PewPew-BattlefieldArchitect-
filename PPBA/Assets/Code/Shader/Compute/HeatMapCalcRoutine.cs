@@ -21,8 +21,8 @@ namespace PPBA
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
 		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
 
-		Texture startResMap;
-		Texture startTerMap;
+		public Texture startResMap;
+		public Texture startTerMap;
 
 		private void OnEnable()
 		{
@@ -40,7 +40,7 @@ namespace PPBA
 		{
 			_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
 			_earlyCalc._computeShader = _computeShader;
-
+					   			 
 			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
 			//_setTexCalc._computeShader = _computeShader;
 
@@ -50,9 +50,14 @@ namespace PPBA
 			_setTexCalc._resourceCalcKernel = _computeShader.FindKernel("CSBitToTex");
 
 
-			_resMapCalc = new ResourceMapCalculate(_computeShader.FindKernel("CSMain"));
-			_resMapCalc._computeShader = _computeShader;
+			//_resMapCalc = new ResourceMapCalculate(_computeShader.FindKernel("CSMain"));
+			//_resMapCalc._computeShader = _computeShader;
 
+			gameObject.AddComponent<ResourceMapCalculate>();
+			_resMapCalc = GetComponent<ResourceMapCalculate>();
+			_resMapCalc._computeShader = _computeShader;
+			_resMapCalc._resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
+					   			 		  
 			_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
 			_terMapCalc._computeShader = _computeShader;
 
@@ -86,17 +91,16 @@ namespace PPBA
 
 		public void EarlyCalc()
 		{
-			_earlyCalc.EarlyCalulation(_Refinerys.Count);
+		//	_earlyCalc.EarlyCalulation(_Refinerys.Count);
 		}
 
 		public void StartHeatMapCalc()
 		{
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
-			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
+		//	StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
 
-
-			HeatMapReturnValue[] heat = ReturnValue();
-			_setTexCalc.StartComputeShader(heat[0].tex, new float[256 * 256], _ResultTextureRessource, _ResultTextureTerritorium);
+			//HeatMapReturnValue[] heat = ReturnValue();
+			//_setTexCalc.StartComputeShader(heat[0].tex, new float[256 * 256], _ResultTextureRessource, _ResultTextureTerritorium);
 		}
 
 		public HeatMapReturnValue[] ReturnValue()
@@ -106,6 +110,19 @@ namespace PPBA
 			map[1] = _terMapCalc.GetValues();
 
 			return map;
+		}
+
+		public int GetHeatmapWidth(int index)
+		{
+			switch(index)
+			{
+				case 0:
+					return startResMap.width;
+				case 1:
+					return startTerMap.width;
+				default:
+					return -1;
+			}
 		}
 
 		public void AddFabric(IRefHolder refHolder)

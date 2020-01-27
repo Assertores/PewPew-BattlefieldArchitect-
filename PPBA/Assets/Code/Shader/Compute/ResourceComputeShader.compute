@@ -12,6 +12,8 @@ int PointSize;
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
+int RequiredSize;
+float4 InformationRequired[50];
 
 //int stateSize;
 //float2 state[50];
@@ -21,9 +23,11 @@ RWStructuredBuffer<float4> InputTextureTerritorium;
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<float> redValue;
+RWStructuredBuffer<float> terValue;
 RWStructuredBuffer<uint> bitField;
 
 RWTexture2D<float4> Result;
+RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
 
 
@@ -43,7 +47,11 @@ void CSInit(uint3 id : SV_DispatchThreadID)
     for (int j = 0; j < (256 * 256); j++)
     {
         redValue[i] = 0;
+		InputRedValue[i] = 0;
+		InputTextureTerritorium[i] = 0;
     }
+
+
 }
 
 [numthreads(16, 16, 1)]
@@ -51,12 +59,13 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
 	   
-    float currentResources = Result[id.xy].r;
+    //redValue[id.y * weightMap + id.x] = 1;
+    float currentResources = input[id.xy].r;
 
     float minValue;
 
-    if (currentResources == 0)
-        return;
+    //if (currentResources == 0)
+    //    return;
 
     for (int i = 0; i < PointSize; i++)
     {
@@ -79,13 +88,14 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     }
     
     redValue[id.y * weightMap + id.x] = currentResources;
+    Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
 
-    if (Result[id.xy].r != currentResources)
-    {
-        int bit = id.y * weightMap + id.x;
-        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-        Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-    }
+    //if (input[id.xy].r != currentResources)
+    //{
+    //    int bit = id.y * weightMap + id.x;
+    //    InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+    //    Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+    //}
 }
 
 [numthreads(16, 16, 1)]
@@ -113,22 +123,21 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
             m_point = Soldiers[i].xy;
         }
 
-
         if (Soldiers[i].z == 0)
         {
-            col = float3(1, 0, 0);
+            col = float3(0.1, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
-            col = float3(0, 1, 0);
+            col = float3(0.2, 1, 0);
         }
         if (Soldiers[i].z == 2)
         {
-            col = float3(0, 0, 1);
+            col = float3(0.3, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-            col = float3(0.5, 0.5, 0);
+            col = float3(0.4, 0.5, 0);
         }
 
 		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
@@ -136,16 +145,15 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         TerritoriumResult[id.xy] = float4(col, 1);
 		
-		//if (TerritoriumResult[id.xy].r != m_point.r)
-  //      {
-  //          int bit = id.y * weightMap + id.x;
-  //          InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+		if (TerritoriumResult[id.xy].r != col.r)
+        {
+            int bit = id.y * weightMap + id.x;
+            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
 
-  //          TerritoriumResult[id.xy] = float4(m_point, 0, 1);
-  //      }
+            TerritoriumResult[id.xy] = float4(col, 1);
+        }
     }
 }
-
     
 [numthreads(16, 16, 1)]
 void CSBitToTex(uint3 id : SV_DispatchThreadID)
@@ -158,74 +166,79 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
 
 
 
-//[numthreads(16, 16, 1)]
-//void CSNextEdge(uint3 id : SV_DispatchThreadID)
-//{
-//	////===== ===== relevance test ===== =====
-// //   bool imIn = false;
-// //   for (int q = 0; !imIn || q < SoldiersSize; q++)
-// //   {
-// //       if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
-// //           imIn = true;
-// //   }
-// //   if (!imIn)
-// //       return;
+[numthreads(16, 16, 1)]
+void CSNextEdge(uint3 id : SV_DispatchThreadID)
+{
+	////===== ===== relevance test ===== =====
+ //   bool imIn = false;
 
-//	////===== ===== init ===== =====
-// //   float myTeam = TerritoriumResult[id.xy].x;
-// //   float2 found;
+ //   for (int q = 0; !imIn || q < RequiredSize; q++)
+ //   {
+	//	if (id.x == InformationRequired[q].x || id.y == InformationRequired[q].y)
+	//	{
+	//		imIn = true;
+	//		break;
+	//	}
+ //   }
 
-// //   float foundDist = 3.402823466e+38F;
+ //   if (!imIn)
+ //       return;
 
-// //   int maxIndex = 4000000;
+	////===== ===== init ===== =====
+ //   float myTeam = TerritoriumResult[id.xy].x;
+ //   float2 found;
 
-//	////===== ===== serach ===== =====
-// //   for (int column = 1; column * column < foundDist; column++)
-// //   {
-// //       int rowLength = min(column, maxIndex);
-// //       for (int row = 0; row <= rowLength; row++)
-// //       {
-// //           float2 pos;
-// //           bool valueIsDifferent = false;
+ //   float foundDist = 3.402823466e+38F;
 
-// //           pos = id.xy + float2(column, row);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(-column, row);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(column, -row);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(-column, -row);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(row, column);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(-row, column);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(row, -column);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
-// //           pos = id.xy + float2(-row, -column);
-// //           if (myTeam != TerritoriumResult[pos].r)
-// //               valueIsDifferent = true;
+ //   int maxIndex = 4000000;
 
-// //           if (valueIsDifferent)
-// //           {
-// //               int dist = column * column + row * row;
-// //               if (foundDist > dist)
-// //               {
-// //                   found = pos;
-// //                   maxIndex = row;
-// //                   foundDist = dist;
-// //               }
-// //           }
-// //       }
+	////===== ===== serach ===== =====
+ //   for (int column = 1; column * column < foundDist; column++)
+ //   {
+ //       int rowLength = min(column, maxIndex);
+ //       for (int row = 0; row <= rowLength; row++)
+ //       {
+ //           float2 pos;
+ //           bool valueIsDifferent = false;
 
-//	//	//===== ===== result ===== =====
-// //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
-// //   }
-//}
+ //           pos = id.xy + float2(column, row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-column, row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(column, -row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-column, -row);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(row, column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-row, column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(row, -column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+ //           pos = id.xy + float2(-row, -column);
+ //           if (myTeam != TerritoriumResult[pos].r)
+ //               valueIsDifferent = true;
+
+ //           if (valueIsDifferent)
+ //           {
+ //               int dist = column * column + row * row;
+ //               if (foundDist > dist)
+ //               {
+ //                   found = pos;
+ //                   maxIndex = row;
+ //                   foundDist = dist;
+ //               }
+ //           }
+ //       }
+
+	//	//===== ===== result ===== =====
+ //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
+ //   }
+}

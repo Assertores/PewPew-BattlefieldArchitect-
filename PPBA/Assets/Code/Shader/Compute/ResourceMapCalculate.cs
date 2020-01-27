@@ -4,14 +4,16 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class ResourceMapCalculate
+	public class ResourceMapCalculate : MonoBehaviour
 	{
 		public ComputeShader _computeShader;
 		private ComputeBuffer _buffer;
 		private ComputeBuffer _RedValueBuffer;
 		private ComputeBuffer _bitField;
 
-		private int _resourceCalcKernel1;
+		private RenderTexture _tempRenTex;
+
+		public int _resourceCalcKernel1;
 
 		private bool isRunning = false;
 
@@ -25,17 +27,16 @@ namespace PPBA
 
 		float[][] _backingTex = new float[2][];
 
-
-
 		[SerializeField]
 		private int[] _ResourceValues;
+		[SerializeField]
 		private float[] _RedValues;
 
 		private byte[] _currentBitField;
 
-		public ResourceMapCalculate(int kernel)
+		public void Start()
 		{
-			_resourceCalcKernel1 = kernel;
+			//_resourceCalcKernel1 = kernel;
 
 			_backingTex[0] = new float[256 * 256];
 			_backingTex[1] = new float[256 * 256];
@@ -46,13 +47,22 @@ namespace PPBA
 				bitfield = new byte[(256 * 256) / 8],
 			};
 
+			Texture resTex = HeatMapCalcRoutine.s_instance._GroundMaterial.GetTexture("_NoiseMap");
+			_tempRenTex = new RenderTexture(resTex.width, resTex.height, 0, RenderTextureFormat.RFloat)
+			{
+				enableRandomWrite = true
+			};
+
+			Graphics.Blit(HeatMapCalcRoutine.s_instance._ResultTextureRessource, _tempRenTex);
+
+
 		}
 
 		public IEnumerator RefreshCalcRes(HeatMapCalcRoutine HMroutine)
 		{
 			if(isRunning || !HMroutine.HasRefinerys())
 			{
-				yield return null;
+				goto endingCo;
 			}
 
 			isRunning = true;
@@ -72,30 +82,35 @@ namespace PPBA
 			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
 			_computeShader.SetBuffer(_resourceCalcKernel1, "redValue", _RedValueBuffer);
-			_computeShader.SetTexture(_resourceCalcKernel1, "Result", HMroutine._ResultTextureRessource);
+			_computeShader.SetTexture(_resourceCalcKernel1, "input", HMroutine._ResultTextureRessource);
+			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _tempRenTex);
+
 			//_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", inputTex);
 
 			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 16, 256 / 16, 1);
-			yield return new WaitForSeconds(0.01f);
-			
+
+			yield return new WaitForSeconds(0.05f);
+
+			Graphics.Blit(_tempRenTex, HeatMapCalcRoutine.s_instance._ResultTextureRessource);
+
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
 			_bitField = null;
 			_buffer.GetData(_ResourceValues);
 			_buffer.Release();
 			_buffer = null;
-
 			_RedValueBuffer.GetData(_RedValues);
 			_RedValueBuffer.Release();
 			_RedValueBuffer = null;
 
-			//yield return new WaitForEndOfFrame();
-			//HMroutine._GroundMaterial.SetTexture("_NoiseMap", HMroutine._ResultTextureRessource);
+			yield return new WaitForEndOfFrame();
+			HMroutine._GroundMaterial.SetTexture("_NoiseMap", HMroutine._ResultTextureRessource);
 
 			yield return ConvertRenToTex2D(_currentBitField, _RedValues);
 			Swap(); // change Texture2d
-
 			isRunning = false;
+endingCo:
+			;
 		}
 
 		float[] Swap()
