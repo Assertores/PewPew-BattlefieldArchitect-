@@ -37,6 +37,8 @@ namespace PPBA
 		public override void Execute(Pawn pawn)
 		{
 			pawn._currentAnimation = PawnAnimations.RUN;
+
+			pawn.SetMoveTarget(new Vector3(pawn._borderData.x, pawn._borderData.y, pawn.transform.position.z));
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)
@@ -62,6 +64,7 @@ namespace PPBA
 				case "Distance":
 				case "DistanceToTarget":
 					return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
+					//return target.z;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;

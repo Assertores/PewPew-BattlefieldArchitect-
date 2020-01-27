@@ -172,6 +172,7 @@ namespace PPBA
 		public Vector3 _behaviorTarget = Vector3.zero;
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null && _mountSlot.isActiveAndEnabled;
+		public Vector3 _borderData = Vector3.zero;
 		#endregion
 
 		#region MonoBehaviour
@@ -233,6 +234,7 @@ namespace PPBA
 		protected void Evaluate(int tick = 0)   //uses behavior-scores to evaluate behaviors
 		{
 			CheckOverlapSphere();
+			GetBorderData();
 
 			if(_isMounting)
 			{
@@ -714,6 +716,11 @@ namespace PPBA
 					return i;
 			}
 			return -1;
+		}
+
+		public void GetBorderData(int tick = 0)
+		{
+			//_borderData = HeatMapHandler.BorderPos(transform.position);
 		}
 		#endregion
 
