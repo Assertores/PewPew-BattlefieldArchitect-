@@ -5,9 +5,8 @@ using UnityEngine;
 namespace PPBA
 {
 	[RequireComponent(typeof(AudioSource))]
-	public class BoomboxController : MonoBehaviour
+	public class UIBoomboxController : MonoBehaviour
 	{
-		[SerializeField] private ClipsEnvironment _clipName;
 		private AudioSource _source;
 
 		void Awake()
@@ -20,13 +19,14 @@ namespace PPBA
 			if(null == _source)
 				return;
 
-			_source.clip = AudioWarehouse.s_instance.Clip(_clipName);
-			_source.Play();
+			_source.clip = AudioWarehouse.s_instance._defaultClip;
 		}
 
 		void Update()
 		{
-			
+
 		}
+
+		public void PlayUI(ClipsUI _clip) => _source.PlayOneShot(AudioWarehouse.s_instance.Clip(_clip));
 	}
 }
