@@ -13,7 +13,7 @@ namespace PPBA
 
 	public class HeatMapHandler : Singleton<HeatMapHandler>
 	{
-		public Texture2D[] _heatMaps = new Texture2D[2];
+		public float[][] _heatMaps = new float[2][];
 		//private BitField2D[] _bitFields = new BitField2D[2];
 
 		private void Start()
@@ -40,21 +40,25 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
-			//ResourceMapCalculate.s_instance.StartCalculation();
-			//TerritoriumMapCalculate.s_instance.StartCalculation();
+
+			if(tick % 5 == 0)
+			{
+				HeatMapCalcRoutine.s_instance.EarlyCalc();
+				HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
+
+			}
 		}
 
 		void SaveMapToGameState(int tick)
 		{
-			HeatMapReturnValue value;
-			//value = ResourceMapCalculate.s_instance.GetValues();
+			HeatMapReturnValue[] value;
+			value = HeatMapCalcRoutine.s_instance.ReturnValue();
 
-			//TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			//_heatMaps[0] = value.tex;
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[0]));
+			_heatMaps[0] = value[0].tex;
 
-			//value = TerritoriumMapCalculate.s_instance.GetValues();
-			//TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			//_heatMaps[1] = value.tex;
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[1]));
+			_heatMaps[1] = value[1].tex;
 		}
 
 		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
@@ -89,36 +93,14 @@ namespace PPBA
 				if(null == map || null == map._values)
 					continue;
 
-				var colorType = _heatMaps[id].GetPixel(0, 0);
 				foreach(var it in map._values)
 				{
-					colorType.r = it._value;
-					Debug.Log(it._value);
-					_heatMaps[id].SetPixel(it._x, it._y, colorType/*new Color(it._value, 0, 0)*/);
-				}
-				_heatMaps[id].Apply();
-
-				switch(id)
-				{
-					case 0:
-						//ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
-						break;
-					case 1:
-						//TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
-						break;
-					default:
-						Debug.LogError("Heatmap index not found");
-						break;
+					_heatMaps[id][it._x + it._y * HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id)] = it._value;//.SetPixel(it._x, it._y, colorType/*new Color(it._value, 0, 0)*/);
 				}
 			}
+			HeatMapCalcRoutine.s_instance.SetRendererTextures(_heatMaps[0], _heatMaps[1]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id">the id of the heatMap</param>
-		/// <returns>size of the heatMap</returns>
-		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
 
 #if Obsolide
 		void CalculateMaps(int tick)
