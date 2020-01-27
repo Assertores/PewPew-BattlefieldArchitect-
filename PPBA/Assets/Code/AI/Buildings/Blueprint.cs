@@ -119,7 +119,7 @@ namespace PPBA
 			if(null != _myRefHolder)
 			{
 				_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
-				ResourceMapCalculate.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
+				HeatMapCalcRoutine.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
 			}
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building

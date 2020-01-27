@@ -5,24 +5,14 @@ using System.Linq;
 
 namespace PPBA
 {
-	public class TerritoriumMapCalculate : Singleton<TerritoriumMapCalculate>
+	public class TerritoriumMapCalculate
 	{
-		[SerializeField] private ComputeShader _computeShader;
-		[SerializeField] private Material _GroundMaterial;
-		[SerializeField] Texture2D _original;
-
-		private RenderTexture _ResultTexture;
-		private ComputeBuffer _buffer;
-		
-		private Texture2D inputTex;
-
+		public ComputeShader _computeShader;
 		private ComputeBuffer _bitField;
 		private byte[] _currentBitField;
 
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
-
-		private Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
 
 
 		private bool isRunning = false;
@@ -36,40 +26,10 @@ namespace PPBA
 
 		float[][] _backingTex = new float[2][];
 
-		float[] Swap()
+
+		public TerritoriumMapCalculate(int kernel)
 		{
-			float[] tmp = _backingTex[0];
-			_backingTex[0] = _backingTex[1];
-			_backingTex[1] = tmp;
-			return _backingTex[0];
-		}
-
-
-
-		void Start()
-		{
-			if(_GroundMaterial == null)
-			{
-				Debug.LogError("No Ground Material Found!!! (ResourceMapCalculate)");
-				return;
-			}
-
-			Texture2D resourceTexture = _original;
-			//Texture2D resourceTexture = Instantiate(_GroundMaterial.GetTexture("_TerritorriumMap")) as Texture2D;
-			_resourceCalcKernel = _computeShader.FindKernel("CSTerritorium");
-
-			_ResultTexture = new RenderTexture(resourceTexture.width, resourceTexture.height, 0, RenderTextureFormat.ARGB32)
-			{
-				enableRandomWrite = true
-			};
-
-			_ResultTexture.Create();
-			Graphics.Blit(resourceTexture, _ResultTexture);
-
-			inputTex = new Texture2D(256, 256, TextureFormat.ARGB32, false);
-			Graphics.CopyTexture(_ResultTexture, inputTex);
-
-			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
+			_resourceCalcKernel = kernel;
 
 			_backingTex[0] = new float[256 * 256];
 			_backingTex[1] = new float[256 * 256];
@@ -79,66 +39,48 @@ namespace PPBA
 				tex = _backingTex[0],
 				bitfield = new byte[(256 * 256) / 8],
 			};
-
-
 		}
 
-		public Texture2D GetStartTex() => _original;
-
-		public void UpdateTexture(Texture2D newTexture)
+		public IEnumerator RefreshCalcTerritorium( HeatMapCalcRoutine HMCalcRoutine)
 		{
-			_GroundMaterial.SetTexture("_TerritorriumMap", newTexture);
-		}
-
-		public void StartCalculation()
-		{
-			if(isRunning)
-			{
-				return;
-			}
-
-			StartCoroutine(RefreshCalcTerritorium());
-		}
-
-		public IEnumerator RefreshCalcTerritorium()
-		{
-			isRunning = true;
-
-			if(!HasSoldiers())
+			if(isRunning && !HMCalcRoutine.HasSoldiers())
 			{
 				yield return null;
 			}
+
+			isRunning = true;
 
 			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(uint)), sizeof(uint));
 			_currentBitField = new byte[(256 * 256) / 8];
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);
 
-			_computeShader.SetInt("SoldiersSize", _Soldiers.Count);
-			_computeShader.SetVectorArray("Soldiers", AddSoldierData());
-			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", _ResultTexture);
-			_computeShader.SetTexture(_resourceCalcKernel, "InputTextureTerritorium", inputTex);
+			_computeShader.SetInt("SoldiersSize", HMCalcRoutine._Soldiers.Count);
+			_computeShader.SetVectorArray("Soldiers", AddSoldierData(HMCalcRoutine));
+			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", HMCalcRoutine._ResultTextureTerritorium);
 
 			_computeShader.Dispatch(_resourceCalcKernel, 256 / 8, 256 / 8, 1);
 
 			_bitField.GetData(_currentBitField);
 			_bitField.Release();
 			_bitField = null;
-			
-			//yield return new WaitForEndOfFrame();
-			yield return new WaitForSeconds(0.2f);
 
-			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTexture);
-
-			yield return StartCoroutine(ConvertRenToTex2D(_currentBitField, new float[65000], _ResultTexture));
+			yield return ConvertRenToTex2D(_currentBitField, new float[65000]);
 			Swap(); // change Texture2d
 
 			isRunning = false;
 		}
 
-		IEnumerator ConvertRenToTex2D(byte[] field, float[] renTex, RenderTexture tex)
+		float[] Swap()
 		{
-			Graphics.CopyTexture(tex, inputTex);
+			float[] tmp = _backingTex[0];
+			_backingTex[0] = _backingTex[1];
+			_backingTex[1] = tmp;
+			return _backingTex[0];
+		}
+
+		IEnumerator ConvertRenToTex2D(byte[] field, float[] renTex)
+		{
 			HeatMap.bitfield = field;
 			_backingTex[1] = renTex;
 			yield return null;
@@ -146,13 +88,13 @@ namespace PPBA
 
 
 		// add data for ComputeInput
-		private Vector4[] AddSoldierData()
+		private Vector4[] AddSoldierData(HeatMapCalcRoutine HMCalcRoutine)
 		{
-			Vector4[] refsProp = new Vector4[_Soldiers.Count];
+			Vector4[] refsProp = new Vector4[HMCalcRoutine._Soldiers.Count];
 
 			int index = 0;
 
-			foreach(KeyValuePair<Transform, int> soldier in _Soldiers)
+			foreach(KeyValuePair<Transform, int> soldier in HMCalcRoutine._Soldiers)
 			{
 				Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(soldier.Key);
 
@@ -162,42 +104,6 @@ namespace PPBA
 			}
 			return refsProp;
 		}
-
-		// add soldies in List
-		public int AddSoldier(Transform pawn, int Team)
-		{
-	//		print("add Soldiers");
-			if(!_Soldiers.ContainsKey(pawn))
-			{
-				_Soldiers[pawn] = Team;
-				return _Soldiers.Count - 1;
-			}
-			return -1;
-		}
-
-		public void RemoveSoldiers(Transform pawn, int index)
-		{
-			_Soldiers.Remove(pawn);
-		}
-
-		void OnDisable()
-		{
-			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
-		}
-
-		void OnEnable()
-		{
-			_GroundMaterial.SetTexture("_TerritorriumMap", _original);
-		}
-
-
-		public bool HasSoldiers()
-		{
-			//print("soldier cound " + _Soldiers.Count);
-			return _Soldiers.Count != 0;
-		}
-
 	}
-
 }
 

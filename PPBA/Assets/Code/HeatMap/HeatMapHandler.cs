@@ -18,8 +18,8 @@ namespace PPBA
 
 		private void Start()
 		{
-			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
-			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
+			//_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
+			//_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
 
 #if UNITY_SERVER
 			TickHandler.s_EarlyCalc += CalculateMaps;
@@ -40,16 +40,16 @@ namespace PPBA
 
 		void CalculateMaps(int tick)
 		{
-			ResourceMapCalculate.s_instance.StartCalculation();
+			//ResourceMapCalculate.s_instance.StartCalculation();
 			//TerritoriumMapCalculate.s_instance.StartCalculation();
 		}
 
 		void SaveMapToGameState(int tick)
 		{
 			HeatMapReturnValue value;
-			value = ResourceMapCalculate.s_instance.GetValues();
+			//value = ResourceMapCalculate.s_instance.GetValues();
 
-			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
+			//TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
 			//_heatMaps[0] = value.tex;
 
 			//value = TerritoriumMapCalculate.s_instance.GetValues();
@@ -101,10 +101,10 @@ namespace PPBA
 				switch(id)
 				{
 					case 0:
-						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
+						//ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
 						break;
 					case 1:
-						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
+						//TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
 						break;
 					default:
 						Debug.LogError("Heatmap index not found");

@@ -17,7 +17,7 @@ namespace PPBA
 		{
 			target = point1;
 
-			TerritoriumMapCalculate.s_instance.AddSoldier(this.transform, team);
+			HeatMapCalcRoutine.s_instance.AddSoldier(this.transform, team);
 
 		}
 
@@ -40,7 +40,7 @@ namespace PPBA
 
 			transform.position = Vector3.MoveTowards(transform.position, target.position, 1);
 
-			TerritoriumMapCalculate.s_instance.StartCalculation();
+			//TerritoriumMapCalculate.s_instance.StartCalculation();
 		}
 	}
 }
