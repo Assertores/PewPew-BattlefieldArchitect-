@@ -10,7 +10,7 @@ namespace PPBA
 		SetTextureMapCalculate _setTexCalc;
 		ResourceMapCalculate _resMapCalc;
 		TerritoriumMapCalculate _terMapCalc;
-		EarlyCalculate _earlyCalc;
+		//EarlyCalculate _earlyCalc;
 
 		[SerializeField] ComputeShader _computeShader;
 		public Material _GroundMaterial;
@@ -38,8 +38,8 @@ namespace PPBA
 
 		private void Start()
 		{
-			_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
-			_earlyCalc._computeShader = _computeShader;
+			//_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
+			//_earlyCalc._computeShader = _computeShader;
 					   			 
 			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
 			//_setTexCalc._computeShader = _computeShader;
@@ -49,14 +49,13 @@ namespace PPBA
 			_setTexCalc._computeShader = _computeShader;
 			_setTexCalc._resourceCalcKernel = _computeShader.FindKernel("CSBitToTex");
 
-
 			//_resMapCalc = new ResourceMapCalculate(_computeShader.FindKernel("CSMain"));
 			//_resMapCalc._computeShader = _computeShader;
 
 			gameObject.AddComponent<ResourceMapCalculate>();
 			_resMapCalc = GetComponent<ResourceMapCalculate>();
 			_resMapCalc._computeShader = _computeShader;
-			_resMapCalc._resourceCalcKernel1 = _computeShader.FindKernel("CSMain");
+			_resMapCalc._ResourceCalcKernel = _computeShader.FindKernel("CSMain");
 					   			 		  
 			_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
 			_terMapCalc._computeShader = _computeShader;
@@ -89,18 +88,15 @@ namespace PPBA
 			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
 		}
 
-		public void EarlyCalc()
-		{
+		//public void EarlyCalc()
+		//{
 		//	_earlyCalc.EarlyCalulation(_Refinerys.Count);
-		}
+		//}
 
 		public void StartHeatMapCalc()
 		{
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
-		//	StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
-
-			//HeatMapReturnValue[] heat = ReturnValue();
-			//_setTexCalc.StartComputeShader(heat[0].tex, new float[256 * 256], _ResultTextureRessource, _ResultTextureTerritorium);
+			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
 		}
 
 		public HeatMapReturnValue[] ReturnValue()
@@ -162,5 +158,11 @@ namespace PPBA
 			//print("soldier cound " + _Soldiers.Count);
 			return _Soldiers.Count != 0;
 		}
+
+		public void PrintSomething(string text)
+		{
+			print("das solltest du lesen! : " + text);
+		}
+
 	}
 }

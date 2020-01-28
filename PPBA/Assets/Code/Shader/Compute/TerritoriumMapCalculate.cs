@@ -8,13 +8,14 @@ namespace PPBA
 	public class TerritoriumMapCalculate
 	{
 		public ComputeShader _computeShader;
-		private ComputeBuffer _bitField;
+		private ComputeBuffer _bitFieldBuffer;
+		private ComputeBuffer _terValueBuffer;
 		private byte[] _currentBitField;
 
 		private int _resourceCalcKernel;
 		private int _resourceCalcKernel2;
 
-
+		private float[] _TerValues;
 		private bool isRunning = false;
 
 		public HeatMapReturnValue GetValues()
@@ -41,19 +42,21 @@ namespace PPBA
 			};
 		}
 
-		public IEnumerator RefreshCalcTerritorium( HeatMapCalcRoutine HMCalcRoutine)
+		public IEnumerator RefreshCalcTerritorium(HeatMapCalcRoutine HMCalcRoutine)
 		{
-			if(isRunning && !HMCalcRoutine.HasSoldiers())
+			if(isRunning || !HMCalcRoutine.HasSoldiers())
 			{
-				yield return null;
+				goto endingCo;
 			}
-
 			isRunning = true;
 
-			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(uint)), sizeof(uint));
+			_bitFieldBuffer = new ComputeBuffer(((256 * 256) / 8 / sizeof(uint)), sizeof(uint));
+			_terValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
 			_currentBitField = new byte[(256 * 256) / 8];
+			_TerValues = new float[256 * 256];
 
-			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitField);
+			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitFieldBuffer);
+			_computeShader.SetBuffer(_resourceCalcKernel, "terValue", _terValueBuffer);
 
 			_computeShader.SetInt("SoldiersSize", HMCalcRoutine._Soldiers.Count);
 			_computeShader.SetVectorArray("Soldiers", AddSoldierData(HMCalcRoutine));
@@ -61,14 +64,23 @@ namespace PPBA
 
 			_computeShader.Dispatch(_resourceCalcKernel, 256 / 8, 256 / 8, 1);
 
-			_bitField.GetData(_currentBitField);
-			_bitField.Release();
-			_bitField = null;
+			_bitFieldBuffer.GetData(_currentBitField);
+			_bitFieldBuffer.Release();
+			_bitFieldBuffer = null;
 
-			yield return ConvertRenToTex2D(_currentBitField, new float[65000]);
+			_terValueBuffer.GetData(_TerValues);
+			_terValueBuffer.Release();
+			_terValueBuffer = null;
+
+			string g = _TerValues[500].ToString();
+			HMCalcRoutine.PrintSomething(g);
+
+			yield return ConvertRenToTex2D(_currentBitField, _TerValues);
 			Swap(); // change Texture2d
 
 			isRunning = false;
+endingCo:
+			;
 		}
 
 		float[] Swap()
@@ -97,8 +109,7 @@ namespace PPBA
 			foreach(KeyValuePair<Transform, int> soldier in HMCalcRoutine._Soldiers)
 			{
 				Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(soldier.Key);
-
-
+				
 				refsProp[index] = new Vector4(pos.x, pos.y, soldier.Value, 0);
 				index++;
 			}

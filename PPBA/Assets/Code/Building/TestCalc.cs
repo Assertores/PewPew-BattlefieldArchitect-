@@ -17,6 +17,7 @@ public class TestCalc : MonoBehaviour
     {
 		if(Input.GetKeyDown(KeyCode.X))
 		{
+			//HeatMapCalcRoutine.s_instance.EarlyCalc();
 			HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
 			print("liste " + HeatMapCalcRoutine.s_instance._Refinerys.Count);
 		}

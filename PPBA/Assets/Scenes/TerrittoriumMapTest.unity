@@ -475,12 +475,12 @@ PrefabInstance:
     - target: {fileID: 9013790921488025294, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000684743
+      value: -0.0000006847376
       objectReference: {fileID: 0}
     - target: {fileID: 9013790921488025294, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000009020188
+      value: 0.0000009020116
       objectReference: {fileID: 0}
     - target: {fileID: 9013790921488025294, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
@@ -540,12 +540,12 @@ PrefabInstance:
     - target: {fileID: 9013790922503201021, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0000008328888
+      value: -0.00000083289046
       objectReference: {fileID: 0}
     - target: {fileID: 9013790922503201021, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000012249554
+      value: 0.0000012249577
       objectReference: {fileID: 0}
     - target: {fileID: 9013790922503201021, guid: 265ad7b14ccac104fb345d952522d764,
         type: 3}
@@ -675,6 +675,11 @@ PrefabInstance:
       propertyPath: _HarvestIntensity
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 7634826460318776889, guid: c82e5328b372c5448a2dbf241e1f2439,
+        type: 3}
+      propertyPath: _terrain
+      value: 
+      objectReference: {fileID: 741819880}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c82e5328b372c5448a2dbf241e1f2439, type: 3}
 --- !u!1 &436674033

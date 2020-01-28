@@ -31,30 +31,25 @@ RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
 
 
-[numthreads(16, 16, 1)]
+[numthreads(1, 1, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-    for (int i = 0; i < 50; i++)
+    const int weightMap = 256;
+    int bit = id.y * weightMap + id.x;
+
+    for (int i = 0; i < PointSize; i++)
     {
         buffer[i] = 0;
     }
-
-    for (int p = 0; p < ((256 * 256) / 8); p++)
-    {
-        bitField[p] = 0;
-    }
-
-    for (int j = 0; j < (256 * 256); j++)
-    {
-        redValue[i] = 0;
-		InputRedValue[i] = 0;
-		InputTextureTerritorium[i] = 0;
-    }
-
+    
+    //bitField[bit / (8 * 4)] = 0;
+    //redValue[bit] = 0;
+    //InputRedValue[bit] = 0;
+    //InputTextureTerritorium[bit] = 0;
 
 }
 
-[numthreads(16, 16, 1)]
+[numthreads(8, 8, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
@@ -87,18 +82,18 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         InterlockedAdd(buffer[i], minValue * 1000.0);
     }
     
-    redValue[id.y * weightMap + id.x] = currentResources;
-    Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-
-    //if (input[id.xy].r != currentResources)
-    //{
-    //    int bit = id.y * weightMap + id.x;
-    //    InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-    //    Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-    //}
+    int bit = id.y * weightMap + id.x;
+    redValue[bit] = currentResources;
+    
+    if (input[id.xy].r != currentResources)
+    {
+        //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+        bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+        Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+    }
 }
 
-[numthreads(16, 16, 1)]
+[numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
@@ -125,7 +120,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         if (Soldiers[i].z == 0)
         {
-            col = float3(0.1, 0, 0);
+            col = float3(0.0, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
@@ -133,40 +128,63 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
         }
         if (Soldiers[i].z == 2)
         {
-            col = float3(0.3, 0, 1);
+            col = float3(0.5, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-            col = float3(0.4, 0.5, 0);
+            col = float3(0.8, 0.5, 0);
         }
 
 		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
 		//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
-
-        TerritoriumResult[id.xy] = float4(col, 1);
-		
-		if (TerritoriumResult[id.xy].r != col.r)
+        		
+        if (TerritoriumResult[id.xy].r != col.r)
         {
             int bit = id.y * weightMap + id.x;
-            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-
+            //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+            bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+          
             TerritoriumResult[id.xy] = float4(col, 1);
+            
+            terValue[bit] = col.r;
         }
     }
 }
     
-[numthreads(16, 16, 1)]
+[numthreads(8, 8, 1)]
 void CSBitToTex(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
     Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
-    TerritoriumResult[id.xy] = InputTextureTerritorium[id.y * weightMap + id.x];
+    
+    float value = InputTextureTerritorium[id.y * weightMap + id.x];
+    
+    if (value == 0.0)
+    {
+        TerritoriumResult[id.xy] = float4(1, 0, 0, 1);
+    }
+    
+    if (value == 0.2)
+    {
+        TerritoriumResult[id.xy] = float4(0, 1, 0, 1);
+    }
+    
+    if (value == 0.5)
+    {
+        TerritoriumResult[id.xy] = float4(0, 0, 1, 1);
+    }
+    
+    if (value == 0.8)
+    {
+        TerritoriumResult[id.xy] = float4(0.5, 0.5, 0.5, 1);
+    }
+    
 }
     
 
 
 
-[numthreads(16, 16, 1)]
+[numthreads(8, 8, 1)]
 void CSNextEdge(uint3 id : SV_DispatchThreadID)
 {
 	////===== ===== relevance test ===== =====

@@ -13,7 +13,8 @@ namespace PPBA
 
 		private RenderTexture _tempRenTex;
 
-		public int _resourceCalcKernel1;
+		public int _ResourceCalcKernel;
+		public int _EarlyCalcKernel;
 
 		private bool isRunning = false;
 
@@ -67,40 +68,50 @@ namespace PPBA
 
 			isRunning = true;
 
-			_currentBitField = new byte[(256 * 256) / 8];
-			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
-			_ResourceValues = new int[HMroutine._Refinerys.Count];
-			_RedValues = new float[256 * 256];
-
 			_buffer = new ComputeBuffer(HMroutine._Refinerys.Count, sizeof(int));
-
+			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
 			_RedValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
 
+			_ResourceValues = new int[HMroutine._Refinerys.Count];
+			_currentBitField = new byte[(256 * 256) / 8];
+			_RedValues = new float[256 * 256];
+
+			_computeShader.SetBuffer(_EarlyCalcKernel, "buffer", _buffer);
+			_computeShader.Dispatch(_EarlyCalcKernel, 256 / 1, 256 / 1, 1);
+
+								   			 
 			_computeShader.SetInt("PointSize", HMroutine._Refinerys.Count);
 			_computeShader.SetVectorArray("coords", RefineriesProperties(HMroutine));
 
-			_computeShader.SetBuffer(_resourceCalcKernel1, "bitField", _bitField);
-			_computeShader.SetBuffer(_resourceCalcKernel1, "buffer", _buffer);
-			_computeShader.SetBuffer(_resourceCalcKernel1, "redValue", _RedValueBuffer);
-			_computeShader.SetTexture(_resourceCalcKernel1, "input", HMroutine._ResultTextureRessource);
-			_computeShader.SetTexture(_resourceCalcKernel1, "Result", _tempRenTex);
+			_computeShader.SetBuffer(_ResourceCalcKernel, "bitField", _bitField);
+			_computeShader.SetBuffer(_ResourceCalcKernel, "buffer", _buffer);
+			_computeShader.SetBuffer(_ResourceCalcKernel, "redValue", _RedValueBuffer);
+			_computeShader.SetTexture(_ResourceCalcKernel, "input", HMroutine._ResultTextureRessource);
+			_computeShader.SetTexture(_ResourceCalcKernel, "Result", _tempRenTex);
 
 			//_computeShader.SetTexture(_resourceCalcKernel1, "InputTexture", inputTex);
 
-			_computeShader.Dispatch(_resourceCalcKernel1, 256 / 16, 256 / 16, 1);
+			_computeShader.Dispatch(_ResourceCalcKernel, 256 / 8, 256 / 8, 1);
 
 			yield return new WaitForSeconds(0.05f);
 
 			Graphics.Blit(_tempRenTex, HeatMapCalcRoutine.s_instance._ResultTextureRessource);
 
-			_bitField.GetData(_currentBitField);
-			_bitField.Release();
-			_bitField = null;
 			_buffer.GetData(_ResourceValues);
-			_buffer.Release();
-			_buffer = null;
+			_bitField.GetData(_currentBitField);
 			_RedValueBuffer.GetData(_RedValues);
+
+			_bitField.SetCounterValue(0);
+			_buffer.SetCounterValue(0);
+			_RedValueBuffer.SetCounterValue(0);
+
+			_buffer.Release();
+			_bitField.Release();
 			_RedValueBuffer.Release();
+
+
+			_buffer = null;
+			_bitField = null;
 			_RedValueBuffer = null;
 
 			yield return new WaitForEndOfFrame();

@@ -151,7 +151,7 @@ namespace PPBA
 
 			if(tick % 5 == 0)
 			{
-				HeatMapCalcRoutine.s_instance.EarlyCalc();
+				//HeatMapCalcRoutine.s_instance.EarlyCalc();
 				HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
 
 			}

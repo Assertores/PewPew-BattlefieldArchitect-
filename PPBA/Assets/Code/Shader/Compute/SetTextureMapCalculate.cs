@@ -35,7 +35,7 @@ namespace PPBA
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", TerRenTex);
 
 			// Start ComputeShader
-			_computeShader.Dispatch(_resourceCalcKernel, 256 / 16, 256 / 16, 1);
+			_computeShader.Dispatch(_resourceCalcKernel, 256 / 8, 256 / 8, 1);
 
 			_redValue.Release();
 			_terValue.Release();
