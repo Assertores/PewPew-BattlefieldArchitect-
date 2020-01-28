@@ -41,7 +41,7 @@ namespace PPBA
 			switch(element.GetObjectType())
 			{
 				case ObjectType.REFINERY:
-					ResourceMapCalculate.s_instance.AddFabric(GetComponent<RefineryRefHolder>());
+					HeatMapCalcRoutine.s_instance.AddFabric(GetComponent<RefineryRefHolder>());
 					break;
 				case ObjectType.DEPOT:
 					break;

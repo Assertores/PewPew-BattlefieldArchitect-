@@ -9,8 +9,7 @@ public class TestCalc : MonoBehaviour
     void Start()
     {
 		IRefHolder holder = GetComponent<IRefHolder>();
-		ResourceMapCalculate.s_instance.AddFabric(holder);
-
+		HeatMapCalcRoutine.s_instance.AddFabric(holder);
 	}
 
 	// Update is called once per frame
@@ -18,7 +17,9 @@ public class TestCalc : MonoBehaviour
     {
 		if(Input.GetKeyDown(KeyCode.X))
 		{
-			ResourceMapCalculate.s_instance.StartCalculation();
+			//HeatMapCalcRoutine.s_instance.EarlyCalc();
+			HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
+			print("liste " + HeatMapCalcRoutine.s_instance._Refinerys.Count);
 		}
     }
 }

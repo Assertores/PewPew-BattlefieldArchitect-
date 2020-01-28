@@ -1,44 +1,52 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 
+
 #pragma kernel CSInit
 #pragma kernel CSMain
 #pragma kernel CSTerritorium
-#pragma kernel CSNextEdge
+//#pragma kernel CSNextEdge
+#pragma kernel CSBitToTex
 
 int PointSize;
 
 float4 coords[50];
 int SoldiersSize;
 float4 Soldiers[50];
-int stateSize;
-float2 state[50];
+int RequiredSize;
+float4 InformationRequired[50];
+
+//int stateSize;
+//float2 state[50];
+
+RWStructuredBuffer<float> InputRedValue;
+RWStructuredBuffer<float4> InputTextureTerritorium;
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<float> redValue;
+RWStructuredBuffer<float> terValue;
 RWStructuredBuffer<uint> bitField;
 
-Texture2D<float4> InputTexture;
 RWTexture2D<float4> Result;
+RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
 
-[numthreads(8, 8, 1)]
+
+[numthreads(1, 1, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-    for (int i = 0; i < 50; i++)
+    const int weightMap = 256;
+    int bit = id.y * weightMap + id.x;
+
+    for (int i = 0; i < PointSize; i++)
     {
         buffer[i] = 0;
-
     }
+    
+    //bitField[bit / (8 * 4)] = 0;
+    //redValue[bit] = 0;
+    //InputRedValue[bit] = 0;
+    //InputTextureTerritorium[bit] = 0;
 
-	for (int i = 0; i < ((256 * 256) / 8); i++)
-	{
-		bitField[i] = 0;
-	}
-
-	for (int j = 0; j < (256*256); j++)
-	{
-		redValue[i] = 0;
-	}
 }
 
 [numthreads(8, 8, 1)]
@@ -46,11 +54,13 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
 	   
+    //redValue[id.y * weightMap + id.x] = 1;
+    float currentResources = input[id.xy].r;
 
-    float currentResources = InputTexture[id.xy].r;
+    float minValue;
 
-	if (currentResources == 0)
-		return;
+    //if (currentResources == 0)
+    //    return;
 
     for (int i = 0; i < PointSize; i++)
     {
@@ -63,26 +73,25 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             continue;
         }
     
-        float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
+        float harvestFac = smoothstep(maxDis, 0, dis) * coords[i].z; // distfactor * coords[i].z;
+        //float harvestFac = /*step( 0.0, dis) **/ coords[i].z; // distfactor * coords[i].z;
         float minValue = float(min(currentResources, harvestFac));
         currentResources -= minValue;
         currentResources = saturate(currentResources);
 
         InterlockedAdd(buffer[i], minValue * 1000.0);
     }
-
-
-	redValue[id.y * weightMap + id.x] = currentResources;
-
-	if (InputTexture[id.xy].r != currentResources)
-	{
-		int bit = id.y * weightMap + id.x;
-		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-
-	}
+    
+    int bit = id.y * weightMap + id.x;
+    redValue[bit] = currentResources;
+    
+    if (input[id.xy].r != currentResources)
+    {
+        //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+        bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+        Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+    }
 }
-
 
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
@@ -90,6 +99,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     float m_dist = 10; // minimun distance
     float2 m_point; // minimum position
+    float3 col = float3(0, 0, 0);; // minimum position
 
 	// Iterate through the points positions
     for (int i = 0; i < SoldiersSize; i++)
@@ -110,31 +120,67 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         if (Soldiers[i].z == 0)
         {
-            m_point = float3(1, 0, 0);
+            col = float3(0.0, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
-            m_point = float3(2, 0, 0);
+            col = float3(0.2, 1, 0);
         }
         if (Soldiers[i].z == 2)
         {
-            m_point = float3(3, 0, 0);
+            col = float3(0.5, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-            m_point = float3(4, 0, 0);
+            col = float3(0.8, 0.5, 0);
         }
 
-        if (TerritoriumResult[id.xy].r != m_point.r)
+		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
+		//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+        		
+        if (TerritoriumResult[id.xy].r != col.r)
         {
             int bit = id.y * weightMap + id.x;
-            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-
-            TerritoriumResult[id.xy] = float4(m_point, 0, 1);
+            //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+            bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+          
+            TerritoriumResult[id.xy] = float4(col, 1);
+            
+            terValue[bit] = col.r;
         }
     }
 }
-
+    
+[numthreads(8, 8, 1)]
+void CSBitToTex(uint3 id : SV_DispatchThreadID)
+{
+    const int weightMap = 256;
+    Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
+    
+    float value = InputTextureTerritorium[id.y * weightMap + id.x];
+    
+    if (value == 0.0)
+    {
+        TerritoriumResult[id.xy] = float4(1, 0, 0, 1);
+    }
+    
+    if (value == 0.2)
+    {
+        TerritoriumResult[id.xy] = float4(0, 1, 0, 1);
+    }
+    
+    if (value == 0.5)
+    {
+        TerritoriumResult[id.xy] = float4(0, 0, 1, 1);
+    }
+    
+    if (value == 0.8)
+    {
+        TerritoriumResult[id.xy] = float4(0.5, 0.5, 0.5, 1);
+    }
+    
+}
+    
 
 
 
@@ -143,11 +189,16 @@ void CSNextEdge(uint3 id : SV_DispatchThreadID)
 {
 	////===== ===== relevance test ===== =====
  //   bool imIn = false;
- //   for (int q = 0; !imIn || q < SoldiersSize; q++)
+
+ //   for (int q = 0; !imIn || q < RequiredSize; q++)
  //   {
- //       if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
- //           imIn = true;
+	//	if (id.x == InformationRequired[q].x || id.y == InformationRequired[q].y)
+	//	{
+	//		imIn = true;
+	//		break;
+	//	}
  //   }
+
  //   if (!imIn)
  //       return;
 

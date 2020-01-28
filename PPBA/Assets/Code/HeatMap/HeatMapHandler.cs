@@ -13,13 +13,33 @@ namespace PPBA
 
 	public class HeatMapHandler : Singleton<HeatMapHandler>
 	{
-		public Texture2D[] _heatMaps = new Texture2D[2];
+		public float[][] _heatMaps = new float[2][];
 		//private BitField2D[] _bitFields = new BitField2D[2];
+
+		[SerializeField] Terrain _terrain;
+		float[] _ppu = new float[2];
+
+		private void Awake()
+		{
+			if(!_terrain)
+			{
+				Debug.LogError("terain reference not set");
+				Destroy(this);
+				return;
+			}
+
+			Vector3 size = _terrain.terrainData.size;
+			for(int i = 0; i < _ppu.Length; i++)
+			{
+				int width = HeatMapCalcRoutine.s_instance.GetHeatmapWidth(i);
+				_ppu[i] = width / size.x;
+			}
+		}
 
 		private void Start()
 		{
-			_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
-			_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
+			//_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
+			//_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
 
 #if UNITY_SERVER
 			TickHandler.s_EarlyCalc += CalculateMaps;
@@ -38,28 +58,122 @@ namespace PPBA
 #endif
 		}
 
+		Dictionary<Vector2Int, Vector3> h_cashValues = new Dictionary<Vector2Int, Vector3>();
+
+		/// <summary>
+		/// calculates position and distance to nearest boarder
+		/// </summary>
+		/// <param name="worldPos">your world position</param>
+		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>
+		public Vector3 BorderValues(Vector3 worldPos)
+		{
+			Vector2 retPos = worldPos * _ppu[1];
+			Vector2Int texPos = new Vector2Int((int)retPos.x, (int)retPos.y);
+
+			if(h_cashValues.ContainsKey(texPos))
+				return h_cashValues[texPos];
+
+			//----- -----> has to be calculated <----- -----
+
+			Vector2Int found = new Vector2Int();
+			float foundDist = float.MaxValue;
+
+			int maxIndex = int.MaxValue;
+
+			int myTeam = (int)GetHMValue(1, texPos.x, texPos.y);
+
+			for(int column = 1; column * column < foundDist; column++)
+			{
+				int rowLength = Mathf.Min(column, maxIndex);
+				for(int row = 0; row <= rowLength; row++)
+				{
+					Vector2Int pos = new Vector2Int();
+					bool valueIsDifferent = false;
+
+					#region Check 8 positions
+
+					pos = texPos + new Vector2Int(column, row);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(-column, row);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(column, -row);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(-column, -row);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(row, column);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(-row, column);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(row, -column);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					pos = texPos + new Vector2Int(-row, -column);
+					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+						valueIsDifferent = true;
+
+					#endregion
+
+					if(valueIsDifferent)
+					{
+						int dist = column * column + row * row;
+						if(foundDist > dist)
+						{
+							found = pos;
+							maxIndex = row;
+							foundDist = dist;
+						}
+					}
+				}
+			}
+
+			foundDist = Mathf.Sqrt(foundDist);
+
+			h_cashValues[texPos] = new Vector3(found.x / _ppu[1], found.y / _ppu[1], foundDist / _ppu[1]);
+
+			return h_cashValues[texPos];
+		}
+
 		void CalculateMaps(int tick)
 		{
-			ResourceMapCalculate.s_instance.StartCalculation();
-			//TerritoriumMapCalculate.s_instance.StartCalculation();
+
+			if(tick % 5 == 0)
+			{
+				//HeatMapCalcRoutine.s_instance.EarlyCalc();
+				HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
+
+			}
 		}
 
 		void SaveMapToGameState(int tick)
 		{
-			HeatMapReturnValue value;
-			value = ResourceMapCalculate.s_instance.GetValues();
+			h_cashValues.Clear();
 
-			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			//_heatMaps[0] = value.tex;
+			HeatMapReturnValue[] value;
+			value = HeatMapCalcRoutine.s_instance.ReturnValue();
 
-			//value = TerritoriumMapCalculate.s_instance.GetValues();
-			//TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value));
-			//_heatMaps[1] = value.tex;
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[0]));
+			_heatMaps[0] = value[0].tex;
+
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[1]));
+			_heatMaps[1] = value[1].tex;
 		}
 
 		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
 		{
-			BitField2D mask = new BitField2D(256, 256, input.bitfield);//TODO: make dynamic
+			BitField2D mask = new BitField2D(HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), input.bitfield);//TODO: get Hight from texture
 			Vector2Int[] pos = mask.GetActiveBits();
 
 
@@ -73,7 +187,7 @@ namespace PPBA
 
 				element._x = (byte)pos[i].x;
 				element._y = (byte)pos[i].y;
-				element._value = input.tex[pos[i].x + 256 * pos[i].y];//TODO: make dynamic
+				element._value = input.tex[pos[i].x + pos[i].y * HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id)];
 
 				value._values.Add(element);
 			}
@@ -89,143 +203,28 @@ namespace PPBA
 				if(null == map || null == map._values)
 					continue;
 
-				var colorType = _heatMaps[id].GetPixel(0, 0);
 				foreach(var it in map._values)
 				{
-					colorType.r = it._value;
-					Debug.Log(it._value);
-					_heatMaps[id].SetPixel(it._x, it._y, colorType/*new Color(it._value, 0, 0)*/);
-				}
-				_heatMaps[id].Apply();
-
-				switch(id)
-				{
-					case 0:
-						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
-						break;
-					case 1:
-						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[id]);
-						break;
-					default:
-						Debug.LogError("Heatmap index not found");
-						break;
+					_heatMaps[id][it._x + it._y * HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id)] = it._value;
 				}
 			}
+			HeatMapCalcRoutine.s_instance.SetRendererTextures(_heatMaps[0], _heatMaps[1]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id">the id of the heatMap</param>
-		/// <returns>size of the heatMap</returns>
-		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
-
-#if Obsolide
-		void CalculateMaps(int tick)
+		int[] h_widths = new int[2];
+		int[] h_hights = new int[2];
+		float GetHMValue(int id, int x, int y)
 		{
-			//----- ----- init ----- -----
-			HeatMapReturnValue value;
+			if(id < 0 || id >= _heatMaps.Length)
+				return float.NaN;
 
-			//----- ----- ResourceMap ----- -----
-			value = ResourceMapCalculate.s_instance.RefreshCalcRes();
-			_heatMaps[0] = ConvertTexture(value.tex, 0);
-			_bitFields[0] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
-
-			//----- ----- TerritoriumMap ----- -----
-			value = TerritoriumMapCalculate.s_instance.RefreshCalcTerritorium();
-			_heatMaps[1] = ConvertTexture(value.tex, 1);
-			_bitFields[1] = new BitField2D(value.tex.width, value.tex.height, value.bitfield);
-
-		}
-
-		void SaveMapToGameState(int tick)
-		{
-
-			for(int i = 0; i < _heatMaps.Length; i++)
+			if(h_widths[id] == 0)
 			{
-				GSC.heatMap hm = new GSC.heatMap();
-				hm._id = i;
-
-				//setting up current Bitfield
-				hm._mask = new BitField2D(_bitFields[i]);
-
-				Vector2Int[] positions = hm._mask.GetActiveBits();
-
-				//saving values
-
-				hm._values = new List<float>(positions.Length);
-				for(int j = 0; j < positions.Length; j++)
-				{
-					hm._values.Add(_heatMaps[i].GetPixel(positions[j].x, positions[j].y).r);
-				}
-			//	Debug.Log("Tick: " + tick + ", id: " + hm._id);
-			//	Debug.Log(hm.ToString());
-				TickHandler.s_interfaceGameState.Add(hm);
+				h_widths[id] = HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id);
+				h_hights[id] = HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id);//TODO: get Hight from texture
 			}
+
+			return _heatMaps[id][Lib.Mod(x, h_widths[id]) + Lib.Mod(y, h_hights[id]) * h_widths[id]];
 		}
-
-		void SetMap(int tick)
-		{
-			foreach(var it in TickHandler.s_interfaceGameState._heatMaps)
-			{
-				Vector2Int[] pos = it._mask.GetActiveBits();
-				for(int i = 0; i < pos.Length; i++)
-				{
-					var tmp = _heatMaps[it._id].GetPixel(pos[i].x, pos[i].y);
-					tmp.r = it._values[i];
-					_heatMaps[it._id].SetPixel(pos[i].x, pos[i].y, tmp);
-				}
-				_heatMaps[it._id].Apply();
-
-				switch(it._id)
-				{
-					case 0:
-						ResourceMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
-						break;
-					case 1:
-						TerritoriumMapCalculate.s_instance.UpdateTexture(_heatMaps[it._id]);
-						break;
-					default:
-						Debug.LogError("Heatmap index not found");
-						break;
-				}
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="id">the id of the heatMap</param>
-		/// <returns>size of the heatMap</returns>
-		public Vector2Int GetHeatMapSize(int id) => new Vector2Int(_heatMaps[id].width, _heatMaps[id].height);
-
-		Texture2D ConvertTexture(RenderTexture rt, int id)
-		{
-			Texture2D tex = _heatMaps[id];
-
-			// ofc you probably don't have a class that is called CameraController :P
-			//	Camera activeCamera = Camera.main;
-
-			//	// Initialize and render
-			//	activeCamera.targetTexture = rt;
-			//	activeCamera.Render();
-			//	RenderTexture.active = rt;
-
-			//	// Read pixels
-			//	tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-			//	tex.Apply();
-			//	// Clean up
-			//	activeCamera.targetTexture = null;
-			//	RenderTexture.active = null; // added to avoid errors 
-			////	DestroyImmediate(rt);
-
-			RenderTexture.active = rt;
-			tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-			tex.Apply();
-
-			return tex;
-
-		}
-#endif
 	}
 }
