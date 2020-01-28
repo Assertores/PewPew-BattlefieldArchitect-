@@ -164,17 +164,25 @@ namespace PPBA
 			print("das solltest du lesen! : " + text);
 		}
 
+		[SerializeField] private Texture2D map1;
+		[SerializeField] private Texture2D map2;
+
 		public float[][] GetStartArrays()
 		{
-			Color[] resPi = startResMap.GetPixels();
-			Color[] terPi = startResMap.GetPixels();
+			Color[] resPi = map1.GetPixels();
+			Color[] terPi = map2.GetPixels();
 
 			float[][] textures = new float[2][];
 
+			for(int i = 0; i < textures.Length; i++)
+			{
+				textures[i] = new float[resPi.Length];
+			}
+
 			for(int i = 0; i < resPi.Length; i++)
 			{
-				textures[0][i] = resPi[i].a;
-				textures[1][i] = terPi[i].a;
+				textures[0][i] = resPi[i].r;
+				textures[1][i] = terPi[i].r;
 			}
 
 			return textures;
