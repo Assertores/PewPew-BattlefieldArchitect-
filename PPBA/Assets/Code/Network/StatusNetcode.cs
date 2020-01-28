@@ -117,9 +117,9 @@ namespace PPBA
 
 					foreach(var it in connections)
 					{
-						it.stream.Write(msg.ToArray(), 0, msg.Count);
 						try
 						{
+							it.stream.Write(msg.ToArray(), 0, msg.Count);
 							it.stream.Flush();//exeption if client not exists
 						}
 						catch(Exception e)
@@ -128,6 +128,7 @@ namespace PPBA
 							connections.Remove(it);
 						}
 					}
+					SceneManager.LoadScene(StringCollection.MAINMENU);
 				}
 			}
 		}
