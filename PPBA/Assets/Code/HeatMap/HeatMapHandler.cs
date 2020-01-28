@@ -19,7 +19,7 @@ namespace PPBA
 		[SerializeField] Terrain _terrain;
 		float[] _ppu = new float[2];
 
-		private void Awake()
+		private void Start()
 		{
 			if(!_terrain)
 			{
@@ -34,12 +34,11 @@ namespace PPBA
 				int width = HeatMapCalcRoutine.s_instance.GetHeatmapWidth(i);
 				_ppu[i] = width / size.x;
 			}
-		}
 
-		private void Start()
-		{
-			//_heatMaps[0] = ResourceMapCalculate.s_instance.GetStartTex();
-			//_heatMaps[1] = TerritoriumMapCalculate.s_instance.GetStartTex();
+			var retValue = HeatMapCalcRoutine.s_instance.ReturnValue();
+
+			_heatMaps[0] = retValue[0].tex;
+			_heatMaps[1] = retValue[1].tex;
 
 #if UNITY_SERVER
 			TickHandler.s_EarlyCalc += CalculateMaps;
