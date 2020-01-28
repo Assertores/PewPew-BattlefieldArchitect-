@@ -40,9 +40,12 @@ namespace PPBA
 #endif
 		}
 
+		int h_disablecount = 0;
 		private void OnDisable()
 		{
 #if UNITY_SERVER
+			h_disablecount++;
+
 			TickHandler.s_DoTick -= CarePackage;
 			TickHandler.s_DoTick -= SpawnPawn;
 
@@ -50,9 +53,9 @@ namespace PPBA
 				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
 					JobCenter.s_headQuarters[_resourceDepot._team].Remove(this);
 
-			JobCenter.CheckWinCon();
+			if(1 < h_disablecount)
+				JobCenter.CheckWinCon();
 #endif
-
 		}
 	}
 }

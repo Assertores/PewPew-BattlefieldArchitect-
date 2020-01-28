@@ -36,7 +36,10 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._currentAnimation = PawnAnimations.RUN;
+			if(pawn._borderData.z < 0.1f)
+				pawn._currentAnimation = PawnAnimations.IDLE;
+			else
+				pawn._currentAnimation = PawnAnimations.RUN;
 
 			pawn.SetMoveTarget(new Vector3(pawn._borderData.x, pawn._borderData.y, pawn.transform.position.z));
 		}
@@ -57,31 +60,36 @@ namespace PPBA
 			}
 		}
 
-		protected float TargetAxisInputs(Pawn pawn, Vector3 target, string name)//add target
+		protected float TargetAxisInputs(Pawn pawn, string name, Vector3 targetData)//add target
 		{
 			switch(name)
 			{
 				case "Distance":
 				case "DistanceToTarget":
-					return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
-					//return target.z;
+					//return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
+					return targetData.z / 100f;
 				default:
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
 					return 1;
 			}
 		}
 
-		public override float FindBestTarget(Pawn pawn)
+		public override float FindBestTarget(Pawn pawn) => CalculateTargetScore(pawn, pawn._borderData);
+
+		protected float CalculateTargetScore(Pawn pawn, Vector3 targetData)
 		{
-			//use some awesome map to find closest border to the pawn
-			
-			return 1;
+			float score = 1;
+
+			for(int i = 0; i < _targetAxes.Length; i++)
+			{
+				if(_targetAxes[i]._isEnabled)
+					score *= Mathf.Clamp(_targetAxes[i]._curve.Evaluate(TargetAxisInputs(pawn, _targetAxes[i]._name, targetData)), 0f, 1f);
+			}
+
+			return score;
 		}
 
-		public override int GetTargetID(Pawn pawn)
-		{
-			throw new System.NotImplementedException();
-		}
+		public override int GetTargetID(Pawn pawn) => pawn._id;
 
 		public override void RemoveFromTargetDict(Pawn pawn)
 		{

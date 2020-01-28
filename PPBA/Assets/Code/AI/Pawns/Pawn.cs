@@ -32,7 +32,7 @@ namespace PPBA
 
 		public int _id { get; set; }
 		public Arguments _arguments = new Arguments();
-		//[SerializeField] public int _team = 0;
+		[SerializeField] public ObjectType _pawnType;
 		private int _teamBackingField;
 		[SerializeField]
 		public int _team
@@ -188,6 +188,7 @@ namespace PPBA
 			//Initialisation
 			InitiateBehaviors();
 
+			//Safeguard against a too short _behaviorMultipliers array.
 			if(_behaviorMultipliers.Length < e_behaviors.Length)
 			{
 				float[] arr = new float[e_behaviors.Length];
@@ -718,10 +719,7 @@ namespace PPBA
 			return -1;
 		}
 
-		public void GetBorderData(int tick = 0)
-		{
-			//_borderData = HeatMapHandler.BorderPos(transform.position);
-		}
+		public void GetBorderData(int tick = 0) => _borderData = HeatMapHandler.s_instance.BorderValues(transform.position);
 		#endregion
 
 		#region Physics
@@ -867,8 +865,7 @@ namespace PPBA
 
 			pawn.SetMaterialColor(team);
 		}
-
-
+		
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
@@ -878,7 +875,7 @@ namespace PPBA
 
 #if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
-			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
+			//newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
 #endif
 		}
 
@@ -944,6 +941,40 @@ namespace PPBA
 				Debug.LogWarning("Pawn still couldn't get a renderer");
 		}
 
+		/// <summary>
+		/// Returns the number of active pawns of a team.
+		/// </summary>
+		public static int GetActivePawnNumber(int team) => _pawns.FindAll((x) => x.isActiveAndEnabled && x._team == team).Count;//SCHNITTSTELLE RENE TODO: use
+
+		/// <summary>
+		/// Returns the number of active pawns of a team per type.
+		/// </summary>
+		/// <returns>(#WARRIOR, #HEALER, #PIONEER) of a team.</returns>
+		public static Vector3 GetActivePawnTypes(int team)
+		{
+			Vector3 ticker = Vector3.zero;
+
+			foreach(Pawn pawn in _pawns.FindAll((x) => x.isActiveAndEnabled && x._team == team))
+			{
+				switch(pawn._pawnType)
+				{
+					case ObjectType.PAWN_WARRIOR:
+						ticker += Vector3.right;
+						continue;
+					case ObjectType.PAWN_HEALER:
+						ticker += Vector3.up;
+						continue;
+					case ObjectType.PAWN_PIONEER:
+						ticker += Vector3.forward;
+						continue;
+					default:
+						continue;
+				}
+			}
+
+			return ticker;
+		}
+
 		private void OnEnable()
 		{
 			_PropertyBlock = new MaterialPropertyBlock();
@@ -954,9 +985,9 @@ namespace PPBA
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 
+#endif
 			if(!_pawns.Contains(this))
 				_pawns.Add(this);
-#endif
 		}
 
 		private void OnDisable()
@@ -969,13 +1000,11 @@ namespace PPBA
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
 
-			if(_pawns.Contains(this))
-				_pawns.Remove(this);
-
-
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
 			//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
 #endif
+			if(_pawns.Contains(this))
+				_pawns.Remove(this);
 		}
 
 		private void OnDestroy()
