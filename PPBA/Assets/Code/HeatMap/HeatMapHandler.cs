@@ -75,7 +75,7 @@ namespace PPBA
 			//----- -----> has to be calculated <----- -----
 
 			Vector2Int found = new Vector2Int();
-			float foundDist = float.MaxValue;
+			float foundDist = 150;//searching maximum distance of 150 pixle so if the hole map is from the same team it wond calculate forever
 
 			int maxIndex = int.MaxValue;
 
@@ -136,6 +136,12 @@ namespace PPBA
 						}
 					}
 				}
+			}
+
+			if(150 <= foundDist)
+			{
+				found = new Vector2Int(Random.Range(0, HeatMapCalcRoutine.s_instance.GetHeatmapWidth(1)), Random.Range(0, HeatMapCalcRoutine.s_instance.GetHeatmapWidth(1)));
+				foundDist = found.x * found.x + found.y * found.y;
 			}
 
 			foundDist = Mathf.Sqrt(foundDist);
