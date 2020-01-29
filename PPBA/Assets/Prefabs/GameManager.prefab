@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1250242366
 Transform:
   m_ObjectHideFlags: 0
@@ -73,14 +73,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693805404}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8cb6ace3afb39c04f8b4061ca3cd625d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _heatMaps:
-  - {fileID: 0}
-  - {fileID: 0}
+  _terrain: {fileID: 0}
 --- !u!114 &259536712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,6 +95,10 @@ MonoBehaviour:
   _GroundMaterial: {fileID: 2100000, guid: 11fcc83d46a7a1c4587c6355e53c9535, type: 2}
   _ResultTextureRessource: {fileID: 0}
   _ResultTextureTerritorium: {fileID: 0}
+  startResMap: {fileID: 0}
+  startTerMap: {fileID: 0}
+  map1: {fileID: 2800000, guid: 5932370c8d2bd1a4d9a9a67da4e3b4bf, type: 3}
+  map2: {fileID: 2800000, guid: 2964f0de8e4f43a40be5d66c53c2f5c1, type: 3}
 --- !u!1 &6486173834488494120
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,7 +118,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6486173834488494121
 Transform:
   m_ObjectHideFlags: 0
@@ -299,7 +301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6486173835104257565
 Transform:
   m_ObjectHideFlags: 0
@@ -364,7 +366,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6486173835291466713
 Transform:
   m_ObjectHideFlags: 0
@@ -745,11 +747,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 800
-      objectReference: {fileID: 0}
-    - target: {fileID: 4439067608032047307, guid: a2fe762f46047ed4d88b1244c76d8d8b,
-        type: 3}
-      propertyPath: _layerMask.m_Bits
-      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2fe762f46047ed4d88b1244c76d8d8b, type: 3}
