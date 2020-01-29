@@ -20,6 +20,7 @@ namespace PPBA
 		public RingBuffer_GameState _gameStates = new RingBuffer_GameState(); //public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
 		public int _totalAICount;
 		public int _totalResources;
+		public int[] _scheduledPawns = new int[3];
 
 		public client()
 		{
@@ -131,6 +132,8 @@ namespace PPBA
 #endif
 		}
 
-		#endregion
+		#endregion //MonoBehaviour
+
+		public static int[] GetScheduledPawns(int team) => s_instance._clients.Find(x => x._id == team)._scheduledPawns;
 	}
 }
