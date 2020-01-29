@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PPBA
 {
@@ -8,6 +9,9 @@ namespace PPBA
 	{
 		[SerializeField] float _speed = 0.25f;
 		[SerializeField] RectTransform _panle;
+		[SerializeField] Image _icon;
+		[SerializeField] Sprite _open;
+		[SerializeField] Sprite _close;
 
 		float _startPanlePos;
 		bool isPanelOut = false;
@@ -15,11 +19,13 @@ namespace PPBA
 		private void Awake()
 		{
 			_startPanlePos = _panle.anchoredPosition.y;
+			_icon.sprite = _open;
 		}
 		public void MovePanel()
 		{
 			StopAllCoroutines();
 			isPanelOut = !isPanelOut;
+			_icon.sprite = isPanelOut ? _close : _open;
 			StartCoroutine(IEMovePanel());
 		}
 
