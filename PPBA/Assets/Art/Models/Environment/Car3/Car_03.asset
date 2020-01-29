@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd458531bb03dad4fb5618d61339edb2, type: 3}
+  m_Name: Car_03
+  m_EditorClassIdentifier: 
+  _meshs:
+  - {fileID: -6296333951556723582, guid: 0f083882e6e75b94ab664feb35f78a15, type: 3}
+  - {fileID: -2648682086755811554, guid: 1e2fd911ad328394ba6e8577f9e26f0c, type: 3}
+  - {fileID: -2648682086755811554, guid: 80d0d2e40f239f044bb4d2f72981a55b, type: 3}
+  - {fileID: -2648682086755811554, guid: 706dfff54b6508841956a313fa62e57b, type: 3}
+  - {fileID: -2648682086755811554, guid: 9d33b9133f59be043974fe87d8b17d89, type: 3}
+  - {fileID: -2648682086755811554, guid: 2738580993837de4f843b3fab9be75ac, type: 3}
+  - {fileID: -5495902117074765545, guid: 850f5ec2f69fc4b44891b7a3bad7eecf, type: 3}
+  - {fileID: -2648682086755811554, guid: eb5f0e19c54eee24abe79fee83ff84a5, type: 3}
+  _ranTexs:
+  - _albedo: {fileID: 2800000, guid: bf45f4995cf77af47967a77e693948ca, type: 3}
+    _hight: {fileID: 2800000, guid: e88ce5c0cc7da15458a61f713a5f43ef, type: 3}
+  - _albedo: {fileID: 2800000, guid: 4f92b6d5e51d75b429026319d660e82e, type: 3}
+    _hight: {fileID: 2800000, guid: e88ce5c0cc7da15458a61f713a5f43ef, type: 3}
+  - _albedo: {fileID: 2800000, guid: 0b28a59e800511644aa814dc9fc1b064, type: 3}
+    _hight: {fileID: 2800000, guid: e88ce5c0cc7da15458a61f713a5f43ef, type: 3}
+  - _albedo: {fileID: 2800000, guid: 7f569f81c1c8f564fbcdb9cae11a668a, type: 3}
+    _hight: {fileID: 2800000, guid: e88ce5c0cc7da15458a61f713a5f43ef, type: 3}
