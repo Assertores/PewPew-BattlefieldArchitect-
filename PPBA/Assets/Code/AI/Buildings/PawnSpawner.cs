@@ -34,6 +34,9 @@ namespace PPBA
 			int[] schedule = GlobalVariables.GetScheduledPawns(_resourceDepot._team);
 			int ticker = Random.Range(0, 3);
 
+			if(null == schedule)
+				return;
+
 			for(int i = 0; i < 3; i++)
 			{
 				if(0 < schedule[ticker])
@@ -52,12 +55,16 @@ namespace PPBA
 
 		private void OnEnable()
 		{
+#if UNITY_SERVER
 			TickHandler.s_DoTick += DoTheThing;
+#endif
 		}
 
 		private void OnDisable()
 		{
+#if UNITY_SERVER
 			TickHandler.s_DoTick -= DoTheThing;
+#endif
 		}
 	}
 }
