@@ -31,7 +31,7 @@ RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
 
 
-[numthreads(1, 1, 1)]
+[numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
@@ -41,9 +41,14 @@ void CSInit(uint3 id : SV_DispatchThreadID)
     {
         buffer[i] = 0;
     }
-    
-    //bitField[bit / (8 * 4)] = 0;
-    //redValue[bit] = 0;
+
+    for (int i = 0; i < ((256 * 256) / (8*4)); i++)
+    {
+		bitField[i] = 0;
+    }
+	
+	//bitField[bit / (8 * 4)] = 0;
+	//redValue[bit] = 0;
     //InputRedValue[bit] = 0;
     //InputTextureTerritorium[bit] = 0;
 
@@ -64,9 +69,9 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     for (int i = 0; i < PointSize; i++)
     {
-        float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-        float maxDis = coords[0].w;
+        float maxDis = coords[i].w;
 
         if (dis > maxDis)
         {
@@ -87,8 +92,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     
     if (input[id.xy].r != currentResources)
     {
-        //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-        bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+       // bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
         Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
     }
 }
@@ -141,8 +146,8 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
         if (TerritoriumResult[id.xy].r != col.r)
         {
             int bit = id.y * weightMap + id.x;
-            //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-            bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+            //bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
           
             TerritoriumResult[id.xy] = float4(col, 1);
             

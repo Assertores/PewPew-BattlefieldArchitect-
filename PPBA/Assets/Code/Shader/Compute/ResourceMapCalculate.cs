@@ -32,7 +32,6 @@ namespace PPBA
 		private int[] _ResourceValues;
 		[SerializeField]
 		private float[] _RedValues;
-
 		private byte[] _currentBitField;
 
 		public void Start()
@@ -77,9 +76,9 @@ namespace PPBA
 			_RedValues = new float[256 * 256];
 
 			_computeShader.SetBuffer(_EarlyCalcKernel, "buffer", _buffer);
-			_computeShader.Dispatch(_EarlyCalcKernel, 256 / 1, 256 / 1, 1);
-
-								   			 
+			_computeShader.SetBuffer(_EarlyCalcKernel, "bitField", _bitField);
+			_computeShader.Dispatch(_EarlyCalcKernel, 256 / 8, 256 / 8, 1);
+											   			 
 			_computeShader.SetInt("PointSize", HMroutine._Refinerys.Count);
 			_computeShader.SetVectorArray("coords", RefineriesProperties(HMroutine));
 

@@ -73,7 +73,6 @@ namespace PPBA
 			_terValueBuffer = null;
 
 			string g = _TerValues[500].ToString();
-			HMCalcRoutine.PrintSomething(g);
 
 			yield return ConvertRenToTex2D(_currentBitField, _TerValues);
 			Swap(); // change Texture2d

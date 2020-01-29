@@ -17,6 +17,7 @@ namespace PPBA
 
 		public RenderTexture _ResultTextureRessource;
 		public RenderTexture _ResultTextureTerritorium;
+		public RenderTexture _Resulttest;
 
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
 		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
@@ -73,11 +74,17 @@ namespace PPBA
 				enableRandomWrite = true
 			};
 
+			_Resulttest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.RFloat)
+			{
+				enableRandomWrite = true
+			};
+
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
 
 			Graphics.Blit(resTex, _ResultTextureRessource);
 			Graphics.Blit(terTex, _ResultTextureTerritorium);
+			Graphics.Blit(terTex, _Resulttest);
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTextureRessource);
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTextureTerritorium);
@@ -85,7 +92,9 @@ namespace PPBA
 
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
 		{
-			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
+			//_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
+			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _Resulttest, _ResultTextureTerritorium);
+			_GroundMaterial.SetTexture("_NoiseMap", _Resulttest);
 		}
 
 		//public void EarlyCalc()
@@ -95,6 +104,7 @@ namespace PPBA
 
 		public void StartHeatMapCalc()
 		{
+			print("startHeatMapCalc");
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
 			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
 		}
@@ -159,10 +169,6 @@ namespace PPBA
 			return _Soldiers.Count != 0;
 		}
 
-		public void PrintSomething(string text)
-		{
-			print("das solltest du lesen! : " + text);
-		}
 
 		[SerializeField] private Texture2D map1;
 		[SerializeField] private Texture2D map2;

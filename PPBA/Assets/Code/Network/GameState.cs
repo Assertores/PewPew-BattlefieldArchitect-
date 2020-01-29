@@ -1682,6 +1682,11 @@ Change:
 
 		public void Add(GSC.heatMap element, bool isMoreSignificant = true)
 		{
+			if(null == element._values)
+			{
+				return;
+			}
+
 			GSC.heatMap target = _heatMaps.Find(x => x._id == element._id);
 
 			if(null == target)
@@ -1697,7 +1702,7 @@ Change:
 					GSC.heatMapElement tmp = target._values.Find(x => x._x == it._x && x._y == it._y);
 					if(null == tmp)
 					{
-						element._values.Add(it);
+						target._values.Add(it);
 					}
 					else
 					{

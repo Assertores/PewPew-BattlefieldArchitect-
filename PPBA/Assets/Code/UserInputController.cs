@@ -22,8 +22,22 @@ namespace PPBA
 			return Vector3.zero;
 		}
 
+		private void Update()
+		{
+			// for test ( ask rene )
+			if(Input.GetMouseButtonDown(0))
+			{
+				GetTexturePixelPoint();
+			}
+		}
+
 		public Vector2 GetTexturePixelPoint()
 		{
+			if(null != Camera.main)
+			{
+				return Vector2.zero;
+			}
+
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Vector2 pixelUV;
 
@@ -31,8 +45,9 @@ namespace PPBA
 			if(Physics.Raycast(ray, out hitInfo, 1000, ignore))
 			{
 				pixelUV = hitInfo.textureCoord;
-				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").width);
-				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= hitInfo.transform.GetComponent<Renderer>().material.GetTexture("_NoiseMap").height);
+				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
+				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
+				print("position on the map IN TextureCoords" + pixelUV );
 				return pixelUV;
 			}
 			return Vector3.zero;
@@ -48,6 +63,7 @@ namespace PPBA
 				pixelUV = hitInfo.textureCoord;
 				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
 				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
+				print("position on the map IN TextureCoords" + pixelUV );
 				return pixelUV;
 			}
 			return Vector3.zero;
@@ -63,6 +79,7 @@ namespace PPBA
 				pixelUV = hitInfo.textureCoord;
 				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
 				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
+				print("position on the map IN TextureCoords" + pixelUV );
 				return pixelUV;
 			}
 			return Vector3.zero;
