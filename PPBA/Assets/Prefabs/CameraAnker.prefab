@@ -241,7 +241,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9013790921488025280}
-  m_LocalRotation: {x: -0.59693056, y: -0.0000006848625, z: 0.0000009021795, w: -0.80229294}
+  m_LocalRotation: {x: -0.5969306, y: -0.00000074067833, z: 0.00000094370813, w: -0.8022929}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -478,8 +478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6484f582cf3fc694e90fe0f64dcfec27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _CameraSpeed: 20
-  _RotateSpeed: 20
+  _CameraSpeed: 35
+  _RotateSpeed: 15
   _panLimit: {x: 450, y: 450}
 --- !u!1 &9013790921785706753
 GameObject:
@@ -638,7 +638,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9013790922503201023}
-  m_LocalRotation: {x: 0.5673933, y: -0.0000008285538, z: 0.0000012219335, w: 0.823447}
+  m_LocalRotation: {x: 0.5673933, y: -0.00000087963934, z: 0.0000012571338, w: 0.823447}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1076,7 +1076,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9013790923212871960}
-  - component: {fileID: 5715554109497659444}
   m_Layer: 0
   m_Name: CameraAnker
   m_TagString: Untagged
@@ -1101,16 +1100,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5715554109497659444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9013790923212871961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d40f164b2895b240b8ba4238342835e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  keapOnClient: 1
