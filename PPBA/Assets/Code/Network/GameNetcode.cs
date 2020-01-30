@@ -126,6 +126,17 @@ namespace PPBA
 
 			int startTick = BitConverter.ToInt32(data, offset);
 			offset += sizeof(int);
+
+#if DB_IS
+			Debug.Log((MessageType)data[0] + ", " + RemoteID + ", " + fieldTick + ", " + field.Length + ", x, " + startTick);
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			for(int i = 0; i < offset; i++)
+			{
+				sb.Append(data[i] + ", ");
+			}
+			Debug.Log(sb.ToString());
+#endif
+
 			int tick = startTick;
 			for(; offset < data.Length; tick++)
 			{
@@ -260,7 +271,7 @@ namespace PPBA
 			GlobalVariables.s_instance._clients = new List<client>();
 		}
 #else
-		void Start()
+			void Start()
 		{
 			if(_startInScene)
 				ClientConnect(_iP, _serverPort);
@@ -358,7 +369,7 @@ namespace PPBA
 		}
 
 
-		readonly byte[] h_emptyInputState = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		
 		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void Send()
 		{
@@ -384,14 +395,14 @@ namespace PPBA
 			{
 				if(ib[i] == default)
 				{
-					msg.AddRange(h_emptyInputState);
+					msg.AddRange(InputState.s_emptyInputState);
 					continue;
 				}
 
 				byte[] tmp = ib[i].Encrypt();
 				if(tmp == null)
 				{
-					msg.AddRange(h_emptyInputState);
+					msg.AddRange(InputState.s_emptyInputState);
 					continue;
 				}
 
