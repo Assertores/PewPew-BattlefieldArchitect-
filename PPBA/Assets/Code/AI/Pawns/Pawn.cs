@@ -765,6 +765,11 @@ namespace PPBA
 						}
 						continue;
 					case StringCollection.DEPOT:
+						ResourceDepot depot = c.GetComponentInChildren<ResourceDepot>();
+						if(null != depot)
+						{
+							_closeBuildings.Add(depot);
+						}
 						continue;
 					case StringCollection.FLAGPOLE:
 						continue;
