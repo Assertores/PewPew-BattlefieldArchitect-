@@ -66,8 +66,8 @@ namespace PPBA
 		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>
 		public Vector3 BorderValues(Vector3 worldPos)
 		{
-			Vector2 retPos = (worldPos - _terrain.transform.position) * _ppu[1];
-			Vector2Int texPos = new Vector2Int((int)retPos.x, (int)retPos.y);
+			Vector3 retPos = (worldPos - _terrain.transform.position) * _ppu[1];
+			Vector2Int texPos = new Vector2Int((int)retPos.x, (int)retPos.z);
 
 			if(h_cashValues.ContainsKey(texPos))
 				return h_cashValues[texPos];
@@ -146,7 +146,7 @@ namespace PPBA
 
 			foundDist = Mathf.Sqrt(foundDist);
 
-			h_cashValues[texPos] = new Vector3((found.x / _ppu[1]) + _terrain.transform.position.x, (found.y / _ppu[1]) + _terrain.transform.position.y, foundDist / _ppu[1]);
+			h_cashValues[texPos] = new Vector3((found.x / _ppu[1]) + _terrain.transform.position.x, (found.y / _ppu[1]) + _terrain.transform.position.z, foundDist / _ppu[1]);
 
 			return h_cashValues[texPos];
 		}
