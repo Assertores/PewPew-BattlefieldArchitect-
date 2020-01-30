@@ -142,6 +142,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
     }
 	//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
 	//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+    
     int bit = id.y * weightMap + id.x;
     terValue[bit] = col.r;
         		
@@ -158,13 +159,11 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
     
-    float value = InputTextureTerritorium[id.y * weightMap + id.x];
+    float value = terValue[id.y * weightMap + id.x];
     
-	TerritoriumResult[id.xy] = float4(0, 0,0, 1);
-
     if (value == 2)
     {
-        TerritoriumResult[id.xy] = float4(1, 1, 0, 1);
+        TerritoriumResult[id.xy] = float4(0, 1, 1, 1);
     }
     
     if (value == 3)

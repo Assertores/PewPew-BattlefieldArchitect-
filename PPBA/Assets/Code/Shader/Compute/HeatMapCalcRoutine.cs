@@ -17,8 +17,8 @@ namespace PPBA
 
 		public RenderTexture _ResultTextureRessource;
 		public RenderTexture _ResultTextureTerritorium;
-		public RenderTexture _Resulttest;
-		public RenderTexture _ResultTerritoriumtest;
+		//public RenderTexture _Resulttest;
+		//public RenderTexture _ResultTerritoriumtest;
 
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
 		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
@@ -40,8 +40,6 @@ namespace PPBA
 
 		private void Start()
 		{
-			//_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
-			//_earlyCalc._computeShader = _computeShader;
 
 			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
 			//_setTexCalc._computeShader = _computeShader;
@@ -67,10 +65,7 @@ namespace PPBA
 			_terMapCalc._computeShader = _computeShader;
 			_terMapCalc._TerCalcKernel = _computeShader.FindKernel("CSTerritorium");
 			_terMapCalc._earlyCalcKernel = _computeShader.FindKernel("CSInit");
-
-
-
-
+					   			 
 			Texture resTex = _GroundMaterial.GetTexture("_NoiseMap");
 			Texture terTex = _GroundMaterial.GetTexture("_TerritorriumMap");
 
@@ -84,25 +79,24 @@ namespace PPBA
 				enableRandomWrite = true
 			};
 
-			_Resulttest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.RFloat)
-			{
-				enableRandomWrite = true
-			};
+			//_Resulttest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.RFloat)
+			//{
+			//	enableRandomWrite = true
+			//};
 
 
-			_ResultTerritoriumtest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
-			{
-				enableRandomWrite = true
-			};
-
-
+			//_ResultTerritoriumtest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
+			//{
+			//	enableRandomWrite = true
+			//};
+			
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
 
 			Graphics.Blit(resTex, _ResultTextureRessource);
 			Graphics.Blit(terTex, _ResultTextureTerritorium);
-			Graphics.Blit(resTex, _Resulttest);
-			Graphics.Blit(terTex, _ResultTerritoriumtest);
+			//Graphics.Blit(resTex, _Resulttest);
+			//Graphics.Blit(terTex, _ResultTerritoriumtest);
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTextureRessource);
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTextureTerritorium);
@@ -111,8 +105,7 @@ namespace PPBA
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
 		{
 			//_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
-			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _Resulttest, _ResultTextureTerritorium);
-			_GroundMaterial.SetTexture("_NoiseMap", _Resulttest);
+			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
 		}
 
 		//public void EarlyCalc()
@@ -123,21 +116,28 @@ namespace PPBA
 		public void StartHeatMapCalc()
 		{
 			print("startHeatMapCalc");
+
+			//// for testing 
+
+			//Graphics.Blit(_ResultTerritoriumtest, _ResultTextureTerritorium);
+			//// end testing
+
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
 			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
-			StartCoroutine(test());
+			//StartCoroutine(test());
 		}
-		IEnumerator test()
-		{
-			yield return new WaitForSecondsRealtime(0.1f);
 
-			HeatMapReturnValue[] holder = new HeatMapReturnValue[2];
-			holder = HeatMapCalcRoutine.s_instance.ReturnValue();
-			_setTexCalc.StartComputeShader(holder[0].tex, holder[1].tex, _Resulttest, _ResultTerritoriumtest);
+		//IEnumerator test()
+		//{
+		//	yield return new WaitForSecondsRealtime(0.1f);
 
-			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTerritoriumtest);
+		//	HeatMapReturnValue[] holder = new HeatMapReturnValue[2];
+		//	holder = HeatMapCalcRoutine.s_instance.ReturnValue();
+		//	_setTexCalc.StartComputeShader(holder[0].tex, holder[1].tex, _Resulttest, _ResultTerritoriumtest);
 
-		}
+		//	_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTerritoriumtest);
+
+		//}
 
 		public HeatMapReturnValue[] ReturnValue()
 		{

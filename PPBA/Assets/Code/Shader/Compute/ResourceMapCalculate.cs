@@ -92,7 +92,7 @@ namespace PPBA
 
 			yield return new WaitForSeconds(0.05f);
 
-			Graphics.Blit(_tempRenTex, HeatMapCalcRoutine.s_instance._ResultTextureRessource);
+			Graphics.Blit(_tempRenTex, HMroutine._ResultTextureRessource);
 
 			_buffer.GetData(_ResourceValues);
 			_bitField.GetData(_currentBitField);

@@ -66,17 +66,19 @@ namespace PPBA
 
 		public Vector2 GetTexturePixelPoint(Transform Obj)
 		{
-			Vector2 pixelUV;
+			//Vector2 pixelUV;
 
-			RaycastHit hitInfo;
-			if(Physics.Raycast(Obj.position + Vector3.up, Vector3.down, out hitInfo, 1000, ignore))
-			{
-				pixelUV = hitInfo.textureCoord;
-				pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
-				pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
-				return pixelUV;
-			}
-			return Vector3.zero;
+			//RaycastHit hitInfo;
+			//if(Physics.Raycast(Obj.position + Vector3.up, Vector3.down, out hitInfo, 1000, ignore))
+			//{
+			//	pixelUV = hitInfo.textureCoord;
+			//	pixelUV.x = Mathf.FloorToInt(pixelUV.x *= TerrainMat.GetTexture("_NoiseMap").width);
+			//	pixelUV.y = Mathf.FloorToInt(pixelUV.y *= TerrainMat.GetTexture("_NoiseMap").height);
+			//	return pixelUV;
+			//}
+			//return Vector3.zero;
+
+			return GetTexturePixelPoint(Obj.position);
 		}
 
 		//public Vector2 GetTexturePixelPoint(Vector3 pos)
