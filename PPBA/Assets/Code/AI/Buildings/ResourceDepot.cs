@@ -4,8 +4,18 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class ResourceDepot : MonoBehaviour, INetElement
+	public class ResourceDepot : MonoBehaviour, INetElement, IDestroyableBuilding
 	{
+		private class State
+		{
+			public float _health;
+			public float _ammo;
+			public int _supplies;
+		}
+
+		private State _lastState = new State();
+		private State _nextState = new State();
+
 		[SerializeField] public int _id { get; set; }
 		public int _team
 		{
@@ -31,15 +41,26 @@ namespace PPBA
 		[SerializeField]
 		[Tooltip("How close does a pawn have to be to interact with this?")]
 		public float _interactRadius = 2f;
+		/// <summary>
+		/// Use _resourceTotal[team] to access resource total over all depots of that team.
+		/// Ready to use after DoInput. 
+		/// </summary>
+		public static int[] _resourceTotal = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
 
 		private IRefHolder _myRefHolder;
 
+		#region Monobehaviour
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
 		}
-
-		
+		void Update()
+		{
+#if !UNITY_SERVER
+			VisualizeLerpedStates();
+#endif
+		}
+		#endregion
 
 		public void CalculateScore(int tick = 0)
 		{
@@ -57,6 +78,25 @@ namespace PPBA
 
 			_score = Mathf.Clamp(_score, 0f, 1f);
 		}
+
+		#region IDestroyableBuilding
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				Die();
+			}
+		}
+
+		private void Die() => transform.parent.gameObject.SetActive(false);
+		public Transform GetTransform() => transform;
+		public float GetHealth() => _health;
+		public float GetMaxHealth() => _maxHealth;
+		public int GetTeam() => _team;
+		#endregion
 
 		#region Give Or Take
 		public int TakeResources(int amount)
@@ -123,15 +163,26 @@ namespace PPBA
 		#endregion
 
 		#region Initialisation
+		private void ResetToDefault()
+		{
+			_health = _maxHealth;
+			_ammo = 0;
+			_resources = 0;
+		}
+
 		private void OnEnable()
 		{
 #if UNITY_SERVER
+			ResetToDefault();
+
 			if(null != JobCenter.s_resourceDepots?[_team] && !JobCenter.s_resourceDepots[_team].Contains(this))
 				JobCenter.s_resourceDepots[_team].Add(this);
 
 			TickHandler.s_LateCalc += CalculateScore;
 			TickHandler.s_GatherValues += WriteToGameState;
 #else
+			TickHandler.s_SetUp += ClearTotal;
+			TickHandler.s_DoInput += ExtractFromGameState;
 			TickHandler.s_EarlyCalc += ActivateBuildingMenu;
 #endif
 		}
@@ -145,6 +196,8 @@ namespace PPBA
 			TickHandler.s_LateCalc -= CalculateScore;
 			TickHandler.s_GatherValues -= WriteToGameState;
 #else
+			TickHandler.s_SetUp -= ClearTotal;
+			TickHandler.s_DoInput -= ExtractFromGameState;
 			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
 #endif
 			gameObject.SetActive(false);
@@ -152,12 +205,74 @@ namespace PPBA
 
 		public void WriteToGameState(int tick = 0)
 		{
-			TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
+			//TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _resources });
 			TickHandler.s_interfaceGameState.Add(new GSC.health { _id = _id, _health = _health, _morale = _score });
 			TickHandler.s_interfaceGameState.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
 		}
+
+		public void ExtractFromGameState(int tick = 0)
+		{
+			if(null != _nextState)
+				_lastState = _nextState;
+
+			_nextState = new State();
+
+			#region Writing into _nextState from s_interfaceGameState
+			{
+				GSC.health temp = TickHandler.s_interfaceGameState.GetHealth(_id);
+				if(null != temp)
+				{
+					_nextState._health = temp._health;
+				}
+			}
+			{
+				GSC.ammo temp = TickHandler.s_interfaceGameState.GetAmmo(_id);
+
+				if(null != temp)
+				{
+					_nextState._ammo = temp._bullets;
+				}
+			}
+			{
+				GSC.resource temp = TickHandler.s_interfaceGameState.GetResource(_id);
+				GSC.type typeTemp = TickHandler.s_interfaceGameState.GetType(_id);
+
+				if(null != temp)
+				{
+					_nextState._supplies = temp._resources;
+
+					if(null != typeTemp)
+						_resourceTotal[typeTemp._team] += temp._resources;
+				}
+			}
+			#endregion
+
+		}
+
+		private void VisualizeLerpedStates()
+		{
+			float lerpFactor;
+
+			if(null == _lastState || null == _nextState)
+			{
+				if(null != _nextState)
+					lerpFactor = 1f;
+				else if(null != _lastState)
+					lerpFactor = 0f;
+				else
+					return;
+			}
+			else
+				lerpFactor = (Time.time - TickHandler.s_currentTickTime) / Time.fixedDeltaTime;
+
+			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
+			_ammo = (int)Mathf.Lerp(_lastState._ammo, _nextState._ammo, lerpFactor);
+			_resources = (int)Mathf.Lerp(_lastState._supplies, _nextState._supplies, lerpFactor);
+		}
+
+		public void ClearTotal(int tick = 0) => _resourceTotal = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
 
 		void ActivateBuildingMenu(int tick)
 		{

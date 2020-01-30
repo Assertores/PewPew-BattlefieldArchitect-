@@ -7,7 +7,7 @@ using TMPro;
 
 namespace PPBA
 {
-	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE };
+	public enum Behaviors : byte { IDLE, SHOOT, THROWGRENADE, GOTOFLAG, GOTOBORDER, CONQUERBUILDING, STAYINCOVER, GOTOCOVER, GOTOHEAL, FLEE, GETSUPPLIES, BRINGSUPPLIES, BUILD, DECONSTRUCT, GETAMMO, MOUNT, FOLLOW, DIE, WINCHEER, GOANYWHERE, SHOOTATBUILDING };
 
 	[RequireComponent(typeof(LineRenderer))]
 	public class Pawn : MonoBehaviour, IPanelInfo, INetElement
@@ -32,7 +32,7 @@ namespace PPBA
 
 		public int _id { get; set; }
 		public Arguments _arguments = new Arguments();
-		//[SerializeField] public int _team = 0;
+		[SerializeField] public ObjectType _pawnType;
 		private int _teamBackingField;
 		[SerializeField]
 		public int _team
@@ -147,10 +147,32 @@ namespace PPBA
 				return _closeCoverSlots;
 			}
 		}
+		public List<IDestroyableBuilding> _closeBuildings = new List<IDestroyableBuilding>();
+		public List<IDestroyableBuilding> _activeBuildings
+		{
+			get
+			{
+				List<IDestroyableBuilding> offBuildings = new List<IDestroyableBuilding>();
+
+				foreach(var it in _closeBuildings)
+				{
+					if(!it.GetTransform().gameObject.activeSelf)
+						offBuildings.Add(it);
+				}
+
+				foreach(var it in offBuildings)
+				{
+					_closeBuildings.Remove(it);
+				}
+
+				return _closeBuildings;
+			}
+		}
 		public Vector3 _moveTarget;//let the behaviors set this
 		public Vector3 _behaviorTarget = Vector3.zero;
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null && _mountSlot.isActiveAndEnabled;
+		public Vector3 _borderData = Vector3.zero;
 		#endregion
 
 		#region MonoBehaviour
@@ -166,6 +188,7 @@ namespace PPBA
 			//Initialisation
 			InitiateBehaviors();
 
+			//Safeguard against a too short _behaviorMultipliers array.
 			if(_behaviorMultipliers.Length < e_behaviors.Length)
 			{
 				float[] arr = new float[e_behaviors.Length];
@@ -202,7 +225,8 @@ namespace PPBA
 			VisualizeLerpedStates();
 #endif
 			_animationController.SetAnimatorBools(_currentAnimation);
-			_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
+			//_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
+			_healthBarController.SetBars(_health / _maxHealth, (float)_supplies / _maxSupplies, (float)_ammo / _maxAmmo);
 			ShowNavPath();
 		}
 		#endregion
@@ -211,6 +235,7 @@ namespace PPBA
 		protected void Evaluate(int tick = 0)   //uses behavior-scores to evaluate behaviors
 		{
 			CheckOverlapSphere();
+			GetBorderData();
 
 			if(_isMounting)
 			{
@@ -302,7 +327,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(new GSC.ammo { _id = _id, _bullets = _ammo });
 			TickHandler.s_interfaceGameState.Add(new GSC.resource { _id = _id, _resources = _supplies });
 			if(_lastBehavior != null)
-				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });//this doesn't give a target yet
+				TickHandler.s_interfaceGameState.Add(new GSC.behavior { _id = _id, _behavior = _lastBehavior._name, _target = _lastBehavior.GetTargetID(this) });
 			if(_navMeshPath != null)
 				TickHandler.s_interfaceGameState.Add(new GSC.path { _id = _id, _path = _navMeshPath.corners });
 			TickHandler.s_interfaceGameState.Add(new GSC.animation { _id = _id, _animation = _currentAnimation });
@@ -473,6 +498,8 @@ namespace PPBA
 					return Behavior_Idle.s_instance;
 				case Behaviors.SHOOT:
 					return Behavior_Shoot.s_instance;
+				case Behaviors.SHOOTATBUILDING:
+					return Behavior_ShootAtBuilding.s_instance;
 				case Behaviors.THROWGRENADE:
 					break;
 				case Behaviors.GOTOFLAG:
@@ -583,12 +610,13 @@ namespace PPBA
 			}
 
 			float maxDistance = _moveSpeed * Time.fixedDeltaTime * 2f / GetNavAreaCost();//Why the (* 2f): NavAreaCosts below 1 give a warning, hence I double the costs in inspector and half them here.
-			float walkedDistance = 0f;
+			float walkedDistance = 0.5f;
 			float nextCornerDistance;
 
 			int i = 1;
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
+				walkedDistance -= 0.5f;
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
 				float tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
 				Vector3 moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
@@ -597,9 +625,7 @@ namespace PPBA
 			}
 
 			if(2 < i)//<=> pawn has moved over a corner
-			{
 				_isNavPathDirty = true;
-			}
 
 			if(i - 1 < _navMeshPath.corners.Length)
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
@@ -692,6 +718,8 @@ namespace PPBA
 			}
 			return -1;
 		}
+
+		public void GetBorderData(int tick = 0) => _borderData = HeatMapHandler.s_instance.BorderValues(transform.position);
 		#endregion
 
 		#region Physics
@@ -723,12 +751,46 @@ namespace PPBA
 							continue;
 
 						Cover cover = c.GetComponent<Cover>();
-						if(cover)
+						if(null != cover)
 						{
+							_closeBuildings.Add(cover);
+
 							foreach(CoverSlot slot in cover._coverSlots)
 							{
 								_closeCoverSlots.Add(slot);
 							}
+						}
+						continue;
+					case StringCollection.DEPOT:
+						continue;
+					case StringCollection.FLAGPOLE:
+						continue;
+					case StringCollection.HQ:
+						HeadQuarter hq = c.transform.GetChild(2)?.GetComponent<HeadQuarter>();
+						if(null != hq)
+						{
+							_closeBuildings.Add(hq._resourceDepot);
+						}
+						continue;
+					case StringCollection.MEDICAMP:
+						MediCamp mediCamp = c.transform.GetChild(2)?.GetComponent<MediCamp>();
+						if(null != mediCamp)
+						{
+							_closeBuildings.Add(mediCamp);
+						}
+						continue;
+					case StringCollection.REFINERY:
+						IDestroyableBuilding refinery = c.transform.GetChild(2)?.GetComponent<IDestroyableBuilding>();
+						if(null != refinery)
+						{
+							_closeBuildings.Add(refinery);
+						}
+						continue;
+					case StringCollection.WALL:
+						IDestroyableBuilding wall = c.transform.GetChild(2)?.GetComponent<IDestroyableBuilding>();
+						if(null != wall)
+						{
+							_closeBuildings.Add(wall);
 						}
 						continue;
 					default:
@@ -772,6 +834,7 @@ namespace PPBA
 		{
 			_closePawns.Clear();
 			_closeCoverSlots.Clear();
+			_closeBuildings.Clear();
 		}
 
 		/// <summary>
@@ -802,8 +865,7 @@ namespace PPBA
 
 			pawn.SetMaterialColor(team);
 		}
-
-
+		
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
@@ -813,7 +875,7 @@ namespace PPBA
 
 #if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
-			newPawn.TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(newPawn.transform, team);
+			newPawn.TerritoryMapId = HeatMapCalcRoutine.s_instance.AddSoldier(newPawn.transform, team);
 #endif
 		}
 
@@ -838,7 +900,7 @@ namespace PPBA
 		{
 			Color color;
 
-			if(team < GlobalVariables.s_instance._teamColors.Length)
+			if(null != GlobalVariables.s_instance._teamColors && team < GlobalVariables.s_instance._teamColors.Length)
 				color = GlobalVariables.s_instance._teamColors[team];
 			else
 				switch(team)
@@ -879,6 +941,40 @@ namespace PPBA
 				Debug.LogWarning("Pawn still couldn't get a renderer");
 		}
 
+		/// <summary>
+		/// Returns the number of active pawns of a team.
+		/// </summary>
+		public static int GetActivePawnNumber(int team) => _pawns.FindAll((x) => x.isActiveAndEnabled && x._team == team).Count;//SCHNITTSTELLE RENE TODO: use
+
+		/// <summary>
+		/// Returns the number of active pawns of a team per type.
+		/// </summary>
+		/// <returns>(#WARRIOR, #HEALER, #PIONEER) of a team.</returns>
+		public static Vector3 GetActivePawnTypes(int team)
+		{
+			Vector3 ticker = Vector3.zero;
+
+			foreach(Pawn pawn in _pawns.FindAll((x) => x.isActiveAndEnabled && x._team == team))
+			{
+				switch(pawn._pawnType)
+				{
+					case ObjectType.PAWN_WARRIOR:
+						ticker += Vector3.right;
+						continue;
+					case ObjectType.PAWN_HEALER:
+						ticker += Vector3.up;
+						continue;
+					case ObjectType.PAWN_PIONEER:
+						ticker += Vector3.forward;
+						continue;
+					default:
+						continue;
+				}
+			}
+
+			return ticker;
+		}
+
 		private void OnEnable()
 		{
 			_PropertyBlock = new MaterialPropertyBlock();
@@ -889,9 +985,9 @@ namespace PPBA
 			TickHandler.s_AIEvaluate += Evaluate;
 			TickHandler.s_DoTick += Execute;
 
+#endif
 			if(!_pawns.Contains(this))
 				_pawns.Add(this);
-#endif
 		}
 
 		private void OnDisable()
@@ -904,13 +1000,11 @@ namespace PPBA
 			if(_isMounting)
 				Behavior_Mount.s_instance.RemoveFromTargetDict(this);//also nulls _mountSlot
 
-			if(_pawns.Contains(this))
-				_pawns.Remove(this);
-
-
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
 			//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
 #endif
+			if(_pawns.Contains(this))
+				_pawns.Remove(this);
 		}
 
 		private void OnDestroy()

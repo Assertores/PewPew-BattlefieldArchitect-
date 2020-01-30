@@ -24,7 +24,7 @@ namespace PPBA
 
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, SDLPAWN, PIXELWISE, BITMAPWISE };
 
 		public class gsc
 		{
@@ -209,6 +209,16 @@ namespace PPBA
 				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
+
+		public class sheduledPawns : gsc
+		{
+			public byte _type;
+			public byte _count;
+			public override string ToString()
+			{
+				return "Type " + _id + ": " + _count;
+			}
+		}
 	}
 
 	[System.Serializable]
@@ -245,6 +255,7 @@ namespace PPBA
 			_heatMaps.AddRange(original._heatMaps.ToArray());
 			_denyedInputIDs.AddRange(original._denyedInputIDs.ToArray());
 			_newIDRanges.AddRange(original._newIDRanges.ToArray());
+			_scheduledPawns.AddRange(original._scheduledPawns.ToArray());
 		}
 
 		public int _refTick { get; set; } = 0;
@@ -275,6 +286,10 @@ namespace PPBA
 		/// DO NOT USE
 		/// </summary>
 		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
+		///<summary>
+		/// DO NOT USE
+		/// </summary>
+		public List<GSC.sheduledPawns> _scheduledPawns = new List<GSC.sheduledPawns>();
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -321,6 +336,9 @@ namespace PPBA
 							int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
 
 							int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
+
+							if(packageCount == 0)
+								continue;
 
 							for(int i = 0; i < packageCount - 1; i++)
 							{
@@ -686,6 +704,18 @@ namespace PPBA
 				}
 				Profiler.EndSample();
 			}
+			//Scheduled Pawns
+			{
+				msg.Clear();
+				msg.Add((byte)GSC.DataType.SDLPAWN);
+				msg.AddRange(BitConverter.GetBytes(_scheduledPawns.Count));
+				foreach(var it in _scheduledPawns)
+				{
+					msg.AddRange(BitConverter.GetBytes(it._id));
+					msg.Add(it._type);
+					msg.Add(it._count);
+				}
+			}
 
 			if(_messageHolder.Count == 0)
 			{
@@ -1037,6 +1067,25 @@ namespace PPBA
 						}
 						break;
 					}
+					case GSC.DataType.SDLPAWN:
+					{
+						_scheduledPawns = new List<GSC.sheduledPawns>(count);
+						for(int i = 0; i < count; i++)
+						{
+							GSC.sheduledPawns value = new GSC.sheduledPawns();
+
+							value._id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._type = msg[offset];
+							offset++;
+
+							value._count = msg[offset];
+
+							_scheduledPawns.Add(value);
+						}
+						break;
+					}
 					default:
 						throw new InvalidEnumArgumentException();
 				}
@@ -1239,7 +1288,16 @@ Change:
 
 				GSC.heatMap lastDelta = null;
 				for(int j = myTick - 1; null == lastDelta && j > refTick; j--)
+				{
+					if(j < references.GetLowEnd() || j > references.GetHighEnd())
+						continue;
+					if(references[j] == default)
+						continue;
+					if(references[j]._heatMaps == null)
+						continue;
+
 					lastDelta = references[j]._heatMaps.Find(x => x._id == _heatMaps[i]._id);
+				}
 
 				if(lastDelta != null)
 				{
@@ -1554,6 +1612,7 @@ Change:
 		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
 		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
 		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
+		public List<GSC.sheduledPawns> GetScheduledPawns(int id) => _scheduledPawns.FindAll(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
@@ -1715,6 +1774,17 @@ Change:
 			}
 
 			_newIDRanges.Add(element);
+		}
+
+		public void Add(GSC.sheduledPawns element)
+		{
+			if(_scheduledPawns.Exists(x => x._id == element._id))
+			{
+				Debug.LogWarning("Scheduled Pawns allready exists: " + element.ToString());
+				return;
+			}
+
+			_scheduledPawns.Add(element);
 		}
 #endregion
 

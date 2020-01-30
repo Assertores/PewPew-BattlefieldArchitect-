@@ -13,7 +13,7 @@ namespace PPBA
 		#endregion
 
 		#region References
-		[SerializeField] private ResourceDepot _resourceDepot;
+		[SerializeField] public ResourceDepot _resourceDepot;
 		#endregion
 
 		private void CarePackage(int tick = 0)
@@ -40,15 +40,21 @@ namespace PPBA
 #endif
 		}
 
+		int h_disablecount = 0;
 		private void OnDisable()
 		{
 #if UNITY_SERVER
+			h_disablecount++;
+
 			TickHandler.s_DoTick -= CarePackage;
 			TickHandler.s_DoTick -= SpawnPawn;
 
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
 					JobCenter.s_headQuarters[_resourceDepot._team].Remove(this);
+
+			if(1 < h_disablecount)
+				JobCenter.CheckWinCon();
 #endif
 		}
 	}

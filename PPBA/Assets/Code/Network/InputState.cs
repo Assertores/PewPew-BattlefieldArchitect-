@@ -26,6 +26,13 @@ namespace PPBA
 		{
 			public Vector3[] _corners;
 		}
+
+		public class ProduceUnit
+		{
+			public int _client;
+			public byte _pawnType;
+			public byte _pawnCount;
+		}
 	}
 
 	[System.Serializable]
@@ -35,6 +42,7 @@ namespace PPBA
 
 		public List<ISC.obj> _objs = new List<ISC.obj>();
 		public List<ISC.combinedObj> _combinedObjs = new List<ISC.combinedObj>();
+		public List<ISC.ProduceUnit> _produceUnits = new List<ISC.ProduceUnit>();
 
 		/// <summary>
 		/// adds a new object to the InputState
@@ -101,6 +109,13 @@ namespace PPBA
 					value.AddRange(BitConverter.GetBytes(it._corners[i].y));
 					value.AddRange(BitConverter.GetBytes(it._corners[i].z));
 				}
+			}
+
+			value.Add((byte)_produceUnits.Count);
+			foreach(var it in _produceUnits)
+			{
+				value.Add(it._pawnType);
+				value.Add(it._pawnCount);
 			}
 
 			return value.ToArray();
@@ -175,6 +190,19 @@ namespace PPBA
 				}
 
 				_combinedObjs.Add(tmp);
+			}
+
+			count = msg[offset];
+			offset++;
+			for(int i = 0; i < count; i++)
+			{
+				_produceUnits.Add(new ISC.ProduceUnit
+				{
+					_client = client,
+					_pawnType = msg[offset],
+					_pawnCount = msg[offset+1],
+				});
+				offset += 2;
 			}
 
 			return offset;

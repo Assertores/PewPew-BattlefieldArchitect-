@@ -18,6 +18,9 @@ namespace PPBA
 		public IPEndPoint _ep;
 		public RingBuffer_InputState _inputStates = new RingBuffer_InputState(); //public RingBuffer<InputState> _inputStates = new RingBuffer<InputState>();
 		public RingBuffer_GameState _gameStates = new RingBuffer_GameState(); //public RingBuffer<GameState> _gameStates = new RingBuffer<GameState>();
+		public int _totalAICount;
+		public int _totalResources;
+		public int[] _scheduledPawns = new int[3];
 
 		public client()
 		{
@@ -42,7 +45,9 @@ namespace PPBA
 	public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		#region Variables
-
+		/// <summary>
+		/// on Client side: the 0 element is always available and always yourself.
+		/// </summary>
 		public List<client> _clients = new List<client>();
 
 		[Tooltip("deactivate this bool to signivy that this variables where set by us")]
@@ -88,6 +93,7 @@ namespace PPBA
 				_prefabs[(int)it._type] = it._prefab;
 			}
 
+#if UNITY_SERVER
 			//ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
 
 			ObjectPool.CreatePool<RefineryRefHolder>(ObjectType.REFINERY, _initialObjectPoolSize, transform); //über netzwerk getracked
@@ -102,11 +108,32 @@ namespace PPBA
 			ObjectPool.CreatePool<MediCampHolder>(ObjectType.MEDICAMP, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, _initialObjectPoolSize, transform); //über netzwerk getracked
 			ObjectPool.CreatePool<DepotHolder>(ObjectType.DEPOT, _initialObjectPoolSize, transform); //über netzwerk getracked
-						
+
 			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
 			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
+#else
+			//ObjectPool.CreatePool<Pawn>(_prefabs[(int)ObjectType.PAWN_WARRIOR], 100, transform); //nicht übers netzwerk
+
+			ObjectPool.CreatePool<RefineryRefHolder>(ObjectType.REFINERY, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL_BETWEEN, 0, transform); //über netzwerk getracked
+																												  //ObjectPool.CreatePool<WallRefHolder>(ObjectType.WALL, 100, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_WARRIOR, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_HEALER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<Pawn>(ObjectType.PAWN_PIONEER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<HQHolder>(ObjectType.HQ, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<TrashWallHolder>(ObjectType.COVER, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<MediCampHolder>(ObjectType.MEDICAMP, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<FlagHolder>(ObjectType.FLAGPOLE, 0, transform); //über netzwerk getracked
+			ObjectPool.CreatePool<DepotHolder>(ObjectType.DEPOT, 0, transform); //über netzwerk getracked
+
+			//ObjectPool.CreatePool<Cover>(ObjectType.COVER, _initialObjectPoolSize, transform); //über netzwerk getracked
+			//Pawn nextPawn = (Pawn)ObjectPool.s_objectPools[_prefabs[(int)ObjectType.PAWN_WARRIOR]].GetNextObject();
+#endif
 		}
 
-		#endregion
+		#endregion //MonoBehaviour
+
+		public static int[] GetScheduledPawns(int team) => s_instance._clients.Find(x => x._id == team)._scheduledPawns;
 	}
 }

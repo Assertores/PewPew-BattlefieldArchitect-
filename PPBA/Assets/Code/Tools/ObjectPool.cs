@@ -28,6 +28,9 @@ namespace PPBA
 			_oType = objectType;
 			_type = type;
 
+			if(_stepSize <= 0)
+				return;
+
 			Resize().gameObject.SetActive(false);
 		}
 

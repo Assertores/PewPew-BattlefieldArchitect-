@@ -421,7 +421,6 @@ namespace PPBA
 
 		void AddNewIDsToGameState(int tick)
 		{
-			return;//TODO: check funktionality
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
@@ -458,6 +457,7 @@ namespace PPBA
 
 		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
+			StatusNetcode.s_instance.StartServer(port, playerCount);
 			_serverPort = port;
 			_playerCount = playerCount;
 			socket = new UdpClient(port);

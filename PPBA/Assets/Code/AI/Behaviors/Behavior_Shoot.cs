@@ -35,7 +35,7 @@ namespace PPBA
 		{
 			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
 			{
-				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
+				if(0 < s_timerDictionary[pawn] || Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
 				{
 					pawn._currentAnimation = PawnAnimations.IDLE;
 					s_timerDictionary[pawn]++;//increment timer
@@ -134,24 +134,27 @@ namespace PPBA
 			switch(name)
 			{
 				case "Distance":
-					//return Vector3.Distance(target.transform.position, pawn.transform.position) / pawn._attackDistance;//gate 2 change
-					return Vector3.Distance(target.transform.position, pawn.transform.position) / 100f;
+					return Vector3.Distance(target.transform.position, pawn.transform.position) / 50f;
 				case "Health":
 					return target._health / target._maxHealth;
 				case "Cover":
-					return 0.5f;//got to implement a cover system
+					if(target._isMounting)
+						return target._mountSlot.GetCoverScore(pawn.transform.position);
+					else
+						return 0f;
 				case "DistanceToMyBase":
-					//return Vector3.Distance(s_targetDictionary[pawn].transform.position, HQ.TRANSFORM.POSITION) / 100f;
-					return 0.5f;
+					HeadQuarter headQuarter = JobCenter.s_headQuarters[pawn._team]?.Find((x) => x.isActiveAndEnabled);
+					if(null != headQuarter)
+						return Vector3.Distance(s_targetDictionary[pawn].transform.position, headQuarter.transform.position) / 100f;
+					else
+						return 0.5f;
 				case "ShotOnMe":
 					return s_targetDictionary.ContainsKey(target) && s_targetDictionary[target] == pawn ? 1f : 0f;
 				case "IsMyTarget":
 					return s_targetDictionary.ContainsKey(pawn) && s_targetDictionary[pawn] == target ? 1f : 0f;
 				default:
-					break;
+					return 1;
 			}
-
-			return 1;
 		}
 
 		public float CalculateTargetScore(Pawn pawn, Pawn target)
@@ -207,10 +210,7 @@ namespace PPBA
 			else
 				return;
 
-			//set shot trigger
-			pawn._arguments |= Arguments.TRIGGERBEHAVIOUR;
-			//(get shot trigger to do particle goodness)
-			Debug.Log(pawn.gameObject.name + " shot on " + target.gameObject.name);
+			pawn._arguments |= Arguments.TRIGGERBEHAVIOUR;//set trigger flag for ShootLineController
 
 			if(!CheckLos(pawn, target))
 				return;
@@ -219,8 +219,6 @@ namespace PPBA
 			{
 				if(target._isMounting)
 				{
-					//pawn._shootLineController.SetShootLine(pawn.transform.position, target._mountSlot.transform.position);
-
 					if(Random.Range(0f, 1f) < target._mountSlot.GetCoverScore(pawn.transform.position))//roll to hit cover
 					{
 						target._mountSlot.GetHit(RollDamage(pawn));
@@ -228,14 +226,10 @@ namespace PPBA
 					}
 				}
 
-				//pawn._shootLineController.SetShootLine(pawn.transform.position, target.transform.position);
 				target.TakeDamage(RollDamage(pawn));//target hit succesfully
-				Debug.Log("Target " + target.name + " has " + target._health + " left.");
 			}
 		}
 
 		private int RollDamage(Pawn pawn) => (int)Mathf.Lerp(pawn._minAttackDamage, pawn._maxAttackDamage, Mathf.Clamp(pawn._attackDamageCurve.Evaluate(Random.Range(0f, 1f)), 0f, 1f));
-
-		//public void ResetTimer(Pawn pawn) => s_timerDictionary[pawn] = 0;
 	}
 }

@@ -24,6 +24,14 @@ namespace PPBA
 		public float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
 
+
+		public delegate void eventUIInfoPanel(ObjectType holder);
+		public eventUIInfoPanel _InfoPanelEvent;
+
+		[HideInInspector] public List<IRefHolder> _refineriesHolder = new List<IRefHolder>();
+		[HideInInspector] public List<IRefHolder> _mediCampHolder = new List<IRefHolder>();
+		[HideInInspector] public List<IRefHolder> _depotHolder = new List<IRefHolder>();
+
 		private void Update()
 		{
 			if(_currentPlaceableObject != null)
@@ -275,6 +283,31 @@ namespace PPBA
 			_currentPlaceableObject.GetComponent<TickBuildEmitter>().AddToGatherValue();
 			_isBuilt = false;
 			EndBuilding();
+		}
+
+		public void AddBuildToHolder(IRefHolder _refHolderyp)
+		{
+			switch(_refHolderyp._Type)
+			{
+				case ObjectType.REFINERY:
+					_refineriesHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.DEPOT:
+					_depotHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.PAWN_WARRIOR:
+					break;
+				case ObjectType.PAWN_HEALER:
+					break;
+				case ObjectType.PAWN_PIONEER:
+					break;
+				case ObjectType.MEDICAMP:
+					_mediCampHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.SIZE:
+					break;
+			}
+
 		}
 	}
 }
