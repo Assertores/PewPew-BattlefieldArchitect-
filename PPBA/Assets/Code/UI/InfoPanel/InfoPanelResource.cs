@@ -46,15 +46,20 @@ namespace PPBA
 					text.text = GetComponent<BuildingManager>()._depotHolder.Count.ToString();
 					break;
 				case ObjectType.PAWN_WARRIOR:
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).x.ToString();
 					break;
 				case ObjectType.PAWN_HEALER:
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).y.ToString();
 					break;
 				case ObjectType.PAWN_PIONEER:
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).z.ToString();
 					break;
 				case ObjectType.MEDICAMP:
 					text.text = GetComponent<BuildingManager>()._mediCampHolder.Count.ToString();
 					break;
 				case ObjectType.SIZE:
+					break;
+				default:
 					break;
 			}
 		}

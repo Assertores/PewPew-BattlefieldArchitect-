@@ -213,7 +213,7 @@ namespace PPBA
 					_heatMaps[id][it._x + it._y * HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id)] = it._value;
 				}
 			}
-			//HeatMapCalcRoutine.s_instance.SetRendererTextures(_heatMaps[0], _heatMaps[1]);
+			HeatMapCalcRoutine.s_instance.SetRendererTextures(_heatMaps[0], _heatMaps[1]);
 		}
 
 		int[] h_widths = new int[2];

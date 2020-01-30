@@ -18,6 +18,7 @@ namespace PPBA
 		{
 			public TcpClient client;
 			public NetworkStream stream;
+			public int id;
 		}
 
 		int _maxPlayers;

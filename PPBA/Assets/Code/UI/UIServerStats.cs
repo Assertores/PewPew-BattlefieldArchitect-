@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 namespace PPBA
 {
@@ -125,6 +126,11 @@ namespace PPBA
 				_maxInputTick.text = max.ToString();
 			}
 			
+		}
+
+		public void StopServer()
+		{
+			SceneManager.LoadScene(StringCollection.MAINMENU);
 		}
 	}
 }
