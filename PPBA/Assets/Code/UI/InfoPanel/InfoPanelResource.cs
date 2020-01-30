@@ -46,13 +46,13 @@ namespace PPBA
 					text.text = GetComponent<BuildingManager>()._refineriesHolder.Count.ToString();
 					break;
 				case ObjectType.PAWN_WARRIOR:
-					//TODO: get alive pawns from johannes
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).x.ToString();
 					break;
 				case ObjectType.PAWN_HEALER:
-					//TODO: get alive pawns from johannes
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).y.ToString();
 					break;
 				case ObjectType.PAWN_PIONEER:
-					//TODO: get alive pawns from johannes
+					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).z.ToString();
 					break;
 				case ObjectType.MEDICAMP:
 					text.text = GetComponent<BuildingManager>()._refineriesHolder.Count.ToString();
