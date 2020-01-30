@@ -86,7 +86,8 @@ namespace PPBA
 	public class AudioWarehouse : Singleton<AudioWarehouse>
 	{
 		#region Name Arrays
-		public ClipsPawn[] _namesPawn = new ClipsPawn[] {
+		[HideInInspector]
+		public static ClipsPawn[] _namesPawn = new ClipsPawn[] {
 			ClipsPawn.DEFAULT,
 			ClipsPawn.GO_TO_COVER_01,
 			ClipsPawn.VOICE_SCREAM_DEATH_01,
@@ -112,7 +113,8 @@ namespace PPBA
 			ClipsPawn.VOICE_WIN_CHEER_01,
 		};
 
-		public ClipsBuilding[] _namesBuilding = new ClipsBuilding[] {
+		[HideInInspector]
+		public static ClipsBuilding[] _namesBuilding = new ClipsBuilding[] {
 			ClipsBuilding.DEFAULT,
 			ClipsBuilding.ERROR_PLACE_BUILDING_01,
 			ClipsBuilding.CLICK_AMMOFACTORY_IDLE_01,
@@ -129,7 +131,8 @@ namespace PPBA
 			ClipsBuilding.UNIT_PRODUCED_01,
 		};
 
-		public ClipsUI[] _namesUI = new ClipsUI[] {
+		[HideInInspector]
+		public static ClipsUI[] _namesUI = new ClipsUI[] {
 			ClipsUI.DEFAULT,
 			ClipsUI.BUTTON_BACK_01,
 			ClipsUI.BUTTON_CLICK_01,
@@ -141,14 +144,16 @@ namespace PPBA
 			ClipsUI.ICON_HOVER_01,
 		};
 
-		public ClipsMusic[] _namesMusic = new ClipsMusic[] {
+		[HideInInspector]
+		public static ClipsMusic[] _namesMusic = new ClipsMusic[] {
 			ClipsMusic.DEFAULT,
 			ClipsMusic.MUSIC_TRACK_01,
 			ClipsMusic.MUSIC_ENDSCREEN_LOSE_01,
 			ClipsMusic.MUSIC_ENDSCREEN_WIN_01,
 		};
 
-		public ClipsEnvironment[] _namesEnvironment = new ClipsEnvironment[] {
+		[HideInInspector]
+		public static ClipsEnvironment[] _namesEnvironment = new ClipsEnvironment[] {
 			ClipsEnvironment.DEFAULT,
 			ClipsEnvironment.ENVIRONMENT_RIVER_01,
 			ClipsEnvironment.ENVIRONMENT_BIRDS_01,
@@ -165,11 +170,13 @@ namespace PPBA
 		public static Dictionary<ClipsMusic, AudioClip> _musicClipDict = new Dictionary<ClipsMusic, AudioClip>();
 		public static Dictionary<ClipsEnvironment, AudioClip> _environmentClipDict = new Dictionary<ClipsEnvironment, AudioClip>();
 
-		public AudioClip _defaultClip;
+		public static AudioClip _defaultClip;
 
 		void Awake()
 		{
 			LoadAll();
+
+			DontDestroyOnLoad(this.transform.parent);
 		}
 
 		void Start()
@@ -177,13 +184,13 @@ namespace PPBA
 
 		}
 
-		public AudioClip Clip(ClipsPawn effect) => _pawnClipDict.ContainsKey(effect) ? _pawnClipDict[effect] : _defaultClip;
-		public AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
-		public AudioClip Clip(ClipsUI effect) => _uiClipDict.ContainsKey(effect) ? _uiClipDict[effect] : _defaultClip;
-		public AudioClip Clip(ClipsMusic effect) => _musicClipDict.ContainsKey(effect) ? _musicClipDict[effect] : _defaultClip;
-		public AudioClip Clip(ClipsEnvironment effect) => _environmentClipDict.ContainsKey(effect) ? _environmentClipDict[effect] : _defaultClip;
+		public static AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
+		public static AudioClip Clip(ClipsUI effect) => _uiClipDict.ContainsKey(effect) ? _uiClipDict[effect] : _defaultClip;
+		public static AudioClip Clip(ClipsMusic effect) => _musicClipDict.ContainsKey(effect) ? _musicClipDict[effect] : _defaultClip;
+		public static AudioClip Clip(ClipsPawn effect) => _pawnClipDict.ContainsKey(effect) ? _pawnClipDict[effect] : _defaultClip;
+		public static AudioClip Clip(ClipsEnvironment effect) => _environmentClipDict.ContainsKey(effect) ? _environmentClipDict[effect] : _defaultClip;
 
-		public void LoadAll()
+		public static void LoadAll()
 		{
 			foreach(ClipsPawn item in _namesPawn)
 			{
