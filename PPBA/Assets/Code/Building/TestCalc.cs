@@ -27,16 +27,16 @@ public class TestCalc : MonoBehaviour
 		}
 	}
 
-
+	public float[] test;
 	IEnumerator StartRoutine()
 	{
 		HeatMapCalcRoutine.s_instance.StartHeatMapCalc();
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.1f);
 
 		HeatMapReturnValue[] holder = new HeatMapReturnValue[2];
 
 		holder = HeatMapCalcRoutine.s_instance.ReturnValue();
-
+		test = holder[1].tex;
 		HeatMapCalcRoutine.s_instance.SetRendererTextures(holder[0].tex, holder[1].tex);
 		yield return null;
 	}

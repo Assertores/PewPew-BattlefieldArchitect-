@@ -17,6 +17,7 @@ namespace PPBA
 		//}
 
 		public float[] bub;
+		public float[] bub2;
 
 		public void StartComputeShader(float[] ResTex, float[] TerTex, RenderTexture ResRenTex, RenderTexture TerRenTex)
 		{
@@ -27,7 +28,8 @@ namespace PPBA
 
 			_redValue.SetData(ResTex);
 			_terValue.SetData(TerTex);
-			bub = ResTex;
+			//bub = ResTex;
+			bub2 = TerTex;
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "InputRedValue", _redValue);
 			_computeShader.SetBuffer(_resourceCalcKernel, "InputTextureTerritorium", _terValue);

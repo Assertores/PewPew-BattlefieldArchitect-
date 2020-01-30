@@ -54,8 +54,6 @@ namespace PPBA
 			};
 
 			Graphics.Blit(HeatMapCalcRoutine.s_instance._ResultTextureRessource, _tempRenTex);
-
-
 		}
 
 		public IEnumerator RefreshCalcRes(HeatMapCalcRoutine HMroutine)
