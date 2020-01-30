@@ -21,13 +21,13 @@ namespace PPBA
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
 		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
 
-		public Texture startResMap;
-		public Texture startTerMap;
+		public Texture2D startResMap;
+		public Texture2D startTerMap;
 
 		private void OnEnable()
 		{
-			startResMap = _GroundMaterial.GetTexture("_NoiseMap");
-			startTerMap = _GroundMaterial.GetTexture("_TerritorriumMap");
+			startResMap = _GroundMaterial.GetTexture("_NoiseMap") as Texture2D;
+			startTerMap = _GroundMaterial.GetTexture("_TerritorriumMap") as Texture2D;
 		}
 
 		private void OnDisable()
@@ -40,7 +40,7 @@ namespace PPBA
 		{
 			//_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
 			//_earlyCalc._computeShader = _computeShader;
-					   			 
+
 			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
 			//_setTexCalc._computeShader = _computeShader;
 
@@ -56,13 +56,13 @@ namespace PPBA
 			_resMapCalc = GetComponent<ResourceMapCalculate>();
 			_resMapCalc._computeShader = _computeShader;
 			_resMapCalc._ResourceCalcKernel = _computeShader.FindKernel("CSMain");
-					   			 		  
+
 			_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
 			_terMapCalc._computeShader = _computeShader;
 
 			Texture resTex = _GroundMaterial.GetTexture("_NoiseMap");
 			Texture terTex = _GroundMaterial.GetTexture("_TerritorriumMap");
-			
+
 			_ResultTextureRessource = new RenderTexture(resTex.width, resTex.height, 0, RenderTextureFormat.RFloat)
 			{
 				enableRandomWrite = true
@@ -162,6 +162,30 @@ namespace PPBA
 		public void PrintSomething(string text)
 		{
 			print("das solltest du lesen! : " + text);
+		}
+
+		[SerializeField] private Texture2D map1;
+		[SerializeField] private Texture2D map2;
+
+		public float[][] GetStartArrays()
+		{
+			Color[] resPi = map1.GetPixels();
+			Color[] terPi = map2.GetPixels();
+
+			float[][] textures = new float[2][];
+
+			for(int i = 0; i < textures.Length; i++)
+			{
+				textures[i] = new float[resPi.Length];
+			}
+
+			for(int i = 0; i < resPi.Length; i++)
+			{
+				textures[0][i] = resPi[i].r;
+				textures[1][i] = terPi[i].r;
+			}
+
+			return textures;
 		}
 
 	}

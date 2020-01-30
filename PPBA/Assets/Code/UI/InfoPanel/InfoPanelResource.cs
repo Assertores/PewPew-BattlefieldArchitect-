@@ -43,7 +43,7 @@ namespace PPBA
 					text.text = GetComponent<BuildingManager>()._refineriesHolder.Count.ToString();
 					break;
 				case ObjectType.DEPOT:
-					text.text = GetComponent<BuildingManager>()._refineriesHolder.Count.ToString();
+					text.text = GetComponent<BuildingManager>()._depotHolder.Count.ToString();
 					break;
 				case ObjectType.PAWN_WARRIOR:
 					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).x.ToString();
@@ -55,7 +55,7 @@ namespace PPBA
 					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).z.ToString();
 					break;
 				case ObjectType.MEDICAMP:
-					text.text = GetComponent<BuildingManager>()._refineriesHolder.Count.ToString();
+					text.text = GetComponent<BuildingManager>()._mediCampHolder.Count.ToString();
 					break;
 				case ObjectType.SIZE:
 					break;

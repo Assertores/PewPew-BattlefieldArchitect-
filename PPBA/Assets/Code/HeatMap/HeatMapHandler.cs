@@ -35,10 +35,10 @@ namespace PPBA
 				_ppu[i] = width / size.x;
 			}
 
-			var retValue = HeatMapCalcRoutine.s_instance.ReturnValue();
+			//var retValue = HeatMapCalcRoutine.s_instance.ReturnValue();
+			
+			_heatMaps = HeatMapCalcRoutine.s_instance.GetStartArrays();
 
-			_heatMaps[0] = retValue[0].tex;
-			_heatMaps[1] = retValue[1].tex;
 
 #if UNITY_SERVER
 			TickHandler.s_EarlyCalc += CalculateMaps;
