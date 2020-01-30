@@ -802,19 +802,27 @@ namespace PPBA
 		#endregion
 
 		#region Interfaces
-		private TextMeshProUGUI[] _panelDetails;
+		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
-			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, "Morale: " + _morale, ref _panelDetails);
+			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _supplies, "Ammo: " + _ammo, "Morale: " + (int)_morale };
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
 		}
 
 		public void UpdateUnitPanelInfo()
 		{
-			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			if(null == _panelDetails)
+				return;
+
+			//Debug.Log("updating panel info " + _panelDetails + " with length " + _panelDetails.Length + " of pawn " + _id);
+
+			if(_panelDetails != null && 5 <= _panelDetails.Length)
 			{
 				_panelDetails[0].text = "Team: " + _team;
-				_panelDetails[1].text = "Health: " + _health;
-				_panelDetails[2].text = "Morale: " + _morale;
+				_panelDetails[1].text = "Health: " + (int)_health;
+				_panelDetails[2].text = "Supplies: " + _supplies;
+				_panelDetails[3].text = "Ammo: " + _ammo;
+				_panelDetails[4].text = "Morale: " + (int)_morale;
 			}
 		}
 		#endregion
@@ -870,8 +878,8 @@ namespace PPBA
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
 			ResetToDefault(newPawn, team);
-			newPawn.transform.position = spawnPoint;
-			newPawn._moveTarget = spawnPoint;
+			newPawn.transform.position = spawnPoint + Vector3.forward * 5f;
+			newPawn._moveTarget = spawnPoint + Vector3.forward * 10f;
 
 #if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);

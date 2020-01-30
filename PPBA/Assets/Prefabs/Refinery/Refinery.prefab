@@ -63,6 +63,7 @@ GameObject:
   - component: {fileID: 7797191311377518056}
   - component: {fileID: 8822295596718978228}
   - component: {fileID: 2070216814480721583}
+  - component: {fileID: 4478439702814766850}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -121,6 +122,19 @@ MonoBehaviour:
   m_Center: {x: 0, y: 1, z: 0}
   m_Area: 3
   m_AffectedAgents: ffffffff
+--- !u!114 &4478439702814766850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688118483440170598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b82825028815c4687ba141b1b8f4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pawnCost: 50
 --- !u!1 &4800975661657982604
 GameObject:
   m_ObjectHideFlags: 0

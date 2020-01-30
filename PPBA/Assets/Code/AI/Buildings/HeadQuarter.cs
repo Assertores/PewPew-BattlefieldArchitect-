@@ -7,6 +7,7 @@ namespace PPBA
 	public class HeadQuarter : MonoBehaviour
 	{
 		#region Variables
+		[SerializeField] private bool _isAutoSpawner = true;
 		[Header("CarePackage")]
 		[SerializeField] private int _suppliesPerTick = 1;
 		[SerializeField] private int _ammoPerTick = 1;
@@ -32,7 +33,9 @@ namespace PPBA
 		{
 #if UNITY_SERVER
 			TickHandler.s_DoTick += CarePackage;
-			TickHandler.s_DoTick += SpawnPawn;
+
+			if(_isAutoSpawner)
+				TickHandler.s_DoTick += SpawnPawn;
 
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(!JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
@@ -47,7 +50,9 @@ namespace PPBA
 			h_disablecount++;
 
 			TickHandler.s_DoTick -= CarePackage;
-			TickHandler.s_DoTick -= SpawnPawn;
+
+			if(_isAutoSpawner)
+				TickHandler.s_DoTick -= SpawnPawn;
 
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))

@@ -53,7 +53,7 @@ namespace PPBA
 			{
 				_activePanel = unit;
 				OpenUnitPanel();
-				unit.InitialiseUnitPanel();
+				//unit.InitialiseUnitPanel();//already called from line above
 			}
 			else if(_isUnitPanel)//fall: hat schon ziel
 			{

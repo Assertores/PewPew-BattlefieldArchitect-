@@ -101,7 +101,7 @@ namespace PPBA
 
 		public void UpdateUnitPanelInfo()
 		{
-			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			if(_panelDetails != null && 2 <= _panelDetails.Length)
 			{
 				_panelDetails[0].text = "Team: " + _team;
 				_panelDetails[1].text = "Health: " + _health;

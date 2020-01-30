@@ -42,6 +42,8 @@ namespace PPBA
 		}
 		public float _score = 1f;
 		public int _maxPawns = 10;
+		private float _lifespanTicker = 0f;
+		private float _lifespanMax = 10f;
 
 		//targets and target lists
 		public List<Pawn> _friendlyPawns = new List<Pawn>();//ONLY PAWNS OF MY TEAM!
@@ -115,6 +117,11 @@ namespace PPBA
 		{
 			CheckOverlapSphere();
 			_score = 1f - Mathf.Clamp((float)_activePawns.Count / _maxPawns, 0f, 1f);
+
+			_lifespanTicker += Time.fixedDeltaTime;
+
+			if(_lifespanMax < _lifespanTicker)
+				transform.parent.gameObject.SetActive(false);
 		}
 
 		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
@@ -162,10 +169,11 @@ namespace PPBA
 
 		public void Init()
 		{
+			_lifespanTicker = 0f;
 			ClearLists();
 
 			//if(null != JobCenter.s_flagPoles[_team] && !JobCenter.s_flagPoles[_team].Contains(this))
-				//JobCenter.s_flagPoles[_team].Add(this);
+			//JobCenter.s_flagPoles[_team].Add(this);
 		}
 
 		#region Interfaces
@@ -254,12 +262,14 @@ namespace PPBA
 #if UNITY_SERVER
 			TickHandler.s_LateCalc -= Calculate;
 			//TickHandler.s_GatherValues -= WriteToGameState;
+
+			_lifespanTicker = 0f;
 #endif
 			if(null != JobCenter.s_flagPoles[_team])
-					if(JobCenter.s_flagPoles[_team].Contains(this))
-						JobCenter.s_flagPoles[_team].Remove(this);
+				if(JobCenter.s_flagPoles[_team].Contains(this))
+					JobCenter.s_flagPoles[_team].Remove(this);
 		}
-		
+
 		private void OnDestroy()
 		{
 #if !UNITY_SERVER

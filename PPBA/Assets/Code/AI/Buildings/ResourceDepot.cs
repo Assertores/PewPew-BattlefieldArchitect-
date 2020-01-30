@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace PPBA
 {
-	public class ResourceDepot : MonoBehaviour, INetElement, IDestroyableBuilding
+	public class ResourceDepot : MonoBehaviour, INetElement, IDestroyableBuilding, IPanelInfo
 	{
 		private class State
 		{
@@ -202,6 +203,7 @@ namespace PPBA
 #endif
 			gameObject.SetActive(false);
 		}
+		#endregion
 
 		public void WriteToGameState(int tick = 0)
 		{
@@ -286,6 +288,25 @@ namespace PPBA
 			print((GetComponentInParent<IRefHolder>() as MonoBehaviour).name);
 
 			UiInventory.s_instance.AddLastBuildings();
+		}
+
+		#region IPanelInfo
+		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
+		public void InitialiseUnitPanel()
+		{
+			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _resources, "Ammo: " + _ammo };
+			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+		}
+
+		public void UpdateUnitPanelInfo()
+		{
+			if(_panelDetails != null && 4 <= _panelDetails.Length)
+			{
+				_panelDetails[0].text = "Team: " + _team;
+				_panelDetails[1].text = "Health: " + (int)_health;
+				_panelDetails[2].text = "Supplies: " + _resources;
+				_panelDetails[3].text = "Ammo: " + _ammo;
+			}
 		}
 		#endregion
 	}
