@@ -29,13 +29,17 @@ namespace PPBA
 		#region References
 		//public
 		public CoverSlot[] _coverSlots;
+		[HideInInspector] public BuildingBoomboxController _myBoombox;
 		//private
 		private State _lastState;
 		private State _nextState;
+
+
 		#endregion
 
 		void Awake()
 		{
+			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #else
@@ -97,6 +101,9 @@ namespace PPBA
 		public void InitialiseUnitPanel()
 		{
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, ref _panelDetails);
+
+			if(null != _myBoombox)
+				_myBoombox.PlayClickSound();
 		}
 
 		public void UpdateUnitPanelInfo()

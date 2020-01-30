@@ -26,7 +26,7 @@ namespace PPBA
 				return;
 
 			for(int i = 0; i < _sources.Length; i++)
-				_sources[i].clip = AudioWarehouse.s_instance._defaultClip;
+				_sources[i].clip = AudioWarehouse._defaultClip;
 
 			_stepSource = _sources[0];
 			_behaviorSource = _sources[1];
@@ -37,6 +37,10 @@ namespace PPBA
 		{
 
 		}
+
+		public void PlaySpawn() => _behaviorSource.PlayOneShot(AudioWarehouse.s_instance.Clip(ClipsBuilding.UNIT_PRODUCED_01));
+
+		public void PlayClick() => Random.Range(0, 1);//TODO
 
 		public void PlayStep(ClipsPawn _clip)
 		{

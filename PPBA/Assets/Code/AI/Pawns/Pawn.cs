@@ -103,6 +103,7 @@ namespace PPBA
 		[SerializeField] private Material _material;
 		[SerializeField] private Renderer _myRenderer;
 		private MaterialPropertyBlock _PropertyBlock;
+		private PawnBoomboxController _myBoombox;
 
 		//targets and target lists
 		public List<Pawn> _closePawns = new List<Pawn>();
@@ -184,6 +185,7 @@ namespace PPBA
 			_healthBarController = GetComponentInChildren<HealthBarController>();
 			_shootLineController = GetComponentInChildren<ShootLineController>();
 			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
+			_myBoombox = GetComponentInChildren<PawnBoomboxController>();
 
 			//Initialisation
 			InitiateBehaviors();
@@ -357,6 +359,7 @@ namespace PPBA
 					if(!gameObject.activeSelf)
 					{
 						gameObject.SetActive(true);
+						_myBoombox.PlaySpawn();
 						ResetToDefault(this, 0);
 					}
 				}
@@ -807,6 +810,9 @@ namespace PPBA
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _supplies, "Ammo: " + _ammo, "Morale: " + (int)_morale };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+		    
+			if(null != _myBoombox)
+				_myBoombox.PlayClick();
 		}
 
 		public void UpdateUnitPanelInfo()
@@ -873,7 +879,7 @@ namespace PPBA
 
 			pawn.SetMaterialColor(team);
 		}
-		
+
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);

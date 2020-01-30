@@ -48,12 +48,17 @@ namespace PPBA
 		/// </summary>
 		public static int[] _resourceTotal = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
 
+		//[HideInInspector] public BuildingBoomboxController _myBoombox;
+		//_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+
 		private IRefHolder _myRefHolder;
+		[HideInInspector] public BuildingBoomboxController _myBoombox;
 
 		#region Monobehaviour
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
+			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
 		}
 		void Update()
 		{
@@ -296,6 +301,9 @@ namespace PPBA
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _resources, "Ammo: " + _ammo };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+
+			if(null != _myBoombox)
+				_myBoombox.PlayClickSound();
 		}
 
 		public void UpdateUnitPanelInfo()

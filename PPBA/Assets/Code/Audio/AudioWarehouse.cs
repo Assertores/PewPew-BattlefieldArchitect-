@@ -184,13 +184,13 @@ namespace PPBA
 
 		}
 
-		public static AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
-		public static AudioClip Clip(ClipsUI effect) => _uiClipDict.ContainsKey(effect) ? _uiClipDict[effect] : _defaultClip;
-		public static AudioClip Clip(ClipsMusic effect) => _musicClipDict.ContainsKey(effect) ? _musicClipDict[effect] : _defaultClip;
-		public static AudioClip Clip(ClipsPawn effect) => _pawnClipDict.ContainsKey(effect) ? _pawnClipDict[effect] : _defaultClip;
-		public static AudioClip Clip(ClipsEnvironment effect) => _environmentClipDict.ContainsKey(effect) ? _environmentClipDict[effect] : _defaultClip;
+		public AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
+		public AudioClip Clip(ClipsUI effect) => _uiClipDict.ContainsKey(effect) ? _uiClipDict[effect] : _defaultClip;
+		public AudioClip Clip(ClipsMusic effect) => _musicClipDict.ContainsKey(effect) ? _musicClipDict[effect] : _defaultClip;
+		public AudioClip Clip(ClipsPawn effect) => _pawnClipDict.ContainsKey(effect) ? _pawnClipDict[effect] : _defaultClip;
+		public AudioClip Clip(ClipsEnvironment effect) => _environmentClipDict.ContainsKey(effect) ? _environmentClipDict[effect] : _defaultClip;
 
-		public static void LoadAll()
+		public void LoadAll()
 		{
 			foreach(ClipsPawn item in _namesPawn)
 			{

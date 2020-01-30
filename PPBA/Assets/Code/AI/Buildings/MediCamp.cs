@@ -8,6 +8,7 @@ namespace PPBA
 	public class MediCamp : MonoBehaviour, INetElement, IDestroyableBuilding, IPanelInfo
 	{
 		[SerializeField] private MediCampHolder _myMediCampHolder;
+		[HideInInspector] public BuildingBoomboxController _myBoombox;
 
 		public int _id { get; set; }
 		[SerializeField] public float _health = 1000;
@@ -30,6 +31,8 @@ namespace PPBA
 		#region Monobehaviour
 		private void Awake()
 		{
+			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #endif
@@ -157,6 +160,9 @@ namespace PPBA
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+
+			if(null != _myBoombox)
+				_myBoombox.PlayClickSound();
 		}
 
 		public void UpdateUnitPanelInfo()
