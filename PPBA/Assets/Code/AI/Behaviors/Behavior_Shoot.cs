@@ -35,7 +35,7 @@ namespace PPBA
 		{
 			if(s_targetDictionary.ContainsKey(pawn) && s_timerDictionary.ContainsKey(pawn) && null != s_targetDictionary[pawn] && s_targetDictionary[pawn].isActiveAndEnabled)
 			{
-				if(0 < s_timerDictionary[pawn] || Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < _attackRange)
+				if(0 < s_timerDictionary[pawn] || Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < pawn._attackDistance)
 				{
 					pawn._currentAnimation = PawnAnimations.IDLE;
 					s_timerDictionary[pawn]++;//increment timer
