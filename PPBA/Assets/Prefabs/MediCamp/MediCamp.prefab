@@ -230,8 +230,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myMediCampHolder: {fileID: 6773971951171986429}
   _myBoombox: {fileID: 0}
-  _health: 1000
-  _maxHealth: 1000
+  _health: 400
+  _maxHealth: 400
 --- !u!114 &8454239855579913623
 MonoBehaviour:
   m_ObjectHideFlags: 0
