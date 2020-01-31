@@ -35,7 +35,7 @@ namespace PPBA
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 				{
 					pawn._currentAnimation = PawnAnimations.IDLE;
-					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
+					pawn._supplies -= s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
 					targetPosition = pawn.transform.position;
 				}
 				else
