@@ -21,7 +21,9 @@ namespace PPBA
 
 		public void StartComputeShader(float[] ResTex, float[] TerTex, RenderTexture ResRenTex, RenderTexture TerRenTex)
 		{
+#if DB_HM
 			print("start set conpute shader zo set texture client");
+#endif
 
 			_redValue = new ComputeBuffer( (256 * 256), sizeof(float));
 			_terValue = new ComputeBuffer( (256 * 256), sizeof(float));
@@ -43,7 +45,9 @@ namespace PPBA
 
 			_redValue.Release();
 			_terValue.Release();
+#if DB_HM
 			print("end conpute shader ");
+#endif
 		}
 	}
 }

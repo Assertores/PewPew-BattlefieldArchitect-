@@ -72,7 +72,9 @@ namespace PPBA
 				case StringCollection.SUPPLIES:
 					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -90,7 +92,9 @@ namespace PPBA
 				return blueprint._score;
 				*/
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

@@ -20,6 +20,7 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_EDITOR
 			if(_itemPrefab == null)
 			{
 				Debug.LogError("Item Prefab not set");
@@ -63,6 +64,7 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 
 			_itemHight = ((RectTransform)(_itemPrefab.transform)).sizeDelta.y;
 		}

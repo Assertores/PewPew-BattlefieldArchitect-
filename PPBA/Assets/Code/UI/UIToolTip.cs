@@ -11,12 +11,14 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_EDITOR
 			if(!_toolTip)
 			{
 				Debug.LogError("Reference to ToolTip was not set");
 				Destroy(this);
 				return;
 			}
+#endif
 
 			_toolTip.SetActive(false);
 		}

@@ -31,7 +31,7 @@ namespace PPBA
 
 		int _currentID = 0;
 		#endregion
-		#region NetCode
+#region NetCode
 #if UNITY_SERVER
 		int _nextID = 0;
 		void Start()
@@ -91,7 +91,9 @@ namespace PPBA
 						HandleReconnect(data, remoteEP);
 						break;
 					default:
+#if DB_NC
 						Debug.Log("[Server] package type was not handled: " + messageType);
+#endif
 						break;
 				}
 			}
@@ -148,7 +150,7 @@ namespace PPBA
 
 			client._gameStates.FreeUpTo(startTick - 1);
 
-#if DB_NET
+#if DB_NC
 			Debug.Log("Client: " + RemoteID + " has send ticks: " + startTick + " to " + (tick - 1));
 #endif
 		}
@@ -271,7 +273,7 @@ namespace PPBA
 			GlobalVariables.s_instance._clients = new List<client>();
 		}
 #else
-			void Start()
+		void Start()
 		{
 			if(_startInScene)
 				ClientConnect(_iP, _serverPort);
@@ -297,7 +299,9 @@ namespace PPBA
 			if(Time.unscaledTime - _lastPackageTime > _serverTimeOut)
 			{
 				s_ServerIsTimedOut = true;
+#if DB_NC
 				Debug.Log("Server Timed Out");
+#endif
 				if(null == h_popUp)
 					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Server Timed Out");
 			}
@@ -353,9 +357,10 @@ namespace PPBA
 			element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
 			element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
 			//Debug.Log("Decrypt: " + tick + " | ref: " + element._refTick);
-
+#if DB_GS
 			if(TickHandler.s_currentTick % 20 == 0)
 				Debug.Log("DeltaTick: " + TickHandler.s_currentTick + "\n" + element.ToString());
+#endif
 
 			//if(!element._isEncrypted)
 				GlobalVariables.s_instance._clients[0]._inputStates.FreeUpTo(tick + 1);
@@ -435,8 +440,8 @@ namespace PPBA
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
-		#endregion
-		#region UIInterface
+#endregion
+#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
 			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
@@ -487,6 +492,6 @@ namespace PPBA
 
 			Debug.Log("[SERVER] shut down");
 		}
-		#endregion
+#endregion
 	}
 }

@@ -69,7 +69,9 @@ namespace PPBA
 				case "Resources":
 					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -85,7 +87,9 @@ namespace PPBA
 				case "Resources":
 					return (float) depot._resources / depot._maxResources;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

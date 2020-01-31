@@ -5,6 +5,7 @@ using PPBA;
 
 public class TestCalc : MonoBehaviour
 {
+#if UNITY_EDITOR
 	public Transform test2;
 
 	// Start is called before the first frame update
@@ -40,4 +41,5 @@ public class TestCalc : MonoBehaviour
 		HeatMapCalcRoutine.s_instance.SetRendererTextures(holder[0].tex, holder[1].tex);
 		yield return null;
 	}
+#endif
 }

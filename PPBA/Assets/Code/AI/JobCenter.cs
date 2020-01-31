@@ -78,6 +78,7 @@ namespace PPBA
 
 		private void LogPolesPerTeam()
 		{
+#if DB_AI || DB_PO
 			for(int i = 0; i < 2; i++)
 			{
 				string temp = "poles team " + i.ToString() + ": ";
@@ -89,6 +90,7 @@ namespace PPBA
 
 				Debug.Log(temp);
 			}
+#endif
 		}
 
 		public static void CheckWinCon()

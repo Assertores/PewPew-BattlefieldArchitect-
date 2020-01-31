@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TestSearchAlgorythem : MonoBehaviour
 {
+#if UNITY_EDITOR
 	[Header("In")]
 	[SerializeField] Texture2D texture;
 	[SerializeField] Vector2Int position;
@@ -106,4 +107,5 @@ public class TestSearchAlgorythem : MonoBehaviour
 		print(found);
 		print(foundDist);
 	}
+#endif
 }

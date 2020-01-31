@@ -17,6 +17,7 @@ namespace PPBA
 		List<UIServerStatsItemRefHolder> items = new List<UIServerStatsItemRefHolder>();
 		void Awake()
 		{
+#if UNITY_EDITOR
 			if(!_currentTick)
 			{
 				Debug.LogError("current Tick text field not set");
@@ -41,7 +42,9 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 			var refHolder = _itemPrefab.GetComponent<UIServerStatsItemRefHolder>();
+#if UNITY_EDITOR
 			if(!refHolder)
 			{
 				Debug.LogError("item prefab has no Ref Holder");
@@ -90,6 +93,7 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 
 			itemWidth = ((RectTransform)(refHolder.transform)).sizeDelta.x;
 		}

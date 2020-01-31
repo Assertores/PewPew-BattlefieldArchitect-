@@ -21,12 +21,14 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_EDITOR
 			if(!_terrain)
 			{
 				Debug.LogError("terain reference not set");
 				Destroy(this);
 				return;
 			}
+#endif
 
 			Vector3 size = _terrain.terrainData.size;
 			for(int i = 0; i < _ppu.Length; i++)

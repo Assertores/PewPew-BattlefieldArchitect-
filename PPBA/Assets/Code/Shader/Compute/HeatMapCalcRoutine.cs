@@ -115,7 +115,9 @@ namespace PPBA
 
 		public void StartHeatMapCalc()
 		{
+#if DB_HM
 			print("startHeatMapCalc");
+#endif
 
 			//// for testing 
 
@@ -167,7 +169,9 @@ namespace PPBA
 			{
 				return;
 			}
+#if DB_HM
 			print("add fabric");
+#endif
 			_Refinerys.Add(refHolder);
 		}
 

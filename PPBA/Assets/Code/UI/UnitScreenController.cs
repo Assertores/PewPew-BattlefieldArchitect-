@@ -72,7 +72,9 @@ namespace PPBA
 
 		public void OpenUnitPanel()
 		{
+#if DB_UI
 			print("open!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+#endif
 			//opens
 			_unitPanel.DOAnchorPos(new Vector2(0, -400), 0.25f);
 			_activePanel.InitialiseUnitPanel();
@@ -165,13 +167,17 @@ namespace PPBA
 			RaycastHit hitInfo;
 			if(Physics.Raycast(ray, out hitInfo, 1000, _layerMask))
 			{
+#if DB_UI
 				print("hit something");
+#endif
 				return hitInfo.transform.GetComponentInChildren<IPanelInfo>();
 
 			}
 			else
 			{
+#if DB_UI
 				print("hit nothing");
+#endif
 				return null;
 
 			}

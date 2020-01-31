@@ -540,7 +540,9 @@ namespace PPBA
 				case Behaviors.GOANYWHERE:
 					return Behavior_GoAnywhere.s_instance;
 				default:
+#if DB_AI
 					Debug.LogWarning("GetBehavior switch defaulted. Couldn't get the desired behavior.");
+#endif
 					return Behavior_GoAnywhere.s_instance;
 			}
 
@@ -548,9 +550,9 @@ namespace PPBA
 		}
 
 		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
-		#endregion
+#endregion
 
-		#region Member Admin
+#region Member Admin
 		public void TakeDamage(int amount)
 		{
 			_health -= amount;
@@ -585,9 +587,9 @@ namespace PPBA
 				_morale += _moraleRegen;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Navigation
+#region Navigation
 		public void NavTick(int tick = 0)//called during DoTick by Execute()
 		{
 			if(null == _navMeshPath)
@@ -647,7 +649,9 @@ namespace PPBA
 		{
 			if(null == _moveTarget || null == _navMeshPath)
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn is missing a _moveTarget or a _navMeshPath");
+#endif
 				return false;
 			}
 
@@ -658,7 +662,9 @@ namespace PPBA
 			}
 			else
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
+#endif
 				return false;
 			}
 		}
@@ -700,7 +706,9 @@ namespace PPBA
 			}
 			else
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn " + _id + " could not sample NavAreaCost. Defaulting to 1.");
+#endif
 				return 1f;
 			}
 		}
@@ -723,9 +731,9 @@ namespace PPBA
 		}
 
 		public void GetBorderData(int tick = 0) => _borderData = HeatMapHandler.s_instance.BorderValues(transform.position);
-		#endregion
+#endregion
 
-		#region Physics
+#region Physics
 		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
 		private void CheckOverlapSphere()
 		{
@@ -807,9 +815,9 @@ namespace PPBA
 				}
 			}
 		}
-		#endregion
+#endregion
 
-		#region Interfaces
+#region Interfaces
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
@@ -836,9 +844,9 @@ namespace PPBA
 				_panelDetails[4].text = "Morale: " + (int)_morale;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Gizmos
+#region Gizmos
 		private void OnDrawGizmos()
 		{
 			/*
@@ -846,9 +854,9 @@ namespace PPBA
 			Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 			*/
 		}
-		#endregion
+#endregion
 
-		#region Spawning/Despawning
+#region Spawning/Despawning
 		private void ClearLists()
 		{
 			_closePawns.Clear();
@@ -957,7 +965,11 @@ namespace PPBA
 			}
 			//}
 			else
+			{
+#if DB_AI
 				Debug.LogWarning("Pawn still couldn't get a renderer");
+#endif
+			}
 		}
 
 		/// <summary>
@@ -1032,6 +1044,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-		#endregion
+#endregion
 	}
 }

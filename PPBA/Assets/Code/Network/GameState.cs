@@ -1030,7 +1030,9 @@ namespace PPBA
 								}
 								break;
 							default:
+#if DB_GS
 								Debug.LogError("unable to read map " + value._id + " as type " + type);
+#endif
 								break;
 						}
 
@@ -1107,7 +1109,9 @@ namespace PPBA
 			GameState reference = references[refTick];
 			if(reference == null)
 			{
+#if DB_NC
 				Debug.Log("reference not found. Tick: " + myTick + " | ref: " + refTick);
+#endif
 				return false;
 			}
 
@@ -1618,7 +1622,9 @@ Change:
 		{
 			if(_types.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Type allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1634,7 +1640,9 @@ Change:
 			}
 			else
 			{
+#if DB_GS
 				Debug.LogWarning("Arg allready exists: " + element.ToString());
+#endif
 				value._arguments |= element._arguments;
 			}
 		}
@@ -1643,7 +1651,9 @@ Change:
 		{
 			if(_transforms.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Transform allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1654,7 +1664,9 @@ Change:
 		{
 			if(_ammos.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Ammo allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1665,7 +1677,9 @@ Change:
 		{
 			if(_resources.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Resource allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1676,7 +1690,9 @@ Change:
 		{
 			if(_healths.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Health allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1687,7 +1703,9 @@ Change:
 		{
 			if(_works.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Work allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1698,7 +1716,9 @@ Change:
 		{
 			if(_behaviors.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Behaviour allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1709,7 +1729,9 @@ Change:
 		{
 			if(_animations.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Animation already exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1720,7 +1742,9 @@ Change:
 		{
 			if(_paths.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Path allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1742,7 +1766,9 @@ Change:
 			}
 			else
 			{
+#if DB_GS
 				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
+#endif
 
 				foreach(var it in element._values)
 				{
@@ -1763,7 +1789,9 @@ Change:
 		{
 			if(_denyedInputIDs.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Input allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1774,7 +1802,9 @@ Change:
 		{
 			if(_newIDRanges.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("IDs allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1785,7 +1815,9 @@ Change:
 		{
 			if(_scheduledPawns.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Scheduled Pawns allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1923,8 +1955,9 @@ Change:
 				hash += (hash << 2);
 				hash ^= (hash >> 6);
 			}
-
+#if DB_GS
 			Debug.Log("Hash: " + hash);
+#endif
 
 			Profiler.EndSample();
 

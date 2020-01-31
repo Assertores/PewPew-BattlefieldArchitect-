@@ -14,6 +14,7 @@ namespace PPBA
 
 		private void Awake()
 		{
+#if UNITY_EDITOR
 			if(!_image)
 			{
 				Debug.Log("image reference not set");
@@ -32,6 +33,7 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 			_image.sprite = _normal;
 		}
 

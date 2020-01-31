@@ -27,8 +27,10 @@ namespace PPBA
 
 		private void PrintGameState(int tick = 0)
 		{
+#if DB_GS
 			if(null != TickHandler.s_interfaceGameState)
 				Debug.Log(TickHandler.s_interfaceGameState.ToString());
+#endif
 		}
 	}
 }

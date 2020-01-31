@@ -43,6 +43,7 @@ namespace PPBA
 			return;
 #endif
 			#region Checks
+#if UNITY_EDITOR
 			if(!_ipField)
 			{
 				Debug.LogError("ipField reference not set");
@@ -151,6 +152,7 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 			#endregion
 
 			float tmp;

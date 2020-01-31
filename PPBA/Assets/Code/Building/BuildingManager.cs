@@ -70,7 +70,9 @@ namespace PPBA
 
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
+#if DB_PO
 						print("!!!_canBuild");
+#endif
 						foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 						{
 							Destroy(build.Key);

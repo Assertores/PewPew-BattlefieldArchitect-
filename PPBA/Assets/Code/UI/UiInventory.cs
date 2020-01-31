@@ -22,10 +22,12 @@ namespace PPBA
 		{
 			if(Input.GetKeyDown(KeyCode.M))
 			{
+#if DB_UI
 				foreach(KeyValuePair<GameObject, int> item in items)
 				{		
 					print(item.Key.name);
 				}
+#endif
 			}
 		}
 

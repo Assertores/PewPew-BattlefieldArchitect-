@@ -6,6 +6,7 @@ namespace PPBA
 {
 	public class TestPopUpWindow : MonoBehaviour
 	{
+#if UNITY_EDITOR
 		UIPopUpWindowRefHolder window;
 
 		void Start()
@@ -24,5 +25,6 @@ namespace PPBA
 			Debug.Log("Closing test window");
 			window.CloseWindow();
 		}
+#endif
 	}
 }

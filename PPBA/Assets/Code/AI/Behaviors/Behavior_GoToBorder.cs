@@ -55,7 +55,9 @@ namespace PPBA
 				case "Morale":
 					return pawn._morale / pawn._maxMorale;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -69,7 +71,9 @@ namespace PPBA
 					//return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
 					return targetData.z / 100f;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

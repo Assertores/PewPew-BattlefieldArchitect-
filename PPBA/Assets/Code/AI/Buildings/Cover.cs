@@ -169,7 +169,9 @@ namespace PPBA
 
 		private void Die()
 		{
+#if DB_PO
 			Debug.Log("Cover " + _id + " of team " + _team + " got destroyed.");
+#endif
 			transform.parent.gameObject.SetActive(false);
 		}
 

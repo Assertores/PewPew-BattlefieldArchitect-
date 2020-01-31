@@ -29,7 +29,7 @@ public class UIRayCastCheck : MonoBehaviour
     [SerializeField]
     private UnityEngine.UI.GraphicRaycaster[] activeCanvases;
 
-    private string output;
+    private System.Text.StringBuilder output = new System.Text.StringBuilder();
     EventSystem eventSystem;
     PointerEventData pointerData;
     List<RaycastResult> results = new List<RaycastResult>();
@@ -37,7 +37,9 @@ public class UIRayCastCheck : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("UIRayCastCheck: " + gameObject.name + "(" + gameObject.scene.name + ")");
+#if DB_UI
+		Debug.Log("UIRayCastCheck: " + gameObject.name + "(" + gameObject.scene.name + ")");
+#endif
         DontDestroyOnLoad(this);
     }
 
@@ -54,22 +56,25 @@ public class UIRayCastCheck : MonoBehaviour
             // currently active canvas
             activeCanvases = FindObjectsOfType<UnityEngine.UI.GraphicRaycaster>();
 
-            output = "_____" + activeCanvases.Length + " Canvas active!_____";
             Transform next;
             Canvas canvas;
+#if DB_UI
+			output.Clear();
+            output.Append("_____" + activeCanvases.Length + " Canvas active!_____");
             for (int i = 0; i < activeCanvases.Length; i++)
             {
                 next = activeCanvases[i].transform;
                 canvas = activeCanvases[i].GetComponent<Canvas>();
-                output += "\n" + activeCanvases[i].gameObject.name + "\t " + canvas.sortingLayerName + " " + canvas.sortingOrder;
+                output.Append("\n" + activeCanvases[i].gameObject.name + "\t " + canvas.sortingLayerName + " " + canvas.sortingOrder);
                 while (next.parent)
                 {
                     next = next.parent;
-                    output += "\n\t " + next.gameObject.name;
+                    output.Append("\n\t " + next.gameObject.name);
                 }
-                output += "\n\t(" + activeCanvases[i].gameObject.scene.name + ")";
+                output.Append("\n\t(" + activeCanvases[i].gameObject.scene.name + ")");
             }
             Debug.Log(output);
+#endif
 
 
             // hits
@@ -88,15 +93,22 @@ public class UIRayCastCheck : MonoBehaviour
                     target = results[ri].gameObject;
                     layer = SortingLayer.IDToName(results[ri].sortingLayer);
                     order = results[ri].sortingOrder;
-                    output = target.name + "\n";
+#if DB_UI
+					output.Clear();
+                    output.Append(target.name + "\n");
+#endif
                     next = target.transform;
                     while (next.parent)
                     {
                         next = next.parent;
-                        output += " " + next.gameObject.name + "\n";
+#if DB_UI
+						output.Append(" " + next.gameObject.name + "\n");
+#endif
                     }
-                    output += "(" + target.scene.name + ")\n" + results[ri];
+#if DB_UI
+					output.Append("(" + target.scene.name + ")\n" + results[ri]);
                     Debug.Log(output);
+#endif
                     activeRaycastTargets.Add(target);
                 }
                 target = activeRaycastTargets[0];

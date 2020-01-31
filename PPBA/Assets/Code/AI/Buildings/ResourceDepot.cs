@@ -294,14 +294,16 @@ namespace PPBA
 			if(TickHandler.s_interfaceGameState.GetType(_id)?._team != GlobalVariables.s_instance._clients[0]._id)
 				return;
 
+#if DB_NC
 			print(tick + "\n" + TickHandler.s_interfaceGameState.ToString());
 			print("_team and global ID " + _team + ", " + GlobalVariables.s_instance._clients[0]._id);
 			print((GetComponentInParent<IRefHolder>() as MonoBehaviour).name);
+#endif
 
 			UiInventory.s_instance.AddLastBuildings();
 		}
 
-		#region IPanelInfo
+#region IPanelInfo
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
@@ -322,6 +324,6 @@ namespace PPBA
 				_panelDetails[3].text = "Ammo: " + _ammo;
 			}
 		}
-		#endregion
+#endregion
 	}
 }
