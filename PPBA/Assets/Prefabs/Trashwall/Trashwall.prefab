@@ -226,9 +226,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 100
+  _resourcesMax: 50
   _work: 0
-  _workMax: 50
+  _workMax: 32
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: a046a3a6cea44e346bed0e6146dc1366, type: 2}

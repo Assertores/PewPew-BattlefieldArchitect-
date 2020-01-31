@@ -192,8 +192,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7863abe65f0204b4db7008903587c75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 1000
-  _maxHealth: 1000
+  _health: 400
+  _maxHealth: 400
   _resources: 0
   _maxResources: 1000
   _ammo: 0
@@ -265,7 +265,7 @@ MonoBehaviour:
   _resourcesIncoming: 0
   _resourcesMax: 100
   _work: 0
-  _workMax: 50
+  _workMax: 160
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: 1651b151e0916aa4cb888f73356f688a, type: 2}

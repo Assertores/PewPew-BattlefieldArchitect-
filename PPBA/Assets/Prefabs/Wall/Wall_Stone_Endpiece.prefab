@@ -45,9 +45,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 100
+  _resourcesMax: 1
   _work: 0
-  _workMax: 50
+  _workMax: 3
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: 1e7f0e40a013bd34ea908a110db15237, type: 2}
@@ -121,7 +121,7 @@ MonoBehaviour:
   _TextField: {fileID: 0}
   _ObjectType: 3
   _GhostPrefab: {fileID: 0}
-  _blueprintPrefab: {fileID: 0}
+  LogicObject: {fileID: 0}
   _BuildingTime: 0
   _BuildingCosts: 0
   _CurrentResources: 0

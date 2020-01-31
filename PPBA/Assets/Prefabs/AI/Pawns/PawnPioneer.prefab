@@ -183,13 +183,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _arguments: 0
   _pawnType: 7
-  _maxHealth: 100
+  _maxHealth: 75
   _maxAmmo: 5
-  _maxMorale: 100
-  _attackDistance: 5
+  _maxMorale: 125
+  _attackDistance: 20
   _attackChance: 0.5
-  _minAttackDamage: 25
-  _maxAttackDamage: 75
+  _minAttackDamage: 30
+  _maxAttackDamage: 80
   _attackDamageCurve:
     serializedVersion: 2
     m_Curve:
@@ -214,14 +214,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _maxSupplies: 10
+  _maxSupplies: 20
   _isNavPathDirty: 1
   _currentAnimation: 0
-  _moveSpeed: 3.611111
-  _healthBackingField: 100
-  _ammoBackingField: 100
+  _moveSpeed: 3.7
+  _healthBackingField: 75
+  _ammoBackingField: 5
   _suppliesBackingField: 0
-  _moraleBackingField: 100
+  _moraleBackingField: 125
   _healthRegen: 0.1
   _moraleRegen: 0.05
   TerritoryMapId: 0
@@ -238,7 +238,7 @@ MonoBehaviour:
   - 2
   - 5
   - 4
-  - 3
+  - 0
   _behaviors: []
   _lastBehavior: {fileID: 0}
   _behaviorScores: []

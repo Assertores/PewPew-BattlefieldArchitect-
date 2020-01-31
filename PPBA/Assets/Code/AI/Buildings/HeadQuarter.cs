@@ -19,8 +19,11 @@ namespace PPBA
 
 		private void CarePackage(int tick = 0)
 		{
-			_resourceDepot.GiveResources(_suppliesPerTick);
-			_resourceDepot.GiveAmmo(_ammoPerTick);
+			if(tick % 8 == 0)
+			{
+				_resourceDepot.GiveResources(_suppliesPerTick);
+				_resourceDepot.GiveAmmo(_ammoPerTick);
+			}
 		}
 
 		private void SpawnPawn(int tick = 0)
