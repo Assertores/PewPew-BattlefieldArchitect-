@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fc576429e620ae94b9398ca8c1f11cf9
+guid: 0ada8b3d61aabd2449c5ce0d4e22897c
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -38,17 +38,17 @@ ScriptedImporter:
   spriteData:
     TessellationDetail: 0
     SpriteRect:
-      name: Background_Buildings_normal
+      name: 
       originalName: 
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       alignment: 0
-      border: {x: 7, y: 6, z: 5, w: 13}
+      border: {x: 0, y: 0, z: 0, w: 0}
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 256
-        height: 191
-      spriteID: ac959a91e68f10e43a93044ea8f12464
+        width: 0
+        height: 0
+      spriteID: 8a5821285842d1345bbf998e7c812ccd
       internalID: 0
     PhysicsOutlines: []
