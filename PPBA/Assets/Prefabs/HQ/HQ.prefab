@@ -58,7 +58,7 @@ MonoBehaviour:
   _ObjectType: 10
   _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
     type: 3}
-  _blueprintPrefab: {fileID: 5333057613725341048}
+  LogicObject: {fileID: 0}
   _logicObject: {fileID: 8959561800333315175}
   BaseMaterial: {fileID: 0}
   _myRenderer: {fileID: 0}
@@ -295,15 +295,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7863abe65f0204b4db7008903587c75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 1000
-  _maxHealth: 1000
+  _health: 2000
+  _maxHealth: 2000
   _resources: 0
-  _maxResources: 1000
+  _maxResources: 999
   _ammo: 0
-  _maxAmmo: 1000
+  _maxAmmo: 999
   _score: 0
   _maxScore: 1
   _interactRadius: 2
+  _myBoombox: {fileID: 0}
 --- !u!114 &2753635470903879488
 MonoBehaviour:
   m_ObjectHideFlags: 0

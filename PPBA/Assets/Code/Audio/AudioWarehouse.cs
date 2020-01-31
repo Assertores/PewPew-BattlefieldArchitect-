@@ -176,7 +176,7 @@ namespace PPBA
 		{
 			LoadAll();
 
-			DontDestroyOnLoad(this.transform.parent);
+			//DontDestroyOnLoad(this.transform.parent);
 		}
 
 		void Start()
