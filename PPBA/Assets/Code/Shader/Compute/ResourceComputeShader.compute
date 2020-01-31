@@ -31,7 +31,7 @@ RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
 
 
-[numthreads(1, 1, 1)]
+[numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
@@ -41,9 +41,14 @@ void CSInit(uint3 id : SV_DispatchThreadID)
     {
         buffer[i] = 0;
     }
-    
-    //bitField[bit / (8 * 4)] = 0;
-    //redValue[bit] = 0;
+
+    for (int i = 0; i < ((256 * 256) / (8*4)); i++)
+    {
+		bitField[i] = 0;
+    }
+	
+	//bitField[bit / (8 * 4)] = 0;
+	//redValue[bit] = 0;
     //InputRedValue[bit] = 0;
     //InputTextureTerritorium[bit] = 0;
 
@@ -64,9 +69,9 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     for (int i = 0; i < PointSize; i++)
     {
-        float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-        float maxDis = coords[0].w;
+        float maxDis = coords[i].w;
 
         if (dis > maxDis)
         {
@@ -87,8 +92,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     
     if (input[id.xy].r != currentResources)
     {
-        //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-        bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+       // bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
         Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
     }
 }
@@ -99,7 +104,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     float m_dist = 10; // minimun distance
     float2 m_point; // minimum position
-    float3 col = float3(0, 0, 0);; // minimum position
+    float3 col = TerritoriumResult[id.xy]; // minimum position
 
 	// Iterate through the points positions
     for (int i = 0; i < SoldiersSize; i++)
@@ -120,34 +125,31 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         if (Soldiers[i].z == 0)
         {
-            col = float3(0.0, 0, 0);
+            col = float3(2, 0, 0);
         }
         if (Soldiers[i].z == 1)
         {
-            col = float3(0.2, 1, 0);
+            col = float3(3, 1, 0);
         }
         if (Soldiers[i].z == 2)
         {
-            col = float3(0.5, 0, 1);
+            col = float3(4, 0, 1);
         }
         if (Soldiers[i].z == 3)
         {
-            col = float3(0.8, 0.5, 0);
+            col = float3(5, 0.5, 0);
         }
-
-		//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
-		//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+    }
+	//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
+	//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+    
+    int bit = id.y * weightMap + id.x;
+    terValue[bit] = col.r;
         		
-        if (TerritoriumResult[id.xy].r != col.r)
-        {
-            int bit = id.y * weightMap + id.x;
-            //InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-            bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
-          
-            TerritoriumResult[id.xy] = float4(col, 1);
-            
-            terValue[bit] = col.r;
-        }
+    if (TerritoriumResult[id.xy].r != col.r)
+    {
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));          
+        TerritoriumResult[id.xy] = float4(col, 1);
     }
 }
     
@@ -157,28 +159,28 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
     
-    float value = InputTextureTerritorium[id.y * weightMap + id.x];
+    float value = terValue[id.y * weightMap + id.x];
     
-    if (value == 0.0)
+    if (value == 2)
     {
-        TerritoriumResult[id.xy] = float4(1, 0, 0, 1);
+        TerritoriumResult[id.xy] = float4(0, 1, 1, 1);
     }
     
-    if (value == 0.2)
+    if (value == 3)
     {
         TerritoriumResult[id.xy] = float4(0, 1, 0, 1);
     }
     
-    if (value == 0.5)
+    if (value == 4)
     {
         TerritoriumResult[id.xy] = float4(0, 0, 1, 1);
     }
     
-    if (value == 0.8)
+    if (value == 5)
     {
         TerritoriumResult[id.xy] = float4(0.5, 0.5, 0.5, 1);
     }
-    
+
 }
     
 

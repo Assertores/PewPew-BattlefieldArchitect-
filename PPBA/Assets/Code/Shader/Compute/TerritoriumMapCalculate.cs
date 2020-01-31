@@ -5,15 +5,16 @@ using System.Linq;
 
 namespace PPBA
 {
-	public class TerritoriumMapCalculate
+	public class TerritoriumMapCalculate : MonoBehaviour
 	{
 		public ComputeShader _computeShader;
+		private ComputeBuffer _buffer;
 		private ComputeBuffer _bitFieldBuffer;
 		private ComputeBuffer _terValueBuffer;
 		private byte[] _currentBitField;
 
-		private int _resourceCalcKernel;
-		private int _resourceCalcKernel2;
+		public int _TerCalcKernel;
+		public int _earlyCalcKernel;
 
 		private float[] _TerValues;
 		private bool isRunning = false;
@@ -28,9 +29,9 @@ namespace PPBA
 		float[][] _backingTex = new float[2][];
 
 
-		public TerritoriumMapCalculate(int kernel)
+		public void Start()
 		{
-			_resourceCalcKernel = kernel;
+			//_resourceCalcKernel = kernel;
 
 			_backingTex[0] = new float[256 * 256];
 			_backingTex[1] = new float[256 * 256];
@@ -50,19 +51,26 @@ namespace PPBA
 			}
 			isRunning = true;
 
+			_buffer = new ComputeBuffer(HMCalcRoutine._Soldiers.Count, sizeof(int));
 			_bitFieldBuffer = new ComputeBuffer(((256 * 256) / 8 / sizeof(uint)), sizeof(uint));
 			_terValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
 			_currentBitField = new byte[(256 * 256) / 8];
 			_TerValues = new float[256 * 256];
 
-			_computeShader.SetBuffer(_resourceCalcKernel, "bitField", _bitFieldBuffer);
-			_computeShader.SetBuffer(_resourceCalcKernel, "terValue", _terValueBuffer);
+			_computeShader.SetBuffer(_earlyCalcKernel, "buffer", _buffer);
+			_computeShader.SetBuffer(_earlyCalcKernel, "bitField", _bitFieldBuffer);
+			_computeShader.Dispatch(_earlyCalcKernel, 256 / 8, 256 / 8, 1);
+			
+			_computeShader.SetBuffer(_TerCalcKernel, "bitField", _bitFieldBuffer);
+			_computeShader.SetBuffer(_TerCalcKernel, "terValue", _terValueBuffer);
 
 			_computeShader.SetInt("SoldiersSize", HMCalcRoutine._Soldiers.Count);
 			_computeShader.SetVectorArray("Soldiers", AddSoldierData(HMCalcRoutine));
-			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", HMCalcRoutine._ResultTextureTerritorium);
+			_computeShader.SetTexture(_TerCalcKernel, "TerritoriumResult", HMCalcRoutine._ResultTextureTerritorium);
 
-			_computeShader.Dispatch(_resourceCalcKernel, 256 / 8, 256 / 8, 1);
+			_computeShader.Dispatch(_TerCalcKernel, 256 / 8, 256 / 8, 1);
+
+			_buffer.Release();
 
 			_bitFieldBuffer.GetData(_currentBitField);
 			_bitFieldBuffer.Release();
@@ -71,9 +79,6 @@ namespace PPBA
 			_terValueBuffer.GetData(_TerValues);
 			_terValueBuffer.Release();
 			_terValueBuffer = null;
-
-			string g = _TerValues[500].ToString();
-			HMCalcRoutine.PrintSomething(g);
 
 			yield return ConvertRenToTex2D(_currentBitField, _TerValues);
 			Swap(); // change Texture2d
@@ -98,7 +103,7 @@ endingCo:
 			yield return null;
 		}
 
-
+		public Vector4[] h_solgerArry;
 		// add data for ComputeInput
 		private Vector4[] AddSoldierData(HeatMapCalcRoutine HMCalcRoutine)
 		{
@@ -108,11 +113,13 @@ endingCo:
 
 			foreach(KeyValuePair<Transform, int> soldier in HMCalcRoutine._Soldiers)
 			{
-				Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(soldier.Key);
+				Vector2Int pos = UserInputController.s_instance.GetTexturePixelPoint(soldier.Key.position);
 				
 				refsProp[index] = new Vector4(pos.x, pos.y, soldier.Value, 0);
 				index++;
 			}
+
+			h_solgerArry = refsProp;
 			return refsProp;
 		}
 	}

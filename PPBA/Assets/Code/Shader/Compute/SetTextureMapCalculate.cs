@@ -17,18 +17,22 @@ namespace PPBA
 		//}
 
 		public float[] bub;
+		public float[] bub2;
 
 		public void StartComputeShader(float[] ResTex, float[] TerTex, RenderTexture ResRenTex, RenderTexture TerRenTex)
 		{
+			print("start set conpute shader zo set texture client");
+
 			_redValue = new ComputeBuffer( (256 * 256), sizeof(float));
 			_terValue = new ComputeBuffer( (256 * 256), sizeof(float));
 
 			_redValue.SetData(ResTex);
 			_terValue.SetData(TerTex);
-			bub = ResTex;
+			//bub = ResTex;
+			//bub2 = TerTex;
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "InputRedValue", _redValue);
-			_computeShader.SetBuffer(_resourceCalcKernel, "InputTextureTerritorium", _terValue);
+			_computeShader.SetBuffer(_resourceCalcKernel, "terValue", _terValue);
 			
    
 			_computeShader.SetTexture(_resourceCalcKernel, "Result", ResRenTex);
@@ -39,6 +43,7 @@ namespace PPBA
 
 			_redValue.Release();
 			_terValue.Release();
+			print("end conpute shader ");
 		}
 	}
 }

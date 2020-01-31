@@ -172,7 +172,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[0]));
 			_heatMaps[0] = value[0].tex;
 
-			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[1]));
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(1, ref value[1]));
 			_heatMaps[1] = value[1].tex;
 		}
 

@@ -10,7 +10,7 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 	[SerializeField] private TextMeshProUGUI _TextField;
 	[SerializeField] private ObjectType _ObjectType;
 	[SerializeField] private GameObject _GhostPrefab;
-	[SerializeField] private GameObject _blueprintPrefab;
+	[SerializeField] private GameObject LogicObject;
 
 	public float _HarvestRadius;
 	public float _HarvestIntensity;
@@ -46,11 +46,13 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 			_teamBackingField = value;
 		}
 	}
+
+
 	[HideInInspector] public Sprite _Image { get => _ImageUI; }
 	[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 	[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 	[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
-	[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
+	[HideInInspector] public GameObject _LogicObj { get => LogicObject; }
 
 
 	/// <summary>
