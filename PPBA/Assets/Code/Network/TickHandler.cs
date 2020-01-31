@@ -64,7 +64,7 @@ namespace PPBA
 					min = it._inputStates.GetHighEnd();
 				}
 			}
-#if DB_NET
+#if DB_NC
 			Debug.Log("simulating up to: " + min + " with current tick beeing: " + s_currentTick);
 #endif
 
