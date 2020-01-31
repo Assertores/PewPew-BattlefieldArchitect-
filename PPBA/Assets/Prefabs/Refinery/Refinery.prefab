@@ -43,11 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3f2d80b2b95164496b2d40e424f9a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resources: 100
+  _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 100
+  _resourcesMax: 200
   _work: 0
-  _workMax: 50
+  _workMax: 360
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: 94e293d39156dca469730476cec32344, type: 2}

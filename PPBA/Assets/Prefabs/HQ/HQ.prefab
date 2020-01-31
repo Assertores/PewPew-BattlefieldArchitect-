@@ -58,7 +58,7 @@ MonoBehaviour:
   _ObjectType: 10
   _GhostPrefab: {fileID: 2213009535242751257, guid: 69f33e3c9ecff4a4a86099e2a8017358,
     type: 3}
-  _blueprintPrefab: {fileID: 5333057613725341048}
+  LogicObject: {fileID: 0}
   _logicObject: {fileID: 8959561800333315175}
   BaseMaterial: {fileID: 0}
   _myRenderer: {fileID: 0}
@@ -304,6 +304,7 @@ MonoBehaviour:
   _score: 0
   _maxScore: 1
   _interactRadius: 2
+  _myBoombox: {fileID: 0}
 --- !u!114 &2753635470903879488
 MonoBehaviour:
   m_ObjectHideFlags: 0
