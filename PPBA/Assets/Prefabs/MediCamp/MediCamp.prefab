@@ -106,6 +106,8 @@ MonoBehaviour:
   _BuildingSound: {fileID: 0}
   _ImageUI: {fileID: 3286163911610860551, guid: 8c856c3d09e8df44da5bbdb2027e9d57,
     type: 3}
+  _UIElement_: {fileID: 3992025764496251754, guid: 5ebb7e37786a079429dbe1338006351a,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 11
   _GhostPrefab: {fileID: 8644842402150925202, guid: 201c1d354d50c5f47872f3ec3484673a,
@@ -255,11 +257,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7507454801724611220}
     m_Modifications:
-    - target: {fileID: 2847573181604728383, guid: f0405b84a811fab419b56f4ab0f7d7a0,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
-      objectReference: {fileID: 0}
     - target: {fileID: 7769597733781911595, guid: f0405b84a811fab419b56f4ab0f7d7a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -314,6 +311,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847573181604728383, guid: f0405b84a811fab419b56f4ab0f7d7a0,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0405b84a811fab419b56f4ab0f7d7a0, type: 3}

@@ -29,7 +29,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8303485101423768793}
+  - {fileID: 9046516572810835568}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -47,15 +47,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _BuildingSound: {fileID: 0}
   _ImageUI: {fileID: 21300000, guid: e604ef18a3919d848b079450ea5c0961, type: 3}
+  _UIElement_: {fileID: 5966048554846561576, guid: ff8c66fe9f0a7bf4c8ee7f98207e323f,
+    type: 3}
   _TextField: {fileID: 0}
   _ObjectType: 3
   _GhostPrefab: {fileID: 4101390062667216111, guid: 6649de821e7d7564ab47ec9e6acad2c5,
     type: 3}
+  LogicObject: {fileID: 0}
   _BuildingTime: 1
   _BuildingCosts: 50
   _CurrentResources: 50
   _LivePoints: 50
   _MaxLivePoints: 100
+  BaseMaterial: {fileID: 0}
+  _myRenderer: {fileID: 0}
 --- !u!114 &-8357493990160151788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,11 +80,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3850693688127147683}
     m_Modifications:
-    - target: {fileID: 4101390062667216111, guid: 8f4308316695df54482f68707a7ca78e,
-        type: 3}
-      propertyPath: m_Name
-      value: Stonewall_Endpiece
-      objectReference: {fileID: 0}
     - target: {fileID: 1058426523684325116, guid: 8f4308316695df54482f68707a7ca78e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -135,9 +135,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4101390062667216111, guid: 8f4308316695df54482f68707a7ca78e,
+        type: 3}
+      propertyPath: m_Name
+      value: Stonewall_Endpiece
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f4308316695df54482f68707a7ca78e, type: 3}
---- !u!4 &8303485101423768793 stripped
+--- !u!4 &9046516572810835568 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1058426523684325116, guid: 8f4308316695df54482f68707a7ca78e,
     type: 3}

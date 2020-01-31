@@ -7,6 +7,8 @@ public class RefineryRefHolder : MonoBehaviour, IRefHolder
 
 	public AudioClip _BuildingSound;
 	[SerializeField] private Sprite _ImageUI;
+	[SerializeField] public GameObject _UIElement_;
+	public GameObject _UIElement { get => _UIElement_; }
 	[SerializeField] private TextMeshProUGUI _TextField;
 	[SerializeField] private ObjectType _ObjectType;
 	[SerializeField] private GameObject _GhostPrefab;
