@@ -45,9 +45,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 100
+  _resourcesMax: 150
   _work: 0
-  _workMax: 50
+  _workMax: 240
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: d94d3976546e361469303261351c7893, type: 2}
@@ -232,8 +232,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myMediCampHolder: {fileID: 6773971951171986429}
   _myBoombox: {fileID: 0}
-  _health: 1000
-  _maxHealth: 1000
+  _health: 400
+  _maxHealth: 400
 --- !u!114 &8454239855579913623
 MonoBehaviour:
   m_ObjectHideFlags: 0
