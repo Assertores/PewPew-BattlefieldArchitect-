@@ -19,7 +19,7 @@ namespace PPBA
 			if(null == _source)
 				return;
 
-			_source.clip = AudioWarehouse.s_instance._defaultClip;
+			_source.clip = AudioWarehouse._defaultClip;
 		}
 
 		void Update()
