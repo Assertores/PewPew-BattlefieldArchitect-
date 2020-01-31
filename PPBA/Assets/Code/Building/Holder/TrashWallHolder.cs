@@ -13,7 +13,7 @@ namespace PPBA
 		[SerializeField] private TextMeshProUGUI _TextField;
 		[SerializeField] private ObjectType _ObjectType;
 		[SerializeField] private GameObject _GhostPrefab;
-		[SerializeField] private GameObject _blueprintPrefab;
+		[SerializeField] private GameObject LogicObject;
 
 		public float _BuildingTime;
 		public float _BuildingCosts;
@@ -26,7 +26,7 @@ namespace PPBA
 		[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 		[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 		[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
-		[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
+		[HideInInspector] public GameObject _LogicObj { get => LogicObject; }
 
 		[SerializeField] Material BaseMaterial;
 		[SerializeField] private Renderer _myRenderer;

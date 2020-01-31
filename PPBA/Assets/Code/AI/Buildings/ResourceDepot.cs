@@ -98,7 +98,13 @@ namespace PPBA
 		public int GetTeam() => _team;
 		#endregion
 
-		#region Give Or Take
+		#region Give Or Take Or Check
+		
+		public bool HaveResourceSpace()
+		{
+			return _resources < _maxResources;
+		}
+
 		public int TakeResources(int amount)
 		{
 			if(amount <= _resources)//can take full wanted amount

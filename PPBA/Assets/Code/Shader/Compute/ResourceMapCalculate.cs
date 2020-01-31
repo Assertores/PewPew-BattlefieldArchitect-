@@ -62,23 +62,33 @@ namespace PPBA
 			{
 				goto endingCo;
 			}
+			List<IRefHolder> refHolder = new List<IRefHolder>();
+
+			Vector4[] refProp = RefineriesProperties(HMroutine, ref refHolder);
+
+			if(refProp.Length <= 0)
+			{
+				goto endingCo;
+			}
 
 			isRunning = true;
 
-			_buffer = new ComputeBuffer(HMroutine._Refinerys.Count, sizeof(int));
+			// Calculate
+			_buffer = new ComputeBuffer(refProp.Length, sizeof(int));
+
 			_bitField = new ComputeBuffer(((256 * 256) / 8 / sizeof(int)), sizeof(int));
 			_RedValueBuffer = new ComputeBuffer((256 * 256), sizeof(float));
 
-			_ResourceValues = new int[HMroutine._Refinerys.Count];
+			_ResourceValues = new int[refProp.Length];
 			_currentBitField = new byte[(256 * 256) / 8];
 			_RedValues = new float[256 * 256];
 
 			_computeShader.SetBuffer(_EarlyCalcKernel, "buffer", _buffer);
 			_computeShader.SetBuffer(_EarlyCalcKernel, "bitField", _bitField);
 			_computeShader.Dispatch(_EarlyCalcKernel, 256 / 8, 256 / 8, 1);
-											   			 
-			_computeShader.SetInt("PointSize", HMroutine._Refinerys.Count);
-			_computeShader.SetVectorArray("coords", RefineriesProperties(HMroutine));
+
+			_computeShader.SetInt("PointSize", refProp.Length);
+			_computeShader.SetVectorArray("coords", refProp);
 
 			_computeShader.SetBuffer(_ResourceCalcKernel, "bitField", _bitField);
 			_computeShader.SetBuffer(_ResourceCalcKernel, "buffer", _buffer);
@@ -97,6 +107,11 @@ namespace PPBA
 			_buffer.GetData(_ResourceValues);
 			_bitField.GetData(_currentBitField);
 			_RedValueBuffer.GetData(_RedValues);
+
+			for(int i = 0; i < _ResourceValues.Length; i++)
+			{
+				refHolder[i]._LogicObj.GetComponent<ResourceDepot>().GiveResources((int)(_ResourceValues[i] * 0.01f));
+			}
 
 			_bitField.SetCounterValue(0);
 			_buffer.SetCounterValue(0);
@@ -136,15 +151,22 @@ endingCo:
 			yield return null;
 		}
 
-		private Vector4[] RefineriesProperties(HeatMapCalcRoutine HTR)
+		private Vector4[] RefineriesProperties(HeatMapCalcRoutine HTR, ref List<IRefHolder> refHolder)
 		{
-			Vector4[] refsProp = new Vector4[HTR._Refinerys.Count];
+			List<Vector4> refsProp = new List<Vector4>();
 
-			for(int i = 0; i < HTR._Refinerys.Count; i++)
+			foreach(var item in HTR._Refinerys)
 			{
-				refsProp[i] = HTR._Refinerys[i].GetShaderProperties;
+				ResourceDepot resHolder = item._LogicObj.GetComponent<ResourceDepot>();
+
+				if(resHolder.HaveResourceSpace())
+				{
+					refsProp.Add(item.GetShaderProperties);
+					refHolder.Add(item);
+				}
 			}
-			return refsProp;
+
+			return refsProp.ToArray();
 		}
 	}
 }
