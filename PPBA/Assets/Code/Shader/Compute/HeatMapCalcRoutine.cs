@@ -86,17 +86,6 @@ namespace PPBA
 				enableRandomWrite = true
 			};
 
-			//_Resulttest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.RFloat)
-			//{
-			//	enableRandomWrite = true
-			//};
-
-
-			//_ResultTerritoriumtest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
-			//{
-			//	enableRandomWrite = true
-			//};
-
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
 
@@ -112,8 +101,8 @@ namespace PPBA
 
 			if(GlobalVariables.s_instance._clients.Count > 0)
 			{
-				int team = GlobalVariables.s_instance._clients[0]._id;
-				_FogMaterial.SetColor("TeamColor", GlobalVariables.s_instance._teamColors[team]);
+			//	int team = GlobalVariables.s_instance._clients[0]._id;
+				//_FogMaterial.SetColor("TeamColor", GlobalVariables.s_instance._teamColors[team]);
 			}
 		}
 
