@@ -714,6 +714,8 @@ namespace PPBA
 					msg.Add(it._type);
 					msg.Add(it._count);
 				}
+
+				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
 
 			if(_messageHolder.Count == 0)
@@ -959,6 +961,8 @@ namespace PPBA
 					}
 					case GSC.DataType.MAP:
 					{
+						if(_heatMaps == null)
+							_heatMaps = new List<GSC.heatMap>();
 						GSC.heatMap value = _heatMaps.Find(x => x._id == count);
 						if(null == value)
 						{
@@ -1082,6 +1086,7 @@ namespace PPBA
 							offset++;
 
 							value._count = msg[offset];
+							offset++;
 
 							_scheduledPawns.Add(value);
 						}
@@ -1152,6 +1157,11 @@ namespace PPBA
 			removerIndex = 0;
 			for(int i = 0; i < _types.Count; i++)
 			{
+				if(reference._types == null)
+					reference._types = new List<GSC.type>();
+				if(_types == null)
+					_types = new List<GSC.type>();
+
 				GSC.type element = reference._types.Find(x => x._id == _types[i]._id);
 
 				if(null == element)
@@ -1936,13 +1946,6 @@ Change:
 		{
 			if(_scheduledPawns == null)
 				_scheduledPawns = new List<GSC.sheduledPawns>();
-			if(_scheduledPawns.Exists(x => x._id == element._id))
-			{
-#if DB_GS
-				Debug.LogWarning("Scheduled Pawns allready exists: " + element.ToString());
-#endif
-				return;
-			}
 
 			_scheduledPawns.Add(element);
 		}
