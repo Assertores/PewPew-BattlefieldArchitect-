@@ -758,6 +758,66 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4793782967470100950, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793782967470100950, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: rolloffMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793782967470100950, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793782967470100950, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MinDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462396860220182306, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462396860220182306, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462396860220182306, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MinDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462396860220182306, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: rolloffMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3269479431516826958, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3269479431516826958, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3269479431516826958, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: MinDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3269479431516826958, guid: 1a81b56b2ec70cd4ca790e193bfd2e03,
+        type: 3}
+      propertyPath: rolloffMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a81b56b2ec70cd4ca790e193bfd2e03, type: 3}
 --- !u!4 &4341399654737327027 stripped

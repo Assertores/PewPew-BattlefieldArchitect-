@@ -158,14 +158,6 @@ namespace PPBA
 		public static AudioClip _defaultClip { get => s_instance._defaultBackingField; set => s_instance._defaultBackingField = value; }
 		[SerializeField] private AudioClip _defaultBackingField;
 
-
-		//void Awake()
-		//{
-			
-
-		//	//DontDestroyOnLoad(this.transform.parent);
-		//}
-
 		void Start()
 		{
 			LoadAll();

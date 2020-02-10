@@ -395,6 +395,8 @@ namespace PPBA
 				{
 					_nextState._health = temp._health;
 					_nextState._morale = temp._morale;
+
+					//hier evtl dmg sound
 				}
 			}
 			{
@@ -1033,6 +1035,8 @@ namespace PPBA
 
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(transform);
 			//	TerritoryMapId = TerritoriumMapCalculate.s_instance.AddSoldier(transform, _team);
+#else
+			MovableSpeakerController.PlaySoundAtSpot(AudioWarehouse.s_instance.Clip(UnityEngine.Random.Range(0f, 1f) < 0.5f ? ClipsPawn.UNIT_HIT_SHOT_01 : ClipsPawn.UNIT_HIT_SHOT_02), transform.position);
 #endif
 			if(_pawns.Contains(this))
 				_pawns.Remove(this);
