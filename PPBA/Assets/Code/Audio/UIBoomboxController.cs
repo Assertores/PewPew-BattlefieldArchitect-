@@ -7,7 +7,7 @@ namespace PPBA
 	[RequireComponent(typeof(AudioSource))]
 	public class UIBoomboxController : MonoBehaviour
 	{
-		private AudioSource _source;
+		private static AudioSource _source;
 
 		void Awake()
 		{
@@ -27,6 +27,6 @@ namespace PPBA
 
 		}
 
-		public void PlayUI(ClipsUI _clip) => _source.PlayOneShot(AudioWarehouse.s_instance.Clip(_clip));
+		public static void PlayUI(ClipsUI _clip) => _source?.PlayOneShot(AudioWarehouse.s_instance.Clip(_clip));
 	}
 }

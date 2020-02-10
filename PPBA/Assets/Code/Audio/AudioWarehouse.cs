@@ -155,17 +155,21 @@ namespace PPBA
 		public static Dictionary<ClipsMusic, AudioClip> _musicClipDict = new Dictionary<ClipsMusic, AudioClip>();
 		public static Dictionary<ClipsEnvironment, AudioClip> _environmentClipDict = new Dictionary<ClipsEnvironment, AudioClip>();
 
-		public static AudioClip _defaultClip;
+		public static AudioClip _defaultClip { get => s_instance._defaultBackingField; set => s_instance._defaultBackingField = value; }
+		[SerializeField] private AudioClip _defaultBackingField;
 
-		void Awake()
-		{
-			LoadAll();
 
-			//DontDestroyOnLoad(this.transform.parent);
-		}
+		//void Awake()
+		//{
+			
+
+		//	//DontDestroyOnLoad(this.transform.parent);
+		//}
 
 		void Start()
 		{
+
+			LoadAll();
 
 		}
 
@@ -184,21 +188,21 @@ namespace PPBA
 				_pawnClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
-			foreach(ClipsBuilding item in _namesPawn)
+			foreach(ClipsBuilding item in _namesBuilding)
 			{
 				string path = "ClipsBuilding/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_buildingClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
-			foreach(ClipsUI item in _namesPawn)
+			foreach(ClipsUI item in _namesUI)
 			{
 				string path = "ClipsUI/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_uiClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
-			foreach(ClipsMusic item in _namesPawn)
+			foreach(ClipsMusic item in _namesMusic)
 			{
 				string path = "ClipsMusic/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);

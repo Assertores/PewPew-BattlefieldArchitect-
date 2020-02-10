@@ -65,7 +65,7 @@ namespace PPBA
 		/// calculates position and distance to nearest boarder
 		/// </summary>
 		/// <param name="worldPos">your world position</param>
-		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>
+		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>//TODO: isn't y the z position?
 		public Vector3 BorderValues(Vector3 worldPos)
 		{
 			Vector3 retPos = (worldPos - _terrain.transform.position) * _ppu[1];

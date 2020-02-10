@@ -340,7 +340,7 @@ PrefabInstance:
     - target: {fileID: 3591058338955120529, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: _clickClip
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16f2ea3459accc94e93a335e3b50f115, type: 3}
@@ -357,6 +357,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1823311292670690244}
     m_Modifications:
+    - target: {fileID: 690360248432292366, guid: 4c56acfa5248f8243815d8a69de8f040,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 6872635151247675552, guid: 4c56acfa5248f8243815d8a69de8f040,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -411,11 +416,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 690360248432292366, guid: 4c56acfa5248f8243815d8a69de8f040,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c56acfa5248f8243815d8a69de8f040, type: 3}
