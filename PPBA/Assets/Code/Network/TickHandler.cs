@@ -220,38 +220,41 @@ namespace PPBA
 #if DB_OP
 			Debug.Log("===== ===== TICK: " + s_currentTick + " ===== =====");
 #endif
-			foreach(var it in nextState._newIDRanges)
+			if(nextState._newIDRanges != null)
 			{
+				foreach(var it in nextState._newIDRanges)
+				{
 #if DB_OP
 				Debug.Log("testing op: " + it._type);
 #endif
-				bool exists = false;
-				for(int i = nextState._refTick; i < s_currentTick; i++)
-				{
+					bool exists = false;
+					for(int i = nextState._refTick; i < s_currentTick; i++)
+					{
 #if DB_OP
 					Debug.Log("for tick " + i);
 #endif
-					if(default == me._gameStates[i])
-						continue;
+						if(default == me._gameStates[i])
+							continue;
 
 #if DB_OP
 					Debug.Log("tick " + i + " exists");
 #endif
 
-					if(me._gameStates[i]._newIDRanges.Exists(x => x._id == it._id))
-					{
-						exists = true;
-						break;
+						if(me._gameStates[i]._newIDRanges.Exists(x => x._id == it._id))
+						{
+							exists = true;
+							break;
+						}
 					}
-				}
 
 #if DB_OP
 				Debug.Log("ids " + it._id + " in op " + it._type + " do exist? " + exists);
 #endif
 
-				if(!exists)
-				{
-					ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+					if(!exists)
+					{
+						ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+					}
 				}
 			}
 

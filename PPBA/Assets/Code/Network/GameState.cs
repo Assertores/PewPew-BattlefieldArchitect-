@@ -224,15 +224,6 @@ namespace PPBA
 	[System.Serializable]
 	public class GameState
 	{
-		public GameState(bool isReceiverGameState = false)
-		{
-			_isEncrypted = isReceiverGameState;
-		}
-
-		/// <summary>
-		/// copy GameState
-		/// </summary>
-		/// <param name="original">GameState to make copy from</param>
 		public GameState(GameState original)
 		{
 			_refTick = original._refTick;
@@ -290,6 +281,15 @@ namespace PPBA
 		/// DO NOT USE
 		/// </summary>
 		public List<GSC.sheduledPawns> _scheduledPawns = new List<GSC.sheduledPawns>();
+
+		/// <summary>
+		/// copy GameState
+		/// </summary>
+		/// <param name="original">GameState to make copy from</param>
+		public GameState(bool isReceiverGameState = false)
+		{
+			_isEncrypted = isReceiverGameState;
+		}
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
@@ -441,7 +441,6 @@ namespace PPBA
 									HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 								}
 							}
-
 #if Obsolete
 							msg.Clear();
 							msg.Add((byte)GSC.DataType.MAP);
@@ -732,7 +731,7 @@ namespace PPBA
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
 		{
 			//Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
-			if(_receivedMessages.GetSize() == Vector2Int.zero)
+			if(_receivedMessages == null || _receivedMessages.GetSize() == Vector2Int.zero)
 			{
 				//Debug.Log("[GameState] creating an bitfield ");
 				_isEncrypted = true;
@@ -1392,69 +1391,123 @@ Change:
 
 			//_messageHolder = null;
 
-			foreach(var it in reference._types)
+			if(_types == null)
+				_types = new List<GSC.type>();
+			if(reference._types != null)
 			{
-				if(_types.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._types)
+				{
+					if(_types.Exists(x => x._id == it._id))
+						continue;
 
-				_types.Add(it);
+					_types.Add(it);
+				}
 			}
-			foreach(var it in reference._args)
+
+			if(_args == null)
+				_args = new List<GSC.arg>();
+			if(reference._args != null)
 			{
-				if(_args.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._args)
+				{
+					if(_args.Exists(x => x._id == it._id))
+						continue;
 
-				_args.Add(it);
+					_args.Add(it);
+				}
 			}
-			foreach(var it in reference._transforms)
+
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
+			if(reference._transforms != null)
 			{
-				if(_transforms.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._transforms)
+				{
+					if(_transforms.Exists(x => x._id == it._id))
+						continue;
 
-				_transforms.Add(it);
+					_transforms.Add(it);
+				}
 			}
-			foreach(var it in reference._ammos)
+
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
+			if(reference._ammos != null)
 			{
-				if(_ammos.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._ammos)
+				{
+					if(_ammos.Exists(x => x._id == it._id))
+						continue;
 
-				_ammos.Add(it);
+					_ammos.Add(it);
+				}
 			}
-			foreach(var it in reference._resources)
+
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
+			if(reference._resources != null)
 			{
-				if(_resources.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._resources)
+				{
+					if(_resources.Exists(x => x._id == it._id))
+						continue;
 
-				_resources.Add(it);
+					_resources.Add(it);
+				}
 			}
-			foreach(var it in reference._healths)
+
+			if(_healths == null)
+				_healths = new List<GSC.health>();
+			if(reference._healths != null)
 			{
-				if(_healths.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._healths)
+				{
+					if(_healths.Exists(x => x._id == it._id))
+						continue;
 
-				_healths.Add(it);
+					_healths.Add(it);
+				}
 			}
-			foreach(var it in reference._behaviors)
+
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
+			if(reference._behaviors != null)
 			{
-				if(_behaviors.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._behaviors)
+				{
+					if(_behaviors.Exists(x => x._id == it._id))
+						continue;
 
-				_behaviors.Add(it);
+					_behaviors.Add(it);
+				}
 			}
-			foreach(var it in reference._animations)
+
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
+			if(reference._animations != null)
 			{
-				if(_animations.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._animations)
+				{
+					if(_animations.Exists(x => x._id == it._id))
+						continue;
 
-				_animations.Add(it);
+					_animations.Add(it);
+				}
 			}
-			foreach(var it in reference._paths)
+
+			if(_paths == null)
+				_paths = new List<GSC.path>();
+			if(reference._paths != null)
 			{
-				if(_paths.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._paths)
+				{
+					if(_paths.Exists(x => x._id == it._id))
+						continue;
 
-				_paths.Add(it);
+					_paths.Add(it);
+				}
 			}
+			
 
 			/*if(_hash != GetHash())
 			{
@@ -1603,23 +1656,25 @@ Change:
 
 #region Helper Funktion
 
-		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
-		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
-		public GSC.transform GetTransform(int id) => _transforms.Find(x => x._id == id);
-		public GSC.ammo GetAmmo(int id) => _ammos.Find(x => x._id == id);
-		public GSC.resource GetResource(int id) => _resources.Find(x => x._id == id);
-		public GSC.health GetHealth(int id) => _healths.Find(x => x._id == id);
-		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
-		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
-		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
-		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
-		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
-		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
-		public List<GSC.sheduledPawns> GetScheduledPawns(int id) => _scheduledPawns.FindAll(x => x._id == id);
+		public GSC.type GetType(int id) => _types?.Find(x => x._id == id);
+		public GSC.arg GetArg(int id) => _args?.Find(x => x._id == id);
+		public GSC.transform GetTransform(int id) => _transforms?.Find(x => x._id == id);
+		public GSC.ammo GetAmmo(int id) => _ammos?.Find(x => x._id == id);
+		public GSC.resource GetResource(int id) => _resources?.Find(x => x._id == id);
+		public GSC.health GetHealth(int id) => _healths?.Find(x => x._id == id);
+		public GSC.work GetWork(int id) => _works?.Find(x => x._id == id);
+		public GSC.behavior GetBehavior(int id) => _behaviors?.Find(x => x._id == id);
+		public GSC.animation GetAnimation(int id) => _animations?.Find(x => x._id == id);
+		public GSC.path GetPath(int id) => _paths?.Find(x => x._id == id);
+		public GSC.heatMap GetHeatMap(int id) => _heatMaps?.Find(x => x._id == id);
+		public GSC.input GetInput(int id) => _denyedInputIDs?.Find(x => x._id == id);
+		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges?.Find(x => x._id == id);
+		public List<GSC.sheduledPawns> GetScheduledPawns(int id) => _scheduledPawns?.FindAll(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
+			if(_types == null)
+				_types = new List<GSC.type>();
 			if(_types.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1633,6 +1688,8 @@ Change:
 
 		public void Add(GSC.arg element)
 		{
+			if(_args == null)
+				_args = new List<GSC.arg>();
 			GSC.arg value = _args.Find(x => x._id == element._id);
 			if(null == value)
 			{
@@ -1649,6 +1706,8 @@ Change:
 
 		public void Add(GSC.transform element)
 		{
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
 			if(_transforms.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1662,6 +1721,8 @@ Change:
 
 		public void Add(GSC.ammo element)
 		{
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
 			if(_ammos.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1675,6 +1736,8 @@ Change:
 
 		public void Add(GSC.resource element)
 		{
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
 			if(_resources.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1688,6 +1751,8 @@ Change:
 
 		public void Add(GSC.health element)
 		{
+			if(_healths == null)
+				_healths = new List<GSC.health>();
 			if(_healths.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1701,6 +1766,8 @@ Change:
 
 		public void Add(GSC.work element)
 		{
+			if(_works == null)
+				_works = new List<GSC.work>();
 			if(_works.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1714,6 +1781,8 @@ Change:
 
 		public void Add(GSC.behavior element)
 		{
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
 			if(_behaviors.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1727,6 +1796,8 @@ Change:
 
 		public void Add(GSC.animation element)
 		{
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
 			if(_animations.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1740,6 +1811,8 @@ Change:
 
 		public void Add(GSC.path element)
 		{
+			if(_paths == null)
+				_paths = new List<GSC.path>();
 			if(_paths.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1753,6 +1826,8 @@ Change:
 
 		public void Add(GSC.heatMap element, bool isMoreSignificant = true)
 		{
+			if(_heatMaps == null)
+				_heatMaps = new List<GSC.heatMap>();
 			if(null == element._values)
 			{
 				return;
@@ -1787,6 +1862,8 @@ Change:
 
 		public void Add(GSC.input element)
 		{
+			if(_denyedInputIDs == null)
+				_denyedInputIDs = new List<GSC.input>();
 			if(_denyedInputIDs.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1800,6 +1877,8 @@ Change:
 
 		public void Add(GSC.newIDRange element)
 		{
+			if(_newIDRanges == null)
+				_newIDRanges = new List<GSC.newIDRange>();
 			if(_newIDRanges.Exists(x => x._id == element._id))
 			{
 #if DB_GS
@@ -1813,6 +1892,8 @@ Change:
 
 		public void Add(GSC.sheduledPawns element)
 		{
+			if(_scheduledPawns == null)
+				_scheduledPawns = new List<GSC.sheduledPawns>();
 			if(_scheduledPawns.Exists(x => x._id == element._id))
 			{
 #if DB_GS

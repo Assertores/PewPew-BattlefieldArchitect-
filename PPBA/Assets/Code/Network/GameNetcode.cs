@@ -348,7 +348,7 @@ namespace PPBA
 			GameState element = GlobalVariables.s_instance._clients[0]._gameStates[tick];
 			if(element == default) //create new Gamestate if not already existing
 			{
-				element = new GameState();
+				element = new GameState(true);
 				GlobalVariables.s_instance._clients[0]._gameStates[tick] = element;
 			}
 

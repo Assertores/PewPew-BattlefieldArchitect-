@@ -40,7 +40,8 @@ namespace PPBA
 
 		public void SchedulePawn(int i)
 		{
-			buffer[i] = int.Parse(_countField.text);
+			Debug.Log("button " + i + " presssed.");
+			buffer[i] = _countField.text == "" ? 0 : int.Parse(_countField.text);
 			max[i] = buffer[i];
 		}
 
