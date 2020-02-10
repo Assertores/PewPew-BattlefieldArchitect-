@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isAutoSpawner: 1
-  _suppliesPerTick: 1
+  _suppliesPerTick: 5
   _ammoPerTick: 1
   _resourceDepot: {fileID: 5712454156475713158}
 --- !u!114 &5712454156475713158
@@ -395,7 +395,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b82825028815c4687ba141b1b8f4b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pawnCost: 50
 --- !u!1001 &991668626000110800
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -403,6 +402,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2629620312372173525}
     m_Modifications:
+    - target: {fileID: 4639548048846212869, guid: bb7835b8f6befff46b3b29f9793ecebd,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 517323152654184249, guid: bb7835b8f6befff46b3b29f9793ecebd,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -457,11 +461,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4639548048846212869, guid: bb7835b8f6befff46b3b29f9793ecebd,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb7835b8f6befff46b3b29f9793ecebd, type: 3}
