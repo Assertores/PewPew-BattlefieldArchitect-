@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd458531bb03dad4fb5618d61339edb2, type: 3}
+  m_Name: House01
+  m_EditorClassIdentifier: 
+  _meshs:
+  - {fileID: 4830469356347373723, guid: 21ec816f280e947469f5a6e455b302d6, type: 3}
+  _ranTexs:
+  - _albedo: {fileID: 2800000, guid: 06ef51a0bda95954f99d29ad879a796f, type: 3}
+    _hight: {fileID: 2800000, guid: 32e50bef62b37e349b7194468dccb4c4, type: 3}
+  - _albedo: {fileID: 2800000, guid: 0dae633f7c924e447ab03739a2931fb5, type: 3}
+    _hight: {fileID: 2800000, guid: 32e50bef62b37e349b7194468dccb4c4, type: 3}
+  - _albedo: {fileID: 2800000, guid: 6c52363fea7490147a492a2daff96e2e, type: 3}
+    _hight: {fileID: 2800000, guid: 32e50bef62b37e349b7194468dccb4c4, type: 3}
+  - _albedo: {fileID: 2800000, guid: d03089804215eb643ac8a8e2d2728483, type: 3}
+    _hight: {fileID: 2800000, guid: 32e50bef62b37e349b7194468dccb4c4, type: 3}
+  - _albedo: {fileID: 2800000, guid: 0be73d5d47f3321408229b9f00d7fdc0, type: 3}
+    _hight: {fileID: 2800000, guid: 32e50bef62b37e349b7194468dccb4c4, type: 3}
