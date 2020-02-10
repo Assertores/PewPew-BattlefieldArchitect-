@@ -47,16 +47,16 @@ AudioSource:
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.823
+  m_Volume: 0.184
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 151
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 5
+  MinDistance: 0
+  MaxDistance: 0.43
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0

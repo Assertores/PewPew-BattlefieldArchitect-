@@ -468,9 +468,6 @@ namespace PPBA
 
 			_arguments = _nextState._arguments;
 
-			if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
-				_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
-
 			transform.position = Vector3.Lerp(_lastState._position, _nextState._position, lerpFactor);
 			transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(_lastState._angle, _nextState._angle, lerpFactor), 0f);
 			_health = Mathf.Lerp(_lastState._health, _nextState._health, lerpFactor);
@@ -480,6 +477,64 @@ namespace PPBA
 			_clientNavPathCorners = _nextState._navPathCorners;
 			_clientBehavior = _nextState._behavior;
 			_currentAnimation = _nextState._animation;
+
+			if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				SoundSwitch();
+		}
+
+		private void SoundSwitch()
+		{
+			switch(_clientBehavior)
+			{
+				case Behaviors.IDLE:
+					break;
+				case Behaviors.SHOOT:
+					_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
+					break;
+				case Behaviors.THROWGRENADE:
+					break;
+				case Behaviors.GOTOFLAG:
+					break;
+				case Behaviors.GOTOBORDER:
+					break;
+				case Behaviors.CONQUERBUILDING:
+					break;
+				case Behaviors.STAYINCOVER:
+					break;
+				case Behaviors.GOTOCOVER:
+					break;
+				case Behaviors.GOTOHEAL:
+					break;
+				case Behaviors.FLEE:
+					break;
+				case Behaviors.GETSUPPLIES:
+					break;
+				case Behaviors.BRINGSUPPLIES:
+					break;
+				case Behaviors.BUILD:
+					_myBoombox.PlayBehavior(ClipsPawn.BUILD_REPAIR_01);
+					break;
+				case Behaviors.DECONSTRUCT:
+					break;
+				case Behaviors.GETAMMO:
+					break;
+				case Behaviors.MOUNT:
+					break;
+				case Behaviors.FOLLOW:
+					break;
+				case Behaviors.DIE:
+					break;
+				case Behaviors.WINCHEER:
+					break;
+				case Behaviors.GOANYWHERE:
+					break;
+				case Behaviors.SHOOTATBUILDING:
+					_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
+					break;
+				default:
+					_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
+					break;
+			}
 		}
 		#endregion
 

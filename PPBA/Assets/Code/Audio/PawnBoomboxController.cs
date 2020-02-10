@@ -17,7 +17,7 @@ namespace PPBA
 
 		private bool _isTicking = false;
 		private float _soundTicker = 0f;
-		private const float _soundCooldown = 0.5f;
+		private const float _soundCooldown = 0.6f;
 
 		void Awake()
 		{

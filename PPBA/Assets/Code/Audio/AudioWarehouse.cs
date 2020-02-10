@@ -174,7 +174,6 @@ namespace PPBA
 			foreach(ClipsPawn item in _namesPawn)
 			{
 				string path = "Audio/ClipsPawn/" + item.ToString();
-				print(path);
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_pawnClipDict[item] = null != temp ? temp : _defaultClip;
 			}
