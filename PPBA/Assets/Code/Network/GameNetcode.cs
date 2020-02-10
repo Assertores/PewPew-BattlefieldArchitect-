@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SceneManagement;
 
 //#define UNITY_SERVER
 namespace PPBA
@@ -267,10 +268,13 @@ namespace PPBA
 
 		void DoServerRestart()
 		{
+			ServerShutDown();
+			/*
 			Debug.Log("[SERVER] restart");
 			ObjectPool.ResetAllObjectPools();
 			TickHandler.s_instance.DoReset();
 			GlobalVariables.s_instance._clients = new List<client>();
+			*/
 		}
 #else
 		void Start()
@@ -491,6 +495,8 @@ namespace PPBA
 				socket.Close();
 
 			Debug.Log("[SERVER] shut down");
+
+			SceneManager.LoadScene(StringCollection.MAINMENU);
 		}
 #endregion
 	}
