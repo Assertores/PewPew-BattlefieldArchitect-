@@ -88,6 +88,7 @@ namespace PPBA
 
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
+			_ResultMyTextureTerritorium.Create();
 
 			Graphics.Blit(resTex, _ResultTextureRessource);
 			Graphics.Blit(terTex, _ResultTextureTerritorium);
