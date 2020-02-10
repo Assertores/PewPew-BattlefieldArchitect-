@@ -76,6 +76,14 @@ namespace PPBA
 		/// <param name="stats">item1 = playerID, item2 = totalAICount, Item3 = totalResources</param>
 		public void Init(bool amITheWinner, System.Tuple<int, int, int>[] stats)
 		{
+#if DB_ES
+			Debug.Log("Init was called");
+			Debug.Log(amITheWinner);
+			foreach(var it in stats)
+			{
+				Debug.Log(it.Item1 + ", " + it.Item2 + ", " + it.Item3);
+			}
+#endif
 			_winningLable.text = amITheWinner ? _winnerText : _LoserText;
 
 			for(int i = 0; i < stats.Length; i++)
