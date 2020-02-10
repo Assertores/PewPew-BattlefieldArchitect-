@@ -242,7 +242,7 @@ namespace PPBA
 
 		int[] h_widths = new int[2];
 		int[] h_hights = new int[2];
-		float GetHMValue(int id, int x, int y)
+		public float GetHMValue(int id, int x, int y)
 		{
 			if(id < 0 || id >= _heatMaps.Length)
 				return float.NaN;

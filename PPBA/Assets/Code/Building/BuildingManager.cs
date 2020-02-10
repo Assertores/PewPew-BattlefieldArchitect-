@@ -17,7 +17,7 @@ namespace PPBA
 		private Vector3 _lastPole;
 		private bool _isBuilt = false;
 
-		private Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
+		public Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
 
 		public bool _canBuild = true;
 
@@ -28,9 +28,10 @@ namespace PPBA
 		public delegate void eventUIInfoPanel(ObjectType holder);
 		public eventUIInfoPanel _InfoPanelEvent;
 
-		[HideInInspector] public List<IRefHolder> _refineriesHolder = new List<IRefHolder>();
-		[HideInInspector] public List<IRefHolder> _mediCampHolder = new List<IRefHolder>();
-		[HideInInspector] public List<IRefHolder> _depotHolder = new List<IRefHolder>();
+		public List<IRefHolder> _refineriesHolder = new List<IRefHolder>();
+		public List<IRefHolder> _mediCampHolder = new List<IRefHolder>();
+		public List<IRefHolder> _depotHolder = new List<IRefHolder>();
+		public List<IRefHolder> _HQ = new List<IRefHolder>();
 
 		private void Update()
 		{
@@ -307,6 +308,19 @@ namespace PPBA
 					_mediCampHolder.Add(_refHolderyp);
 					break;
 				case ObjectType.SIZE:
+					break;
+				case ObjectType.GUN_TURRET:
+					break;
+				case ObjectType.WALL:
+					break;
+				case ObjectType.WALL_BETWEEN:
+					break;
+				case ObjectType.COVER:
+					break;
+				case ObjectType.FLAGPOLE:
+					break;
+				case ObjectType.HQ:
+					_HQ.Add(_refHolderyp);
 					break;
 			}
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PPBA
 {
@@ -14,9 +15,14 @@ namespace PPBA
 
 		void LateUpdate()
 		{
-			if(Input.GetMouseButton(1))
+			if(/*Input.GetMouseButton(1)*/ Input.GetKey(KeyCode.E))
 			{
-				transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * _RotateSpeed, 0), Space.World);
+				transform.Rotate(new Vector3(0, 1 * _RotateSpeed, 0), Space.World);
+			}
+
+			if(/*Input.GetMouseButton(1)*/ Input.GetKey(KeyCode.Q))
+			{
+				transform.Rotate(new Vector3(0, -1 * _RotateSpeed, 0), Space.World);
 			}
 
 			Vector3 pos = Vector3.zero;
@@ -54,7 +60,25 @@ namespace PPBA
 			pos.z = Mathf.Clamp(pos.z, -_panLimit.y, _panLimit.y);
 
 			transform.position = pos ;
-		}
 
+			if(Input.GetKeyDown(KeyCode.H))
+			{
+				if(BuildingManager.s_instance._HQ.Count > 0)
+				{
+					IRefHolder holder = BuildingManager.s_instance._HQ[0];
+					transform.position = ((MonoBehaviour)holder).transform.position;
+				}
+
+				//foreach(KeyValuePair<GameObject, ObjectType> build in BuildingManager.s_instance._HQ)
+				//{
+				//	if(ObjectType.HQ == build.Value)
+				//	{
+				//	print("jump!!!!!!!!!!!!!!!");
+				//		transform.position = build.Key.transform.position;
+				//		break;
+				//	}
+				//}
+			}
+		}
 	}
 }

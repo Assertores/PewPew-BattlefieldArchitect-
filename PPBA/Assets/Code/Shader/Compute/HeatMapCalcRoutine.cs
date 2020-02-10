@@ -215,21 +215,30 @@ namespace PPBA
 
 		public float[][] GetStartArrays()
 		{
-			Color[] resPi = map1.GetPixels();
-			Color[] terPi = map2.GetPixels();
+			StartHeatMapCalc();
+
+			//Color[] resPi = map1.GetPixels();
+			//Color[] terPi = map2.GetPixels();
+
+
 
 			float[][] textures = new float[2][];
 
-			for(int i = 0; i < textures.Length; i++)
-			{
-				textures[i] = new float[resPi.Length];
-			}
+			textures[0] = _resMapCalc.GetValues().tex;
+			textures[1] = _terMapCalc.GetValues().tex;
 
-			for(int i = 0; i < resPi.Length; i++)
-			{
-				textures[0][i] = resPi[i].r;
-				textures[1][i] = terPi[i].r;
-			}
+
+
+			//for(int i = 0; i < textures.Length; i++)
+			//{
+			//	textures[i] = new float[resPi.Length];
+			//}
+
+			//for(int i = 0; i < resPi.Length; i++)
+			//{
+			//	textures[0][i] = resPi[i].r;
+			//	textures[1][i] = terPi[i].r;
+			//}
 
 			return textures;
 		}
