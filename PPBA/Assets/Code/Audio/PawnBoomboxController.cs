@@ -15,6 +15,10 @@ namespace PPBA
 		private AudioSource _behaviorSource;
 		private AudioSource _voiceSource;
 
+		private bool _isTicking = false;
+		private float _soundTicker = 0f;
+		private const float _soundCooldown = 0.5f;
+
 		void Awake()
 		{
 			_sources = GetComponents<AudioSource>();
@@ -35,7 +39,13 @@ namespace PPBA
 
 		void Update()
 		{
-
+#if !UNITY_SERVER
+			if(_isTicking)
+			{
+				_soundTicker += Time.deltaTime;
+				_isTicking = _soundTicker < _soundCooldown;
+			}
+#endif
 		}
 
 		public void PlaySpawn() => _behaviorSource?.PlayOneShot(AudioWarehouse.s_instance.Clip(ClipsBuilding.UNIT_PRODUCED_01));
@@ -46,8 +56,13 @@ namespace PPBA
 
 		public void PlayBehavior(ClipsPawn _clip)
 		{
-			_behaviorSource.clip = AudioWarehouse.s_instance.Clip(_clip);
-			_behaviorSource.Play();
+			if(!_isTicking)
+			{
+				_behaviorSource.clip = AudioWarehouse.s_instance.Clip(_clip);
+				_behaviorSource.Play();
+				_soundTicker = 0f;
+				_isTicking = true;
+			}
 		}
 
 		public void PlayVoice(ClipsPawn _clip)
