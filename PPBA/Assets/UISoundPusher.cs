@@ -9,7 +9,6 @@ namespace PPBA
 		public void PushClick() => UIBoomboxController.PlayUI(ClipsUI.ICON_CLICK_01);
 		
 
-
 		public void PushSound(ClipsUI clip) => UIBoomboxController.PlayUI(clip);
 	}
 }
