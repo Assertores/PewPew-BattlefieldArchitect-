@@ -166,33 +166,45 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
     
     if (value == 2)
     {
+
+
         //TerritoriumResult[id.xy] = float4(0, 1, 1, 1);
         TerritoriumResult[id.xy] = teamColors[0];
 
         float4 bw = (team == (value - 2) ? 0 : 1);
 
-        MyTerritoriumResult[id.xy] = bw;
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
 
     }
     else if (value == 3)
     {
+
+
         //TerritoriumResult[id.xy] = float4(0, 1, 0, 1);
         TerritoriumResult[id.xy] = teamColors[1];
         
         float4 bw = (team == (value - 2) ? 0 : 1);
 
-        MyTerritoriumResult[id.xy] = bw;
-        
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
     }
     else if (value == 4)
     {
+
         //TerritoriumResult[id.xy] = float4(0, 0, 1, 1);
         TerritoriumResult[id.xy] = teamColors[2];
         
         float4 bw = (team == (value - 2) ?  0 : 1);
 
-        MyTerritoriumResult[id.xy] = bw;
-        
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
     }
     else if (value == 5)
     {
@@ -201,10 +213,11 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
         
         float4 bw = (team == (value - 2) ?  0 : 1);
 
-        MyTerritoriumResult[id.xy] = bw;
-        
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
     }
-
 }
     
 
