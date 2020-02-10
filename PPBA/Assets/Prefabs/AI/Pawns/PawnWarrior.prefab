@@ -217,8 +217,8 @@ MonoBehaviour:
   _maxSupplies: 5
   _isNavPathDirty: 1
   _currentAnimation: 0
-  _moveSpeed: 3.7
-  _healthBackingField: 125
+  _moveSpeed: 3.8
+  _healthBackingField: 150
   _ammoBackingField: 10
   _suppliesBackingField: 0
   _moraleBackingField: 150

@@ -8,7 +8,6 @@ namespace PPBA
 	public class PawnSpawner : MonoBehaviour
 	{
 		private ResourceDepot _resourceDepot;
-		[SerializeField] private int _pawnCost = 50;
 		private ObjectType[] _pawnTypes = new ObjectType[] { ObjectType.PAWN_HEALER, ObjectType.PAWN_PIONEER, ObjectType.PAWN_WARRIOR };
 
 		void Awake()
@@ -42,7 +41,7 @@ namespace PPBA
 				if(0 < schedule[ticker] && HasEnoughResources(_pawnTypes[ticker]))
 				{
 					Pawn.Spawn(_pawnTypes[ticker], transform.position, _resourceDepot._team);
-					_resourceDepot.TakeResources(_pawnCost);
+					_resourceDepot.TakeResources(PawnCost(_pawnTypes[ticker]));
 					schedule[ticker]--;
 					break;
 				}

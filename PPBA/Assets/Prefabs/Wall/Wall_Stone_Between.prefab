@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 5
+  _resourcesMax: 2
   _work: 0
   _workMax: 16
   _interactRadius: 5
@@ -118,6 +118,7 @@ MonoBehaviour:
   _BuildingSound: {fileID: 0}
   _ImageUI: {fileID: 3286163911610860551, guid: fc00a32907e32ab4a9ed9f88f62289ea,
     type: 3}
+  _UIElement_: {fileID: 0}
   _TextField: {fileID: 0}
   _ObjectType: 4
   _GhostPrefab: {fileID: 0}
