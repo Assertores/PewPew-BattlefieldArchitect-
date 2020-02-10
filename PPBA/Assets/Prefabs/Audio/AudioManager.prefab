@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d74d57f8785fef14d98bd8ede6bf50cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _defaultBackingField: {fileID: 8300000, guid: f19d3c0096ecf65448a68a6c0fc5feaa,
+    type: 3}
 --- !u!1001 &3338188426688024350
 PrefabInstance:
   m_ObjectHideFlags: 0

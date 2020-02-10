@@ -41,7 +41,8 @@ namespace PPBA
 			else
 				pawn._currentAnimation = PawnAnimations.RUN;
 
-			pawn.SetMoveTarget(new Vector3(pawn._borderData.x, pawn._borderData.y, pawn.transform.position.z));
+			//pawn.SetMoveTarget(new Vector3(pawn._borderData.x, pawn._borderData.y, pawn.transform.position.z));
+			pawn.SetMoveTarget(new Vector3(pawn._borderData.x, pawn.transform.position.y, pawn._borderData.y));
 		}
 
 		protected override float PawnAxisInputs(Pawn pawn, string name)

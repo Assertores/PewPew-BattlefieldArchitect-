@@ -38,7 +38,7 @@ namespace PPBA
 
 		}
 
-		public void PlaySpawn() => _behaviorSource.PlayOneShot(AudioWarehouse.s_instance.Clip(ClipsBuilding.UNIT_PRODUCED_01));
+		public void PlaySpawn() => _behaviorSource?.PlayOneShot(AudioWarehouse.s_instance.Clip(ClipsBuilding.UNIT_PRODUCED_01));
 
 		public void PlayClick() => Random.Range(0, 1);//TODO
 

@@ -218,8 +218,8 @@ MonoBehaviour:
   _maxSupplies: 5
   _isNavPathDirty: 1
   _currentAnimation: 0
-  _moveSpeed: 3.7
-  _healthBackingField: 125
+  _moveSpeed: 3.8
+  _healthBackingField: 150
   _ammoBackingField: 10
   _suppliesBackingField: 0
   _moraleBackingField: 150
@@ -238,8 +238,8 @@ MonoBehaviour:
   - 7
   - 7
   - 4
+  - 6
   - 5
-  - 0
   _behaviors: []
   _lastBehavior: {fileID: 0}
   _behaviorScores: []

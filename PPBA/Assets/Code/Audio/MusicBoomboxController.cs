@@ -19,7 +19,7 @@ namespace PPBA
 			if(null == _source)
 				return;
 
-			PlayMusic(ClipsMusic.MUSIC_TRACK_01);
+			//PlayMusic(ClipsMusic.MUSIC_TRACK_01);
 		}
 
 		void Update()

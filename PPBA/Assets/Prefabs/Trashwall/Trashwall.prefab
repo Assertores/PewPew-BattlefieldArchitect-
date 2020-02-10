@@ -226,7 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 50
+  _resourcesMax: 25
   _work: 0
   _workMax: 32
   _interactRadius: 5
@@ -440,6 +440,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6709774135978924389}
     m_Modifications:
+    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
+        type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
     - target: {fileID: 1386764047220013527, guid: afa21fd1e4c406c4cb3c8d234f08489a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -494,11 +499,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8835393031937435599, guid: afa21fd1e4c406c4cb3c8d234f08489a,
-        type: 3}
-      propertyPath: m_Name
-      value: Model
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa21fd1e4c406c4cb3c8d234f08489a, type: 3}
