@@ -359,7 +359,7 @@ namespace PPBA
 					if(!gameObject.activeSelf)
 					{
 						gameObject.SetActive(true);
-						_myBoombox.PlaySpawn();
+						//_myBoombox.PlaySpawn();
 						ResetToDefault(this, 0);
 					}
 				}

@@ -14,9 +14,11 @@ namespace PPBA
 
 		[SerializeField] ComputeShader _computeShader;
 		public Material _GroundMaterial;
+		public Material _FogMaterial;
 
 		public RenderTexture _ResultTextureRessource;
 		public RenderTexture _ResultTextureTerritorium;
+		public RenderTexture _ResultMyTextureTerritorium;
 		//public RenderTexture _Resulttest;
 		//public RenderTexture _ResultTerritoriumtest;
 
@@ -41,13 +43,13 @@ namespace PPBA
 		private void Start()
 		{
 
-			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
-			//_setTexCalc._computeShader = _computeShader;
-
-			gameObject.AddComponent<SetTextureMapCalculate>();
-			_setTexCalc = GetComponent<SetTextureMapCalculate>();
+			_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"), GlobalVariables.s_instance._teamColors);
 			_setTexCalc._computeShader = _computeShader;
-			_setTexCalc._resourceCalcKernel = _computeShader.FindKernel("CSBitToTex");
+
+			//gameObject.AddComponent<SetTextureMapCalculate>();
+			//_setTexCalc = GetComponent<SetTextureMapCalculate>();
+			//_setTexCalc._computeShader = _computeShader;
+			//_setTexCalc._resourceCalcKernel = _computeShader.FindKernel("CSBitToTex");
 
 			//_resMapCalc = new ResourceMapCalculate(_computeShader.FindKernel("CSMain"));
 			//_resMapCalc._computeShader = _computeShader;
@@ -65,7 +67,7 @@ namespace PPBA
 			_terMapCalc._computeShader = _computeShader;
 			_terMapCalc._TerCalcKernel = _computeShader.FindKernel("CSTerritorium");
 			_terMapCalc._earlyCalcKernel = _computeShader.FindKernel("CSInit");
-					   			 
+
 			Texture resTex = _GroundMaterial.GetTexture("_NoiseMap");
 			Texture terTex = _GroundMaterial.GetTexture("_TerritorriumMap");
 
@@ -75,6 +77,11 @@ namespace PPBA
 			};
 
 			_ResultTextureTerritorium = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
+			{
+				enableRandomWrite = true
+			};
+
+			_ResultMyTextureTerritorium = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
 			{
 				enableRandomWrite = true
 			};
@@ -89,23 +96,32 @@ namespace PPBA
 			//{
 			//	enableRandomWrite = true
 			//};
-			
+
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
 
 			Graphics.Blit(resTex, _ResultTextureRessource);
 			Graphics.Blit(terTex, _ResultTextureTerritorium);
-			//Graphics.Blit(resTex, _Resulttest);
-			//Graphics.Blit(terTex, _ResultTerritoriumtest);
+			Graphics.Blit(terTex, _ResultMyTextureTerritorium);
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTextureRessource);
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTextureTerritorium);
+
+			// set fog TeamColors
+			_FogMaterial.SetTexture("_TerTex", _ResultMyTextureTerritorium);
+
+			if(GlobalVariables.s_instance._clients.Count > 0)
+			{
+				int team = GlobalVariables.s_instance._clients[0]._id;
+				_FogMaterial.SetColor("TeamColor", GlobalVariables.s_instance._teamColors[team]);
+			}
 		}
+
 
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
 		{
 			//_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
-			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
+			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium, _ResultMyTextureTerritorium);
 		}
 
 		//public void EarlyCalc()
