@@ -109,7 +109,10 @@ namespace PPBA
 			 
 		}
 
-
+		public Vector3 TexPointToWorldSpace(Vector2Int texPos)
+		{
+			return new Vector3((texPos.x / _ppu) + _terrain.transform.position.x, 0, (texPos.y / _ppu) + _terrain.transform.position.z);
+		}
 
 	}
 }
