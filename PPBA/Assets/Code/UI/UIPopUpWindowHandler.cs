@@ -10,6 +10,7 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_EDITOR
 			if(null == _popUpPrefab)
 			{
 				Debug.LogError("Pop Up Window Reference not set");
@@ -25,6 +26,7 @@ namespace PPBA
 				Debug.LogError("Pop Up Window Content Reference not set");
 				Destroy(this);
 			}
+#endif
 		}
 
 		public UIPopUpWindowRefHolder CreateWindow(string content)

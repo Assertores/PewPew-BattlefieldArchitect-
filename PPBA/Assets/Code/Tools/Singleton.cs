@@ -13,7 +13,9 @@ namespace PPBA
 			{
 				if(s_instanceBackingField == null)
 				{
+#if DB_ST
 					Debug.Log("no object of type " + typeof(T) + " was found.");
+#endif
 					GameObject tmp = new GameObject("SINGELTON_" + typeof(T));
 					s_instanceBackingField = tmp.AddComponent<T>();
 				}
@@ -25,7 +27,9 @@ namespace PPBA
 		{
 			if(s_instanceBackingField != null)
 			{
+#if DB_ST
 				Debug.Log("multible instances of type " + typeof(T));
+#endif
 				Destroy(this);
 				return;
 			}

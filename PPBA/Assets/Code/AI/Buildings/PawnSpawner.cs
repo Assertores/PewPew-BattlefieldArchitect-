@@ -8,7 +8,6 @@ namespace PPBA
 	public class PawnSpawner : MonoBehaviour
 	{
 		private ResourceDepot _resourceDepot;
-		[SerializeField] private int _pawnCost = 50;
 		private ObjectType[] _pawnTypes = new ObjectType[] { ObjectType.PAWN_HEALER, ObjectType.PAWN_PIONEER, ObjectType.PAWN_WARRIOR };
 
 		void Awake()
@@ -28,7 +27,7 @@ namespace PPBA
 
 		public void DoTheThing(int tick = 0)
 		{
-			if(tick % 25 != 0 || !HasEnoughResources())//early skip
+			if(tick % 25 != 0 || _resourceDepot._resources < 50)//early skip
 				return;
 
 			int[] schedule = GlobalVariables.GetScheduledPawns(_resourceDepot._team);
@@ -39,10 +38,10 @@ namespace PPBA
 
 			for(int i = 0; i < 3; i++)
 			{
-				if(0 < schedule[ticker])
+				if(0 < schedule[ticker] && HasEnoughResources(_pawnTypes[ticker]))
 				{
 					Pawn.Spawn(_pawnTypes[ticker], transform.position, _resourceDepot._team);
-					_resourceDepot.TakeResources(_pawnCost);
+					_resourceDepot.TakeResources(PawnCost(_pawnTypes[ticker]));
 					schedule[ticker]--;
 					break;
 				}
@@ -51,7 +50,22 @@ namespace PPBA
 			}
 		}
 
-		private bool HasEnoughResources() => _resourceDepot._resources < _pawnCost;
+		private bool HasEnoughResources(ObjectType pawnType) => _resourceDepot._resources < PawnCost(pawnType);
+
+		private int PawnCost(ObjectType pawnType)
+		{
+			switch(pawnType)
+			{
+				case ObjectType.PAWN_HEALER:
+					return 50;
+				case ObjectType.PAWN_PIONEER:
+					return 75;
+				case ObjectType.PAWN_WARRIOR:
+					return 100;
+				default:
+					return 75;
+			}
+		}
 
 		private void OnEnable()
 		{

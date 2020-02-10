@@ -6,6 +6,7 @@ namespace PPBA
 {
 	public class Example_TickUse : MonoBehaviour
 	{
+#if UNITY_EDITOR
 
 		private void OnEnable()
 		{
@@ -70,5 +71,6 @@ namespace PPBA
 			_tick = tick;
 			_id = TickHandler.s_interfaceInputState.AddObj(_type, transform.position, transform.rotation.eulerAngles.y);
 		}
+#endif
 	}
 }

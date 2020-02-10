@@ -48,12 +48,17 @@ namespace PPBA
 		/// </summary>
 		public static int[] _resourceTotal = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
 
+		//[HideInInspector] public BuildingBoomboxController _myBoombox;
+		//_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+
 		private IRefHolder _myRefHolder;
+		[HideInInspector] public BuildingBoomboxController _myBoombox;
 
 		#region Monobehaviour
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
+			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
 		}
 		void Update()
 		{
@@ -99,7 +104,13 @@ namespace PPBA
 		public int GetTeam() => _team;
 		#endregion
 
-		#region Give Or Take
+		#region Give Or Take Or Check
+		
+		public bool HaveResourceSpace()
+		{
+			return _resources < _maxResources;
+		}
+
 		public int TakeResources(int amount)
 		{
 			if(amount <= _resources)//can take full wanted amount
@@ -283,19 +294,24 @@ namespace PPBA
 			if(TickHandler.s_interfaceGameState.GetType(_id)?._team != GlobalVariables.s_instance._clients[0]._id)
 				return;
 
+#if DB_NC
 			print(tick + "\n" + TickHandler.s_interfaceGameState.ToString());
 			print("_team and global ID " + _team + ", " + GlobalVariables.s_instance._clients[0]._id);
 			print((GetComponentInParent<IRefHolder>() as MonoBehaviour).name);
+#endif
 
 			UiInventory.s_instance.AddLastBuildings();
 		}
 
-		#region IPanelInfo
+#region IPanelInfo
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _resources, "Ammo: " + _ammo };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+
+			if(null != _myBoombox)
+				_myBoombox.PlayClickSound();
 		}
 
 		public void UpdateUnitPanelInfo()
@@ -308,6 +324,6 @@ namespace PPBA
 				_panelDetails[3].text = "Ammo: " + _ammo;
 			}
 		}
-		#endregion
+#endregion
 	}
 }

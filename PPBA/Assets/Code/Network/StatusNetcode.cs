@@ -213,7 +213,9 @@ namespace PPBA
 				}
 				catch(Exception e)
 				{
+#if DB_NC
 					Debug.LogException(e);
+#endif
 					SceneManager.LoadScene(StringCollection.MAINMENU);
 					Destroy(this);
 					return;
@@ -224,7 +226,9 @@ namespace PPBA
 					case StatusType.AWAITINGPLAYERS:
 						if(!LoadingScreenRefHolder.Exists() || LoadingScreenRefHolder.s_instance.text == null)
 						{
+#if DB_NC
 							Debug.LogError("Reference for Loading Screen not set");
+#endif
 							continue;
 						}
 						LoadingScreenRefHolder.s_instance.text.text = data[1] + " of " + data[2] + " players are connected";
@@ -234,7 +238,9 @@ namespace PPBA
 						{
 							h_isInStartUp = true;
 							SceneManager.sceneLoaded += OnClientLoadFinished;
+#if DB_NC
 							print("Loading into Game Scene");
+#endif
 							SceneManager.LoadScene(StringCollection.GAME);
 						}
 						break;
@@ -253,7 +259,9 @@ namespace PPBA
 						Destroy(this);
 						return;
 					default:
+#if DB_NC
 						Debug.LogWarning("Message not readable: " + (StatusType)data[0]);
+#endif
 						break;
 				}
 			}
@@ -272,7 +280,7 @@ namespace PPBA
 		}
 #endif
 
-		public void StartServer(int port, int maxPlayers)
+							public void StartServer(int port, int maxPlayers)
 		{
 #if UNITY_SERVER
 			Server(port, maxPlayers);

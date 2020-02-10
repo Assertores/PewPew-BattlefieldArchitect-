@@ -43,7 +43,9 @@ public class MiniMapController : MonoBehaviour, IPointerClickHandler
 
 		if(Physics.Raycast(miniMapRay, out miniMapHit, Mathf.Infinity))
 		{
+#if DB_UI
 			Debug.Log("miniMapHit: " + miniMapHit.collider.gameObject.name);
+#endif
 			_MovingObject.position = miniMapHit.point;
 		}
 

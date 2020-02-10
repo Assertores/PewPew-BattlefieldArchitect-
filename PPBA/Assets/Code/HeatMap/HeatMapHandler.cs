@@ -21,12 +21,14 @@ namespace PPBA
 
 		private void Start()
 		{
+#if UNITY_EDITOR
 			if(!_terrain)
 			{
 				Debug.LogError("terain reference not set");
 				Destroy(this);
 				return;
 			}
+#endif
 
 			Vector3 size = _terrain.terrainData.size;
 			for(int i = 0; i < _ppu.Length; i++)
@@ -63,11 +65,10 @@ namespace PPBA
 		/// calculates position and distance to nearest boarder
 		/// </summary>
 		/// <param name="worldPos">your world position</param>
-		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>
+		/// <returns>x = target x position in worldspace, y = target y position in worldspace, z = distance to target in worldspace</returns>//TODO: isn't y the z position?
 		public Vector3 BorderValues(Vector3 worldPos)
 		{
-			Vector2 retPos = (worldPos - _terrain.transform.position) * _ppu[1];
-			Vector2Int texPos = new Vector2Int((int)retPos.x, (int)retPos.y);
+			Vector2Int texPos = UserInputController.s_instance.GetTexturePixelPoint(worldPos);
 
 			if(h_cashValues.ContainsKey(texPos))
 				return h_cashValues[texPos];
@@ -92,36 +93,57 @@ namespace PPBA
 					#region Check 8 positions
 
 					pos = texPos + new Vector2Int(column, row);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+					if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
 						valueIsDifferent = true;
 
-					pos = texPos + new Vector2Int(-column, row);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(column, -row);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(-column, -row);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(row, column);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(-row, column);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(row, -column);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
-
-					pos = texPos + new Vector2Int(-row, -column);
-					if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
-						valueIsDifferent = true;
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(-column, row);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(column, -row);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(-column, -row);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(row, column);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(-row, column);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(row, -column);
+						if(myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
+					if(!valueIsDifferent)
+					{
+						pos = texPos + new Vector2Int(-row, -column);
+						if(!valueIsDifferent && myTeam != (int)GetHMValue(1, pos.x, pos.y))
+							valueIsDifferent = true;
+					}
+					
 
 					#endregion
 
@@ -146,7 +168,9 @@ namespace PPBA
 
 			foundDist = Mathf.Sqrt(foundDist);
 
-			h_cashValues[texPos] = new Vector3((found.x / _ppu[1]) + _terrain.transform.position.x, (found.y / _ppu[1]) + _terrain.transform.position.y, foundDist / _ppu[1]);
+			Vector3 targetWorldPos = UserInputController.s_instance.TexPointToWorldSpace(found);
+
+			h_cashValues[texPos] = new Vector3(targetWorldPos.x, targetWorldPos.z, foundDist / _ppu[1]);
 
 			return h_cashValues[texPos];
 		}
@@ -172,7 +196,7 @@ namespace PPBA
 			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[0]));
 			_heatMaps[0] = value[0].tex;
 
-			TickHandler.s_interfaceGameState.Add(HMRetToGSC(0, ref value[1]));
+			TickHandler.s_interfaceGameState.Add(HMRetToGSC(1, ref value[1]));
 			_heatMaps[1] = value[1].tex;
 		}
 

@@ -37,7 +37,7 @@ namespace PPBA
 			{
 				Vector3 targetPosition = s_targetDictionary[pawn].GetTransform().position;
 
-				if(0 < s_timerDictionary[pawn] || Vector3.Magnitude(targetPosition - pawn.transform.position) < _attackRange)
+				if(0 < s_timerDictionary[pawn] || Vector3.Magnitude(targetPosition - pawn.transform.position) < pawn._attackDistance)
 				{
 					pawn._currentAnimation = PawnAnimations.IDLE;
 					s_timerDictionary[pawn]++;//increment timer
@@ -126,7 +126,9 @@ namespace PPBA
 				case "Morale":
 					return pawn._morale / pawn._maxMorale;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -189,7 +191,7 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
 		}
-		#endregion
+#endregion
 
 		private bool CheckLos(Pawn pawn, Pawn target)
 		{

@@ -58,7 +58,9 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

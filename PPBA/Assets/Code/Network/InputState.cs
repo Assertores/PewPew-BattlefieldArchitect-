@@ -27,6 +27,7 @@ namespace PPBA
 			public Vector3[] _corners;
 		}
 
+		[System.Serializable]
 		public class ProduceUnit
 		{
 			public int _client;
@@ -39,6 +40,7 @@ namespace PPBA
 	public class InputState
 	{
 		private static int _currentID = 0;
+		public static readonly byte[] s_emptyInputState = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };//remeber to update this if you change the encrypting
 
 		public List<ISC.obj> _objs = new List<ISC.obj>();
 		public List<ISC.combinedObj> _combinedObjs = new List<ISC.combinedObj>();
@@ -111,12 +113,22 @@ namespace PPBA
 				}
 			}
 
+#if DB_IS
+			Debug.Log(_produceUnits.Count + ", " + (byte)_produceUnits.Count);
+#endif
+
 			value.Add((byte)_produceUnits.Count);
 			foreach(var it in _produceUnits)
 			{
 				value.Add(it._pawnType);
 				value.Add(it._pawnCount);
 			}
+
+			//remember to update s_emptyInputState if you change something
+
+#if DB_IS
+			Debug.Log(value.Count);
+#endif
 
 			return value.ToArray();
 		}
@@ -129,8 +141,15 @@ namespace PPBA
 		/// <returns>the offset after the point it stoped reading</returns>
 		public int Decrypt(int client, byte[] msg, int offset)
 		{
+#if DB_IS
+			Debug.Log(offset + ", " + msg.Length);
+#endif
 			int count = BitConverter.ToInt32(msg, offset);
 			offset += sizeof(int);
+
+#if DB_IS
+			Debug.Log(count);
+#endif
 
 			for(int i = 0; i < count; i++)
 			{
@@ -161,6 +180,10 @@ namespace PPBA
 
 			count = BitConverter.ToInt32(msg, offset);
 			offset += sizeof(int);
+
+#if DB_IS
+			Debug.Log(count);
+#endif
 
 			for(int i = 0; i < count; i++)
 			{
@@ -194,6 +217,11 @@ namespace PPBA
 
 			count = msg[offset];
 			offset++;
+
+#if DB_IS
+			Debug.Log(count);
+#endif
+
 			for(int i = 0; i < count; i++)
 			{
 				_produceUnits.Add(new ISC.ProduceUnit
@@ -204,6 +232,10 @@ namespace PPBA
 				});
 				offset += 2;
 			}
+
+#if DB_IS
+			Debug.Log("out offset: " + offset);
+#endif
 
 			return offset;
 		}

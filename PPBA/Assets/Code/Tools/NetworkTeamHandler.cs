@@ -13,13 +13,14 @@ namespace PPBA
 		void OnEnable()
 		{
 			refHolder = GetComponent<IRefHolder>();
-
+#if UNITY_EDITOR
 			if(null == refHolder)
 			{
 				Debug.LogWarning("no Refholder found. self Destruct.");
 				Destroy(this);
 				return;
 			}
+#endif
 
 #if UNITY_SERVER
 			TickHandler.s_GatherValues += WriteToGameState;

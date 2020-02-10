@@ -103,6 +103,7 @@ namespace PPBA
 		[SerializeField] private Material _material;
 		[SerializeField] private Renderer _myRenderer;
 		private MaterialPropertyBlock _PropertyBlock;
+		private PawnBoomboxController _myBoombox;
 
 		//targets and target lists
 		public List<Pawn> _closePawns = new List<Pawn>();
@@ -184,6 +185,7 @@ namespace PPBA
 			_healthBarController = GetComponentInChildren<HealthBarController>();
 			_shootLineController = GetComponentInChildren<ShootLineController>();
 			_animationController = transform.GetChild(0).GetComponent<PawnAnimationController>();
+			_myBoombox = GetComponentInChildren<PawnBoomboxController>();
 
 			//Initialisation
 			InitiateBehaviors();
@@ -357,6 +359,7 @@ namespace PPBA
 					if(!gameObject.activeSelf)
 					{
 						gameObject.SetActive(true);
+						_myBoombox.PlaySpawn();
 						ResetToDefault(this, 0);
 					}
 				}
@@ -537,7 +540,9 @@ namespace PPBA
 				case Behaviors.GOANYWHERE:
 					return Behavior_GoAnywhere.s_instance;
 				default:
+#if DB_AI
 					Debug.LogWarning("GetBehavior switch defaulted. Couldn't get the desired behavior.");
+#endif
 					return Behavior_GoAnywhere.s_instance;
 			}
 
@@ -545,9 +550,9 @@ namespace PPBA
 		}
 
 		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
-		#endregion
+#endregion
 
-		#region Member Admin
+#region Member Admin
 		public void TakeDamage(int amount)
 		{
 			_health -= amount;
@@ -582,9 +587,9 @@ namespace PPBA
 				_morale += _moraleRegen;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Navigation
+#region Navigation
 		public void NavTick(int tick = 0)//called during DoTick by Execute()
 		{
 			if(null == _navMeshPath)
@@ -644,7 +649,9 @@ namespace PPBA
 		{
 			if(null == _moveTarget || null == _navMeshPath)
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn is missing a _moveTarget or a _navMeshPath");
+#endif
 				return false;
 			}
 
@@ -655,7 +662,9 @@ namespace PPBA
 			}
 			else
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn " + _id + " failed to calculate NavPath.");
+#endif
 				return false;
 			}
 		}
@@ -697,7 +706,9 @@ namespace PPBA
 			}
 			else
 			{
+#if DB_AI || DB_PF
 				Debug.LogWarning("Pawn " + _id + " could not sample NavAreaCost. Defaulting to 1.");
+#endif
 				return 1f;
 			}
 		}
@@ -720,9 +731,9 @@ namespace PPBA
 		}
 
 		public void GetBorderData(int tick = 0) => _borderData = HeatMapHandler.s_instance.BorderValues(transform.position);
-		#endregion
+#endregion
 
-		#region Physics
+#region Physics
 		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
 		private void CheckOverlapSphere()
 		{
@@ -762,6 +773,11 @@ namespace PPBA
 						}
 						continue;
 					case StringCollection.DEPOT:
+						ResourceDepot depot = c.GetComponentInChildren<ResourceDepot>();
+						if(null != depot)
+						{
+							_closeBuildings.Add(depot);
+						}
 						continue;
 					case StringCollection.FLAGPOLE:
 						continue;
@@ -799,14 +815,17 @@ namespace PPBA
 				}
 			}
 		}
-		#endregion
+#endregion
 
-		#region Interfaces
+#region Interfaces
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _supplies, "Ammo: " + _ammo, "Morale: " + (int)_morale };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
+		    
+			if(null != _myBoombox)
+				_myBoombox.PlayClick();
 		}
 
 		public void UpdateUnitPanelInfo()
@@ -825,9 +844,9 @@ namespace PPBA
 				_panelDetails[4].text = "Morale: " + (int)_morale;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Gizmos
+#region Gizmos
 		private void OnDrawGizmos()
 		{
 			/*
@@ -835,9 +854,9 @@ namespace PPBA
 			Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 			*/
 		}
-		#endregion
+#endregion
 
-		#region Spawning/Despawning
+#region Spawning/Despawning
 		private void ClearLists()
 		{
 			_closePawns.Clear();
@@ -873,7 +892,7 @@ namespace PPBA
 
 			pawn.SetMaterialColor(team);
 		}
-		
+
 		public static void Spawn(ObjectType pawnType, Vector3 spawnPoint, int team)
 		{
 			Pawn newPawn = (Pawn)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)pawnType]].GetNextObject(team);
@@ -946,7 +965,11 @@ namespace PPBA
 			}
 			//}
 			else
+			{
+#if DB_AI
 				Debug.LogWarning("Pawn still couldn't get a renderer");
+#endif
+			}
 		}
 
 		/// <summary>
@@ -1021,6 +1044,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-		#endregion
+#endregion
 	}
 }

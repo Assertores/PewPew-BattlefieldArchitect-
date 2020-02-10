@@ -35,7 +35,7 @@ namespace PPBA
 				if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 				{
 					pawn._currentAnimation = PawnAnimations.IDLE;
-					s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
+					pawn._supplies -= s_targetDictionary[pawn].GiveResources(Mathf.Min(_grabSize, pawn._supplies));
 					targetPosition = pawn.transform.position;
 				}
 				else
@@ -72,7 +72,9 @@ namespace PPBA
 				case StringCollection.SUPPLIES:
 					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -90,7 +92,9 @@ namespace PPBA
 				return blueprint._score;
 				*/
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

@@ -17,6 +17,8 @@ namespace PPBA
 
 		public RenderTexture _ResultTextureRessource;
 		public RenderTexture _ResultTextureTerritorium;
+		//public RenderTexture _Resulttest;
+		//public RenderTexture _ResultTerritoriumtest;
 
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
 		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
@@ -38,8 +40,6 @@ namespace PPBA
 
 		private void Start()
 		{
-			//_earlyCalc = new EarlyCalculate(_computeShader.FindKernel("CSInit"));
-			//_earlyCalc._computeShader = _computeShader;
 
 			//_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"));
 			//_setTexCalc._computeShader = _computeShader;
@@ -57,9 +57,15 @@ namespace PPBA
 			_resMapCalc._computeShader = _computeShader;
 			_resMapCalc._ResourceCalcKernel = _computeShader.FindKernel("CSMain");
 
-			_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
-			_terMapCalc._computeShader = _computeShader;
+			//_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
+			//_terMapCalc._computeShader = _computeShader;
 
+			gameObject.AddComponent<TerritoriumMapCalculate>();
+			_terMapCalc = GetComponent<TerritoriumMapCalculate>();
+			_terMapCalc._computeShader = _computeShader;
+			_terMapCalc._TerCalcKernel = _computeShader.FindKernel("CSTerritorium");
+			_terMapCalc._earlyCalcKernel = _computeShader.FindKernel("CSInit");
+					   			 
 			Texture resTex = _GroundMaterial.GetTexture("_NoiseMap");
 			Texture terTex = _GroundMaterial.GetTexture("_TerritorriumMap");
 
@@ -73,11 +79,24 @@ namespace PPBA
 				enableRandomWrite = true
 			};
 
+			//_Resulttest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.RFloat)
+			//{
+			//	enableRandomWrite = true
+			//};
+
+
+			//_ResultTerritoriumtest = new RenderTexture(terTex.width, terTex.height, 0, RenderTextureFormat.ARGB32)
+			//{
+			//	enableRandomWrite = true
+			//};
+			
 			_ResultTextureRessource.Create();
 			_ResultTextureTerritorium.Create();
 
 			Graphics.Blit(resTex, _ResultTextureRessource);
 			Graphics.Blit(terTex, _ResultTextureTerritorium);
+			//Graphics.Blit(resTex, _Resulttest);
+			//Graphics.Blit(terTex, _ResultTerritoriumtest);
 
 			_GroundMaterial.SetTexture("_NoiseMap", _ResultTextureRessource);
 			_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTextureTerritorium);
@@ -85,6 +104,7 @@ namespace PPBA
 
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
 		{
+			//_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
 			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
 		}
 
@@ -95,9 +115,31 @@ namespace PPBA
 
 		public void StartHeatMapCalc()
 		{
+#if DB_HM
+			print("startHeatMapCalc");
+#endif
+
+			//// for testing 
+
+			//Graphics.Blit(_ResultTerritoriumtest, _ResultTextureTerritorium);
+			//// end testing
+
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
 			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
+			//StartCoroutine(test());
 		}
+
+		//IEnumerator test()
+		//{
+		//	yield return new WaitForSecondsRealtime(0.1f);
+
+		//	HeatMapReturnValue[] holder = new HeatMapReturnValue[2];
+		//	holder = HeatMapCalcRoutine.s_instance.ReturnValue();
+		//	_setTexCalc.StartComputeShader(holder[0].tex, holder[1].tex, _Resulttest, _ResultTerritoriumtest);
+
+		//	_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTerritoriumtest);
+
+		//}
 
 		public HeatMapReturnValue[] ReturnValue()
 		{
@@ -127,7 +169,9 @@ namespace PPBA
 			{
 				return;
 			}
+#if DB_HM
 			print("add fabric");
+#endif
 			_Refinerys.Add(refHolder);
 		}
 
@@ -159,10 +203,6 @@ namespace PPBA
 			return _Soldiers.Count != 0;
 		}
 
-		public void PrintSomething(string text)
-		{
-			print("das solltest du lesen! : " + text);
-		}
 
 		[SerializeField] private Texture2D map1;
 		[SerializeField] private Texture2D map2;

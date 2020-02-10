@@ -64,7 +64,7 @@ namespace PPBA
 					min = it._inputStates.GetHighEnd();
 				}
 			}
-#if DB_NET
+#if DB_NC
 			Debug.Log("simulating up to: " + min + " with current tick beeing: " + s_currentTick);
 #endif
 
@@ -93,6 +93,11 @@ namespace PPBA
 						it._client = GlobalVariables.s_instance._clients[i]._id;
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
+					foreach(var it in GlobalVariables.s_instance._clients[i]._inputStates[s_currentTick]._produceUnits)
+					{
+						it._client = GlobalVariables.s_instance._clients[i]._id;
+						s_interfaceInputState._produceUnits.Add(it);
+					}
 				}
 
 #if !UNITY_SERVER
@@ -117,8 +122,10 @@ namespace PPBA
 				s_DoTick?.Invoke(s_currentTick);
 				Profiler.EndSample();
 
+#if DB_NC
 				if(null != _debugText)
 					_debugText.text = "Tick: " + s_currentTick + " -> " + minClientID;
+#endif
 			}
 			s_currentTick--;
 			Profiler.EndSample();
@@ -129,7 +136,7 @@ namespace PPBA
 			s_GatherValues?.Invoke(s_currentTick);
 			Profiler.EndSample();
 
-#if DB_NET
+#if DB_NC
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
 #endif
@@ -140,6 +147,7 @@ namespace PPBA
 				GameState element = new GameState(s_interfaceGameState);
 
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
+				element._scheduledPawns = element._scheduledPawns.FindAll(x => x._id == it._id);
 
 				it._gameStates[s_currentTick] = element;
 
@@ -159,7 +167,7 @@ namespace PPBA
 			  (me._gameStates.GetHighEnd() == s_currentTick && !me._gameStates[s_currentTick]._receivedMessages.AreAllBytesActive()))
 			{
 				s_NetworkPause = true;
-#if DB_NET
+#if DB_NC
 				Debug.Log("Network Pause");
 #endif
 
@@ -171,7 +179,7 @@ namespace PPBA
 
 			if(s_NetworkPause && me._gameStates.GetHighEnd() - s_currentTick <= _inputBuffer / 2)//not quite shure. feals right. might get stuck in an deadlock otherwise.
 			{
-#if DB_NET
+#if DB_NC
 				Debug.Log("waiting for buffer refilling");
 #endif
 				return false;
@@ -194,8 +202,10 @@ namespace PPBA
 
 			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 			{
+#if DB_NC
 				Debug.Log(nextStateTick + " | ref: " + nextState._refTick);
 				Debug.LogError("Reference Tick not Found");
+#endif
 				return false;//no idea how to fix this
 			}
 
@@ -216,38 +226,41 @@ namespace PPBA
 #if DB_OP
 			Debug.Log("===== ===== TICK: " + s_currentTick + " ===== =====");
 #endif
-			foreach(var it in nextState._newIDRanges)
+			if(nextState._newIDRanges != null)
 			{
+				foreach(var it in nextState._newIDRanges)
+				{
 #if DB_OP
 				Debug.Log("testing op: " + it._type);
 #endif
-				bool exists = false;
-				for(int i = nextState._refTick; i < s_currentTick; i++)
-				{
+					bool exists = false;
+					for(int i = nextState._refTick; i < s_currentTick; i++)
+					{
 #if DB_OP
 					Debug.Log("for tick " + i);
 #endif
-					if(default == me._gameStates[i])
-						continue;
+						if(default == me._gameStates[i])
+							continue;
 
 #if DB_OP
 					Debug.Log("tick " + i + " exists");
 #endif
 
-					if(me._gameStates[i]._newIDRanges.Exists(x => x._id == it._id))
-					{
-						exists = true;
-						break;
+						if(me._gameStates[i]._newIDRanges.Exists(x => x._id == it._id))
+						{
+							exists = true;
+							break;
+						}
 					}
-				}
 
 #if DB_OP
 				Debug.Log("ids " + it._id + " in op " + it._type + " do exist? " + exists);
 #endif
 
-				if(!exists)
-				{
-					ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+					if(!exists)
+					{
+						ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)it._type]]?.Resize(it._range, it._id);
+					}
 				}
 			}
 
@@ -256,8 +269,10 @@ namespace PPBA
 
 			s_currentTickTime = Time.time;
 
+#if DB_GS
 			if(s_currentTick % 20 == 0)
 				Debug.Log("Tick: " + s_currentTick + "\n" + s_interfaceGameState.ToString());
+#endif
 
 			Profiler.BeginSample("[Client] SetUp");
 			s_SetUp?.Invoke(s_currentTick);
@@ -285,8 +300,10 @@ namespace PPBA
 
 			me._inputStates[s_currentTick + _inputBuffer] = s_interfaceInputState;
 
+#if DB_NC
 			if(null != _debugText)
 				_debugText.text = "Tick: " + s_currentTick + " -> " + me._gameStates.GetHighEnd() + " (" + me._inputStates.GetLowEnd() + ", " + me._inputStates.GetHighEnd() + ")";
+#endif
 
 			s_currentTick++;
 

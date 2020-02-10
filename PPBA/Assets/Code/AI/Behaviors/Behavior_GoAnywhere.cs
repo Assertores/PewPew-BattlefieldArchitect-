@@ -60,7 +60,9 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -73,7 +75,9 @@ namespace PPBA
 				case "DistanceToTarget":
 					return Vector3.Distance(pawn.transform.position, target) / _maxDistance;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
