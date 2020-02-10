@@ -93,6 +93,11 @@ namespace PPBA
 						it._client = GlobalVariables.s_instance._clients[i]._id;
 						s_interfaceInputState._combinedObjs.Add(it);
 					}
+					foreach(var it in GlobalVariables.s_instance._clients[i]._inputStates[s_currentTick]._produceUnits)
+					{
+						it._client = GlobalVariables.s_instance._clients[i]._id;
+						s_interfaceInputState._produceUnits.Add(it);
+					}
 				}
 
 #if !UNITY_SERVER
@@ -142,6 +147,7 @@ namespace PPBA
 				GameState element = new GameState(s_interfaceGameState);
 
 				element._denyedInputIDs = element._denyedInputIDs.FindAll(x => x._client == it._id);
+				element._scheduledPawns = element._scheduledPawns.FindAll(x => x._id == it._id);
 
 				it._gameStates[s_currentTick] = element;
 
