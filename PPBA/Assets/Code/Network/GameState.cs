@@ -1386,8 +1386,13 @@ Change:
 					//Debug.Log("[GameState] tick was not calculated");
 					continue;
 				}
+				if(nextState._denyedInputIDs == null)
+					nextState._denyedInputIDs = new List<GSC.input>();
 
 				//Debug.Log("[GameState] adding denyed inputs");
+				if(_denyedInputIDs == null)
+					_denyedInputIDs = new List<GSC.input>();
+
 				var elements = nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id));
 				if(elements != null && elements.Count > 0)
 					_denyedInputIDs.AddRange(elements);
@@ -1401,6 +1406,11 @@ Change:
 				{
 					continue;
 				}
+
+				if(_newIDRanges == null)
+					_newIDRanges = new List<GSC.newIDRange>();
+				if(nextState._newIDRanges == null)
+					nextState._newIDRanges = new List<GSC.newIDRange>();
 
 				_newIDRanges.AddRange(nextState._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
