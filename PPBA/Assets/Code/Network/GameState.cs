@@ -1117,6 +1117,36 @@ namespace PPBA
 			Profiler.BeginSample("[GameState] Create Delta");
 
 			_refTick = refTick;
+
+			if(_types == null)
+				_types = new List<GSC.type>();
+			if(_args == null)
+				_args = new List<GSC.arg>();
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
+			if(_healths == null)
+				_healths = new List<GSC.health>();
+			if(_works == null)
+				_works = new List<GSC.work>();
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
+			if(_paths == null)
+				_paths = new List<GSC.path>();
+			if(_heatMaps == null)
+				_heatMaps = new List<GSC.heatMap>();
+			if(_denyedInputIDs == null)
+				_denyedInputIDs = new List<GSC.input>();
+			if(_newIDRanges == null)
+				_newIDRanges = new List<GSC.newIDRange>();
+			if(_scheduledPawns == null)
+				_scheduledPawns = new List<GSC.sheduledPawns>();
+
 			int removerIndex;
 
 			removerIndex = 0;
@@ -1358,7 +1388,9 @@ Change:
 				}
 
 				//Debug.Log("[GameState] adding denyed inputs");
-				_denyedInputIDs.AddRange(nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id)));
+				var elements = nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id));
+				if(elements != null && elements.Count > 0)
+					_denyedInputIDs.AddRange(elements);
 			}
 			_denyedInputIDs.RemoveAll(x => reference._denyedInputIDs.Exists(y => y._id == x._id));
 			//Debug.Log("[GameState] finished denyed input backing");
