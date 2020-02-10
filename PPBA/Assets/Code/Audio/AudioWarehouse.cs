@@ -168,9 +168,7 @@ namespace PPBA
 
 		void Start()
 		{
-
 			LoadAll();
-
 		}
 
 		public AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
