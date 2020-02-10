@@ -32,6 +32,8 @@ namespace PPBA
 			_computeShader.SetVectorArray("teamColors", colorVecs);
 			_computeShader.SetInt("teamColors", GlobalVariables.s_instance._clients[0]._id);
 
+			Debug.Log("team in compute setTer shader : " + GlobalVariables.s_instance._clients[0]._id);
+
 			_computeShader.SetTexture(_resourceCalcKernel, "Result", ResRenTex);
 			_computeShader.SetTexture(_resourceCalcKernel, "TerritoriumResult", TerRenTex);
 			_computeShader.SetTexture(_resourceCalcKernel, "MyTerritoriumResult", MyTerRenTex);
