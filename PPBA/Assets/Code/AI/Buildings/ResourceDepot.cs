@@ -58,7 +58,7 @@ namespace PPBA
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
-			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+			_myBoombox = transform.parent.GetComponentInChildren<BuildingBoomboxController>();
 		}
 		void Update()
 		{
@@ -97,7 +97,14 @@ namespace PPBA
 			}
 		}
 
-		private void Die() => transform.parent.gameObject.SetActive(false);
+		private void Die()
+		{
+			transform.parent.gameObject.SetActive(false);
+#if !UNITY_SERVER
+			//wolke
+			MovableSpeakerController.PlaySoundAtSpot(AudioWarehouse.s_instance.Clip(ClipsBuilding.DESTROY_BUILDING_01), transform.position);
+#endif
+		}
 		public Transform GetTransform() => transform;
 		public float GetHealth() => _health;
 		public float GetMaxHealth() => _maxHealth;
@@ -105,7 +112,7 @@ namespace PPBA
 		#endregion
 
 		#region Give Or Take Or Check
-		
+
 		public bool HaveResourceSpace()
 		{
 			return _resources < _maxResources;
@@ -303,7 +310,7 @@ namespace PPBA
 			UiInventory.s_instance.AddLastBuildings();
 		}
 
-#region IPanelInfo
+		#region IPanelInfo
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
@@ -324,6 +331,6 @@ namespace PPBA
 				_panelDetails[3].text = "Ammo: " + _ammo;
 			}
 		}
-#endregion
+		#endregion
 	}
 }

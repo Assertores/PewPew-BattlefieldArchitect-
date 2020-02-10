@@ -42,11 +42,7 @@ namespace PPBA
 
 		public void PlayClick() => Random.Range(0, 1);//TODO
 
-		public void PlayStep(ClipsPawn _clip)
-		{
-			_stepSource.clip = AudioWarehouse.s_instance.Clip(_clip);
-			_stepSource.Play();
-		}
+		public void PlayStep() => _stepSource?.PlayOneShot(AudioWarehouse.s_instance.Clip(Random.Range(0f, 1f) < 0.5f ? ClipsPawn.UNIT_MOVE_01 : ClipsPawn.UNIT_MOVE_02));
 
 		public void PlayBehavior(ClipsPawn _clip)
 		{
@@ -59,5 +55,7 @@ namespace PPBA
 			_voiceSource.clip = AudioWarehouse.s_instance.Clip(_clip);
 			_voiceSource.Play();
 		}
+
+		public void PlayGetShot() => _behaviorSource?.PlayOneShot(AudioWarehouse.s_instance.Clip(Random.Range(0f, 1f) < 0.5f ? ClipsPawn.UNIT_HIT_SHOT_01 : ClipsPawn.UNIT_HIT_SHOT_02));
 	}
 }

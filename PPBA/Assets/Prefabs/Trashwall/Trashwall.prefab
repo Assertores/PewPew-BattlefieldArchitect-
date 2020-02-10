@@ -81,7 +81,6 @@ Transform:
   m_Children:
   - {fileID: 5077182497961931531}
   - {fileID: 546380337469753507}
-  - {fileID: 9122957257793492895}
   m_Father: {fileID: 6709774135978924389}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -268,6 +267,7 @@ Transform:
   - {fileID: 7173247640328506071}
   - {fileID: 2739725646082410489}
   - {fileID: 5561490301871486370}
+  - {fileID: 9122957257793492895}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -358,7 +358,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 5561490301871486370}
+    m_TransformParent: {fileID: 6709774135978924389}
     m_Modifications:
     - target: {fileID: 8911756999542709260, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
@@ -383,17 +383,17 @@ PrefabInstance:
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
@@ -403,7 +403,7 @@ PrefabInstance:
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
@@ -423,7 +423,7 @@ PrefabInstance:
     - target: {fileID: 3591058338955120529, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: _clickClip
-      value: 9
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16f2ea3459accc94e93a335e3b50f115, type: 3}
