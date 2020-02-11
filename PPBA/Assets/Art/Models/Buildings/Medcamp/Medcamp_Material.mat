@@ -65,7 +65,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AmbientValue: 0
-    - _BuildingHeight: 4.74
+    - _BuildingHeight: 5.81
     - _BumpMapValue: 1
     - _BumpScale: 1
     - _Clip: 1
