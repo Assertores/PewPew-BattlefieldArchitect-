@@ -33,7 +33,11 @@ namespace PPBA
 		}
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
-		[SerializeField] public int _resources = 0;
+		[SerializeField] private int _resourcesBackingField = 0;
+		[SerializeField] public int _resources {
+			get { return _resourcesBackingField; }
+			set { _resourcesBackingField = value; GlobalVariables.IncrementResourceCount(_team, value); }
+		}
 		[SerializeField] public int _maxResources = 1000;
 		[SerializeField] public int _ammo = 0;
 		[SerializeField] public int _maxAmmo = 1000;

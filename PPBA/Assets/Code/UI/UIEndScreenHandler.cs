@@ -86,6 +86,8 @@ namespace PPBA
 #endif
 			_winningLable.text = amITheWinner ? _winnerText : _LoserText;
 
+			_content.sizeDelta = new Vector2(_content.sizeDelta.x, stats.Length * _itemHight);
+
 			for(int i = 0; i < stats.Length; i++)
 			{
 				RectTransform element = (RectTransform)Instantiate(_itemPrefab, _content).transform;
@@ -95,8 +97,6 @@ namespace PPBA
 				refHolder._aiCount.text = stats[i].Item2.ToString();
 				refHolder._resources.text = stats[i].Item3.ToString();
 			}
-
-			_content.sizeDelta = new Vector2(_content.sizeDelta.x, stats.Length * _itemHight);
 		}
 
 		public void BackToMainMenu()
