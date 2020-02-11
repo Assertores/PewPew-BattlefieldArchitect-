@@ -120,17 +120,17 @@ PrefabInstance:
     - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 13
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -141,31 +141,75 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_text
+      value: Wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: a5df1ecc89aaf2343871c77bc1927340,
+        type: 2}
+    - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7391536681944145730, guid: a5df1ecc89aaf2343871c77bc1927340,
+        type: 2}
+    - target: {fileID: 5946413920784558081, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 32.8
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 12
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 2
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: a5df1ecc89aaf2343871c77bc1927340,
+        type: 2}
+    - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7391536681944145730, guid: a5df1ecc89aaf2343871c77bc1927340,
+        type: 2}
+    - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_text
+      value: "Serves as cover and obstacle.\nCosts:2\tHealth:200"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 24.3
       objectReference: {fileID: 0}
     - target: {fileID: 2084824058672353074, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
