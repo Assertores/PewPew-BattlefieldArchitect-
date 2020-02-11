@@ -157,10 +157,15 @@ namespace PPBA
 
 		public static AudioClip _defaultClip { get => s_instance._defaultBackingField; set => s_instance._defaultBackingField = value; }
 		[SerializeField] private AudioClip _defaultBackingField;
+		[SerializeField] private UnityEngine.Audio.AudioMixer _audioMixer;
 
 		void Start()
 		{
 			LoadAll();
+
+#if UNITY_SERVER
+			_audioMixer.SetFloat(StringCollection.MASTER, -80);
+#endif
 		}
 
 		public AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
