@@ -104,6 +104,20 @@ namespace PPBA
 				}
 			}
 
+			for(int i = 0; i < JobCenter.s_headQuarters.Length; i++)
+			{
+				foreach(HeadQuarter target in JobCenter.s_headQuarters[i].FindAll(x => x._resourceDepot.GetTeam() != pawn._team))
+				{
+					float tempScore = CalculateTargetScore(pawn, target._resourceDepot);
+
+					if(bestScore < tempScore)
+					{
+						s_targetDictionary[pawn] = target._resourceDepot;//change target if score is better
+						bestScore = tempScore;
+					}
+				}
+			}
+
 			if(!hadTarget || (null != lastTarget && s_targetDictionary.ContainsKey(pawn) && lastTarget != s_targetDictionary[pawn]))
 				s_timerDictionary[pawn] = 0;//reset timer if target was changed
 
@@ -157,7 +171,7 @@ namespace PPBA
 		public float CalculateTargetScore(Pawn pawn, IDestroyableBuilding target)
 		{
 			//if(!CheckLos(pawn, target))//early skip when LOS is blocked by something other then cover
-				//return 0;
+			//return 0;
 
 			float score = 1f;
 
@@ -191,7 +205,7 @@ namespace PPBA
 			if(s_targetDictionary.ContainsKey(pawn))
 				s_targetDictionary.Remove(pawn);
 		}
-#endregion
+		#endregion
 
 		private bool CheckLos(Pawn pawn, Pawn target)
 		{
