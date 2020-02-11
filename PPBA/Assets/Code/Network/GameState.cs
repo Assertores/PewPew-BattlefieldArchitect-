@@ -1021,6 +1021,7 @@ namespace PPBA
 								float[] values = new float[pos.Length];
 
 								Buffer.BlockCopy(msg, offset, values, 0, values.Length * sizeof(float));
+								offset += values.Length * sizeof(float);
 
 								for(int i = 0; i < pos.Length; i++)
 								{
