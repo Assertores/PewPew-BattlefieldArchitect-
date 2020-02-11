@@ -8,7 +8,7 @@ namespace PPBA
 	{
 		private LineRenderer _lineRenderer;
 		private float _lineTicker = 0f;
-		private float _lineDuration = 0.2f;
+		[SerializeField] private float _lineDuration = 0.2f;
 		private PawnBoomboxController _boombox;
 
 		#region Monobehaviour

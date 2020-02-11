@@ -71,7 +71,7 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			while(socket.Available > 0)
+			while(null != socket && socket.Available > 0)
 			{
 				IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
 				byte[] data = socket.Receive(ref remoteEP);
