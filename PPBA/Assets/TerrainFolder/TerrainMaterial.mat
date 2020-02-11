@@ -28,11 +28,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TerritorriumMap:
-        m_Texture: {fileID: 2800000, guid: b866cfc775652da4ab2a3bda3e895a22, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4e69860a3becb924d8be55d22f79cd73, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _MapChange: 2
+    - _MapChange: 0
     - _MetalResourcesInt: 0
     - _TerrriitorumMapInt: 0
     m_Colors:
