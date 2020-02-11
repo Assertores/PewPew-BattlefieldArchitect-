@@ -8,6 +8,20 @@ namespace PPBA
 	{
 		[SerializeField] Transform[] _startPositions;
 
+
+		private void Start()
+		{
+#if UNITY_SERVER
+
+			for(int i = 0; i < _startPositions.Length; i++)
+			{
+				HeatMapCalcRoutine.s_instance.AddSoldier(_startPositions[i], i);
+			}
+#endif
+		}
+
+
+
 #if !UNITY_SERVER
 		void Update()
 		{
@@ -21,4 +35,6 @@ namespace PPBA
 		}
 #endif
 	}
+
+
 }

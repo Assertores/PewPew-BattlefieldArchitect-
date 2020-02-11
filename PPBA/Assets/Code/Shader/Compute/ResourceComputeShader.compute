@@ -6,6 +6,7 @@
 #pragma kernel CSTerritorium
 //#pragma kernel CSNextEdge
 #pragma kernel CSBitToTex
+#pragma kernel CSTexToArray
 
 int PointSize;
 
@@ -224,78 +225,36 @@ void CSBitToTex(uint3 id : SV_DispatchThreadID)
 
 
 [numthreads(8, 8, 1)]
-void CSNextEdge(uint3 id : SV_DispatchThreadID)
+void CSTexToArray(uint3 id : SV_DispatchThreadID)
 {
-	////===== ===== relevance test ===== =====
- //   bool imIn = false;
+    const int weightMap = 256;
+    
+	float3 col = TerritoriumResult[id.xy].rgb;
+	float gray = (col.r + col.g + col.b) * 0.333;
+	
+	float teamColor1 = (teamColors[0].r + teamColors[0].r + teamColors[0].r) * 0.333;
+	float teamColor2 = (teamColors[1].r + teamColors[1].r + teamColors[1].r) * 0.333;
+	float teamColor3 = (teamColors[2].r + teamColors[2].r + teamColors[2].r) * 0.333;
+	float teamColor4 = (teamColors[3].r + teamColors[3].r + teamColors[3].r) * 0.333;
 
- //   for (int q = 0; !imIn || q < RequiredSize; q++)
- //   {
-	//	if (id.x == InformationRequired[q].x || id.y == InformationRequired[q].y)
-	//	{
-	//		imIn = true;
-	//		break;
-	//	}
- //   }
+    float value = 1;
 
- //   if (!imIn)
- //       return;
+    if (gray == teamColor1)
+    {
+		value = 2;
+    }
+    else if (gray == teamColor2)
+    {
+		value= 3;
+    }
+    else if (gray == teamColor3)
+    {
+		value = 4;
+    }
+    else if (gray == teamColor4)
+    {
+		value = 5;
+    }
 
-	////===== ===== init ===== =====
- //   float myTeam = TerritoriumResult[id.xy].x;
- //   float2 found;
-
- //   float foundDist = 3.402823466e+38F;
-
- //   int maxIndex = 4000000;
-
-	////===== ===== serach ===== =====
- //   for (int column = 1; column * column < foundDist; column++)
- //   {
- //       int rowLength = min(column, maxIndex);
- //       for (int row = 0; row <= rowLength; row++)
- //       {
- //           float2 pos;
- //           bool valueIsDifferent = false;
-
- //           pos = id.xy + float2(column, row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-column, row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(column, -row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-column, -row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(row, column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-row, column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(row, -column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-row, -column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
-
- //           if (valueIsDifferent)
- //           {
- //               int dist = column * column + row * row;
- //               if (foundDist > dist)
- //               {
- //                   found = pos;
- //                   maxIndex = row;
- //                   foundDist = dist;
- //               }
- //           }
- //       }
-
-	//	//===== ===== result ===== =====
- //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
- //   }
-}
+	terValue[id.y * weightMap + id.x] = value;
+}	
