@@ -27,11 +27,9 @@ namespace PPBA
 			{
 				return;
 			}
-
-
+			
 			_redValue.SetData(ResTex);
 			_terValue.SetData(TerTex);
-
 
 			_computeShader.SetBuffer(_resourceCalcKernel, "InputRedValue", _redValue);
 			_computeShader.SetBuffer(_resourceCalcKernel, "terValue", _terValue);

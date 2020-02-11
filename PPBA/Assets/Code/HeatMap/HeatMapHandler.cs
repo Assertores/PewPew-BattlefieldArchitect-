@@ -202,7 +202,15 @@ namespace PPBA
 
 		GSC.heatMap HMRetToGSC(int id, ref HeatMapReturnValue input)
 		{
-			BitField2D mask = new BitField2D(HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), input.bitfield);//TODO: get Hight from texture
+			BitField2D mask;
+			if(input.bitfield == null || input.bitfield.Length == 0)
+			{
+				mask = new BitField2D(HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), true);
+			}
+			else
+			{
+				mask = new BitField2D(HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), HeatMapCalcRoutine.s_instance.GetHeatmapWidth(id), input.bitfield);//TODO: get Hight from texture
+			}
 			Vector2Int[] pos = mask.GetActiveBits();
 
 

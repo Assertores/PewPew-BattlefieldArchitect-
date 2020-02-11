@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace PPBA
 {
 	public class HeatMapCalcRoutine : Singleton<HeatMapCalcRoutine>
@@ -10,7 +9,7 @@ namespace PPBA
 		SetTextureMapCalculate _setTexCalc;
 		ResourceMapCalculate _resMapCalc;
 		TerritoriumMapCalculate _terMapCalc;
-		//EarlyCalculate _earlyCalc;
+		TextureToArryComputeCalculate _TexToArray;
 
 		[SerializeField] ComputeShader _computeShader;
 		public Material _GroundMaterial;
@@ -46,27 +45,20 @@ namespace PPBA
 			_setTexCalc = new SetTextureMapCalculate(_computeShader.FindKernel("CSBitToTex"), GlobalVariables.s_instance._teamColors);
 			_setTexCalc._computeShader = _computeShader;
 
-			//gameObject.AddComponent<SetTextureMapCalculate>();
-			//_setTexCalc = GetComponent<SetTextureMapCalculate>();
-			//_setTexCalc._computeShader = _computeShader;
-			//_setTexCalc._resourceCalcKernel = _computeShader.FindKernel("CSBitToTex");
-
-			//_resMapCalc = new ResourceMapCalculate(_computeShader.FindKernel("CSMain"));
-			//_resMapCalc._computeShader = _computeShader;
-
 			gameObject.AddComponent<ResourceMapCalculate>();
 			_resMapCalc = GetComponent<ResourceMapCalculate>();
 			_resMapCalc._computeShader = _computeShader;
 			_resMapCalc._ResourceCalcKernel = _computeShader.FindKernel("CSMain");
-
-			//_terMapCalc = new TerritoriumMapCalculate(_computeShader.FindKernel("CSTerritorium"));
-			//_terMapCalc._computeShader = _computeShader;
 
 			gameObject.AddComponent<TerritoriumMapCalculate>();
 			_terMapCalc = GetComponent<TerritoriumMapCalculate>();
 			_terMapCalc._computeShader = _computeShader;
 			_terMapCalc._TerCalcKernel = _computeShader.FindKernel("CSTerritorium");
 			_terMapCalc._earlyCalcKernel = _computeShader.FindKernel("CSInit");
+
+			//_TexToArray = new TextureToArryComputeCalculate(_computeShader.FindKernel("CSTexToArray"), GlobalVariables.s_instance._teamColors);
+			//_TexToArray._computeShader = _computeShader;
+
 
 			Texture resTex = _GroundMaterial.GetTexture("_NoiseMap");
 			Texture terTex = _GroundMaterial.GetTexture("_TerritorriumMap");
@@ -102,22 +94,32 @@ namespace PPBA
 
 			if(GlobalVariables.s_instance._clients.Count > 0)
 			{
-			//	int team = GlobalVariables.s_instance._clients[0]._id;
+				//	int team = GlobalVariables.s_instance._clients[0]._id;
 				//_FogMaterial.SetColor("TeamColor", GlobalVariables.s_instance._teamColors[team]);
 			}
+
+			//TexToArray();
 		}
 
+		//private void Update()
+		//{
+		//	if(Input.GetKeyDown(KeyCode.U))
+		//	{
+		//		TexToArray();
+		//		test = _TexToArray.GetValues().tex;
+		//	}
+		//}
+
+		public void TexToArray()
+		{
+			print("start textoArray");
+			StartCoroutine(_TexToArray.TextureToArrayCalc(this));
+		}
 
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
 		{
-			//_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium);
 			_setTexCalc.StartComputeShader(Resfloats, Terfloats, _ResultTextureRessource, _ResultTextureTerritorium, _ResultMyTextureTerritorium);
 		}
-
-		//public void EarlyCalc()
-		//{
-		//	_earlyCalc.EarlyCalulation(_Refinerys.Count);
-		//}
 
 		public void StartHeatMapCalc()
 		{
@@ -125,27 +127,10 @@ namespace PPBA
 			print("startHeatMapCalc");
 #endif
 
-			//// for testing 
-
-			//Graphics.Blit(_ResultTerritoriumtest, _ResultTextureTerritorium);
-			//// end testing
-
 			StartCoroutine(_resMapCalc.RefreshCalcRes(this));
 			StartCoroutine(_terMapCalc.RefreshCalcTerritorium(this));
-			//StartCoroutine(test());
 		}
 
-		//IEnumerator test()
-		//{
-		//	yield return new WaitForSecondsRealtime(0.1f);
-
-		//	HeatMapReturnValue[] holder = new HeatMapReturnValue[2];
-		//	holder = HeatMapCalcRoutine.s_instance.ReturnValue();
-		//	_setTexCalc.StartComputeShader(holder[0].tex, holder[1].tex, _Resulttest, _ResultTerritoriumtest);
-
-		//	_GroundMaterial.SetTexture("_TerritorriumMap", _ResultTerritoriumtest);
-
-		//}
 
 		public HeatMapReturnValue[] ReturnValue()
 		{
@@ -211,34 +196,22 @@ namespace PPBA
 
 
 		[SerializeField] private Texture2D map1;
-		[SerializeField] private Texture2D map2;
+
 
 		public float[][] GetStartArrays()
 		{
-			StartHeatMapCalc();
-
-			//Color[] resPi = map1.GetPixels();
-			//Color[] terPi = map2.GetPixels();
-
-
+			Color[] resPi = map1.GetPixels();
 
 			float[][] textures = new float[2][];
 
-			textures[0] = _resMapCalc.GetValues().tex;
+			textures[0] = new float[resPi.Length];
+
+			for(int i = 0; i < resPi.Length; i++)
+			{
+				textures[0][i] = resPi[i].r;
+			}
+
 			textures[1] = _terMapCalc.GetValues().tex;
-
-
-
-			//for(int i = 0; i < textures.Length; i++)
-			//{
-			//	textures[i] = new float[resPi.Length];
-			//}
-
-			//for(int i = 0; i < resPi.Length; i++)
-			//{
-			//	textures[0][i] = resPi[i].r;
-			//	textures[1][i] = terPi[i].r;
-			//}
 
 			return textures;
 		}

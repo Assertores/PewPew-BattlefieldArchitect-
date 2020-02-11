@@ -34,12 +34,15 @@ namespace PPBA
 		private float[] _RedValues;
 		private byte[] _currentBitField;
 
+		private void Awake()
+		{
+			_backingTex[0] = new float[256 * 256];
+			_backingTex[1] = new float[256 * 256];
+		}
+
 		public void Start()
 		{
 			//_resourceCalcKernel1 = kernel;
-
-			_backingTex[0] = new float[256 * 256];
-			_backingTex[1] = new float[256 * 256];
 
 			HeatMap = new HeatMapReturnValue
 			{

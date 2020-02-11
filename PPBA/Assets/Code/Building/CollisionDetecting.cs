@@ -38,7 +38,7 @@ namespace PPBA
 				//RenderTexture.active = null; // added to avoid errors 
 				//							 //	Color col = groundTex.GetPixel((int)pos.x, (int)pos.y);
 
-				float rValue = (HeatMapHandler.s_instance.GetHMValue(1, (int)pos.x, (int)pos.y));
+				float rValue = (HeatMapHandler.s_instance.GetHMValue(1, (int)pos.x, (int)pos.y))-2;
 
 				print("rValue : " + rValue + "team " + team);
 
