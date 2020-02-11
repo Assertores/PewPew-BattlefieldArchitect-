@@ -10,6 +10,7 @@ namespace PPBA
 		public LayerMask ignore;
 		public Material TerrainMat;
 		public Terrain _terrain;
+		[SerializeField] Terrain _heatMapTerrain;
 
 
 		private float _ppu;
@@ -19,6 +20,8 @@ namespace PPBA
 			Vector3 size = _terrain.terrainData.size;
 			int width = HeatMapCalcRoutine.s_instance.GetHeatmapWidth(0);
 			 _ppu = width / size.x;
+
+			ChangeMap(0);
 		}
 
 
@@ -99,6 +102,16 @@ namespace PPBA
 		public void ChangeMap(int index)
 		{
 			TerrainMat.SetFloat("_MapChange", index);
+			if(index == 0)
+			{
+				_terrain.gameObject.SetActive(true);
+				_heatMapTerrain.gameObject.SetActive(false);
+			}
+			else
+			{
+				_terrain.gameObject.SetActive(false);
+				_heatMapTerrain.gameObject.SetActive(true);
+			}
 		}
 
 
