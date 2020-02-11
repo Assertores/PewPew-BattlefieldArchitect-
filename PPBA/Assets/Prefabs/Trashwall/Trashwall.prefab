@@ -61,13 +61,14 @@ GameObject:
   - component: {fileID: 6856618680346289713}
   - component: {fileID: 4527124545924247150}
   - component: {fileID: 4094407476123911449}
+  - component: {fileID: 1546463185887089621}
   m_Layer: 9
   m_Name: Logic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5561490301871486370
 Transform:
   m_ObjectHideFlags: 0
@@ -76,7 +77,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5199382595133232413}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5077182497961931531}
@@ -132,6 +133,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0474b3c7d838d97428d786ac7b1bbf88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!208 &1546463185887089621
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5199382595133232413}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 4, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &7082095762277033584
 GameObject:
   m_ObjectHideFlags: 0

@@ -271,7 +271,7 @@ MonoBehaviour:
   TerritoryMapId: 0
   e_behaviors: 13010e0a0b0c11080f031404
   _behaviorMultipliers:
-  - 1
+  - 0.2
   - 6
   - 5
   - 15
@@ -870,11 +870,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5517797673602460985}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: 16b037df290201943b05727201d812e7,
-        type: 3}
-      propertyPath: m_Name
-      value: Rifle
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 16b037df290201943b05727201d812e7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -929,6 +924,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -188.97299
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 16b037df290201943b05727201d812e7,
+        type: 3}
+      propertyPath: m_Name
+      value: Rifle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16b037df290201943b05727201d812e7, type: 3}

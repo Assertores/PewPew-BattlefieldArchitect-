@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultBackingField: {fileID: 8300000, guid: f19d3c0096ecf65448a68a6c0fc5feaa,
     type: 3}
+  _audioMixer: {fileID: 24100000, guid: 7378a9addba203440a911df42805eef8, type: 2}
 --- !u!1001 &938350494887671740
 PrefabInstance:
   m_ObjectHideFlags: 0
