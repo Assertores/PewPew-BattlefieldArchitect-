@@ -26,7 +26,7 @@ namespace PPBA
 
 		void OnLoadFinished(Scene scene, LoadSceneMode mode)
 		{
-			if(scene.name == StringCollection.GAME && scene.isLoaded)
+			if(scene.name == StringCollection.ENDSCREEN && scene.isLoaded)
 			{
 				SceneManager.sceneLoaded -= OnLoadFinished;
 #if DB_ES
