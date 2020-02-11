@@ -137,5 +137,7 @@ namespace PPBA
 #endregion //MonoBehaviour
 
 		public static int[] GetScheduledPawns(int team) => s_instance._clients.Find(x => x._id == team)._scheduledPawns;
+
+		public static void IncrementAICounter(int team, int count = 1) => s_instance._clients.Find(x => x._id == team)._totalAICount += count;
 	}
 }

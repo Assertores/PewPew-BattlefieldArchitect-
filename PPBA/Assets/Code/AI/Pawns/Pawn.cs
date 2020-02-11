@@ -960,6 +960,7 @@ namespace PPBA
 #if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
 			newPawn.TerritoryMapId = HeatMapCalcRoutine.s_instance.AddSoldier(newPawn.transform, team);
+			GlobalVariables.IncrementAICounter(team);
 #endif
 		}
 
