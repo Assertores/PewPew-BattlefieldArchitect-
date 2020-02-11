@@ -396,7 +396,8 @@ namespace PPBA
 					_nextState._health = temp._health;
 					_nextState._morale = temp._morale;
 
-					//hier evtl dmg sound
+					if(_nextState._health < _health && 0 != _nextState._health)//damage sound. not played on death, to avoid doubling with the command in OnDisable()
+						MovableSpeakerController.PlaySoundAtSpot(AudioWarehouse.s_instance.Clip(UnityEngine.Random.Range(0f, 1f) < 0.5f ? ClipsPawn.UNIT_HIT_SHOT_01 : ClipsPawn.UNIT_HIT_SHOT_02), transform.position);
 				}
 			}
 			{
@@ -960,6 +961,7 @@ namespace PPBA
 #if UNITY_SERVER
 			Vector2 pos = UserInputController.s_instance.GetTexturePixelPoint(newPawn.transform);
 			newPawn.TerritoryMapId = HeatMapCalcRoutine.s_instance.AddSoldier(newPawn.transform, team);
+			GlobalVariables.IncrementAICounter(team);
 #endif
 		}
 

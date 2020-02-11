@@ -9633,6 +9633,7 @@ GameObject:
   - component: {fileID: 3322505222282831877}
   - component: {fileID: 123793467485748620}
   - component: {fileID: 5092998647997559769}
+  - component: {fileID: 1497928720048370760}
   m_Layer: 0
   m_Name: Small Destruction
   m_TagString: Untagged
@@ -14435,3 +14436,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &1497928720048370760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8759883045639416203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19d00e0e6b7f77f4eb13e29bb6852011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -50,7 +50,7 @@ namespace PPBA
 			}
 		}
 
-		private bool HasEnoughResources(ObjectType pawnType) => _resourceDepot._resources < PawnCost(pawnType);
+		private bool HasEnoughResources(ObjectType pawnType) => PawnCost(pawnType) <= _resourceDepot._resources;
 
 		private int PawnCost(ObjectType pawnType)
 		{
