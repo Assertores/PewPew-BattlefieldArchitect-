@@ -135,7 +135,17 @@ namespace PPBA
 		}
 
 		#endregion //MonoBehaviour
-		public static void IncrementResourceCount(int team, int count = 1) => s_instance._clients.Find(x => x._id == team)._totalResources += count;
+		public static void IncrementResourceCount(int team, int count = 1)
+		{
+			if(count < 0)
+				return;
+
+			client target = s_instance._clients.Find(x => x._id == team);
+			if(target == null)
+				return;
+
+			target._totalResources += count;
+		}
 		public static int[] GetScheduledPawns(int team) => s_instance._clients.Find(x => x._id == team)._scheduledPawns;
 	}
 }

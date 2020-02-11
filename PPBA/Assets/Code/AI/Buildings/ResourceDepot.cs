@@ -36,7 +36,14 @@ namespace PPBA
 		[SerializeField] private int _resourcesBackingField = 0;
 		[SerializeField] public int _resources {
 			get { return _resourcesBackingField; }
-			set { _resourcesBackingField = value; GlobalVariables.IncrementResourceCount(_team, value); }
+			set
+			{
+				if(GlobalVariables.Exists())
+					GlobalVariables.IncrementResourceCount(_team, value - _resourcesBackingField);
+
+				_resourcesBackingField = value;
+				
+			}
 		}
 		[SerializeField] public int _maxResources = 1000;
 		[SerializeField] public int _ammo = 0;
