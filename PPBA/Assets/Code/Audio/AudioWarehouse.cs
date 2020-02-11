@@ -180,7 +180,7 @@ namespace PPBA
 
 			foreach(ClipsBuilding item in _namesBuilding)
 			{
-				string path = "Audio/ClipsBuilding/" + item.ToString();
+				string path = "Audio/ClipsBuildings/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_buildingClipDict[item] = null != temp ? temp : _defaultClip;
 			}

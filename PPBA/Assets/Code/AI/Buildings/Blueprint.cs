@@ -193,7 +193,12 @@ namespace PPBA
 				*/
 
 				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				{
 					_isFinished = true;
+#if !UNITY_SERVER
+					transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
+#endif
+				}
 				else
 					_isFinished = false;
 			}
