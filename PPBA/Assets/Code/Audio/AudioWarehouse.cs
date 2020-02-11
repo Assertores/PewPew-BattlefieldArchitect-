@@ -158,19 +158,9 @@ namespace PPBA
 		public static AudioClip _defaultClip { get => s_instance._defaultBackingField; set => s_instance._defaultBackingField = value; }
 		[SerializeField] private AudioClip _defaultBackingField;
 
-
-		//void Awake()
-		//{
-			
-
-		//	//DontDestroyOnLoad(this.transform.parent);
-		//}
-
 		void Start()
 		{
-
 			LoadAll();
-
 		}
 
 		public AudioClip Clip(ClipsBuilding effect) => _buildingClipDict.ContainsKey(effect) ? _buildingClipDict[effect] : _defaultClip;
@@ -183,35 +173,35 @@ namespace PPBA
 		{
 			foreach(ClipsPawn item in _namesPawn)
 			{
-				string path = "ClipsPawn/" + item.ToString();
+				string path = "Audio/ClipsPawn/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_pawnClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
 			foreach(ClipsBuilding item in _namesBuilding)
 			{
-				string path = "ClipsBuilding/" + item.ToString();
+				string path = "Audio/ClipsBuilding/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_buildingClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
 			foreach(ClipsUI item in _namesUI)
 			{
-				string path = "ClipsUI/" + item.ToString();
+				string path = "Audio/ClipsUI/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_uiClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
 			foreach(ClipsMusic item in _namesMusic)
 			{
-				string path = "ClipsMusic/" + item.ToString();
+				string path = "Audio/ClipsMusic/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_musicClipDict[item] = null != temp ? temp : _defaultClip;
 			}
 
 			foreach(ClipsEnvironment item in _namesEnvironment)
 			{
-				string path = "ClipsEnvironment/" + item.ToString();
+				string path = "Audio/ClipsEnvironment/" + item.ToString();
 				AudioClip temp = Resources.Load<AudioClip>(path);
 				_environmentClipDict[item] = null != temp ? temp : _defaultClip;
 			}

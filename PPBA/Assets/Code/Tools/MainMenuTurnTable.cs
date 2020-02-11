@@ -6,7 +6,6 @@ namespace PPBA
 {
 	public class MainMenuTurnTable : MonoBehaviour
 	{
-		[SerializeField] AnimationClip _rotation;
 		[SerializeField] float _timeBetweenJups;
 		[SerializeField] float _translation;
 		[SerializeField] AnimationCurve _jump;
@@ -15,7 +14,7 @@ namespace PPBA
 
 		void Start()
 		{
-			_jumpAngle = 360 / transform.childCount;
+			_jumpAngle = 360.0f / transform.childCount;
 
 			for(int i = 0; i < transform.childCount; i++)
 			{
@@ -27,6 +26,8 @@ namespace PPBA
 				anim.Stop();
 				anim.Play();*/
 			}
+
+			transform.Translate(transform.forward * -_translation);
 		}
 
 		float h_lastJump = 0;

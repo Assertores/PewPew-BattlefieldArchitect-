@@ -39,7 +39,7 @@ namespace PPBA
 
 		void Awake()
 		{
-			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+			_myBoombox = transform.parent.GetComponentInChildren<BuildingBoomboxController>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #else

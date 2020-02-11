@@ -49,6 +49,9 @@ namespace PPBA
 		{
 			client me = GlobalVariables.s_instance._clients[0];
 
+			if(TickHandler.s_interfaceGameState._scheduledPawns == null)
+				return;
+
 			List<GSC.sheduledPawns> tmp = TickHandler.s_interfaceGameState._scheduledPawns.FindAll(x => x._id == me._id);
 			foreach(var it in tmp)
 			{

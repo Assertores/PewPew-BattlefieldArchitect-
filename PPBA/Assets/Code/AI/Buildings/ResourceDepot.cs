@@ -33,7 +33,11 @@ namespace PPBA
 		}
 		[SerializeField] public float _health = 1000;
 		[SerializeField] public float _maxHealth = 1000;
-		[SerializeField] public int _resources = 0;
+		[SerializeField] private int _resourcesBackingField = 0;
+		[SerializeField] public int _resources {
+			get { return _resourcesBackingField; }
+			set { _resourcesBackingField = value; GlobalVariables.IncrementResourceCount(_team, value); }
+		}
 		[SerializeField] public int _maxResources = 1000;
 		[SerializeField] public int _ammo = 0;
 		[SerializeField] public int _maxAmmo = 1000;
@@ -58,7 +62,7 @@ namespace PPBA
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
-			_myBoombox = GetComponentInChildren<BuildingBoomboxController>();
+			_myBoombox = transform.parent.GetComponentInChildren<BuildingBoomboxController>();
 		}
 		void Update()
 		{
@@ -97,7 +101,14 @@ namespace PPBA
 			}
 		}
 
-		private void Die() => transform.parent.gameObject.SetActive(false);
+		private void Die()
+		{
+			transform.parent.gameObject.SetActive(false);
+#if !UNITY_SERVER
+			//wolke
+			MovableSpeakerController.PlaySoundAtSpot(AudioWarehouse.s_instance.Clip(ClipsBuilding.DESTROY_BUILDING_01), transform.position);
+#endif
+		}
 		public Transform GetTransform() => transform;
 		public float GetHealth() => _health;
 		public float GetMaxHealth() => _maxHealth;
@@ -105,7 +116,7 @@ namespace PPBA
 		#endregion
 
 		#region Give Or Take Or Check
-		
+
 		public bool HaveResourceSpace()
 		{
 			return _resources < _maxResources;
@@ -303,7 +314,7 @@ namespace PPBA
 			UiInventory.s_instance.AddLastBuildings();
 		}
 
-#region IPanelInfo
+		#region IPanelInfo
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
@@ -324,6 +335,6 @@ namespace PPBA
 				_panelDetails[3].text = "Ammo: " + _ammo;
 			}
 		}
-#endregion
+		#endregion
 	}
 }

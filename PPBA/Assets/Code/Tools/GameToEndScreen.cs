@@ -13,6 +13,9 @@ namespace PPBA
 
 		public void Execute(bool amIWinner, Tuple<int, int, int>[] stats)
 		{
+#if DB_ES
+			Debug.Log("i'm switching the Scenes");
+#endif
 			_amIWinner = amIWinner;
 			_stats = stats;
 
@@ -23,10 +26,12 @@ namespace PPBA
 
 		void OnLoadFinished(Scene scene, LoadSceneMode mode)
 		{
-			if(scene.name == StringCollection.GAME && scene.isLoaded)
+			if(scene.name == StringCollection.ENDSCREEN && scene.isLoaded)
 			{
 				SceneManager.sceneLoaded -= OnLoadFinished;
-
+#if DB_ES
+				Debug.Log("i have switch the Scene and am now calling the Init funktion");
+#endif
 				UIEndScreenHandler.s_instance.Init(_amIWinner, _stats);
 
 				Destroy(this.gameObject);

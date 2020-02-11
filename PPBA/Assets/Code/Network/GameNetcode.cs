@@ -358,8 +358,14 @@ namespace PPBA
 
 			//Debug.Log("decrypting tick " + tick);
 			//Debug.Log("Decrypt package: " + data[1] + " of " + data[2]);
-			element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
-			element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
+			try //HOTFIX: if the package cant be Decrypted, the hole gamestate will be dropt and lerped
+			{
+				element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
+				element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
+			}catch(Exception e)
+			{
+				element = default;
+			}
 			//Debug.Log("Decrypt: " + tick + " | ref: " + element._refTick);
 #if DB_GS
 			if(TickHandler.s_currentTick % 20 == 0)

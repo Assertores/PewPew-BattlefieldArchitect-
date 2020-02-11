@@ -35,6 +35,7 @@ namespace PPBA
 					s_targetDictionary[pawn].DoWork();
 					targetPosition = pawn.transform.position;
 					pawn._currentAnimation = PawnAnimations.BUILD;
+					pawn._arguments |= Arguments.TRIGGERBEHAVIOUR;//set trigger flag for build sound
 				}
 				else
 					pawn._currentAnimation = PawnAnimations.RUN;

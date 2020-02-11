@@ -254,6 +254,19 @@ namespace PPBA
 							offset += 1 + 2 * sizeof(int);
 						}
 
+#if DB_ES
+						Debug.Log("i'm Triggering the Endscreen with folowing informations");
+						for(int i = 0; i < 3 + stats.Length * (1+2*sizeof(int)); i++)
+						{
+							Debug.Log(data[i]);
+						}
+						Debug.Log("===== ======");
+						Debug.Log(winner + ": " + GlobalVariables.s_instance._clients[0]._id);
+						foreach(var it in stats)
+						{
+							Debug.Log(it.Item1 + ", " + it.Item2 + ", " + it.Item3);
+						}
+#endif
 						GameToEndScreen.s_instance.Execute(GlobalVariables.s_instance._clients[0]._id == winner, stats);
 
 						Destroy(this);
