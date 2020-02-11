@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1881202250821715231}
   - component: {fileID: 3262308636235046519}
   - component: {fileID: 5970334725956831412}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: NavPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
