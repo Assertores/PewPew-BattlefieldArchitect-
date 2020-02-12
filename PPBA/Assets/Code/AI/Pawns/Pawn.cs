@@ -696,8 +696,8 @@ namespace PPBA
 				walkedDistance += tempDistance;
 			}
 
-			//if(2 < i)//<=> pawn has moved over a corner
-				//_isNavPathDirty = true;
+			if(2 < i)//<=> pawn has moved over a corner
+				_isNavPathDirty = true;
 
 			if(i - 1 < _navMeshPath.corners.Length)
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
