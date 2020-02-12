@@ -1028,17 +1028,14 @@ namespace PPBA
 								mask.FromArray(field);
 
 								Vector2Int[] pos = mask.GetActiveBits();
-								float[] values = new float[pos.Length];
-
-								Buffer.BlockCopy(msg, offset, values, 0, values.Length * sizeof(float));
-								offset += values.Length * sizeof(float);
 
 								for(int i = 0; i < pos.Length; i++)
 								{
 									GSC.heatMapElement element = new GSC.heatMapElement();
 									element._x = (byte)(pos[i].x + x);
 									element._y = (byte)(pos[i].y + y);
-									element._value = values[i];
+									element._value = BitConverter.ToSingle(msg, offset);
+									offset += sizeof(float);
 
 									value._values.Add(element);
 								}
