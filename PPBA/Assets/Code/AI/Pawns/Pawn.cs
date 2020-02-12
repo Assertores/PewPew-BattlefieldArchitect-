@@ -533,7 +533,8 @@ namespace PPBA
 				case Behaviors.GOANYWHERE:
 					break;
 				case Behaviors.SHOOTATBUILDING:
-					_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
+					//_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
+					_shootLineController.SetShootLine(_shootLineController.transform.position, transform.position + (transform.forward * 0.75f * _attackDistance));
 					break;
 				default:
 					_shootLineController.SetShootLine(_shootLineController.transform.position, _behaviorTarget);
