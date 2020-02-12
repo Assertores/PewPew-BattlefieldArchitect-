@@ -249,6 +249,7 @@ namespace PPBA
 			_scheduledPawns.AddRange(original._scheduledPawns.ToArray());
 		}
 
+		public bool _isNULLGameState { get; private set; } = true;
 		public int _refTick { get; set; } = 0;
 		public bool _isLerped { get; private set; } = false;
 		public bool _isDelta { get; private set; } = false;
@@ -1101,6 +1102,9 @@ namespace PPBA
 			if(_receivedMessages.AreAllBytesActive())
 			{
 				_isEncrypted = false;
+
+				if(_args.Count != 0 && _transforms.Count != 0 && _scheduledPawns.Count != 0)
+					_isNULLGameState = false;
 			}
 
 			Profiler.EndSample();
