@@ -57,13 +57,13 @@ namespace PPBA
 			switch(pawnType)
 			{
 				case ObjectType.PAWN_HEALER:
-					return 50;
+					return 40;
 				case ObjectType.PAWN_PIONEER:
-					return 75;
+					return 60;
 				case ObjectType.PAWN_WARRIOR:
-					return 100;
+					return 80;
 				default:
-					return 75;
+					return 60;
 			}
 		}
 

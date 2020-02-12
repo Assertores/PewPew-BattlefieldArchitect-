@@ -228,7 +228,7 @@ MonoBehaviour:
   _arguments: 0
   _pawnType: 6
   _maxHealth: 100
-  _maxAmmo: 3
+  _maxAmmo: 15
   _maxMorale: 100
   _attackDistance: 20
   _attackChance: 0.4
