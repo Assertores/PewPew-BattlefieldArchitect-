@@ -328,7 +328,7 @@ namespace PPBA
 						xSize -= xMin;
 						ySize -= yMin;
 
-						if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
+						if(false)//if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
 						{
 							msg.Clear();
 							msg.Add((byte)GSC.DataType.MAP);
