@@ -174,6 +174,9 @@ namespace PPBA
 		public MountSlot _mountSlot = null;
 		public bool _isMounting => _mountSlot != null && _mountSlot.isActiveAndEnabled;
 		public Vector3 _borderData = Vector3.zero;
+
+		[SerializeField] private Material _ringMaterial;
+		[SerializeField] private MeshRenderer _ringRenderer;
 		#endregion
 
 		#region MonoBehaviour
@@ -1028,6 +1031,14 @@ namespace PPBA
 #if DB_AI
 				Debug.LogWarning("Pawn still couldn't get a renderer");
 #endif
+			}
+
+			if(_ringRenderer != null && _ringMaterial != null)
+			{
+				//_ringRenderer.GetPropertyBlock(_PropertyBlock);
+				//_PropertyBlock.SetColor("_Emission", color);
+				//_ringRenderer.SetPropertyBlock(_PropertyBlock);
+				_ringMaterial.SetColor("_EmissionColor", color);
 			}
 		}
 
