@@ -167,12 +167,12 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 60
+      value: 62
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -192,7 +192,7 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_text
-      value: "Protect your headquarter from the enemy.\nCosts:0\tHealth:2000"
+      value: "Protect your headquarter from the enemy.\nCosts: 0\tHealth: 2000"
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -211,16 +211,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7391536681944145730, guid: a5df1ecc89aaf2343871c77bc1927340,
         type: 2}
+    - target: {fileID: 1819379606817560598, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2084824058672353074, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 3286163911610860551, guid: 3d9c1a0b6708fb24b8f0991b42183f08,
         type: 3}
-    - target: {fileID: 1819379606817560598, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8, type: 3}

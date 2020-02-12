@@ -167,12 +167,12 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 42
+      value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -204,7 +204,7 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_text
-      value: "Stores your supplies.\nCosts:100\tHealth:100"
+      value: "Stores your supplies.\nCosts: 100\tHealth: 100"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8, type: 3}

@@ -167,12 +167,12 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 48
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -204,7 +204,7 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_text
-      value: "Serves as cover and obstacle.\nCosts:2\tHealth:200"
+      value: "Serves as cover and obstacle.\nCosts: 2\tHealth: 200"
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}

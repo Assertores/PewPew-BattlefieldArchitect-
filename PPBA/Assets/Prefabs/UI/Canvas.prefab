@@ -10082,17 +10082,17 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 86
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 11
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 18
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -10107,7 +10107,8 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_text
-      value: "Press the button to recruit.\nCosts:50\tHealth:100\nAmmo:3\tMorale:100\nRange:20\tSpeed:3,6\n"
+      value: "Heals your units like nobody else.\nCosts: 40\tHealth: 100\nAmmo: 15\tMorale:
+        100\nRange: 20\tSpeed: 3,6\n"
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -10737,17 +10738,17 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 88
+      value: 86
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 11
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 18
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -10762,7 +10763,8 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_text
-      value: "Press the button to recruit.\nCosts:100\tHealth:150\nAmmo:10\tMorale:150\nRange:30\tSpeed:3,8\n"
+      value: "Shoots at long range.\nCosts: 80\tHealth: 150\nAmmo: 30\tMorale: 150\nRange:
+        30\tSpeed: 3,8\n"
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12107,12 +12109,12 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 85
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 11
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12132,7 +12134,8 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_text
-      value: "Press the button to recruit.\nCosts:75\tHealth:75\nAmmo:5\tMorale:125\nRange:20\tSpeed:3,7\n"
+      value: "Builds and repairs your structures.\nCosts: 60\tHealth: 75\nAmmo: 20\tMorale:
+        125\nRange: 20\tSpeed: 3,7\n"
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
