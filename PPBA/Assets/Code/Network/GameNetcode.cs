@@ -367,7 +367,8 @@ namespace PPBA
 #endif
 			}catch(Exception e)
 			{
-				element = default;
+				Debug.LogException(e);
+				//element = default;
 			}
 			//Debug.Log("Decrypt: " + tick + " | ref: " + element._refTick);
 #if DB_GS

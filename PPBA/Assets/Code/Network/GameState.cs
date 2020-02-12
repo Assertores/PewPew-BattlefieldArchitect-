@@ -962,6 +962,8 @@ namespace PPBA
 						break;
 					}
 					case GSC.DataType.MAP:
+					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
+					/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 					{
 						if(_heatMaps == null)
 							_heatMaps = new List<GSC.heatMap>();
@@ -1042,7 +1044,7 @@ namespace PPBA
 								break;
 						}
 
-						_heatMaps.Add(value);
+						Add(value);
 						break;
 					}
 					case GSC.DataType.INPUTS:
