@@ -4895,7 +4895,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.45, y: 1}
-  m_AnchoredPosition: {x: 1.9499993, y: 0}
+  m_AnchoredPosition: {x: 1.9499817, y: 0}
   m_SizeDelta: {x: -36.1, y: -40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3952849353716683667
@@ -9964,11 +9964,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4026784365412002093}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10073,6 +10068,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -10194,11 +10194,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: "Sanit\xE4ter"
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10303,6 +10298,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: "Sanit\xE4ter"
       objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -10355,7 +10355,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Displays number of medics alive.
+      value: Displays number of Medics alive.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -10404,11 +10404,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: Depos
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10514,6 +10509,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: Depos
+      objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: _Typ
@@ -10565,7 +10565,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Shows the number of your placed depots.
+      value: Shows the number of your active Depots.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -10619,11 +10619,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5570192155404613897}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip Bottom
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10728,6 +10723,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip Bottom
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -10849,11 +10849,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8902290500198424632}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10958,6 +10953,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -11079,11 +11079,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: Pionier
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11189,6 +11184,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: Pionier
+      objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: _Typ
@@ -11240,7 +11240,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Displays number of engineers alive.
+      value: Displays number of Engineers alive.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -11294,11 +11294,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8022405584032427846}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11403,6 +11398,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -11524,11 +11524,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: Rafineries
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11634,35 +11629,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 1155249941774385234, guid: c654db1b59ee87a4db229f3161665b23,
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 49.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6117923809779127421, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 87.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 46.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 12.800003
+      propertyPath: m_Name
+      value: Rafineries
       objectReference: {fileID: 0}
     - target: {fileID: 4016438347130347419, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -11710,7 +11680,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Shows the number of your placed refineries.
+      value: Shows the number of your active Refineries.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -11749,6 +11719,36 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7391536681944145730, guid: a5df1ecc89aaf2343871c77bc1927340,
         type: 2}
+    - target: {fileID: 1155249941774385234, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 49.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6117923809779127421, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 87.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 46.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 622397268297652501, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 12.800003
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c654db1b59ee87a4db229f3161665b23, type: 3}
 --- !u!224 &6159833585773484377 stripped
@@ -11764,11 +11764,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 295640521922486682}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11873,6 +11868,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -11989,11 +11989,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 402824561384961364}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12098,6 +12093,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12226,11 +12226,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2875091082123403113}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12335,6 +12330,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
       objectReference: {fileID: 0}
     - target: {fileID: 8224800954246804018, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12481,11 +12481,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 120033867672332628}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12591,6 +12586,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip
+      objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -12599,17 +12599,17 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 37
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12624,7 +12624,7 @@ PrefabInstance:
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_text
-      value: Shows you the dispersion of resources
+      value: Shows the distribution of resources
       objectReference: {fileID: 0}
     - target: {fileID: 3649209521396662106, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -12711,11 +12711,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: MedCamps
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12821,6 +12816,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: MedCamps
+      objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: _Typ
@@ -12835,7 +12835,7 @@ PrefabInstance:
     - target: {fileID: 3822674135893530398, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Placed medical Camps
+      value: Placed Medical Camps
       objectReference: {fileID: 0}
     - target: {fileID: 3822674135893530398, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -12855,7 +12855,7 @@ PrefabInstance:
     - target: {fileID: 3822674135893530398, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_fontSize
-      value: 28.25
+      value: 28.05
       objectReference: {fileID: 0}
     - target: {fileID: 3822674135893530398, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -12872,7 +12872,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Shows the number of placed medic camps.
+      value: Shows the number of active Medic Camps.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -12926,11 +12926,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8879554479120136489}
     m_Modifications:
-    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
-        type: 3}
-      propertyPath: m_Name
-      value: ToolTip Bottom
-      objectReference: {fileID: 0}
     - target: {fileID: 3341764016806084442, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13035,6 +13030,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4828464574044741508, guid: 36fdacba1ec5daa409a595d8217e8c0e,
+        type: 3}
+      propertyPath: m_Name
+      value: ToolTip Bottom
       objectReference: {fileID: 0}
     - target: {fileID: 5559414467295750728, guid: 36fdacba1ec5daa409a595d8217e8c0e,
         type: 3}
@@ -13161,11 +13161,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: Supplies
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13271,6 +13266,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: Supplies
+      objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: selfUpdate
@@ -13322,12 +13322,12 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Shows your current amount of resources.
+      value: Shows your current amount of Supplies.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 39
+      value: 38
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
@@ -13376,11 +13376,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6926494235276102273}
     m_Modifications:
-    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
-        type: 3}
-      propertyPath: m_Name
-      value: "Sch\xFCtze"
-      objectReference: {fileID: 0}
     - target: {fileID: 7929868725764245368, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13486,6 +13481,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 210425721358308138, guid: c654db1b59ee87a4db229f3161665b23,
+        type: 3}
+      propertyPath: m_Name
+      value: "Sch\xFCtze"
+      objectReference: {fileID: 0}
     - target: {fileID: 3538504027040535078, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: _Typ
@@ -13537,7 +13537,7 @@ PrefabInstance:
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
       propertyPath: m_text
-      value: Displays number of marksmen alive.
+      value: Displays number of Marksmen alive.
       objectReference: {fileID: 0}
     - target: {fileID: 5198270357579011197, guid: c654db1b59ee87a4db229f3161665b23,
         type: 3}
