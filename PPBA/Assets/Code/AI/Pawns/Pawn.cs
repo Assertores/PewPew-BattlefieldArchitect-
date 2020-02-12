@@ -680,13 +680,13 @@ namespace PPBA
 			}
 
 			float maxDistance = _moveSpeed * Time.fixedDeltaTime * 2f / GetNavAreaCost();//Why the (* 2f): NavAreaCosts below 1 give a warning, hence I double the costs in inspector and half them here.
-			float walkedDistance = 1.0f;
+			float walkedDistance = 0.5f;
 			float nextCornerDistance;
 
 			int i = 1;
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
-				walkedDistance -= 1.0f;
+				walkedDistance -= 0.5f;
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
 				float tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
 				Vector3 moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
