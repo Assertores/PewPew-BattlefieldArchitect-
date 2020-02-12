@@ -51,7 +51,7 @@ MonoBehaviour:
   _interactRadius: 5
   _workers: []
   _material: {fileID: 2100000, guid: 94e293d39156dca469730476cec32344, type: 2}
-  _myRenderer: {fileID: 0}
+  _myRenderer: {fileID: 3171620710750201658}
 --- !u!1 &3688118483440170598
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,6 +326,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4645440423556425737}
     m_Modifications:
+    - target: {fileID: 8911756999542709260, guid: 16f2ea3459accc94e93a335e3b50f115,
+        type: 3}
+      propertyPath: m_Name
+      value: BuildingBoombox
+      objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -380,11 +385,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8911756999542709260, guid: 16f2ea3459accc94e93a335e3b50f115,
-        type: 3}
-      propertyPath: m_Name
-      value: BuildingBoombox
       objectReference: {fileID: 0}
     - target: {fileID: 3591058338955120529, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
@@ -489,6 +489,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5124787556408675055}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &3171620710750201658 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: 009552c650560e94bab84787902f450f,
+    type: 3}
+  m_PrefabInstance: {fileID: 5124787556408675055}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6844223314593052277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -496,6 +502,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7797191311377518056}
     m_Modifications:
+    - target: {fileID: 2422239332927111195, guid: 836a31851ac70474783561f79e708836,
+        type: 3}
+      propertyPath: m_Name
+      value: BomberMan
+      objectReference: {fileID: 0}
     - target: {fileID: 2422239332927111194, guid: 836a31851ac70474783561f79e708836,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -550,11 +561,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2422239332927111195, guid: 836a31851ac70474783561f79e708836,
-        type: 3}
-      propertyPath: m_Name
-      value: BomberMan
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 836a31851ac70474783561f79e708836, type: 3}
