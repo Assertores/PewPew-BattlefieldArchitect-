@@ -696,14 +696,14 @@ namespace PPBA
 				walkedDistance += tempDistance;
 			}
 
-			if(2 < i)//<=> pawn has moved over a corner
-				_isNavPathDirty = true;
+			//if(2 < i)//<=> pawn has moved over a corner
+				//_isNavPathDirty = true;
 
 			if(i - 1 < _navMeshPath.corners.Length)
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
 
-			if(Vector3.Magnitude(originalPos - _moveTarget) < 1f || Vector3.Magnitude(transform.position - originalPos) < 1f)
-				transform.position = Behavior_GoAnywhere.s_instance.GetRandomPoint(this);
+			//if(Vector3.Magnitude(originalPos - _moveTarget) < 1f || Vector3.Magnitude(transform.position - originalPos) < 1f)
+				//transform.position = Behavior_GoAnywhere.s_instance.GetRandomPoint(this);
 		}
 
 		public void SetMoveTarget(Vector3 newTarget)//call this from the behaviors
