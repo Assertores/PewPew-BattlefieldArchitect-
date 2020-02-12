@@ -185,7 +185,9 @@ namespace PPBA
 				return false;
 			}
 
+#if DB_NC
 			Debug.Log("Start serch at: " + s_currentTick);
+#endif
 			GameState nextState = default;
 			int nextStateTick = s_currentTick;
 			if(s_currentTick == 0)
@@ -197,6 +199,7 @@ namespace PPBA
 				for(; nextStateTick <= me._gameStates.GetHighEnd() && (nextState == default || nextState._isNULLGameState); nextStateTick++)
 				{
 					nextState = me._gameStates[nextStateTick];
+#if DB_NC
 					if(nextState == default)
 					{
 						Debug.Log("Serch: " + nextStateTick + ", no State");
@@ -205,6 +208,7 @@ namespace PPBA
 					{
 						Debug.Log("Serch: " + nextStateTick + ", " + nextState._isNULLGameState);
 					}
+#endif
 				}
 				if(nextState == default)
 					return false;
@@ -283,10 +287,8 @@ namespace PPBA
 				}
 			}
 
-			Debug.Log("Tick1: " + s_currentTick + ", " + nextState._isNULLGameState);
 			s_interfaceGameState = nextState;
 			s_interfaceInputState = me._inputStates[nextStateTick];
-			Debug.Log("Tick2: " + s_currentTick + ", " + s_interfaceGameState._isNULLGameState);
 
 			s_currentTickTime = Time.time;
 

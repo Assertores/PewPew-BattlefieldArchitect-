@@ -362,7 +362,9 @@ namespace PPBA
 			{
 				element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
 				element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
+#if DB_NC
 				Debug.Log("Decryption: " + tick + ", " + element._isNULLGameState);
+#endif
 			}catch(Exception e)
 			{
 				element = default;
