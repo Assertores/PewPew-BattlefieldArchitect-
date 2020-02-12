@@ -751,13 +751,18 @@ namespace PPBA
 			//_hash = BitConverter.ToInt32(msg, offset);
 			//offset += sizeof(int);
 
+			GSC.DataType lastDataType = GSC.DataType.NON;
+			GSC.DataType testDataType = GSC.DataType.NON;
 			int count;
 			while(offset < msg.Length)
 			{
 				//Debug.Log((GSC.DataType)msg[offset]);
 				//Debug.Log(msg.Length + " | " + offset);
+				int prevOffset = offset;
 				count = BitConverter.ToInt32(msg, offset + 1);
 				offset += sizeof(int) + 1;
+				lastDataType = testDataType;
+				testDataType = (GSC.DataType)msg[offset - 1 - sizeof(int)];
 				switch((GSC.DataType)msg[offset - 1 - sizeof(int)])
 				{
 					case GSC.DataType.NON:
@@ -1002,6 +1007,7 @@ namespace PPBA
 								break;
 							/// byte Type, int ID, byte type| byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 							case GSC.DataType.BITMAPWISE:
+								Debug.Log("reseaved a Heatmpa with a bitmask");
 								byte x = msg[offset];
 								offset++;
 
@@ -1098,7 +1104,7 @@ namespace PPBA
 						break;
 					}
 					default:
-						throw new InvalidEnumArgumentException();
+						throw new InvalidEnumArgumentException("Last Type: " + lastDataType.ToString() + " and Test Type: " + testDataType.ToString() + "\nLast Offset: " + prevOffset + " and Current Offset: " + offset + " (datalength: " + msg.Length + ")");
 				}
 			}
 
