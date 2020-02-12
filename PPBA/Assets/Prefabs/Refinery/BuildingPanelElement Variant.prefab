@@ -167,12 +167,12 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 49
+      value: 51
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
@@ -192,7 +192,7 @@ PrefabInstance:
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
       propertyPath: m_text
-      value: "Produces supllies and units.\nCosts:200\tHealth:500"
+      value: "Produces supllies and units.\nCosts: 200\tHealth: 500"
       objectReference: {fileID: 0}
     - target: {fileID: 3434783556075547490, guid: 4c9ebd3b312df3b40843e4e5e0f7b1a8,
         type: 3}
