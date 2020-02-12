@@ -4,12 +4,18 @@ using UnityEngine;
 
 namespace PPBA
 {
+
+	public struct soldierStruct
+	{
+		public int Team;
+		public float CicleLenght;
+	}
+
 	public class HeatMapCalcRoutine : Singleton<HeatMapCalcRoutine>
 	{
 		SetTextureMapCalculate _setTexCalc;
 		ResourceMapCalculate _resMapCalc;
 		TerritoriumMapCalculate _terMapCalc;
-		TextureToArryComputeCalculate _TexToArray;
 
 		[SerializeField] ComputeShader _computeShader;
 		public Material _GroundMaterial;
@@ -22,7 +28,7 @@ namespace PPBA
 		//public RenderTexture _ResultTerritoriumtest;
 
 		public List<IRefHolder> _Refinerys = new List<IRefHolder>();
-		public Dictionary<Transform, int> _Soldiers = new Dictionary<Transform, int>();
+		public Dictionary<Transform, soldierStruct> _Soldiers = new Dictionary<Transform, soldierStruct>();
 
 		public Texture2D startResMap;
 		public Texture2D startTerMap;
@@ -92,28 +98,10 @@ namespace PPBA
 			// set fog TeamColors
 			_FogMaterial.SetTexture("_TerTex", _ResultMyTextureTerritorium);
 
-			if(GlobalVariables.s_instance._clients.Count > 0)
-			{
-				//	int team = GlobalVariables.s_instance._clients[0]._id;
-				//_FogMaterial.SetColor("TeamColor", GlobalVariables.s_instance._teamColors[team]);
-			}
 
-			//TexToArray();
-		}
-
-		//private void Update()
-		//{
-		//	if(Input.GetKeyDown(KeyCode.U))
-		//	{
-		//		TexToArray();
-		//		test = _TexToArray.GetValues().tex;
-		//	}
-		//}
-
-		public void TexToArray()
-		{
-			print("start textoArray");
-			StartCoroutine(_TexToArray.TextureToArrayCalc(this));
+#if UNITY_SERVER
+			GetStartSoldies();
+#endif
 		}
 
 		public void SetRendererTextures(float[] Resfloats, float[] Terfloats)
@@ -172,20 +160,30 @@ namespace PPBA
 		}
 
 		// add soldies in List
-		public int AddSoldier(Transform pawn, int Team)
+		public int AddSoldier(Transform pawn, int _Team, float _CircleLenght = 10)
 		{
 			//		print("add Soldiers");
 			if(!_Soldiers.ContainsKey(pawn))
 			{
-				_Soldiers[pawn] = Team;
+				soldierStruct str = new soldierStruct
+				{
+					Team = _Team,
+					CicleLenght = _CircleLenght
+				};
+
+				_Soldiers.Add(pawn, str);
+
 				return _Soldiers.Count - 1;
 			}
 			return -1;
 		}
 
-		public void RemoveSoldiers(Transform pawn, int index)
+		public void RemoveSoldiers(Transform pawn)
 		{
-			_Soldiers.Remove(pawn);
+			if(_Soldiers.ContainsKey(pawn))
+			{
+				_Soldiers.Remove(pawn);
+			}
 		}
 
 		public bool HasSoldiers()
@@ -194,9 +192,7 @@ namespace PPBA
 			return _Soldiers.Count != 0;
 		}
 
-
 		[SerializeField] private Texture2D map1;
-
 
 		public float[][] GetStartArrays()
 		{
@@ -214,6 +210,34 @@ namespace PPBA
 			textures[1] = _terMapCalc.GetValues().tex;
 
 			return textures;
+		}
+
+
+		public Transform[] _startPositions;
+		public void GetStartSoldies()
+		{
+			print("111111111111111111111");
+			for(int i = 0; i < _startPositions.Length; i++)
+			{
+				print("startPositions " + _startPositions[i]);
+				AddSoldier(_startPositions[i], i,20);
+			}
+
+			//StartCoroutine(removeSoldiers(_startPositions));
+		}
+
+		IEnumerator removeSoldiers(Transform[] soldiers)
+		{
+			//  TODO WAnn fängt die runde an? While fürs warten
+
+
+			yield return new WaitForSeconds(5);
+			for(int i = 0; i < soldiers.Length; i++)
+			{
+				print("remove soldier: " + i);
+				RemoveSoldiers(soldiers[i]);
+
+			}
 		}
 
 	}

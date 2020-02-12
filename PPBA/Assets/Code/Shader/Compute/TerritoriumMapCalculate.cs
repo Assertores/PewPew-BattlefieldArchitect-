@@ -113,11 +113,11 @@ endingCo:
 
 			int index = 0;
 
-			foreach(KeyValuePair<Transform, int> soldier in HMCalcRoutine._Soldiers)
+			foreach(KeyValuePair<Transform, soldierStruct> soldier in HMCalcRoutine._Soldiers)
 			{
 				Vector2Int pos = UserInputController.s_instance.GetTexturePixelPoint(soldier.Key.position);
 				
-				refsProp[index] = new Vector4(pos.x, pos.y, soldier.Value, 0);
+				refsProp[index] = new Vector4(pos.x, pos.y, soldier.Value.Team, soldier.Value.CicleLenght);
 				index++;
 			}
 

@@ -6,20 +6,7 @@ namespace PPBA
 {
 	public class CameraStartPosition : MonoBehaviour
 	{
-		[SerializeField] Transform[] _startPositions;
-
-
-		private void Start()
-		{
-#if UNITY_SERVER
-
-			for(int i = 0; i < _startPositions.Length; i++)
-			{
-				HeatMapCalcRoutine.s_instance.AddSoldier(_startPositions[i], i);
-			}
-#endif
-		}
-
+		public Transform[] _startPositions;
 
 
 #if !UNITY_SERVER

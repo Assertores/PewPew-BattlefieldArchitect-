@@ -10,9 +10,9 @@
 
 int PointSize;
 
-float4 coords[50];
+float4 coords[100];
 int SoldiersSize;
-float4 Soldiers[50];
+float4 Soldiers[200];
 int RequiredSize;
 float4 InformationRequired[50];
 float4 teamColors[4];
@@ -113,6 +113,7 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 	// Iterate through the points positions
     for (int i = 0; i < SoldiersSize; i++)
     {
+        //float m_dist = Soldiers[i].w; // minimun distance
         float dist = distance(id.xy, Soldiers[i].xy);
 
         if (dist > m_dist)

@@ -39,9 +39,7 @@ namespace PPBA
 				//							 //	Color col = groundTex.GetPixel((int)pos.x, (int)pos.y);
 
 				float rValue = (HeatMapHandler.s_instance.GetHMValue(1, (int)pos.x, (int)pos.y))-2;
-
-				print("rValue : " + rValue + "team " + team);
-
+				
 				if(rValue == team)
 				{
 					BuildingManager.s_instance._canBuild = true;
@@ -56,7 +54,6 @@ namespace PPBA
 			}
 			else
 			{
-				print("nixs");
 				BuildingManager.s_instance._canBuild = false;
 				GhostMaterial.SetColor("_Color", GhostRedColor);
 			}
