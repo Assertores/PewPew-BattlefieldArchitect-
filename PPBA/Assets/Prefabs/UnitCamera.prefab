@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7903651553682424925}
   - component: {fileID: 7903651553682424926}
+  - component: {fileID: 784458152231079923}
   m_Layer: 0
   m_Name: UnitCamera
   m_TagString: Untagged
@@ -74,3 +75,16 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &784458152231079923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7903651553682424928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d40f164b2895b240b8ba4238342835e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keapOnClient: 1

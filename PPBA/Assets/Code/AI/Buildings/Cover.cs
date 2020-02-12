@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PPBA
 {
-	public class Cover : MonoBehaviour, INetElement, IPanelInfo
+	public class Cover : MonoBehaviour, INetElement, IPanelInfo, IDestroyableBuilding
 	{
 		protected class State
 		{
@@ -29,13 +29,17 @@ namespace PPBA
 		#region References
 		//public
 		public CoverSlot[] _coverSlots;
+		[HideInInspector] public BuildingBoomboxController _myBoombox;
 		//private
 		private State _lastState;
 		private State _nextState;
+
+
 		#endregion
 
 		void Awake()
 		{
+			_myBoombox = transform.parent.GetComponentInChildren<BuildingBoomboxController>();
 #if !UNITY_SERVER
 			TickHandler.s_DoInput += ExtractFromGameState;
 #else
@@ -53,16 +57,6 @@ namespace PPBA
 
 		}
 
-		public void TakeDamage(int amount)
-		{
-			_health -= amount;
-			//set "i got hurt" flag to send to the client
-
-			if(_health <= 0)
-			{
-				//die
-			}
-		}
 
 		private void OnValidate()
 		{
@@ -83,45 +77,15 @@ namespace PPBA
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
-			/*
 			if(null != _nextState)
 				_lastState = _nextState;
+
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
 
 			_nextState = new State();
 
 			#region Writing into _nextState from s_interfaceGameState
-			{
-				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
-
-				if(null == temp || !temp._arguments.HasFlag(Arguments.ENABLED))
-				{
-					if(gameObject.activeSelf)
-						gameObject.SetActive(false);
-					return;
-				}
-				else
-				{
-					if(!gameObject.activeSelf)
-					{
-						gameObject.SetActive(true);
-						ResetToDefault(this, 0);
-					}
-				}
-
-				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
-				{
-					// do trigger stuff
-				}
-			}
-			{
-				GSC.transform temp = TickHandler.s_interfaceGameState.GetTransform(_id);
-
-				if(null != temp)
-				{
-					_nextState.position = temp._position;
-					_nextState._angle = temp._angle;
-				}
-			}
 			{
 				GSC.health temp = TickHandler.s_interfaceGameState.GetHealth(_id);
 				if(null != temp)
@@ -130,32 +94,9 @@ namespace PPBA
 				}
 			}
 			#endregion
-				*/
 		}
 
-		public void WriteToGameState(int tick)
-		{
-			/*
-			{
-				Arguments temp = new Arguments();
-
-				if(isActiveAndEnabled)
-					temp |= Arguments.ENABLED;
-
-				if(_arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
-					temp |= Arguments.TRIGGERBEHAVIOUR;
-
-				TickHandler.s_interfaceGameState._args.Add(new GSC.arg { _id = _id, _arguments = temp });
-
-				if(!isActiveAndEnabled)
-					return;//if cover is disabled, no other info is relevant
-			}
-
-			TickHandler.s_interfaceGameState._types.Add(new GSC.type { _id = _id, _type = 0, _team = (byte)_team });
-			TickHandler.s_interfaceGameState._transforms.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
-			TickHandler.s_interfaceGameState._healths.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
-			*/
-		}
+		public void WriteToGameState(int tick) => TickHandler.s_interfaceGameState.Add(new GSC.health { _id = _id, _health = _health, _morale = 0f });
 		#endregion
 
 		#region IPanelInfo
@@ -163,22 +104,41 @@ namespace PPBA
 		public void InitialiseUnitPanel()
 		{
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, "Team: " + _team, "Health: " + _health, ref _panelDetails);
+
+			if(null != _myBoombox)
+				_myBoombox.PlayClickSound();
 		}
 
 		public void UpdateUnitPanelInfo()
 		{
-			if(_panelDetails != null && 3 <= _panelDetails.Length)
+			if(_panelDetails != null && 2 <= _panelDetails.Length)
 			{
 				_panelDetails[0].text = "Team: " + _team;
 				_panelDetails[1].text = "Health: " + _health;
 			}
 		}
 		#endregion
+
+		#region IDestroyableBuilding
+		public void TakeDamage(int amount)
+		{
+			_health -= amount;
+			//set "i got hurt" flag to send to the client
+
+			if(_health <= 0)
+			{
+				Die();
+			}
+		}
+		public Transform GetTransform() => transform;
+		public float GetHealth() => _health;
+		public float GetMaxHealth() => _maxHealth;
+		public int GetTeam() => _team;
+		#endregion
 		#endregion
 
-		private static void ResetToDefault(Cover cover, int team)
+		private static void ResetToDefault(Cover cover)
 		{
-			cover._team = team;
 			cover._health = cover._maxHealth;
 		}
 
@@ -202,12 +162,25 @@ namespace PPBA
 		public static void Spawn(Vector3 spawnPoint, int team)
 		{
 			Cover newCover = (Cover)ObjectPool.s_objectPools[GlobalVariables.s_instance._prefabs[(int)ObjectType.COVER]].GetNextObject(team);
-			ResetToDefault(newCover, team);
+			ResetToDefault(newCover);
 			newCover.transform.position = spawnPoint;
 
 #if UNITY_SERVER
 			newCover.AddCoverSlotsToLists();
 #endif
+		}
+
+		private void Die()
+		{
+#if DB_PO
+			Debug.Log("Cover " + _id + " of team " + _team + " got destroyed.");
+#endif
+			transform.parent.gameObject.SetActive(false);
+		}
+
+		private void OnEnable()
+		{
+			ResetToDefault(this);
 		}
 
 		private void OnDisable()

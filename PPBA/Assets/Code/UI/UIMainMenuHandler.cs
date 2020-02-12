@@ -43,6 +43,7 @@ namespace PPBA
 			return;
 #endif
 			#region Checks
+#if UNITY_EDITOR
 			if(!_ipField)
 			{
 				Debug.LogError("ipField reference not set");
@@ -151,6 +152,7 @@ namespace PPBA
 				Destroy(this);
 				return;
 			}
+#endif
 			#endregion
 
 			float tmp;
@@ -244,7 +246,8 @@ namespace PPBA
 		{
 			string ip = _ipField.text == "" ? "127.0.0.1" : _ipField.text;
 			int port = _portField.text == "" ? 13370 : int.Parse(_portField.text);
-			MainMenuToGame.s_instance.ClientExecute(ip, port);
+			StatusNetcode.s_instance.StartClient(ip, port);
+			//MainMenuToGame.s_instance.ClientExecute(ip, port);
 		}
 
 		public void Quit()

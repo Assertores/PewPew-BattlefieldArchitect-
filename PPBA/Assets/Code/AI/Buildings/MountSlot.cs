@@ -42,11 +42,13 @@ namespace PPBA
 
 		public virtual void GetHit(int amount)
 		{
+#if DB_AI
 			Debug.Log("Hitting MountSlot " + gameObject.name + " did not apply damage anywhere.");
+#endif
 		}
-		#endregion
+#endregion
 
-		#region Tick
+#region Tick
 		public abstract void Execute();
 		public abstract void CalculateScore(int tick = 0);//add to action: s_LateCalc (attention: can't use cover scores as they are calculated at the same time. maybe move those to EarlyCalc)
 
@@ -62,7 +64,7 @@ namespace PPBA
 
 			//TickHandler.s_interfaceGameState.Add(new GSC.transform { _id = _id, _position = transform.position, _angle = transform.eulerAngles.y });
 		}
-		#endregion
+#endregion
 
 		private void OnEnable()
 		{

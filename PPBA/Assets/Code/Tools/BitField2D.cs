@@ -14,11 +14,19 @@ namespace PPBA
 		private int _fieldWidth = -1;
 		private int _fieldHight = -1;
 
-		public BitField2D(int width, int hight)
+		public BitField2D(int width, int hight, bool setAllBits = false)
 		{
 			_backingArray = new byte[Mathf.CeilToInt((width * hight) / 8.0f)];
 			_fieldWidth = width;
 			_fieldHight = hight;
+
+			if(setAllBits)
+			{
+				for(int i = 0; i < _backingArray.Length; i++)
+				{
+					_backingArray[i] = byte.MaxValue;
+				}
+			}
 		}
 
 		public BitField2D(int width, int hight, byte[] values)
@@ -141,7 +149,7 @@ namespace PPBA
 
 		public Vector2Int[] GetActiveBits()
 		{
-			Profiler.BeginSample("[BitField] GetActiveBits");
+			//Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
 			for(int i = 0; i < _backingArray.Length; i++)
 			{
@@ -162,7 +170,7 @@ namespace PPBA
 					}
 				}
 			}
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			return value.ToArray();
 		}
 

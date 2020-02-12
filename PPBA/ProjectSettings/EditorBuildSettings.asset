@@ -12,9 +12,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Game.unity
     guid: 6104918283bbea34294d626f00f4afc9
   - enabled: 0
-    path: Assets/Scenes/BuildingTest.unity
+    path: 
     guid: 0f22cfab628b5994488f12b69bf156bf
   - enabled: 0
     path: Assets/Scenes/AI/AI_BuildingTestTakeOver.unity
     guid: decf6fbb785d0f44eb7338d5cf996140
+  - enabled: 1
+    path: Assets/Scenes/LoadingScene.unity
+    guid: 38b851ec7727f5e4d814101a7b769e59
+  - enabled: 1
+    path: Assets/Scenes/EndScreen.unity
+    guid: ef54b22fb78eaf64bb6d890523eac1a7
   m_configObjects: {}

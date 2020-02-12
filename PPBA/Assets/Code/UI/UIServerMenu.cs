@@ -23,6 +23,7 @@ namespace PPBA {
 			Destroy(this.gameObject);
 			return;
 #endif
+#if UNITY_EDITOR
 			if(!_ipField)
 			{
 				Debug.LogError("IPField reference not set");
@@ -59,6 +60,7 @@ namespace PPBA {
 				Destroy(this);
 				return;
 			}
+#endif
 
 			string hostName = Dns.GetHostName(); // Retrive the Name of HOST
 			string myIP = "";

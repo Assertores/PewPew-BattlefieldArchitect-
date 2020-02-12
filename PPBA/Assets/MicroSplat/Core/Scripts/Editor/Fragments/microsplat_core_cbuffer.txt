@@ -1,0 +1,28 @@
+﻿
+      #if _VSSHADOWMAP
+         float4 gVSSunDirection;
+      #endif
+      
+      #if _MESHSUBARRAY
+         half4 _MeshSubArrayIndexes;
+      #endif
+
+
+      #if _USEEMISSIVEMETAL
+         half _EmissiveMult;
+      #endif
+
+      float4 _UVScale; // scale and offset
+
+      float2 _ToonTerrainSize;
+
+      half _Contrast;
+
+      #if _GLITTER || _MESHCOMBINEDUSESSS || _PERTEXSSS || _SNOWSSS
+         #if defined(UNITY_PASS_DEFERRED) || _MSRENDERLOOP_UNITYHD
+            float3 _gGlitterLight;
+         #endif
+      #endif
+
+      
+   

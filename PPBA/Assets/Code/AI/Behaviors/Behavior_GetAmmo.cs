@@ -67,7 +67,9 @@ namespace PPBA
 				case "Ammo":
 					return (float) pawn._ammo / pawn._maxAmmo;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -83,7 +85,9 @@ namespace PPBA
 				case "Ammo":
 					return (float) depot._ammo / depot._maxAmmo;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

@@ -10,10 +10,13 @@ namespace PPBA
 	{
 		public AudioClip _BuildingSound;
 		[SerializeField] private Sprite _ImageUI;
+		[SerializeField] public GameObject _UIElement_;
+		public GameObject _UIElement { get => _UIElement_; }
 		[SerializeField] private TextMeshProUGUI _TextField;
 		[SerializeField] private ObjectType _ObjectType;
 		[SerializeField] private GameObject _GhostPrefab;
-		[SerializeField] private GameObject _blueprintPrefab;
+		[SerializeField] private GameObject LogicObject;
+		public FlagPole _flagPole;
 
 		public float _BuildingTime;
 		public float _BuildingCosts;
@@ -26,7 +29,7 @@ namespace PPBA
 		[HideInInspector] public TextMeshProUGUI _ToolTipFeld { get => _TextField; }
 		[HideInInspector] public ObjectType _Type { get => _ObjectType; }
 		[HideInInspector] public GameObject _GhostPrefabObj { get => _GhostPrefab; }
-		[HideInInspector] public GameObject _blueprintObj { get => _blueprintPrefab; }
+		[HideInInspector] public GameObject _LogicObj { get => LogicObject; }
 
 		[SerializeField] Material BaseMaterial;
 		[SerializeField] private Renderer _myRenderer;
@@ -40,6 +43,9 @@ namespace PPBA
 				if(null != temp)
 					_myRenderer = temp;
 			}
+
+			if(null == _flagPole)
+				_flagPole = GetComponentInChildren<FlagPole>();
 		}
 
 		private int _teamBackingField;
@@ -52,6 +58,9 @@ namespace PPBA
 					BuildingColorSetter.SetMaterialColor(_myRenderer, _PropertyBlock, value);
 
 				_teamBackingField = value;
+
+				if(null != _flagPole)
+					JobCenter.ChangeTeamList(JobCenter.s_flagPoles, _flagPole, value);
 			}
 		}
 

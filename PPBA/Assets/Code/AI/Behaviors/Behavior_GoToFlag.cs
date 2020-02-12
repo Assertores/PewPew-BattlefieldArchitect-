@@ -38,7 +38,7 @@ namespace PPBA
 		{
 			pawn._animationController.SetAnimatorBools(PawnAnimations.RUN);
 
-			if(s_targetDictionary[pawn] != null && Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < 5f)
+			if(s_targetDictionary[pawn] != null && 0.1f < Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position))
 			{
 				pawn._currentAnimation = PawnAnimations.RUN;
 				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
@@ -61,7 +61,9 @@ namespace PPBA
 				case StringCollection.MORALE:
 					return pawn._morale / pawn._maxMorale;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -76,7 +78,9 @@ namespace PPBA
 				case "Score":
 					return flagPole._score;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

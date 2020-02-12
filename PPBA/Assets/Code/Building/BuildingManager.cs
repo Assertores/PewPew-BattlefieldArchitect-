@@ -17,12 +17,21 @@ namespace PPBA
 		private Vector3 _lastPole;
 		private bool _isBuilt = false;
 
-		private Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
+		public Dictionary<GameObject, ObjectType> _placedBuiltings = new Dictionary<GameObject, ObjectType>();
 
 		public bool _canBuild = true;
 
 		public float _mouseWheelRotation;
 		private int _currentPrefabIndex = 0;
+
+
+		public delegate void eventUIInfoPanel(ObjectType holder);
+		public eventUIInfoPanel _InfoPanelEvent;
+
+		public List<IRefHolder> _refineriesHolder = new List<IRefHolder>();
+		public List<IRefHolder> _mediCampHolder = new List<IRefHolder>();
+		public List<IRefHolder> _depotHolder = new List<IRefHolder>();
+		public List<IRefHolder> _HQ = new List<IRefHolder>();
 
 		private void Update()
 		{
@@ -62,7 +71,9 @@ namespace PPBA
 
 					if(!_canBuild)
 					{   // for the last one with this we can go on building
+#if DB_PO
 						print("!!!_canBuild");
+#endif
 						foreach(KeyValuePair<GameObject, ObjectType> build in _placedBuiltings)
 						{
 							Destroy(build.Key);
@@ -275,6 +286,44 @@ namespace PPBA
 			_currentPlaceableObject.GetComponent<TickBuildEmitter>().AddToGatherValue();
 			_isBuilt = false;
 			EndBuilding();
+		}
+
+		public void AddBuildToHolder(IRefHolder _refHolderyp)
+		{
+			switch(_refHolderyp._Type)
+			{
+				case ObjectType.REFINERY:
+					_refineriesHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.DEPOT:
+					_depotHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.PAWN_WARRIOR:
+					break;
+				case ObjectType.PAWN_HEALER:
+					break;
+				case ObjectType.PAWN_PIONEER:
+					break;
+				case ObjectType.MEDICAMP:
+					_mediCampHolder.Add(_refHolderyp);
+					break;
+				case ObjectType.SIZE:
+					break;
+				case ObjectType.GUN_TURRET:
+					break;
+				case ObjectType.WALL:
+					break;
+				case ObjectType.WALL_BETWEEN:
+					break;
+				case ObjectType.COVER:
+					break;
+				case ObjectType.FLAGPOLE:
+					break;
+				case ObjectType.HQ:
+					_HQ.Add(_refHolderyp);
+					break;
+			}
+
 		}
 	}
 }

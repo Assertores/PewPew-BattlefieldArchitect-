@@ -7,19 +7,23 @@ namespace PPBA
 	public class HeadQuarter : MonoBehaviour
 	{
 		#region Variables
+		[SerializeField] private bool _isAutoSpawner = true;
 		[Header("CarePackage")]
 		[SerializeField] private int _suppliesPerTick = 1;
 		[SerializeField] private int _ammoPerTick = 1;
 		#endregion
 
 		#region References
-		[SerializeField] private ResourceDepot _resourceDepot;
+		[SerializeField] public ResourceDepot _resourceDepot;
 		#endregion
 
 		private void CarePackage(int tick = 0)
 		{
-			_resourceDepot.GiveResources(_suppliesPerTick);
-			_resourceDepot.GiveAmmo(_ammoPerTick);
+			if(tick % 8 == 0)
+			{
+				_resourceDepot.GiveResources(_suppliesPerTick);
+				_resourceDepot.GiveAmmo(_ammoPerTick);
+			}
 		}
 
 		private void SpawnPawn(int tick = 0)
@@ -32,7 +36,9 @@ namespace PPBA
 		{
 #if UNITY_SERVER
 			TickHandler.s_DoTick += CarePackage;
-			TickHandler.s_DoTick += SpawnPawn;
+
+			if(_isAutoSpawner)
+				TickHandler.s_DoTick += SpawnPawn;
 
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(!JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
@@ -40,15 +46,23 @@ namespace PPBA
 #endif
 		}
 
+		int h_disablecount = 0;
 		private void OnDisable()
 		{
 #if UNITY_SERVER
+			h_disablecount++;
+
 			TickHandler.s_DoTick -= CarePackage;
-			TickHandler.s_DoTick -= SpawnPawn;
+
+			if(_isAutoSpawner)
+				TickHandler.s_DoTick -= SpawnPawn;
 
 			if(null != JobCenter.s_headQuarters[_resourceDepot._team])
 				if(JobCenter.s_headQuarters[_resourceDepot._team].Contains(this))
 					JobCenter.s_headQuarters[_resourceDepot._team].Remove(this);
+
+			if(1 < h_disablecount)
+				JobCenter.CheckWinCon();
 #endif
 		}
 	}

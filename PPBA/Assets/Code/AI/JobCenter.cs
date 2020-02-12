@@ -14,9 +14,10 @@ namespace PPBA
 		public static List<MountSlot>[] s_mountSlots = new List<MountSlot>[10];
 		public static List<CoverSlot>[] s_coverSlots = new List<CoverSlot>[10];
 		public static List<FlagPole>[] s_flagPoles = new List<FlagPole>[10];
-		public static List<MediCamp>[] s_mediCamp = new List<MediCamp>[10];		
+		public static List<MediCamp>[] s_mediCamp = new List<MediCamp>[10];
 		public static List<HeadQuarter>[] s_headQuarters = new List<HeadQuarter>[10];
 
+		#region Monobehaviour
 		void Awake()
 		{
 			if(s_instance == null)
@@ -48,12 +49,74 @@ namespace PPBA
 
 		void Start()
 		{
-   
+
 		}
 
 		void Update()
 		{
+#if false
+			LogPolesPerTeam();
+#endif
+		}
+		#endregion
 
+		public static void ChangeTeamList<T>(List<T>[] list, T item, int newTeam)
+		{
+			bool isInRightTeam = false;
+
+			for(int i = 0; i < list.Length; i++)
+			{
+				if(i == newTeam && list[i].Contains(item))
+					isInRightTeam = true;
+				else if(list[i].Contains(item))
+					list[i].Remove(item);
+			}
+
+			if(!isInRightTeam)
+				list[newTeam].Add(item);
+		}
+
+		private void LogPolesPerTeam()
+		{
+#if DB_AI || DB_PO
+			for(int i = 0; i < 2; i++)
+			{
+				string temp = "poles team " + i.ToString() + ": ";
+
+				foreach(var pole in s_flagPoles[i])
+				{
+					temp += " " + pole._id.ToString() + ",";
+				}
+
+				Debug.Log(temp);
+			}
+#endif
+		}
+
+		public static void CheckWinCon()
+		{
+			bool[] areWinners = new bool[s_headQuarters.Length];
+			int alivePlayers = 0;
+
+			for(int i = 0; i < s_headQuarters.Length; i++)
+			{
+				if(0 < s_headQuarters[i].Count)
+				{
+					alivePlayers++;
+					areWinners[i] = true;
+				}
+				else
+					areWinners[i] = false;
+			}
+
+			if(alivePlayers == 1)
+			{
+				for(int i = 0; i < areWinners.Length; i++)
+				{
+					if(areWinners[i])
+						StatusNetcode.s_instance.SetWinningConndition(i);
+				}
+			}
 		}
 	}
 }

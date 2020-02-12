@@ -1,44 +1,61 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 
+
 #pragma kernel CSInit
 #pragma kernel CSMain
 #pragma kernel CSTerritorium
-#pragma kernel CSNextEdge
+//#pragma kernel CSNextEdge
+#pragma kernel CSBitToTex
+#pragma kernel CSTexToArray
 
 int PointSize;
 
-float4 coords[50];
+float4 coords[100];
 int SoldiersSize;
-float4 Soldiers[50];
-int stateSize;
-float2 state[50];
+float4 Soldiers[200];
+int RequiredSize;
+float4 InformationRequired[50];
+float4 teamColors[4];
+int team;
+
+//int stateSize;
+//float2 state[50];
+
+RWStructuredBuffer<float> InputRedValue;
+RWStructuredBuffer<float4> InputTextureTerritorium;
 
 RWStructuredBuffer<int> buffer;
 RWStructuredBuffer<float> redValue;
+RWStructuredBuffer<float> terValue;
 RWStructuredBuffer<uint> bitField;
 
-Texture2D<float4> InputTexture;
 RWTexture2D<float4> Result;
+RWTexture2D<float4> input;
 RWTexture2D<float4> TerritoriumResult;
+RWTexture2D<float4> MyTerritoriumResult;
+
 
 [numthreads(8, 8, 1)]
 void CSInit(uint3 id : SV_DispatchThreadID)
 {
-    for (int i = 0; i < 50; i++)
+    const int weightMap = 256;
+    int bit = id.y * weightMap + id.x;
+
+    for (int i = 0; i < PointSize; i++)
     {
         buffer[i] = 0;
-
     }
 
-	for (int i = 0; i < ((256 * 256) / 8); i++)
-	{
+    for (int i = 0; i < ((256 * 256) / (8*4)); i++)
+    {
 		bitField[i] = 0;
-	}
+    }
+	
+	//bitField[bit / (8 * 4)] = 0;
+	//redValue[bit] = 0;
+    //InputRedValue[bit] = 0;
+    //InputTextureTerritorium[bit] = 0;
 
-	for (int j = 0; j < (256*256); j++)
-	{
-		redValue[i] = 0;
-	}
 }
 
 [numthreads(8, 8, 1)]
@@ -46,43 +63,44 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const int weightMap = 256;
 	   
+    //redValue[id.y * weightMap + id.x] = 1;
+    float currentResources = input[id.xy].r;
 
-    float currentResources = InputTexture[id.xy].r;
+    float minValue;
 
-	if (currentResources == 0)
-		return;
+    //if (currentResources == 0)
+    //    return;
 
     for (int i = 0; i < PointSize; i++)
     {
-        float dis = distance(float2(id.x, id.y), float2(coords[0].x, coords[0].y));
+        float dis = distance(float2(id.x, id.y), float2(coords[i].x, coords[i].y));
 
-        float maxDis = coords[0].w;
+        float maxDis = coords[i].w;
 
         if (dis > maxDis)
         {
             continue;
         }
     
-        float harvestFac = smoothstep(maxDis, 0.0, dis) * coords[i].z; // distfactor * coords[i].z;
+        float harvestFac = smoothstep(maxDis, 0, dis) * coords[i].z; // distfactor * coords[i].z;
+        //float harvestFac = /*step( 0.0, dis) **/ coords[i].z; // distfactor * coords[i].z;
         float minValue = float(min(currentResources, harvestFac));
         currentResources -= minValue;
         currentResources = saturate(currentResources);
 
         InterlockedAdd(buffer[i], minValue * 1000.0);
     }
-
-
-	redValue[id.y * weightMap + id.x] = currentResources;
-
-	if (InputTexture[id.xy].r != currentResources)
-	{
-		int bit = id.y * weightMap + id.x;
-		InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-		Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
-
-	}
+    
+    int bit = id.y * weightMap + id.x;
+    redValue[bit] = currentResources;
+    
+    if (input[id.xy].r != currentResources)
+    {
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
+       // bitField[bit / (8 * 4)] = ( 1 << (bit % (8 * 4)));
+        Result[id.xy] = float4(currentResources, 0.0, 0.0, 1.0);
+    }
 }
-
 
 [numthreads(8, 8, 1)]
 void CSTerritorium(uint3 id : SV_DispatchThreadID)
@@ -90,10 +108,12 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
     const int weightMap = 256;
     float m_dist = 10; // minimun distance
     float2 m_point; // minimum position
+    float3 col = TerritoriumResult[id.xy]; // minimum position
 
 	// Iterate through the points positions
     for (int i = 0; i < SoldiersSize; i++)
     {
+        //float m_dist = Soldiers[i].w; // minimun distance
         float dist = distance(id.xy, Soldiers[i].xy);
 
         if (dist > m_dist)
@@ -110,102 +130,132 @@ void CSTerritorium(uint3 id : SV_DispatchThreadID)
 
         if (Soldiers[i].z == 0)
         {
-            m_point = float3(1, 0, 0);
+            col = float3(2, 0, 0);
         }
-        if (Soldiers[i].z == 1)
+        else if (Soldiers[i].z == 1)
         {
-            m_point = float3(2, 0, 0);
+            col = float3(3, 1, 0);
         }
-        if (Soldiers[i].z == 2)
+        else if (Soldiers[i].z == 2)
         {
-            m_point = float3(3, 0, 0);
+            col = float3(4, 0, 1);
         }
-        if (Soldiers[i].z == 3)
+        else if (Soldiers[i].z == 3)
         {
-            m_point = float3(4, 0, 0);
-        }
-
-        if (TerritoriumResult[id.xy].r != m_point.r)
-        {
-            int bit = id.y * weightMap + id.x;
-            InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));
-
-            TerritoriumResult[id.xy] = float4(m_point, 0, 1);
+            col = float3(5, 0.5, 0);
         }
     }
+	//col = lerp( InputTextureTerritorium[id.xy], col, m_dist);
+	//col = smoothstep(InputTextureTerritorium[id.xy], col,dist); // distfactor * coords[i].z;
+    
+    int bit = id.y * weightMap + id.x;
+    terValue[bit] = col.r;
+        		
+    if (TerritoriumResult[id.xy].r != col.r)
+    {
+        InterlockedAdd(bitField[bit / (8 * 4)], 1 << (bit % (8 * 4)));          
+        TerritoriumResult[id.xy] = float4(col, 1);
+    }
 }
+    
+[numthreads(8, 8, 1)]
+void CSBitToTex(uint3 id : SV_DispatchThreadID)
+{
+    const int weightMap = 256;
+    Result[id.xy] = InputRedValue[id.y * weightMap + id.x];
+    
+    float value = terValue[id.y * weightMap + id.x];
+    
+    if (value == 2)
+    {
 
+
+        //TerritoriumResult[id.xy] = float4(0, 1, 1, 1);
+        TerritoriumResult[id.xy] = teamColors[0];
+
+        float4 bw = (team == (value - 2) ? 0 : 1);
+
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
+
+    }
+    else if (value == 3)
+    {
+
+
+        //TerritoriumResult[id.xy] = float4(0, 1, 0, 1);
+        TerritoriumResult[id.xy] = teamColors[1];
+        
+        float4 bw = (team == (value - 2) ? 0 : 1);
+
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
+    }
+    else if (value == 4)
+    {
+
+        //TerritoriumResult[id.xy] = float4(0, 0, 1, 1);
+        TerritoriumResult[id.xy] = teamColors[2];
+        
+        float4 bw = (team == (value - 2) ?  0 : 1);
+
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
+    }
+    else if (value == 5)
+    {
+        //TerritoriumResult[id.xy] = float4(0.5, 0.5, 0.5, 1);
+        TerritoriumResult[id.xy] = teamColors[3];
+        
+        float4 bw = (team == (value - 2) ?  0 : 1);
+
+		if( MyTerritoriumResult[id.xy].r != 0)
+		{
+			MyTerritoriumResult[id.xy] = bw;
+		}
+    }
+}
+    
 
 
 
 [numthreads(8, 8, 1)]
-void CSNextEdge(uint3 id : SV_DispatchThreadID)
+void CSTexToArray(uint3 id : SV_DispatchThreadID)
 {
-	////===== ===== relevance test ===== =====
- //   bool imIn = false;
- //   for (int q = 0; !imIn || q < SoldiersSize; q++)
- //   {
- //       if (id.x == Soldiers[q].x || id.y == Soldiers[q].y)
- //           imIn = true;
- //   }
- //   if (!imIn)
- //       return;
+    const int weightMap = 256;
+    
+	float3 col = TerritoriumResult[id.xy].rgb;
+	float gray = (col.r + col.g + col.b) * 0.333;
+	
+	float teamColor1 = (teamColors[0].r + teamColors[0].r + teamColors[0].r) * 0.333;
+	float teamColor2 = (teamColors[1].r + teamColors[1].r + teamColors[1].r) * 0.333;
+	float teamColor3 = (teamColors[2].r + teamColors[2].r + teamColors[2].r) * 0.333;
+	float teamColor4 = (teamColors[3].r + teamColors[3].r + teamColors[3].r) * 0.333;
 
-	////===== ===== init ===== =====
- //   float myTeam = TerritoriumResult[id.xy].x;
- //   float2 found;
+    float value = 1;
 
- //   float foundDist = 3.402823466e+38F;
+    if (gray == teamColor1)
+    {
+		value = 2;
+    }
+    else if (gray == teamColor2)
+    {
+		value= 3;
+    }
+    else if (gray == teamColor3)
+    {
+		value = 4;
+    }
+    else if (gray == teamColor4)
+    {
+		value = 5;
+    }
 
- //   int maxIndex = 4000000;
-
-	////===== ===== serach ===== =====
- //   for (int column = 1; column * column < foundDist; column++)
- //   {
- //       int rowLength = min(column, maxIndex);
- //       for (int row = 0; row <= rowLength; row++)
- //       {
- //           float2 pos;
- //           bool valueIsDifferent = false;
-
- //           pos = id.xy + float2(column, row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-column, row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(column, -row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-column, -row);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(row, column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-row, column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(row, -column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
- //           pos = id.xy + float2(-row, -column);
- //           if (myTeam != TerritoriumResult[pos].r)
- //               valueIsDifferent = true;
-
- //           if (valueIsDifferent)
- //           {
- //               int dist = column * column + row * row;
- //               if (foundDist > dist)
- //               {
- //                   found = pos;
- //                   maxIndex = row;
- //                   foundDist = dist;
- //               }
- //           }
- //       }
-
-	//	//===== ===== result ===== =====
- //       TerritoriumResult[id.xy] = float4(TerritoriumResult[id.xy].x, found.x, found.y, sqrt(foundDist));
- //   }
-}
+	terValue[id.y * weightMap + id.x] = value;
+}	

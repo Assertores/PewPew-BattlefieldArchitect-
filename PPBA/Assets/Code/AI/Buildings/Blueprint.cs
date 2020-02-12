@@ -26,7 +26,9 @@ namespace PPBA
 
 				if(null == _myRefHolder)
 				{
+#if DB_PO
 					Debug.LogError("Blueprint couldn't find IRefHolder");
+#endif
 					return 0;
 				}
 				else
@@ -42,9 +44,9 @@ namespace PPBA
 
 		private bool _isFinished = false;
 		//public Arguments _arguments = new Arguments();
-		#endregion
+#endregion
 
-		#region References
+#region References
 		private IRefHolder _myRefHolder;
 		[SerializeField] public List<Pawn> _workers = new List<Pawn>();
 
@@ -57,7 +59,7 @@ namespace PPBA
 		[SerializeField] private Renderer _myRenderer;
 		private MaterialPropertyBlock _PropertyBlock;
 
-		#endregion
+#endregion
 
 		public float _workDoable
 		{
@@ -70,7 +72,7 @@ namespace PPBA
 			get => (float)(_resourcesMax - _resources - _resourcesIncoming);
 		}
 
-		#region Monobehavior
+#region Monobehavior
 		void Awake()
 		{
 			_myRefHolder = GetComponentInParent<IRefHolder>();
@@ -87,9 +89,9 @@ namespace PPBA
 			VisualizeLerpedStates();
 #endif
 		}
-		#endregion
+#endregion
 
-		#region Give & Take
+#region Give & Take
 		public void WorkTick()
 		{
 			foreach(Pawn w in _workers)
@@ -119,7 +121,7 @@ namespace PPBA
 			if(null != _myRefHolder)
 			{
 				_myRefHolder.GetShaderProperties = UserInputController.s_instance.GetTexturePixelPoint(this.transform);
-				ResourceMapCalculate.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
+				HeatMapCalcRoutine.s_instance.AddFabric(_myRefHolder);//HAS TO DIFFER PER PREFAB
 			}
 
 			transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
@@ -143,9 +145,9 @@ namespace PPBA
 				return spaceLeft;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Initialisation
+#region Initialisation
 		public void WriteToGameState(int tick)
 		{
 			{
@@ -173,9 +175,12 @@ namespace PPBA
 			if(null != _nextState)
 				_lastState = _nextState;
 
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			_nextState = new State();
 
-			#region Writing into _nextState from s_interfaceGameState
+#region Writing into _nextState from s_interfaceGameState
 			{
 				GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
 
@@ -191,7 +196,12 @@ namespace PPBA
 				*/
 
 				if(temp._arguments.HasFlag(Arguments.TRIGGERBEHAVIOUR))
+				{
 					_isFinished = true;
+#if !UNITY_SERVER
+					transform.parent.GetChild(2)?.gameObject.SetActive(true);//activate child with building
+#endif
+				}
 				else
 					_isFinished = false;
 			}
@@ -219,7 +229,7 @@ namespace PPBA
 					_nextState._work = temp._work;
 				}
 			}
-			#endregion
+#endregion
 		}
 
 		private static void ResetToDefault(Blueprint blueprint)
@@ -335,6 +345,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-		#endregion
+#endregion
 	}
 }

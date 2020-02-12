@@ -45,6 +45,7 @@ namespace PPBA
 					p._morale += Moralizer.s_instance.PassJudgement(MoraleEvents.ENEMYDIED);
 			}
 
+			HeatMapCalcRoutine.s_instance.RemoveSoldiers(pawn.transform);
 			//put pawn back into object pool
 			pawn.gameObject.SetActive(false);
 		}
@@ -58,7 +59,9 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

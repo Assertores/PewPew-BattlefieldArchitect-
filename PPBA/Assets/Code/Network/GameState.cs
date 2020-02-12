@@ -16,9 +16,15 @@ namespace PPBA
 		TRIGGERBEHAVIOUR = 2,//2^1
 	};
 
+	struct HeatMapMessageElement
+	{
+		public BitField2D _mask;
+		public List<float> _values;
+	}
+
 	namespace GSC //Game State Component
 	{
-		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, PIXELWISE, BITMAPWISE };
+		enum DataType : byte { NON, TYPE, ARGUMENT, TRANSFORM, AMMO, RESOURCE, HEALTH, WORK, BEHAVIOUR, ANIMATIONS, PATH, MAP, INPUTS, RANGE, SDLPAWN, PIXELWISE, BITMAPWISE };
 
 		public class gsc
 		{
@@ -203,20 +209,21 @@ namespace PPBA
 				return "ObjectPool: " + _type + "| ids: " + _id.ToString("0000") + " - " + (_id + _range).ToString("0000");
 			}
 		}
+
+		public class sheduledPawns : gsc
+		{
+			public byte _type;
+			public byte _count;
+			public override string ToString()
+			{
+				return "Type " + _id + ": " + _count;
+			}
+		}
 	}
 
 	[System.Serializable]
 	public class GameState
 	{
-		public GameState(bool isReceiverGameState = false)
-		{
-			_isEncrypted = isReceiverGameState;
-		}
-
-		/// <summary>
-		/// copy GameState
-		/// </summary>
-		/// <param name="original">GameState to make copy from</param>
 		public GameState(GameState original)
 		{
 			_refTick = original._refTick;
@@ -225,6 +232,7 @@ namespace PPBA
 			_isEncrypted = original._isEncrypted;
 			_receivedMessages = original._receivedMessages;
 			_messageHolder = original._messageHolder;
+			_isNULLGameState = original._isNULLGameState;
 
 			_types.AddRange(original._types.ToArray());
 			_args.AddRange(original._args.ToArray());
@@ -239,8 +247,10 @@ namespace PPBA
 			_heatMaps.AddRange(original._heatMaps.ToArray());
 			_denyedInputIDs.AddRange(original._denyedInputIDs.ToArray());
 			_newIDRanges.AddRange(original._newIDRanges.ToArray());
+			_scheduledPawns.AddRange(original._scheduledPawns.ToArray());
 		}
 
+		public bool _isNULLGameState { get; private set; } = true;
 		public int _refTick { get; set; } = 0;
 		public bool _isLerped { get; private set; } = false;
 		public bool _isDelta { get; private set; } = false;
@@ -269,274 +279,463 @@ namespace PPBA
 		/// DO NOT USE
 		/// </summary>
 		public List<GSC.newIDRange> _newIDRanges = new List<GSC.newIDRange>();
+		///<summary>
+		/// DO NOT USE
+		/// </summary>
+		public List<GSC.sheduledPawns> _scheduledPawns = new List<GSC.sheduledPawns>();
+
+		/// <summary>
+		/// copy GameState
+		/// </summary>
+		/// <param name="original">GameState to make copy from</param>
+		public GameState(bool isReceiverGameState = false)
+		{
+			_isEncrypted = isReceiverGameState;
+		}
 
 		public List<byte[]> Encrypt(int maxPackageSize)
 		{
 			if(_messageHolder != null)
 				return _messageHolder;
 
-			Profiler.BeginSample("[GameState] Encrypt");
+			//Profiler.BeginSample("[GameState] Encrypt");
 			_messageHolder = new List<byte[]>();
 			List<byte> msg = new List<byte>();
 
-			//HandlePackageSize(maxPackageSize, value, BitConverter.GetBytes(_hash));
-
-			Profiler.BeginSample("[GameState] types");
-			if(_types.Count > 0)
+			//HeatMaps
 			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.TYPE);
-				msg.AddRange(BitConverter.GetBytes(_types.Count));
-				foreach(var it in _types)
+				//Profiler.BeginSample("[GameState] heatMaps");
+				if(_heatMaps.Count > 0)
 				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add(it._type);
-					msg.Add(it._team);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] args");
-			if(_args.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.ARGUMENT);
-				msg.AddRange(BitConverter.GetBytes(_args.Count));
-				foreach(var it in _args)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._arguments);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] transforms");
-			if(_transforms.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.TRANSFORM);
-				msg.AddRange(BitConverter.GetBytes(_transforms.Count));
-				foreach(var it in _transforms)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._position.x));
-					msg.AddRange(BitConverter.GetBytes(it._position.y));
-					msg.AddRange(BitConverter.GetBytes(it._position.z));
-					msg.AddRange(BitConverter.GetBytes(it._angle));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] ammo");
-			if(_ammos.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.AMMO);
-				msg.AddRange(BitConverter.GetBytes(_ammos.Count));
-				foreach(var it in _ammos)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._bullets));
-					//msg.AddRange(BitConverter.GetBytes(it._grenades));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] resources");
-			if(_resources.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.RESOURCE);
-				msg.AddRange(BitConverter.GetBytes(_resources.Count));
-				foreach(var it in _resources)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._resources));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] healths");
-			if(_healths.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.HEALTH);
-				msg.AddRange(BitConverter.GetBytes(_healths.Count));
-				foreach(var it in _healths)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._health));
-					msg.AddRange(BitConverter.GetBytes(it._morale));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] works");
-			if(_works.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.WORK);
-				msg.AddRange(BitConverter.GetBytes(_works.Count));
-				foreach(var it in _works)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._work));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] behaviors");
-			if(_behaviors.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.BEHAVIOUR);
-				msg.AddRange(BitConverter.GetBytes(_behaviors.Count));
-				foreach(var it in _behaviors)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._behavior);
-					msg.AddRange(BitConverter.GetBytes(it._target));
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] animations");
-			if(_animations.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.ANIMATIONS);
-				msg.AddRange(BitConverter.GetBytes(_animations.Count));
-				foreach(var it in _animations)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.Add((byte)it._animation);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] paths");
-			if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.PATH);
-				msg.AddRange(BitConverter.GetBytes(_paths.Count));
-				foreach(var it in _paths)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._path.Length));
-					for(int i = 0; i < it._path.Length; i++)
+					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
+					/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
+					foreach(var it in _heatMaps)
 					{
-						msg.AddRange(BitConverter.GetBytes(it._path[i].x));
-						msg.AddRange(BitConverter.GetBytes(it._path[i].y));
-						msg.AddRange(BitConverter.GetBytes(it._path[i].z));
-					}
-				}
 
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] heatMaps");
-			if(_heatMaps.Count > 0)
-			{
-				/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
-				foreach(var it in _heatMaps)
-				{
-					msg.Clear();
-					msg.Add((byte)GSC.DataType.MAP);
-					msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
 
-					if(true)
-					{
-						msg.Add((byte)GSC.DataType.PIXELWISE);
+						byte xMin = byte.MaxValue;
+						byte xSize = byte.MinValue;
+						byte yMin = byte.MaxValue;
+						byte ySize = byte.MinValue;
 
-						msg.AddRange(BitConverter.GetBytes(it._values.Count));
 						foreach(var jt in it._values)
 						{
-							msg.Add(jt._x);
-							msg.Add(jt._y);
-							msg.AddRange(BitConverter.GetBytes(jt._value));
+							xMin = xMin < jt._x ? xMin : jt._x;
+							xSize = jt._x < xSize ? jt._x : xSize;
+							yMin = yMin < jt._y ? yMin : jt._y;
+							ySize = jt._y < ySize ? jt._y : ySize;
 						}
+						xSize -= xMin;
+						ySize -= yMin;
+
+						if(false)//if(it._values.Count * 2 < Mathf.CeilToInt((float)(xSize * ySize) / 8))
+						{
+							msg.Clear();
+							msg.Add((byte)GSC.DataType.MAP);
+							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+							msg.Add((byte)GSC.DataType.PIXELWISE);
+
+							int maxElementCount = (maxPackageSize - 1 - sizeof(int)) / (2 + sizeof(float));
+
+							int packageCount = Mathf.CeilToInt((float)it._values.Count / maxElementCount);
+
+							if(packageCount == 0)
+								continue;
+
+							for(int i = 0; i < packageCount - 1; i++)
+							{
+								msg.AddRange(BitConverter.GetBytes(maxElementCount));
+
+								for(int j = i * maxElementCount; j < i * maxElementCount + maxElementCount; j++)
+								{
+									msg.Add(it._values[j]._x);
+									msg.Add(it._values[j]._y);
+									msg.AddRange(BitConverter.GetBytes(it._values[j]._value));
+								}
+
+								HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+
+								msg.Clear();
+								msg.Add((byte)GSC.DataType.MAP);
+								msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+								msg.Add((byte)GSC.DataType.PIXELWISE);
+							}
+
+							msg.AddRange(BitConverter.GetBytes(it._values.Count % maxElementCount));//should be the same value as the for loop count
+
+							for(int i = (packageCount - 1) * maxElementCount; i < it._values.Count; i++)
+							{
+								msg.Add(it._values[i]._x);
+								msg.Add(it._values[i]._y);
+								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+							}
+
+							HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+#if Obsolete
+
+						msg.AddRange(BitConverter.GetBytes(it._values.Count));
+						for(int i = 0; i < it._values.Count; i++)
+						{
+							msg.Add(it._values[i]._x);
+							msg.Add(it._values[i]._y);
+							msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+
+							if(i %)
+							{
+								HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+
+								msg.Clear();
+								msg.Add((byte)GSC.DataType.MAP);
+								msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+								msg.Add((byte)GSC.DataType.PIXELWISE);
+
+								msg.AddRange(BitConverter.GetBytes(it._values.Count));
+							}
+						}
+#endif
+						}
+						else
+						{
+							int xFieldCount = Mathf.CeilToInt((float)xSize / 64);
+							int yFieldCount = Mathf.CeilToInt((float)ySize / 64);
+
+							int bFWidth = Mathf.CeilToInt((float)xSize / xFieldCount);
+							int bFHeight = Mathf.CeilToInt((float)ySize / yFieldCount);
+
+							HeatMapMessageElement[,] messageHandler = new HeatMapMessageElement[xFieldCount, yFieldCount];
+							for(int x = 0; x < xFieldCount; x++)
+							{
+								for(int y = 0; y < yFieldCount; y++)
+								{
+									messageHandler[x, y]._mask = new BitField2D(bFWidth, bFHeight);
+									messageHandler[x, y]._values = new List<float>();
+								}
+							}
+							foreach(var jt in it._values)
+							{
+								messageHandler[(jt._x - xMin) / bFWidth, (jt._y - yMin) / bFHeight]._mask[(jt._x - xMin) % bFWidth, (jt._y - yMin) % bFHeight] = true;
+								messageHandler[(jt._x - xMin) / bFWidth, (jt._y - yMin) / bFHeight]._values.Add(jt._value);
+							}
+
+							for(int x = 0; x < xFieldCount; x++)
+							{
+								for(int y = 0; y < yFieldCount; y++)
+								{
+									if(messageHandler[x, y]._values.Count == 0)
+										continue;
+
+									msg.Clear();
+									msg.Add((byte)GSC.DataType.MAP);
+									msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+									msg.Add((byte)GSC.DataType.BITMAPWISE);
+
+									msg.Add((byte)(xMin + x * bFWidth));
+									msg.Add((byte)(yMin + y * bFHeight));
+									msg.Add((byte)bFWidth);
+									msg.Add((byte)bFHeight);
+
+									msg.AddRange(messageHandler[x, y]._mask.ToArray());
+									for(int i = 0; i < messageHandler[x, y]._values.Count; i++)
+									{
+										msg.AddRange(BitConverter.GetBytes(messageHandler[x, y]._values[i]));
+									}
+
+									HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+								}
+							}
+#if Obsolete
+							msg.Clear();
+							msg.Add((byte)GSC.DataType.MAP);
+							msg.AddRange(BitConverter.GetBytes(it._id));//overloads the count bytes in compareson to all other types
+							msg.Add((byte)GSC.DataType.BITMAPWISE);
+
+							msg.Add(xMin);
+							msg.Add(yMin);
+							msg.Add(xSize);
+							msg.Add(ySize);
+
+							BitField2D mask = new BitField2D(xSize, ySize);
+							foreach(var jt in it._values)
+							{
+								mask[jt._x, jt._y] = true;
+							}
+
+							msg.AddRange(mask.ToArray());
+
+							for(int i = 0; i < it._values.Count; i++)
+							{
+								msg.AddRange(BitConverter.GetBytes(it._values[i]._value));
+							}
+#endif
+						}
+
+						
 					}
-					else
+				}
+				//Profiler.EndSample();
+			}
+			//Paths
+			{
+				//Profiler.BeginSample("[GameState] paths");
+				if(_paths.Count > 0) //byte type, int length, [struct elements, int pathLength, [Vec3 positions]]
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.PATH);
+					msg.AddRange(BitConverter.GetBytes(_paths.Count));
+					foreach(var it in _paths)
 					{
-						msg.Add((byte)GSC.DataType.BITMAPWISE);
-						//TODO: impliment bitfields
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._path.Length));
+						for(int i = 0; i < it._path.Length; i++)
+						{
+							msg.AddRange(BitConverter.GetBytes(it._path[i].x));
+							msg.AddRange(BitConverter.GetBytes(it._path[i].y));
+							msg.AddRange(BitConverter.GetBytes(it._path[i].z));
+						}
 					}
 
 					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 				}
+				//Profiler.EndSample();
 			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] denyedInput");
-			if(_denyedInputIDs.Count > 0)
+			//Args
+			{
+				//Profiler.BeginSample("[GameState] args");
+				if(_args.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.ARGUMENT);
+					msg.AddRange(BitConverter.GetBytes(_args.Count));
+					foreach(var it in _args)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._arguments);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Transforms
+			{
+				//Profiler.BeginSample("[GameState] transforms");
+				if(_transforms.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.TRANSFORM);
+					msg.AddRange(BitConverter.GetBytes(_transforms.Count));
+					foreach(var it in _transforms)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._position.x));
+						msg.AddRange(BitConverter.GetBytes(it._position.y));
+						msg.AddRange(BitConverter.GetBytes(it._position.z));
+						msg.AddRange(BitConverter.GetBytes(it._angle));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Resources
+			{
+				//Profiler.BeginSample("[GameState] resources");
+				if(_resources.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.RESOURCE);
+					msg.AddRange(BitConverter.GetBytes(_resources.Count));
+					foreach(var it in _resources)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._resources));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Animation
+			{
+				//Profiler.BeginSample("[GameState] animations");
+				if(_animations.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.ANIMATIONS);
+					msg.AddRange(BitConverter.GetBytes(_animations.Count));
+					foreach(var it in _animations)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._animation);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+
+			//Behaviours
+			{
+				//Profiler.BeginSample("[GameState] behaviors");
+				if(_behaviors.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.BEHAVIOUR);
+					msg.AddRange(BitConverter.GetBytes(_behaviors.Count));
+					foreach(var it in _behaviors)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add((byte)it._behavior);
+						msg.AddRange(BitConverter.GetBytes(it._target));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Health
+			{
+				//Profiler.BeginSample("[GameState] healths");
+				if(_healths.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.HEALTH);
+					msg.AddRange(BitConverter.GetBytes(_healths.Count));
+					foreach(var it in _healths)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._health));
+						msg.AddRange(BitConverter.GetBytes(it._morale));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Ammos
+			{
+				//Profiler.BeginSample("[GameState] ammo");
+				if(_ammos.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.AMMO);
+					msg.AddRange(BitConverter.GetBytes(_ammos.Count));
+					foreach(var it in _ammos)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._bullets));
+						//msg.AddRange(BitConverter.GetBytes(it._grenades));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Works
+			{
+				//Profiler.BeginSample("[GameState] works");
+				if(_works.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.WORK);
+					msg.AddRange(BitConverter.GetBytes(_works.Count));
+					foreach(var it in _works)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._work));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+
+			//Types
+			{
+				//Profiler.BeginSample("[GameState] types");
+				if(_types.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.TYPE);
+					msg.AddRange(BitConverter.GetBytes(_types.Count));
+					foreach(var it in _types)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.Add(it._type);
+						msg.Add(it._team);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Range
+			{
+				//Profiler.BeginSample("[GameState] IDRanges");
+				if(_newIDRanges.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.RANGE);
+					msg.AddRange(BitConverter.GetBytes(_newIDRanges.Count));
+					foreach(var it in _newIDRanges)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+						msg.AddRange(BitConverter.GetBytes(it._range));
+						msg.Add((byte)it._type);
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Input
+			{
+				//Profiler.BeginSample("[GameState] denyedInput");
+				if(_denyedInputIDs.Count > 0)
+				{
+					msg.Clear();
+					msg.Add((byte)GSC.DataType.INPUTS);
+					msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
+					foreach(var it in _denyedInputIDs)
+					{
+						msg.AddRange(BitConverter.GetBytes(it._id));
+					}
+
+					HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
+				}
+				//Profiler.EndSample();
+			}
+			//Scheduled Pawns
 			{
 				msg.Clear();
-				msg.Add((byte)GSC.DataType.INPUTS);
-				msg.AddRange(BitConverter.GetBytes(_denyedInputIDs.Count));
-				foreach(var it in _denyedInputIDs)
+				msg.Add((byte)GSC.DataType.SDLPAWN);
+				msg.AddRange(BitConverter.GetBytes(_scheduledPawns.Count));
+				foreach(var it in _scheduledPawns)
 				{
 					msg.AddRange(BitConverter.GetBytes(it._id));
+					msg.Add(it._type);
+					msg.Add(it._count);
 				}
 
 				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
 			}
-			Profiler.EndSample();
-			Profiler.BeginSample("[GameState] IDRanges");
-			if(_newIDRanges.Count > 0)
-			{
-				msg.Clear();
-				msg.Add((byte)GSC.DataType.RANGE);
-				msg.AddRange(BitConverter.GetBytes(_newIDRanges.Count));
-				foreach(var it in _newIDRanges)
-				{
-					msg.AddRange(BitConverter.GetBytes(it._id));
-					msg.AddRange(BitConverter.GetBytes(it._range));
-					msg.Add((byte)it._type);
-				}
-
-				HandlePackageSize(maxPackageSize, _messageHolder, msg.ToArray());
-			}
-			Profiler.EndSample();
 
 			if(_messageHolder.Count == 0)
 			{
 				_messageHolder.Add(new byte[0]);
 			}
 
-			/*{
-				_types.Clear();
-				_args.Clear();
-				_transforms.Clear();
-				_ammos.Clear();
-				_resources.Clear();
-				_healths.Clear();
-				_works.Clear();
-				_behaviors.Clear();
-				_paths.Clear();
-				_heatMaps.Clear();
-				_denyedInputIDs.Clear();
-				_newIDRanges.Clear();
-			}*/
 			_receivedMessages = new BitField2D(_messageHolder.Count, 1);
 			_isEncrypted = true;
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			return _messageHolder;
 		}
 
 		public void Decrypt(byte[] msg, int offset, int packageNumber, int packageCount)
 		{
 			//Debug.Log("[GameState] package nr. " + packageNumber + " of " + packageCount);
-			if(_receivedMessages.GetSize() == Vector2Int.zero)
+			if(_receivedMessages == null || _receivedMessages.GetSize() == Vector2Int.zero)
 			{
 				//Debug.Log("[GameState] creating an bitfield ");
 				_isEncrypted = true;
@@ -545,20 +744,25 @@ namespace PPBA
 			if(_receivedMessages[packageNumber, 0])
 				return;
 
-			Profiler.BeginSample("[GameState] Decrypt");
+			//Profiler.BeginSample("[GameState] Decrypt");
 			_receivedMessages[packageNumber, 0] = true;
 
 
 			//_hash = BitConverter.ToInt32(msg, offset);
 			//offset += sizeof(int);
 
+			GSC.DataType lastDataType = GSC.DataType.NON;
+			GSC.DataType testDataType = GSC.DataType.NON;
 			int count;
 			while(offset < msg.Length)
 			{
 				//Debug.Log((GSC.DataType)msg[offset]);
 				//Debug.Log(msg.Length + " | " + offset);
+				int prevOffset = offset;
 				count = BitConverter.ToInt32(msg, offset + 1);
 				offset += sizeof(int) + 1;
+				lastDataType = testDataType;
+				testDataType = (GSC.DataType)msg[offset - 1 - sizeof(int)];
 				switch((GSC.DataType)msg[offset - 1 - sizeof(int)])
 				{
 					case GSC.DataType.NON:
@@ -762,9 +966,12 @@ namespace PPBA
 						}
 						break;
 					}
-					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
 					case GSC.DataType.MAP:
+					/// byte Type, int ID, byte type, int pixelCount, {byte x, byte y, float value}[]
+					/// byte Type, int ID, byte type, byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 					{
+						if(_heatMaps == null)
+							_heatMaps = new List<GSC.heatMap>();
 						GSC.heatMap value = _heatMaps.Find(x => x._id == count);
 						if(null == value)
 						{
@@ -777,6 +984,7 @@ namespace PPBA
 
 						switch(type)
 						{
+							/// byte Type, int ID, byte type| int pixelCount, {byte x, byte y, float value}[]
 							case GSC.DataType.PIXELWISE:
 								int size = BitConverter.ToInt32(msg, offset);
 								offset += sizeof(int);
@@ -797,15 +1005,49 @@ namespace PPBA
 									value._values.Add(element);
 								}
 								break;
+							/// byte Type, int ID, byte type| byte x, byte y, byte width, byte hight, byte[] mask, float[] values
 							case GSC.DataType.BITMAPWISE:
-								Debug.LogWarning("not implimented");//TODO: Reimpliment
+								Debug.Log("reseaved a Heatmpa with a bitmask");
+								byte x = msg[offset];
+								offset++;
+
+								byte y = msg[offset];
+								offset++;
+
+								byte w = msg[offset];
+								offset++;
+
+								byte h = msg[offset];
+								offset++;
+
+								BitField2D mask = new BitField2D(w, h);
+
+								byte[] field = mask.ToArray();
+								Buffer.BlockCopy(msg, offset, field, 0, field.Length);
+								offset += field.Length;
+								mask.FromArray(field);
+
+								Vector2Int[] pos = mask.GetActiveBits();
+
+								for(int i = 0; i < pos.Length; i++)
+								{
+									GSC.heatMapElement element = new GSC.heatMapElement();
+									element._x = (byte)(pos[i].x + x);
+									element._y = (byte)(pos[i].y + y);
+									element._value = BitConverter.ToSingle(msg, offset);
+									offset += sizeof(float);
+
+									value._values.Add(element);
+								}
 								break;
 							default:
+#if DB_GS
 								Debug.LogError("unable to read map " + value._id + " as type " + type);
+#endif
 								break;
 						}
 
-						_heatMaps.Add(value);
+						Add(value);
 						break;
 					}
 					case GSC.DataType.INPUTS:
@@ -838,17 +1080,39 @@ namespace PPBA
 						}
 						break;
 					}
+					case GSC.DataType.SDLPAWN:
+					{
+						_scheduledPawns = new List<GSC.sheduledPawns>(count);
+						for(int i = 0; i < count; i++)
+						{
+							GSC.sheduledPawns value = new GSC.sheduledPawns();
+
+							value._id = BitConverter.ToInt32(msg, offset);
+							offset += sizeof(int);
+
+							value._type = msg[offset];
+							offset++;
+
+							value._count = msg[offset];
+							offset++;
+
+							_scheduledPawns.Add(value);
+						}
+						break;
+					}
 					default:
-						throw new InvalidEnumArgumentException();
+						throw new InvalidEnumArgumentException("Last Type: " + lastDataType.ToString() + " and Test Type: " + testDataType.ToString() + "\nLast Offset: " + prevOffset + " and Current Offset: " + offset + " (datalength: " + msg.Length + ")");
 				}
 			}
 
 			if(_receivedMessages.AreAllBytesActive())
 			{
 				_isEncrypted = false;
+				if(_scheduledPawns.Count != 0)
+					_isNULLGameState = false;
 			}
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			//Debug.Log("----- EOM -----");
 		}
 
@@ -859,18 +1123,55 @@ namespace PPBA
 			GameState reference = references[refTick];
 			if(reference == null)
 			{
+#if DB_NC
 				Debug.Log("reference not found. Tick: " + myTick + " | ref: " + refTick);
+#endif
 				return false;
 			}
 
-			Profiler.BeginSample("[GameState] Create Delta");
+			//Profiler.BeginSample("[GameState] Create Delta");
 
 			_refTick = refTick;
+
+			if(_types == null)
+				_types = new List<GSC.type>();
+			if(_args == null)
+				_args = new List<GSC.arg>();
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
+			if(_healths == null)
+				_healths = new List<GSC.health>();
+			if(_works == null)
+				_works = new List<GSC.work>();
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
+			if(_paths == null)
+				_paths = new List<GSC.path>();
+			if(_heatMaps == null)
+				_heatMaps = new List<GSC.heatMap>();
+			if(_denyedInputIDs == null)
+				_denyedInputIDs = new List<GSC.input>();
+			if(_newIDRanges == null)
+				_newIDRanges = new List<GSC.newIDRange>();
+			if(_scheduledPawns == null)
+				_scheduledPawns = new List<GSC.sheduledPawns>();
+
 			int removerIndex;
 
 			removerIndex = 0;
 			for(int i = 0; i < _types.Count; i++)
 			{
+				if(reference._types == null)
+					reference._types = new List<GSC.type>();
+				if(_types == null)
+					_types = new List<GSC.type>();
+
 				GSC.type element = reference._types.Find(x => x._id == _types[i]._id);
 
 				if(null == element)
@@ -1033,11 +1334,34 @@ Change:
 				removerIndex++;
 			}
 			_paths.RemoveRange(removerIndex, _paths.Count - removerIndex);
-			Profiler.BeginSample("[GameState] backing");
+			//Profiler.BeginSample("[GameState] backing");
 			removerIndex = 0;
 			for(int i = 0; i < _heatMaps.Count; i++)
 			{
-				//TODO: add heatmaps in between to delta
+
+				GSC.heatMap lastDelta = null;
+				for(int j = myTick - 1; null == lastDelta && j > refTick; j--)
+				{
+					if(j < references.GetLowEnd() || j > references.GetHighEnd())
+						continue;
+					if(references[j] == default)
+						continue;
+					if(references[j]._heatMaps == null)
+						continue;
+
+					lastDelta = references[j]._heatMaps.Find(x => x._id == _heatMaps[i]._id);
+				}
+
+				if(lastDelta != null)
+				{
+					Add(lastDelta, false);
+					//foreach(var it in lastDelta._values)
+					//{
+					//	if(!_heatMaps[i]._values.Exists(x => x._x == it._x && x._y == it._y)){
+					//		_heatMaps[i]._values.Add(it);
+					//	}
+					//}
+				}
 
 				GSC.heatMap element = reference._heatMaps.Find(x => x._id == _heatMaps[i]._id);
 
@@ -1082,9 +1406,16 @@ Change:
 					//Debug.Log("[GameState] tick was not calculated");
 					continue;
 				}
+				if(nextState._denyedInputIDs == null)
+					nextState._denyedInputIDs = new List<GSC.input>();
 
 				//Debug.Log("[GameState] adding denyed inputs");
-				_denyedInputIDs.AddRange(nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id)));
+				if(_denyedInputIDs == null)
+					_denyedInputIDs = new List<GSC.input>();
+
+				var elements = nextState._denyedInputIDs.FindAll(x => !_denyedInputIDs.Exists(y => y._id == x._id));
+				if(elements != null && elements.Count > 0)
+					_denyedInputIDs.AddRange(elements);
 			}
 			_denyedInputIDs.RemoveAll(x => reference._denyedInputIDs.Exists(y => y._id == x._id));
 			//Debug.Log("[GameState] finished denyed input backing");
@@ -1096,14 +1427,19 @@ Change:
 					continue;
 				}
 
+				if(_newIDRanges == null)
+					_newIDRanges = new List<GSC.newIDRange>();
+				if(nextState._newIDRanges == null)
+					nextState._newIDRanges = new List<GSC.newIDRange>();
+
 				_newIDRanges.AddRange(nextState._newIDRanges.FindAll(x => !_newIDRanges.Exists(y => y._id == x._id)));
 			}
 			_newIDRanges.RemoveAll(x => reference._newIDRanges.Exists(y => y._id == x._id));
-			Profiler.EndSample();
+			//Profiler.EndSample();
 
 			_isDelta = true;
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 
 			return true;
 		}
@@ -1113,73 +1449,127 @@ Change:
 			if(reference == default)
 				return false;
 
-			Profiler.BeginSample("[GameState] Dismantle Delta");
+			//Profiler.BeginSample("[GameState] Dismantle Delta");
 
 			//_messageHolder = null;
 
-			foreach(var it in reference._types)
+			if(_types == null)
+				_types = new List<GSC.type>();
+			if(reference._types != null)
 			{
-				if(_types.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._types)
+				{
+					if(_types.Exists(x => x._id == it._id))
+						continue;
 
-				_types.Add(it);
+					_types.Add(it);
+				}
 			}
-			foreach(var it in reference._args)
+
+			if(_args == null)
+				_args = new List<GSC.arg>();
+			if(reference._args != null)
 			{
-				if(_args.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._args)
+				{
+					if(_args.Exists(x => x._id == it._id))
+						continue;
 
-				_args.Add(it);
+					_args.Add(it);
+				}
 			}
-			foreach(var it in reference._transforms)
+
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
+			if(reference._transforms != null)
 			{
-				if(_transforms.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._transforms)
+				{
+					if(_transforms.Exists(x => x._id == it._id))
+						continue;
 
-				_transforms.Add(it);
+					_transforms.Add(it);
+				}
 			}
-			foreach(var it in reference._ammos)
+
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
+			if(reference._ammos != null)
 			{
-				if(_ammos.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._ammos)
+				{
+					if(_ammos.Exists(x => x._id == it._id))
+						continue;
 
-				_ammos.Add(it);
+					_ammos.Add(it);
+				}
 			}
-			foreach(var it in reference._resources)
+
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
+			if(reference._resources != null)
 			{
-				if(_resources.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._resources)
+				{
+					if(_resources.Exists(x => x._id == it._id))
+						continue;
 
-				_resources.Add(it);
+					_resources.Add(it);
+				}
 			}
-			foreach(var it in reference._healths)
+
+			if(_healths == null)
+				_healths = new List<GSC.health>();
+			if(reference._healths != null)
 			{
-				if(_healths.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._healths)
+				{
+					if(_healths.Exists(x => x._id == it._id))
+						continue;
 
-				_healths.Add(it);
+					_healths.Add(it);
+				}
 			}
-			foreach(var it in reference._behaviors)
+
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
+			if(reference._behaviors != null)
 			{
-				if(_behaviors.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._behaviors)
+				{
+					if(_behaviors.Exists(x => x._id == it._id))
+						continue;
 
-				_behaviors.Add(it);
+					_behaviors.Add(it);
+				}
 			}
-			foreach(var it in reference._animations)
+
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
+			if(reference._animations != null)
 			{
-				if(_animations.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._animations)
+				{
+					if(_animations.Exists(x => x._id == it._id))
+						continue;
 
-				_animations.Add(it);
+					_animations.Add(it);
+				}
 			}
-			foreach(var it in reference._paths)
+
+			if(_paths == null)
+				_paths = new List<GSC.path>();
+			if(reference._paths != null)
 			{
-				if(_paths.Exists(x => x._id == it._id))
-					continue;
+				foreach(var it in reference._paths)
+				{
+					if(_paths.Exists(x => x._id == it._id))
+						continue;
 
-				_paths.Add(it);
+					_paths.Add(it);
+				}
 			}
+			
 
 			/*if(_hash != GetHash())
 			{
@@ -1188,21 +1578,27 @@ Change:
 
 			_isDelta = false;
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 
 			return true;
 		}
 
 		public static GameState Lerp(GameState start, GameState end, float lerpValue)
 		{
-			Profiler.BeginSample("[GameState] Lerp");
+			//Profiler.BeginSample("[GameState] Lerp");
 			GameState value = new GameState();
 
-			foreach(var origin in start._types)
+			GameState nearState = lerpValue < 0.5f ? start : end;
+			GameState fareState = lerpValue < 0.5f ? end : start;
+
+			foreach(var origin in nearState._types)
 			{
-				GSC.type target = end._types.Find(x => x._id == origin._id);
+				GSC.type target = fareState._types.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._types.Add(origin);
 					continue;
+				}
 
 				value._types.Add(new GSC.type
 				{
@@ -1211,11 +1607,14 @@ Change:
 					_team = (lerpValue < 0.5f) ? origin._team : target._team,
 				});
 			}
-			foreach(var origin in start._args)
+			foreach(var origin in nearState._args)
 			{
-				GSC.arg target = end._args.Find(x => x._id == origin._id);
+				GSC.arg target = fareState._args.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._args.Add(origin);
 					continue;
+				}
 
 				value._args.Add(new GSC.arg
 				{
@@ -1223,11 +1622,14 @@ Change:
 					_arguments = (lerpValue < 0.5f) ? origin._arguments : target._arguments,
 				});//Flags könnten verlohren gene, vorallem wenn meherere ticks auf einmal geschickt werden.
 			}
-			foreach(var origin in start._transforms)
+			foreach(var origin in nearState._transforms)
 			{
-				GSC.transform target = end._transforms.Find(x => x._id == origin._id);
+				GSC.transform target = fareState._transforms.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._transforms.Add(origin);
 					continue;
+				}
 
 				value._transforms.Add(new GSC.transform
 				{
@@ -1236,11 +1638,14 @@ Change:
 					_angle = Mathf.LerpAngle(origin._angle, target._angle, lerpValue),
 				});
 			}
-			foreach(var origin in start._ammos)
+			foreach(var origin in nearState._ammos)
 			{
-				GSC.ammo target = end._ammos.Find(x => x._id == origin._id);
+				GSC.ammo target = fareState._ammos.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._ammos.Add(origin);
 					continue;
+				}
 
 				value._ammos.Add(new GSC.ammo
 				{
@@ -1249,11 +1654,14 @@ Change:
 					//_grenades = (int)Mathf.Lerp(origin._grenades, target._grenades, lerpValue),
 				});
 			}
-			foreach(var origin in start._resources)
+			foreach(var origin in nearState._resources)
 			{
-				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				GSC.resource target = fareState._resources.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._resources.Add(origin);
 					continue;
+				}
 
 				value._resources.Add(new GSC.resource
 				{
@@ -1261,11 +1669,14 @@ Change:
 					_resources = (int)Mathf.Lerp(origin._resources, target._resources, lerpValue),
 				});
 			}
-			foreach(var origin in start._healths)
+			foreach(var origin in nearState._healths)
 			{
-				GSC.health target = end._healths.Find(x => x._id == origin._id);
+				GSC.health target = fareState._healths.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._healths.Add(origin);
 					continue;
+				}
 
 				value._healths.Add(new GSC.health
 				{
@@ -1274,11 +1685,14 @@ Change:
 					_morale = Mathf.Lerp(origin._morale, target._morale, lerpValue),
 				});
 			}
-			foreach(var origin in start._behaviors)
+			foreach(var origin in nearState._behaviors)
 			{
-				GSC.behavior target = end._behaviors.Find(x => x._id == origin._id);
+				GSC.behavior target = fareState._behaviors.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._behaviors.Add(origin);
 					continue;
+				}
 
 				value._behaviors.Add(new GSC.behavior
 				{
@@ -1287,11 +1701,14 @@ Change:
 					_target = (lerpValue < 0.5f) ? origin._target : target._target,
 				});
 			}
-			foreach(var origin in start._animations)
+			foreach(var origin in nearState._animations)
 			{
-				GSC.animation target = end._animations.Find(x => x._id == origin._id);
+				GSC.animation target = fareState._animations.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._animations.Add(origin);
 					continue;
+				}
 
 				value._animations.Add(new GSC.animation
 				{
@@ -1299,11 +1716,14 @@ Change:
 					_animation = (lerpValue < 0.5f) ? origin._animation : target._animation,
 				});
 			}
-			foreach(var origin in start._paths)
+			foreach(var origin in nearState._paths)
 			{
-				GSC.path target = end._paths.Find(x => x._id == origin._id);
+				GSC.path target = fareState._paths.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._paths.Add(origin);
 					continue;
+				}
 
 				value._paths.Add(new GSC.path
 				{
@@ -1321,32 +1741,39 @@ Change:
 			value._isEncrypted = false;
 			value._isDelta = false;
 			value._isLerped = true;
+			//if(value._args.Count != 0 && value._scheduledPawns.Count != 0)
+				value._isNULLGameState = false;
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			return value;
 		}
 
-		#region Helper Funktion
+#region Helper Funktion
 
-		public GSC.type GetType(int id) => _types.Find(x => x._id == id);
-		public GSC.arg GetArg(int id) => _args.Find(x => x._id == id);
-		public GSC.transform GetTransform(int id) => _transforms.Find(x => x._id == id);
-		public GSC.ammo GetAmmo(int id) => _ammos.Find(x => x._id == id);
-		public GSC.resource GetResource(int id) => _resources.Find(x => x._id == id);
-		public GSC.health GetHealth(int id) => _healths.Find(x => x._id == id);
-		public GSC.work GetWork(int id) => _works.Find(x => x._id == id);
-		public GSC.behavior GetBehavior(int id) => _behaviors.Find(x => x._id == id);
-		public GSC.animation GetAnimation(int id) => _animations.Find(x => x._id == id);
-		public GSC.path GetPath(int id) => _paths.Find(x => x._id == id);
-		public GSC.heatMap GetHeatMap(int id) => _heatMaps.Find(x => x._id == id);
-		public GSC.input GetInput(int id) => _denyedInputIDs.Find(x => x._id == id);
-		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges.Find(x => x._id == id);
+		public GSC.type GetType(int id) => _types?.Find(x => x._id == id);
+		public GSC.arg GetArg(int id) => _args?.Find(x => x._id == id);
+		public GSC.transform GetTransform(int id) => _transforms?.Find(x => x._id == id);
+		public GSC.ammo GetAmmo(int id) => _ammos?.Find(x => x._id == id);
+		public GSC.resource GetResource(int id) => _resources?.Find(x => x._id == id);
+		public GSC.health GetHealth(int id) => _healths?.Find(x => x._id == id);
+		public GSC.work GetWork(int id) => _works?.Find(x => x._id == id);
+		public GSC.behavior GetBehavior(int id) => _behaviors?.Find(x => x._id == id);
+		public GSC.animation GetAnimation(int id) => _animations?.Find(x => x._id == id);
+		public GSC.path GetPath(int id) => _paths?.Find(x => x._id == id);
+		public GSC.heatMap GetHeatMap(int id) => _heatMaps?.Find(x => x._id == id);
+		public GSC.input GetInput(int id) => _denyedInputIDs?.Find(x => x._id == id);
+		public GSC.newIDRange GetNewIDRange(int id) => _newIDRanges?.Find(x => x._id == id);
+		public List<GSC.sheduledPawns> GetScheduledPawns(int id) => _scheduledPawns?.FindAll(x => x._id == id);
 
 		public void Add(GSC.type element)
 		{
+			if(_types == null)
+				_types = new List<GSC.type>();
 			if(_types.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Type allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1355,6 +1782,8 @@ Change:
 
 		public void Add(GSC.arg element)
 		{
+			if(_args == null)
+				_args = new List<GSC.arg>();
 			GSC.arg value = _args.Find(x => x._id == element._id);
 			if(null == value)
 			{
@@ -1362,16 +1791,22 @@ Change:
 			}
 			else
 			{
+#if DB_GS
 				Debug.LogWarning("Arg allready exists: " + element.ToString());
+#endif
 				value._arguments |= element._arguments;
 			}
 		}
 
 		public void Add(GSC.transform element)
 		{
+			if(_transforms == null)
+				_transforms = new List<GSC.transform>();
 			if(_transforms.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Transform allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1380,9 +1815,13 @@ Change:
 
 		public void Add(GSC.ammo element)
 		{
+			if(_ammos == null)
+				_ammos = new List<GSC.ammo>();
 			if(_ammos.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Ammo allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1391,9 +1830,13 @@ Change:
 
 		public void Add(GSC.resource element)
 		{
+			if(_resources == null)
+				_resources = new List<GSC.resource>();
 			if(_resources.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Resource allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1402,9 +1845,13 @@ Change:
 
 		public void Add(GSC.health element)
 		{
+			if(_healths == null)
+				_healths = new List<GSC.health>();
 			if(_healths.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Health allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1413,9 +1860,13 @@ Change:
 
 		public void Add(GSC.work element)
 		{
+			if(_works == null)
+				_works = new List<GSC.work>();
 			if(_works.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Work allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1424,9 +1875,13 @@ Change:
 
 		public void Add(GSC.behavior element)
 		{
+			if(_behaviors == null)
+				_behaviors = new List<GSC.behavior>();
 			if(_behaviors.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Behaviour allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1435,9 +1890,13 @@ Change:
 
 		public void Add(GSC.animation element)
 		{
+			if(_animations == null)
+				_animations = new List<GSC.animation>();
 			if(_animations.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Animation already exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1446,32 +1905,64 @@ Change:
 
 		public void Add(GSC.path element)
 		{
+			if(_paths == null)
+				_paths = new List<GSC.path>();
 			if(_paths.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Path allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
 			_paths.Add(element);
 		}
 
-		public void Add(GSC.heatMap element)
+		public void Add(GSC.heatMap element, bool isMoreSignificant = true)
 		{
-			return;//remove this to reimpliment HeatMap transmition
-			if(_heatMaps.Exists(x => x._id == element._id))//TODO: merge heatmaps
+			if(_heatMaps == null)
+				_heatMaps = new List<GSC.heatMap>();
+			if(null == element._values)
 			{
-				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
 				return;
 			}
 
-			_heatMaps.Add(element);
+			GSC.heatMap target = _heatMaps.Find(x => x._id == element._id);
+
+			if(null == target)
+			{
+				_heatMaps.Add(element);
+			}
+			else
+			{
+#if DB_GS
+				Debug.LogWarning("HeatMap allready exists: " + element.ToString());
+#endif
+
+				foreach(var it in element._values)
+				{
+					GSC.heatMapElement tmp = target._values.Find(x => x._x == it._x && x._y == it._y);
+					if(null == tmp)
+					{
+						target._values.Add(it);
+					}
+					else
+					{
+						tmp._value = isMoreSignificant ? it._value : tmp._value;
+					}
+				}
+			}
 		}
 
 		public void Add(GSC.input element)
 		{
+			if(_denyedInputIDs == null)
+				_denyedInputIDs = new List<GSC.input>();
 			if(_denyedInputIDs.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("Input allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
@@ -1480,15 +1971,27 @@ Change:
 
 		public void Add(GSC.newIDRange element)
 		{
+			if(_newIDRanges == null)
+				_newIDRanges = new List<GSC.newIDRange>();
 			if(_newIDRanges.Exists(x => x._id == element._id))
 			{
+#if DB_GS
 				Debug.LogWarning("IDs allready exists: " + element.ToString());
+#endif
 				return;
 			}
 
 			_newIDRanges.Add(element);
 		}
-		#endregion
+
+		public void Add(GSC.sheduledPawns element)
+		{
+			if(_scheduledPawns == null)
+				_scheduledPawns = new List<GSC.sheduledPawns>();
+
+			_scheduledPawns.Add(element);
+		}
+#endregion
 
 		/// <summary>
 		/// packs the message into the next best package
@@ -1527,7 +2030,7 @@ Change:
 
 		int GetHash()
 		{
-			Profiler.BeginSample("[GameState] Hash");
+			//Profiler.BeginSample("[GameState] Hash");
 			int hash = 0;
 
 			for(int i = 0; i < _types.Count; i++)
@@ -1620,10 +2123,11 @@ Change:
 				hash += (hash << 2);
 				hash ^= (hash >> 6);
 			}
-
+#if DB_GS
 			Debug.Log("Hash: " + hash);
+#endif
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 
 			return hash;
 		}

@@ -68,7 +68,9 @@ namespace PPBA
 					return pawn._morale / pawn._maxMorale;
 
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -83,7 +85,9 @@ namespace PPBA
 				//case "Score":
 				//	return mediCamp._score;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

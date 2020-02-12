@@ -53,7 +53,7 @@ namespace PPBA
 			{
 				_activePanel = unit;
 				OpenUnitPanel();
-				unit.InitialiseUnitPanel();
+				//unit.InitialiseUnitPanel();//already called from line above
 			}
 			else if(_isUnitPanel)//fall: hat schon ziel
 			{
@@ -72,7 +72,9 @@ namespace PPBA
 
 		public void OpenUnitPanel()
 		{
+#if DB_UI
 			print("open!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+#endif
 			//opens
 			_unitPanel.DOAnchorPos(new Vector2(0, -400), 0.25f);
 			_activePanel.InitialiseUnitPanel();
@@ -164,9 +166,21 @@ namespace PPBA
 
 			RaycastHit hitInfo;
 			if(Physics.Raycast(ray, out hitInfo, 1000, _layerMask))
-				return hitInfo.transform.GetComponent<IPanelInfo>();
+			{
+#if DB_UI
+				print("hit something");
+#endif
+				return hitInfo.transform.GetComponentInChildren<IPanelInfo>();
+
+			}
 			else
+			{
+#if DB_UI
+				print("hit nothing");
+#endif
 				return null;
+
+			}
 		}
 	}
 }

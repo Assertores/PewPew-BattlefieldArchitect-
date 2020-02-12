@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SceneManagement;
 
 //#define UNITY_SERVER
 namespace PPBA
@@ -31,7 +32,7 @@ namespace PPBA
 
 		int _currentID = 0;
 		#endregion
-		#region NetCode
+#region NetCode
 #if UNITY_SERVER
 		int _nextID = 0;
 		void Start()
@@ -46,23 +47,23 @@ namespace PPBA
 
 		private void Update()
 		{
-			Profiler.BeginSample("[Server] Listen");
+			//Profiler.BeginSample("[Server] Listen");
 			bool b = Listen();
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			if(!b)
 				return;
 			if(GlobalVariables.s_instance._clients.FindAll(x => x._isConnected == true).Count < _playerCount)
 				return;
 
-			Profiler.BeginSample("[Server] Simulate");
+			//Profiler.BeginSample("[Server] Simulate");
 			int tick = TickHandler.s_instance.Simulate();
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			if(tick < 0)
 				return;
 
-			Profiler.BeginSample("[Server] Send");
+			//Profiler.BeginSample("[Server] Send");
 			Send(tick);
-			Profiler.EndSample();
+			//Profiler.EndSample();
 		}
 
 		bool Listen()
@@ -70,7 +71,7 @@ namespace PPBA
 			if(null == socket || socket.Available <= 0)
 				return false;
 
-			while(socket.Available > 0)
+			while(null != socket && socket.Available > 0)
 			{
 				IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, _serverPort);
 				byte[] data = socket.Receive(ref remoteEP);
@@ -91,7 +92,9 @@ namespace PPBA
 						HandleReconnect(data, remoteEP);
 						break;
 					default:
+#if DB_NC
 						Debug.Log("[Server] package type was not handled: " + messageType);
+#endif
 						break;
 				}
 			}
@@ -126,6 +129,17 @@ namespace PPBA
 
 			int startTick = BitConverter.ToInt32(data, offset);
 			offset += sizeof(int);
+
+#if DB_IS
+			Debug.Log((MessageType)data[0] + ", " + RemoteID + ", " + fieldTick + ", " + field.Length + ", x, " + startTick);
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			for(int i = 0; i < offset; i++)
+			{
+				sb.Append(data[i] + ", ");
+			}
+			Debug.Log(sb.ToString());
+#endif
+
 			int tick = startTick;
 			for(; offset < data.Length; tick++)
 			{
@@ -137,7 +151,7 @@ namespace PPBA
 
 			client._gameStates.FreeUpTo(startTick - 1);
 
-#if DB_NET
+#if DB_NC
 			Debug.Log("Client: " + RemoteID + " has send ticks: " + startTick + " to " + (tick - 1));
 #endif
 		}
@@ -226,7 +240,7 @@ namespace PPBA
 
 			List<byte> msg = new List<byte>();
 			List<byte[]> state = client._gameStates[tick].Encrypt(_maxPackageSize);//if gamestate exiets max udp package size
-#if DB_NET
+#if DB_NC
 			if(tick % 20 == 0)
 				print("DeltaTick: " + tick + "\n" + client._gameStates[tick].ToString());
 #endif
@@ -254,10 +268,13 @@ namespace PPBA
 
 		void DoServerRestart()
 		{
+			ServerShutDown();
+			/*
 			Debug.Log("[SERVER] restart");
 			ObjectPool.ResetAllObjectPools();
 			TickHandler.s_instance.DoReset();
 			GlobalVariables.s_instance._clients = new List<client>();
+			*/
 		}
 #else
 		void Start()
@@ -286,7 +303,9 @@ namespace PPBA
 			if(Time.unscaledTime - _lastPackageTime > _serverTimeOut)
 			{
 				s_ServerIsTimedOut = true;
+#if DB_NC
 				Debug.Log("Server Timed Out");
+#endif
 				if(null == h_popUp)
 					h_popUp = UIPopUpWindowHandler.s_instance.CreateWindow("Server Timed Out");
 			}
@@ -333,18 +352,29 @@ namespace PPBA
 			GameState element = GlobalVariables.s_instance._clients[0]._gameStates[tick];
 			if(element == default) //create new Gamestate if not already existing
 			{
-				element = new GameState();
+				element = new GameState(true);
 				GlobalVariables.s_instance._clients[0]._gameStates[tick] = element;
 			}
 
 			//Debug.Log("decrypting tick " + tick);
 			//Debug.Log("Decrypt package: " + data[1] + " of " + data[2]);
-			element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
-			element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
+			try //HOTFIX: if the package cant be Decrypted, the hole gamestate will be dropt and lerped
+			{
+				element.Decrypt(data, 3 + 2 * sizeof(int), data[1], data[2]);
+				element._refTick = BitConverter.ToInt32(data, 3 + sizeof(int));
+#if DB_NC
+				Debug.Log("Decryption: " + tick + ", " + element._isNULLGameState);
+#endif
+			}catch(Exception e)
+			{
+				Debug.LogException(e);
+				//element = default;
+			}
 			//Debug.Log("Decrypt: " + tick + " | ref: " + element._refTick);
-
+#if DB_GS
 			if(TickHandler.s_currentTick % 20 == 0)
 				Debug.Log("DeltaTick: " + TickHandler.s_currentTick + "\n" + element.ToString());
+#endif
 
 			//if(!element._isEncrypted)
 				GlobalVariables.s_instance._clients[0]._inputStates.FreeUpTo(tick + 1);
@@ -358,7 +388,7 @@ namespace PPBA
 		}
 
 
-		readonly byte[] h_emptyInputState = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		
 		/// NON:        byte Type, int ID, int PackagesTick, byte BitFieldSize, byte[] ReceavedPackageBitField, int tick, {InputType[] inputs}[] tickInputs
 		void Send()
 		{
@@ -384,14 +414,14 @@ namespace PPBA
 			{
 				if(ib[i] == default)
 				{
-					msg.AddRange(h_emptyInputState);
+					msg.AddRange(InputState.s_emptyInputState);
 					continue;
 				}
 
 				byte[] tmp = ib[i].Encrypt();
 				if(tmp == null)
 				{
-					msg.AddRange(h_emptyInputState);
+					msg.AddRange(InputState.s_emptyInputState);
 					continue;
 				}
 
@@ -421,12 +451,11 @@ namespace PPBA
 
 		void AddNewIDsToGameState(int tick)
 		{
-			return;//TODO: check funktionality
 			TickHandler.s_interfaceGameState._newIDRanges.AddRange(h_newIDs);
 			h_newIDs.Clear();
 		}
-		#endregion
-		#region UIInterface
+#endregion
+#region UIInterface
 		public void ClientConnect(string ip, int port)
 		{
 			Debug.Log("[CLIENT] connecting to " + ip + " at port " + port);
@@ -458,6 +487,7 @@ namespace PPBA
 
 		public void ServerStart(int port, int playerCount, int map = -1, int botLimit = -1, int hmRes = -1, bool regToMS = false)
 		{
+			StatusNetcode.s_instance.StartServer(port, playerCount);
 			_serverPort = port;
 			_playerCount = playerCount;
 			socket = new UdpClient(port);
@@ -475,7 +505,9 @@ namespace PPBA
 				socket.Close();
 
 			Debug.Log("[SERVER] shut down");
+
+			SceneManager.LoadScene(StringCollection.MAINMENU);
 		}
-		#endregion
+#endregion
 	}
 }

@@ -8,12 +8,13 @@ namespace PPBA
 	{
 		private LineRenderer _lineRenderer;
 		private float _lineTicker = 0f;
-		private float _lineDuration = 0.2f;
+		[SerializeField] private float _lineDuration = 0.2f;
+		private PawnBoomboxController _boombox;
 
 		#region Monobehaviour
 		void Start()
 		{
-
+			_boombox = transform.parent.GetComponentInChildren<PawnBoomboxController>();
 		}
 
 		void Update()
@@ -31,15 +32,21 @@ namespace PPBA
 		{
 			if(null == _lineRenderer)
 				_lineRenderer = GetComponent<LineRenderer>();
+
+			if(null == _boombox)
+				_boombox = transform.parent.GetComponentInChildren<PawnBoomboxController>();
 		}
 		#endregion
 
 		public void SetShootLine(Vector3 shooter, Vector3 target)
 		{
 			_lineRenderer.positionCount = 2;
-			_lineRenderer.SetPositions(new Vector3[] { shooter, target });
+			//_lineRenderer.SetPositions(new Vector3[] { shooter, target });
+			_lineRenderer.SetPositions(new Vector3[] { shooter, new Vector3(target.x, target.y + 0.5f, target.z) });
 			_lineTicker = 0f;
 			_lineRenderer.enabled = true;
+
+			_boombox.PlayBehavior(ClipsPawn.SHOT_MP_01);
 		}
 	}
 }

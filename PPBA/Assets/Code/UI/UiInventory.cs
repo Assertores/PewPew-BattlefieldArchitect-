@@ -22,10 +22,12 @@ namespace PPBA
 		{
 			if(Input.GetKeyDown(KeyCode.M))
 			{
+#if DB_UI
 				foreach(KeyValuePair<GameObject, int> item in items)
 				{		
 					print(item.Key.name);
 				}
+#endif
 			}
 		}
 
@@ -54,8 +56,30 @@ namespace PPBA
 			return items.Count;
 		}
 
+		Dictionary<GameObject, GameObject> h_inventory = new Dictionary<GameObject, GameObject>();
 		public bool AddItem(GameObject ip)
 		{
+			//check if element
+			if(h_inventory.ContainsKey(ip))
+				return false;
+			IRefHolder rh = ip.GetComponent<IRefHolder>();
+			if(null == rh)
+				return false;
+			if(null == rh._UIElement)
+				return false;
+			if(!rh._UIElement.GetComponent<Button>())
+				return false;
+
+			//element erzeugen
+			GameObject ui = Instantiate(rh._UIElement, inventoryPanel.transform);
+			ui.name = ip.name + "_ELEMENT";
+
+			h_inventory.Add(ip, ui);
+
+			//funktion an button dran hängen
+			ui.GetComponent<Button>().onClick.AddListener(delegate	{ BuildingManager.s_instance.HandleNewObject(rh); });
+			return true;
+#if Obsolete
 			if(!items.ContainsKey(ip))
 			{
 				AddInventoryImage();        // erzeugt nen image (button)
@@ -76,10 +100,21 @@ namespace PPBA
 			}
 			UpdateView();
 			return true;
+#endif
 		}
 
 		public bool RemoveItem(GameObject ip)
 		{
+			Debug.Log("removing item: " + ip);
+			if(!h_inventory.ContainsKey(ip))
+				return false;
+
+			Debug.Log("found item: " + h_inventory[ip]);
+
+			Destroy(h_inventory[ip]);
+			h_inventory.Remove(ip);
+			return true;
+#if Obsolete
 			// item vorhanden?
 			if(items.ContainsKey(ip))
 			{
@@ -97,10 +132,12 @@ namespace PPBA
 				}
 			}
 			return false;
+#endif
 		}
 
 		void UpdateView()
 		{
+#if Obsolete
 			int guiCount = guiItemImages.Count;
 
 			for(int i = 0; i < guiCount; i++)
@@ -121,17 +158,19 @@ namespace PPBA
 
 				index++;
 			}
+#endif
 		}
 
 		void AddInventoryImage()
 		{
-			GameObject Tiles = (GameObject)Instantiate(inventoryTiles, new Vector3(0, 0, 0), Quaternion.identity);
+#if Obsolete
+			GameObject Tiles = Instantiate(inventoryTiles, new Vector3(0, 0, 0), Quaternion.identity);
 			Tiles.transform.SetParent(inventoryPanel.transform);
 			guiItemImages.Add(Tiles.transform.GetChild(0).GetComponent<Image>());
 			Tiles.transform.GetComponent<Image>().rectTransform.localScale = new Vector3(1, 1, 1);
 			button = Tiles.GetComponent<Button>();
 			Tiles.transform.GetComponent<Image>().rectTransform.position = new Vector3(Tiles.transform.GetComponent<Image>().rectTransform.position.x, Tiles.transform.GetComponent<Image>().rectTransform.position.y, 0);
-
+#endif
 		}
 
 		void AddStartItem()
@@ -144,9 +183,11 @@ namespace PPBA
 
 		public void AddLastBuildings()
 		{
+			Debug.Log("Adding the other items");
 			if(!_isAll)
 			{
 				_isAll = true;
+				Debug.Log("Removing start items");
 				RemoveStartBuildings();
 
 				for(int i = 0; i < NormalBuilds.Length; i++)
@@ -164,7 +205,7 @@ namespace PPBA
 			//}
 			//print("remove buildings in UIinventory");
 
-			for(int i = 0; i < items.Count; i++)
+			for(int i = 0; i < StartBuilds.Length; i++)
 			{
 				RemoveItem(StartBuilds[i]);
 			}

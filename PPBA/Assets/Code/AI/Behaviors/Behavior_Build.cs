@@ -35,6 +35,7 @@ namespace PPBA
 					s_targetDictionary[pawn].DoWork();
 					targetPosition = pawn.transform.position;
 					pawn._currentAnimation = PawnAnimations.BUILD;
+					pawn._arguments |= Arguments.TRIGGERBEHAVIOUR;//set trigger flag for build sound
 				}
 				else
 					pawn._currentAnimation = PawnAnimations.RUN;
@@ -68,7 +69,9 @@ namespace PPBA
 				case "Health":
 					return pawn._health / pawn._maxHealth;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -82,7 +85,9 @@ namespace PPBA
 				case "WorkDoable":
 					return blueprint._workDoable;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}

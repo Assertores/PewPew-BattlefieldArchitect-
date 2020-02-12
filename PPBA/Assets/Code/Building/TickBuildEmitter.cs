@@ -36,6 +36,7 @@ namespace PPBA
 			{
 				TickHandler.s_DoInput -= ReactOnInput;
 
+#if NOT_IMPLIMENTED
 				if(TickHandler.s_interfaceGameState._denyedInputIDs.Exists(x => x._id == _id))
 				{
 					//TODO: eingabe war invalide
@@ -45,6 +46,7 @@ namespace PPBA
 					//TickHandler.s_currentTick.
 					//TODO: eingabe war valide
 				}
+#endif
 				if(null != this.gameObject)
 					Destroy(this.gameObject);
 			}

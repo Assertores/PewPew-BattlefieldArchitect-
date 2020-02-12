@@ -10,7 +10,7 @@ namespace PPBA
 		public static Dictionary<Pawn, MountSlot> s_targetDictionary = new Dictionary<Pawn, MountSlot>();
 
 		[SerializeField] private float _maxDistance = 70f;
-		[SerializeField][Tooltip("How close does a pawn have to be to allow mounting?")] private float _mountDistance = .15f;
+		[SerializeField] [Tooltip("How close does a pawn have to be to allow mounting?")] private float _mountDistance = .5f;
 
 		public Behavior_Mount()
 		{
@@ -29,6 +29,8 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
+			pawn._currentAnimation = PawnAnimations.IDLE;
+
 			if(!s_targetDictionary.ContainsKey(pawn))//early skip if no target
 			{
 				pawn.SetMoveTarget(pawn.transform.position);
@@ -37,25 +39,28 @@ namespace PPBA
 
 			if(pawn._isMounting)
 			{
-				pawn._currentAnimation = PawnAnimations.IDLE;
-
 				pawn._mountSlot.Execute();
 				pawn.SetMoveTarget(pawn._mountSlot.transform.position);
 			}
 			else
 			{
-				pawn._currentAnimation = PawnAnimations.RUN;
-
 				if(s_targetDictionary[pawn]._isMounted)
 				{
 					pawn.SetMoveTarget(pawn.transform.position);
 					return;
 				}
 
-				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
+				float distance = Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position);
 
-				if(Vector3.Magnitude(s_targetDictionary[pawn].transform.position - pawn.transform.position) < 0.1)
+				if(distance < _mountDistance)
+				{
 					s_targetDictionary[pawn].GetIn(pawn);
+					pawn.SetMoveTarget(pawn._mountSlot.transform.position);
+					return;
+				}
+
+				pawn._currentAnimation = PawnAnimations.RUN;
+				pawn.SetMoveTarget(s_targetDictionary[pawn].transform.position);
 			}
 		}
 

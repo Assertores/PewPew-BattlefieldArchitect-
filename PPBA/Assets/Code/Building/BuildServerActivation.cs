@@ -17,6 +17,7 @@ namespace PPBA
 			TickHandler.s_GatherValues += ServerGatherValue;
 #endif
 		}
+
 		private void OnDestroy()
 		{
 #if !UNITY_SERVER
@@ -28,7 +29,7 @@ namespace PPBA
 
 		private void Update()
 		{
-			
+
 		}
 
 		void ServerGatherValue(int tick)
@@ -45,6 +46,9 @@ namespace PPBA
 		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus
 		void HandleGameStateEnableEvents(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			GSC.arg args = TickHandler.s_interfaceGameState.GetArg(_id);
 
 			if(args != null && args._arguments.HasFlag(Arguments.ENABLED))
@@ -58,6 +62,13 @@ namespace PPBA
 					{
 						transform.position = newTransform._position;
 						transform.rotation = Quaternion.Euler(0, newTransform._angle, 0);
+
+						if(GlobalVariables.s_instance._clients[0]._id == GetComponent<IRefHolder>()._team)
+						{
+							IRefHolder typ = GetComponent<IRefHolder>();
+							BuildingManager.s_instance.AddBuildToHolder(typ);
+							BuildingManager.s_instance._InfoPanelEvent(typ._Type);
+						}
 					}
 				}
 			}

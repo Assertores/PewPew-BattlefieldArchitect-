@@ -6,7 +6,8 @@ namespace PPBA
 {
 	public class CameraStartPosition : MonoBehaviour
 	{
-		[SerializeField] Transform[] _startPositions;
+		public Transform[] _startPositions;
+
 
 #if !UNITY_SERVER
 		void Update()
@@ -21,4 +22,6 @@ namespace PPBA
 		}
 #endif
 	}
+
+
 }

@@ -28,6 +28,9 @@ namespace PPBA
 			_oType = objectType;
 			_type = type;
 
+			if(_stepSize <= 0)
+				return;
+
 			Resize().gameObject.SetActive(false);
 		}
 
@@ -58,29 +61,39 @@ namespace PPBA
 		{
 			if(type == ObjectType.SIZE)
 			{
+#if DB_OP
 				Debug.LogError("type is invalide");
+#endif
 				return null;
 			}
 
 			GameObject prefab = GlobalVariables.s_instance._prefabs[(int)type];
 			if(prefab == null)
 			{
+#if DB_OP
 				Debug.LogError("prefab not found");
+#endif
 				return null;
 			}
 			if(s_objectPools.ContainsKey(prefab))
 			{
+#if DB_OP
 				Debug.LogError("object pool already exists");
+#endif
 				return s_objectPools[prefab];
 			}
 			if(!prefab.GetComponent(typeof(T)))
 			{
+#if DB_OP
 				Debug.LogError("skript is not on the gameobject: " + prefab.name);
+#endif
 				return null;
 			}
 			if(prefab.GetComponentsInChildren<INetElement>().Length <= 0)
 			{
+#if DB_OP
 				Debug.LogError("prefab has no INetElement Components");
+#endif
 				return null;
 			}
 

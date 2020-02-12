@@ -9,7 +9,7 @@ namespace PPBA
 		public static Behavior_GetSupplies s_instance;
 		public static Dictionary<Pawn, ResourceDepot> s_targetDictionary = new Dictionary<Pawn, ResourceDepot>();
 
-		[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
+		//[SerializeField] [Tooltip("How many resources does a pawn grab at once?")] private int _grabSize = 10;
 
 		public Behavior_GetSupplies()
 		{
@@ -28,16 +28,17 @@ namespace PPBA
 
 		public override void Execute(Pawn pawn)
 		{
-			pawn._currentAnimation = PawnAnimations.RUN;
-
 			Vector3 targetPosition = s_targetDictionary[pawn].transform.position;
 
 			if(Vector3.Magnitude(targetPosition - pawn.transform.position) < s_targetDictionary[pawn]._interactRadius)
 			{
+				pawn._currentAnimation = PawnAnimations.IDLE;
 				//Takes an amount of resources from the depot no larger than (1) the space left at pawn (2) the res left at depot, and gives it to the pawn.
-				pawn._supplies += s_targetDictionary[pawn].TakeResources(Mathf.Min(_grabSize, pawn._maxSupplies - pawn._supplies));
+				pawn._supplies += s_targetDictionary[pawn].TakeResources(Mathf.Min(pawn._maxSupplies, pawn._maxSupplies - pawn._supplies));
 				targetPosition = pawn.transform.position;
 			}
+			else
+				pawn._currentAnimation = PawnAnimations.RUN;
 
 			pawn.SetMoveTarget(targetPosition);
 		}
@@ -69,7 +70,9 @@ namespace PPBA
 				case "Resources":
 					return (float) pawn._supplies / pawn._maxSupplies;
 				default:
+#if DB_AI
 					Debug.LogWarning("PawnAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
@@ -85,7 +88,9 @@ namespace PPBA
 				case "Resources":
 					return (float) depot._resources / depot._maxResources;
 				default:
+#if DB_AI
 					Debug.LogWarning("TargetAxisInputs defaulted to 1. Probably messed up the string name: " + name);
+#endif
 					return 1;
 			}
 		}
