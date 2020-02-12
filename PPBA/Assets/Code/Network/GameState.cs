@@ -232,6 +232,7 @@ namespace PPBA
 			_isEncrypted = original._isEncrypted;
 			_receivedMessages = original._receivedMessages;
 			_messageHolder = original._messageHolder;
+			_isNULLGameState = original._isNULLGameState;
 
 			_types.AddRange(original._types.ToArray());
 			_args.AddRange(original._args.ToArray());
@@ -1102,8 +1103,7 @@ namespace PPBA
 			if(_receivedMessages.AreAllBytesActive())
 			{
 				_isEncrypted = false;
-
-				if(_args.Count != 0 && _transforms.Count != 0 && _scheduledPawns.Count != 0)
+				if(_args.Count != 0 && _scheduledPawns.Count != 0)
 					_isNULLGameState = false;
 			}
 
@@ -1583,11 +1583,17 @@ Change:
 			Profiler.BeginSample("[GameState] Lerp");
 			GameState value = new GameState();
 
-			foreach(var origin in start._types)
+			GameState nearState = lerpValue < 0.5f ? start : end;
+			GameState fareState = lerpValue < 0.5f ? end : start;
+
+			foreach(var origin in nearState._types)
 			{
-				GSC.type target = end._types.Find(x => x._id == origin._id);
+				GSC.type target = fareState._types.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._types.Add(origin);
 					continue;
+				}
 
 				value._types.Add(new GSC.type
 				{
@@ -1596,11 +1602,14 @@ Change:
 					_team = (lerpValue < 0.5f) ? origin._team : target._team,
 				});
 			}
-			foreach(var origin in start._args)
+			foreach(var origin in nearState._args)
 			{
-				GSC.arg target = end._args.Find(x => x._id == origin._id);
+				GSC.arg target = fareState._args.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._args.Add(origin);
 					continue;
+				}
 
 				value._args.Add(new GSC.arg
 				{
@@ -1608,11 +1617,14 @@ Change:
 					_arguments = (lerpValue < 0.5f) ? origin._arguments : target._arguments,
 				});//Flags könnten verlohren gene, vorallem wenn meherere ticks auf einmal geschickt werden.
 			}
-			foreach(var origin in start._transforms)
+			foreach(var origin in nearState._transforms)
 			{
-				GSC.transform target = end._transforms.Find(x => x._id == origin._id);
+				GSC.transform target = fareState._transforms.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._transforms.Add(origin);
 					continue;
+				}
 
 				value._transforms.Add(new GSC.transform
 				{
@@ -1621,11 +1633,14 @@ Change:
 					_angle = Mathf.LerpAngle(origin._angle, target._angle, lerpValue),
 				});
 			}
-			foreach(var origin in start._ammos)
+			foreach(var origin in nearState._ammos)
 			{
-				GSC.ammo target = end._ammos.Find(x => x._id == origin._id);
+				GSC.ammo target = fareState._ammos.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._ammos.Add(origin);
 					continue;
+				}
 
 				value._ammos.Add(new GSC.ammo
 				{
@@ -1634,11 +1649,14 @@ Change:
 					//_grenades = (int)Mathf.Lerp(origin._grenades, target._grenades, lerpValue),
 				});
 			}
-			foreach(var origin in start._resources)
+			foreach(var origin in nearState._resources)
 			{
-				GSC.resource target = end._resources.Find(x => x._id == origin._id);
+				GSC.resource target = fareState._resources.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._resources.Add(origin);
 					continue;
+				}
 
 				value._resources.Add(new GSC.resource
 				{
@@ -1646,11 +1664,14 @@ Change:
 					_resources = (int)Mathf.Lerp(origin._resources, target._resources, lerpValue),
 				});
 			}
-			foreach(var origin in start._healths)
+			foreach(var origin in nearState._healths)
 			{
-				GSC.health target = end._healths.Find(x => x._id == origin._id);
+				GSC.health target = fareState._healths.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._healths.Add(origin);
 					continue;
+				}
 
 				value._healths.Add(new GSC.health
 				{
@@ -1659,11 +1680,14 @@ Change:
 					_morale = Mathf.Lerp(origin._morale, target._morale, lerpValue),
 				});
 			}
-			foreach(var origin in start._behaviors)
+			foreach(var origin in nearState._behaviors)
 			{
-				GSC.behavior target = end._behaviors.Find(x => x._id == origin._id);
+				GSC.behavior target = fareState._behaviors.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._behaviors.Add(origin);
 					continue;
+				}
 
 				value._behaviors.Add(new GSC.behavior
 				{
@@ -1672,11 +1696,14 @@ Change:
 					_target = (lerpValue < 0.5f) ? origin._target : target._target,
 				});
 			}
-			foreach(var origin in start._animations)
+			foreach(var origin in nearState._animations)
 			{
-				GSC.animation target = end._animations.Find(x => x._id == origin._id);
+				GSC.animation target = fareState._animations.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._animations.Add(origin);
 					continue;
+				}
 
 				value._animations.Add(new GSC.animation
 				{
@@ -1684,11 +1711,14 @@ Change:
 					_animation = (lerpValue < 0.5f) ? origin._animation : target._animation,
 				});
 			}
-			foreach(var origin in start._paths)
+			foreach(var origin in nearState._paths)
 			{
-				GSC.path target = end._paths.Find(x => x._id == origin._id);
+				GSC.path target = fareState._paths.Find(x => x._id == origin._id);
 				if(target == default)
+				{
+					value._paths.Add(origin);
 					continue;
+				}
 
 				value._paths.Add(new GSC.path
 				{
@@ -1706,6 +1736,8 @@ Change:
 			value._isEncrypted = false;
 			value._isDelta = false;
 			value._isLerped = true;
+			//if(value._args.Count != 0 && value._scheduledPawns.Count != 0)
+				value._isNULLGameState = false;
 
 			Profiler.EndSample();
 			return value;

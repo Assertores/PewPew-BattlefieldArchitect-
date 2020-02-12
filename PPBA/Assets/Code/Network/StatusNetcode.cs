@@ -130,6 +130,8 @@ namespace PPBA
 						}
 					}
 					SceneManager.LoadScene(StringCollection.MAINMENU);
+
+					Destroy(this.gameObject);
 				}
 			}
 		}
@@ -197,7 +199,7 @@ namespace PPBA
 				if(!client.Connected)
 				{
 					SceneManager.LoadScene(StringCollection.MAINMENU);
-					Destroy(this);
+					Destroy(this.gameObject);
 					return;
 				}
 
@@ -207,7 +209,7 @@ namespace PPBA
 					if(retValue <= 0)
 					{
 						SceneManager.LoadScene(StringCollection.MAINMENU);
-						Destroy(this);
+						Destroy(this.gameObject);
 						return;
 					}
 				}
@@ -217,7 +219,7 @@ namespace PPBA
 					Debug.LogException(e);
 #endif
 					SceneManager.LoadScene(StringCollection.MAINMENU);
-					Destroy(this);
+					Destroy(this.gameObject);
 					return;
 				}
 
@@ -269,7 +271,7 @@ namespace PPBA
 #endif
 						GameToEndScreen.s_instance.Execute(GlobalVariables.s_instance._clients[0]._id == winner, stats);
 
-						Destroy(this);
+						Destroy(this.gameObject);
 						return;
 					default:
 #if DB_NC

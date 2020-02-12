@@ -27,16 +27,17 @@ namespace PPBA
 
 		void WriteToGameState(int tick)
 		{
-			GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
-			if(null == temp)
+			if(gameObject.activeSelf)
 			{
-				temp = new GSC.arg();
+				GSC.arg temp = new GSC.arg();
 				temp._id = _id;
+				if(gameObject.activeSelf)
+					temp._arguments |= Arguments.ENABLED;
+
 				TickHandler.s_interfaceGameState.Add(temp);
 			}
 
-			if(gameObject.activeSelf)
-				temp._arguments |= Arguments.ENABLED;
+			
 		}
 
 		void ReadFromGameState(int tick)
