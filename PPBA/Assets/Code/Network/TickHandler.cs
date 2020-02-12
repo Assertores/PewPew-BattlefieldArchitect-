@@ -185,20 +185,39 @@ namespace PPBA
 				return false;
 			}
 
+			Debug.Log("Start serch at: " + s_currentTick);
+			GameState nextState = default;
+			int nextStateTick = s_currentTick;
+			if(s_currentTick == 0)
+			{
+				nextState = new GameState();
+			}
+			else
+			{
+				for(; nextStateTick <= me._gameStates.GetHighEnd() && (nextState == default || nextState._isNULLGameState); nextStateTick++)
+				{
+					nextState = me._gameStates[nextStateTick];
+					if(nextState == default)
+					{
+						Debug.Log("Serch: " + nextStateTick + ", no State");
+					}
+					else
+					{
+						Debug.Log("Serch: " + nextStateTick + ", " + nextState._isNULLGameState);
+					}
+				}
+				if(nextState == default)
+					return false;
+				nextStateTick--;//nextStateTick++ will be executed once to often
+			}
+			
+
 			if(null != h_popUp)
 			{
 				h_popUp.CloseWindow();
 				h_popUp = null;
 			}
 			s_NetworkPause = false;
-
-			GameState nextState = default;
-			int nextStateTick = s_currentTick;
-			for(; nextState == default; nextStateTick++)
-			{
-				nextState = me._gameStates[nextStateTick];
-			}
-			nextStateTick--;//nextStateTick++ will be executed once to often
 
 			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 			{

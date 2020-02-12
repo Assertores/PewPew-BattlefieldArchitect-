@@ -1103,7 +1103,7 @@ namespace PPBA
 			if(_receivedMessages.AreAllBytesActive())
 			{
 				_isEncrypted = false;
-				if(_args.Count != 0 && _scheduledPawns.Count != 0)
+				if(_scheduledPawns.Count != 0)
 					_isNULLGameState = false;
 			}
 
