@@ -234,6 +234,9 @@ namespace PPBA
 
 		void SetMap(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			for(int id = 0; id < _heatMaps.Length; id++)
 			{
 				GSC.heatMap map = TickHandler.s_interfaceGameState.GetHeatMap(id);

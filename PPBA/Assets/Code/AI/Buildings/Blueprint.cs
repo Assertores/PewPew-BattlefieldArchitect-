@@ -172,6 +172,9 @@ namespace PPBA
 
 		public void ExtractFromGameState(int tick)//if CLIENT: an doinput hängen
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			if(null != _nextState)
 				_lastState = _nextState;
 

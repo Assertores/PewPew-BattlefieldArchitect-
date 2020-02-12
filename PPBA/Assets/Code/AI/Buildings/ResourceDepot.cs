@@ -245,6 +245,9 @@ namespace PPBA
 
 		public void ExtractFromGameState(int tick = 0)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			if(null != _nextState)
 				_lastState = _nextState;
 
@@ -307,6 +310,9 @@ namespace PPBA
 
 		void ActivateBuildingMenu(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			TickHandler.s_EarlyCalc -= ActivateBuildingMenu;
 
 			if(TickHandler.s_interfaceGameState.GetType(_id)?._team != GlobalVariables.s_instance._clients[0]._id)

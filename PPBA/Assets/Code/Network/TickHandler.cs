@@ -226,7 +226,7 @@ namespace PPBA
 #if DB_OP
 			Debug.Log("===== ===== TICK: " + s_currentTick + " ===== =====");
 #endif
-			if(nextState._newIDRanges != null)
+			if(!nextState._isNULLGameState && nextState._newIDRanges != null)
 			{
 				foreach(var it in nextState._newIDRanges)
 				{
@@ -264,8 +264,10 @@ namespace PPBA
 				}
 			}
 
+			Debug.Log("Tick1: " + s_currentTick + ", " + nextState._isNULLGameState);
 			s_interfaceGameState = nextState;
 			s_interfaceInputState = me._inputStates[nextStateTick];
+			Debug.Log("Tick2: " + s_currentTick + ", " + s_interfaceGameState._isNULLGameState);
 
 			s_currentTickTime = Time.time;
 

@@ -42,6 +42,9 @@ namespace PPBA
 
 		void ReadFromGameState(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			GSC.arg temp = TickHandler.s_interfaceGameState.GetArg(_id);
 			if(null == temp)
 				return;
