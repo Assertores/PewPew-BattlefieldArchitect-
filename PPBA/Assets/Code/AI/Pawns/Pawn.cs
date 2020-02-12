@@ -232,7 +232,7 @@ namespace PPBA
 			_animationController.SetAnimatorBools(_currentAnimation);
 			//_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			_healthBarController.SetBars(_health / _maxHealth, (float)_supplies / _maxSupplies, (float)_ammo / _maxAmmo);
-			//ShowNavPath();
+			ShowNavPath();
 		}
 		#endregion
 
@@ -615,9 +615,9 @@ namespace PPBA
 		}
 
 		public Behaviors GetBehaviorsEnum(Behavior behavior) => behavior._name;
-#endregion
+		#endregion
 
-#region Member Admin
+		#region Member Admin
 		public void TakeDamage(int amount)
 		{
 			_health -= amount;
@@ -652,11 +652,13 @@ namespace PPBA
 				_morale += _moraleRegen;
 			}
 		}
-#endregion
+		#endregion
 
-#region Navigation
+		#region Navigation
 		public void NavTick(int tick = 0)//called during DoTick by Execute()
 		{
+			Vector3 originalPos = transform.position;
+
 			if(null == _navMeshPath)
 				_navMeshPath = new NavMeshPath();
 
@@ -680,18 +682,18 @@ namespace PPBA
 			}
 
 			float maxDistance = _moveSpeed * Time.fixedDeltaTime * 2f / GetNavAreaCost();//Why the (* 2f): NavAreaCosts below 1 give a warning, hence I double the costs in inspector and half them here.
-			float walkedDistance = 0f;
+			float walkedDistance = 0.5f;
 			float nextCornerDistance;
 
 			int i = 1;
 			for(; i < _navMeshPath.corners.Length && walkedDistance < maxDistance; i++)//moves the pawn by maxDistance towards the next corners, even around them
 			{
+				walkedDistance -= 0.5f;
 				nextCornerDistance = Vector3.Distance(transform.position, _navMeshPath.corners[i]);
 				float tempDistance = Mathf.Min(nextCornerDistance, maxDistance - walkedDistance);
 				Vector3 moveVec = Vector3.MoveTowards(transform.position, _navMeshPath.corners[i], tempDistance);
 				transform.position = moveVec;
 				walkedDistance += tempDistance;
-				walkedDistance -= 0.5f;
 			}
 
 			if(2 < i)//<=> pawn has moved over a corner
@@ -699,6 +701,9 @@ namespace PPBA
 
 			if(i - 1 < _navMeshPath.corners.Length)
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
+
+			//if(Vector3.Magnitude(originalPos - _moveTarget) < 1f || Vector3.Magnitude(transform.position - originalPos) < 1f)
+				//transform.position = Behavior_GoAnywhere.s_instance.GetRandomPoint(this);
 		}
 
 		public void SetMoveTarget(Vector3 newTarget)//call this from the behaviors
@@ -796,9 +801,9 @@ namespace PPBA
 		}
 
 		public void GetBorderData(int tick = 0) => _borderData = HeatMapHandler.s_instance.BorderValues(transform.position);
-#endregion
+		#endregion
 
-#region Physics
+		#region Physics
 		[SerializeField] [Tooltip("Which layers should be used when checking for close objects with CheckOverloadSphere()?")] private LayerMask _overlapSphereLayerMask;
 		private void CheckOverlapSphere()
 		{
@@ -880,15 +885,15 @@ namespace PPBA
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Interfaces
+		#region Interfaces
 		private TextMeshProUGUI[] _panelDetails = new TextMeshProUGUI[0];
 		public void InitialiseUnitPanel()
 		{
 			string[] details = new string[] { "Team: " + _team, "Health: " + (int)_health, "Supplies: " + _supplies, "Ammo: " + _ammo, "Morale: " + (int)_morale };
 			UnitScreenController.s_instance.AddUnitInfoPanel(transform, details, ref _panelDetails);
-		    
+
 			if(null != _myBoombox)
 				_myBoombox.PlayClick();
 		}
@@ -909,9 +914,9 @@ namespace PPBA
 				_panelDetails[4].text = "Morale: " + (int)_morale;
 			}
 		}
-#endregion
+		#endregion
 
-#region Gizmos
+		#region Gizmos
 		private void OnDrawGizmos()
 		{
 			/*
@@ -919,9 +924,9 @@ namespace PPBA
 			Gizmos.DrawLine(transform.position, _navMeshPath.corners[_navMeshPath.corners.Length - 1]);//done with a LineRenderer up top
 			*/
 		}
-#endregion
+		#endregion
 
-#region Spawning/Despawning
+		#region Spawning/Despawning
 		private void ClearLists()
 		{
 			_closePawns.Clear();
@@ -1126,6 +1131,6 @@ namespace PPBA
 			TickHandler.s_GatherValues -= WriteToGameState;
 #endif
 		}
-#endregion
+		#endregion
 	}
 }

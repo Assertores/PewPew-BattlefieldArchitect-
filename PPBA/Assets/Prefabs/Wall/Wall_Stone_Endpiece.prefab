@@ -258,7 +258,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8342003128655926561}
-  - component: {fileID: 6177259166747794959}
   m_Layer: 0
   m_Name: Logic
   m_TagString: Untagged
@@ -280,22 +279,6 @@ Transform:
   m_Father: {fileID: 1058426523684325116}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!208 &6177259166747794959
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8743273358150401629}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.115, y: 2.76, z: 0.16}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!1001 &1980493138394153967
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -303,6 +286,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1058426523684325116}
     m_Modifications:
+    - target: {fileID: 8911756999542709260, guid: 16f2ea3459accc94e93a335e3b50f115,
+        type: 3}
+      propertyPath: m_Name
+      value: BuildingBoombox
+      objectReference: {fileID: 0}
     - target: {fileID: 3004185809869329934, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -357,11 +345,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8911756999542709260, guid: 16f2ea3459accc94e93a335e3b50f115,
-        type: 3}
-      propertyPath: m_Name
-      value: BuildingBoombox
       objectReference: {fileID: 0}
     - target: {fileID: 3591058338955120529, guid: 16f2ea3459accc94e93a335e3b50f115,
         type: 3}
