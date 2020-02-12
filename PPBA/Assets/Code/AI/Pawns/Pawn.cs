@@ -221,7 +221,7 @@ namespace PPBA
 
 		private void Start()
 		{
-
+			_lineRenderer.enabled = false;
 		}
 
 		private void Update()
@@ -232,7 +232,7 @@ namespace PPBA
 			_animationController.SetAnimatorBools(_currentAnimation);
 			//_healthBarController.SetBars(_health / _maxHealth, _morale / _maxMorale, (float)_ammo / _maxAmmo);
 			_healthBarController.SetBars(_health / _maxHealth, (float)_supplies / _maxSupplies, (float)_ammo / _maxAmmo);
-			ShowNavPath();
+			//ShowNavPath();
 		}
 		#endregion
 
