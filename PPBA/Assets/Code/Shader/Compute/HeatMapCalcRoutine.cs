@@ -226,7 +226,7 @@ namespace PPBA
 		public void StartGame()
 		{
 			
-			StartCoroutine(removeSoldiers(_startPositions));
+			//StartCoroutine(removeSoldiers(_startPositions));
 
 		}
 
