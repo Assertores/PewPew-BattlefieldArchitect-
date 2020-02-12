@@ -221,7 +221,13 @@ namespace PPBA
 				AddSoldier(_startPositions[i], i,20);
 			}
 
-			//StartCoroutine(removeSoldiers(_startPositions));
+		}
+
+		public void StartGame()
+		{
+			
+			StartCoroutine(removeSoldiers(_startPositions));
+
 		}
 
 		IEnumerator removeSoldiers(Transform[] soldiers)
