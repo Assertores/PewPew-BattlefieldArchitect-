@@ -185,20 +185,43 @@ namespace PPBA
 				return false;
 			}
 
+#if DB_NC
+			Debug.Log("Start serch at: " + s_currentTick);
+#endif
+			GameState nextState = default;
+			int nextStateTick = s_currentTick;
+			if(s_currentTick == 0)
+			{
+				nextState = new GameState();
+			}
+			else
+			{
+				for(; nextStateTick <= me._gameStates.GetHighEnd() && (nextState == default || nextState._isNULLGameState); nextStateTick++)
+				{
+					nextState = me._gameStates[nextStateTick];
+#if DB_NC
+					if(nextState == default)
+					{
+						Debug.Log("Serch: " + nextStateTick + ", no State");
+					}
+					else
+					{
+						Debug.Log("Serch: " + nextStateTick + ", " + nextState._isNULLGameState);
+					}
+#endif
+				}
+				if(nextState == default)
+					return false;
+				nextStateTick--;//nextStateTick++ will be executed once to often
+			}
+			
+
 			if(null != h_popUp)
 			{
 				h_popUp.CloseWindow();
 				h_popUp = null;
 			}
 			s_NetworkPause = false;
-
-			GameState nextState = default;
-			int nextStateTick = s_currentTick;
-			for(; nextState == default; nextStateTick++)
-			{
-				nextState = me._gameStates[nextStateTick];
-			}
-			nextStateTick--;//nextStateTick++ will be executed once to often
 
 			if(nextState._refTick < me._gameStates.GetLowEnd() || me._gameStates[nextState._refTick] == default)
 			{
@@ -226,7 +249,7 @@ namespace PPBA
 #if DB_OP
 			Debug.Log("===== ===== TICK: " + s_currentTick + " ===== =====");
 #endif
-			if(nextState._newIDRanges != null)
+			if(!nextState._isNULLGameState && nextState._newIDRanges != null)
 			{
 				foreach(var it in nextState._newIDRanges)
 				{

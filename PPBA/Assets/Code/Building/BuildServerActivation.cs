@@ -46,6 +46,9 @@ namespace PPBA
 		//alles was in der funktion drüber in den Gamestate geschrieben wird, bekommt man in der funktion drunter wieder aus dem Gamestate raus
 		void HandleGameStateEnableEvents(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			GSC.arg args = TickHandler.s_interfaceGameState.GetArg(_id);
 
 			if(args != null && args._arguments.HasFlag(Arguments.ENABLED))

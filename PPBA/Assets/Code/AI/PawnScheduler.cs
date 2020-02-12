@@ -47,6 +47,9 @@ namespace PPBA
 
 		void ReadFroomGameState(int tick)
 		{
+			if(TickHandler.s_interfaceGameState._isNULLGameState)
+				return;
+
 			client me = GlobalVariables.s_instance._clients[0];
 
 			if(TickHandler.s_interfaceGameState._scheduledPawns == null)
