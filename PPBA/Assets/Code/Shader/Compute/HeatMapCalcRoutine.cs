@@ -220,13 +220,16 @@ namespace PPBA
 			{
 				AddSoldier(_startPositions[i], i,20);
 			}
-
+			TickHandler.s_SetUp += StartGame;
 		}
 
-		public void StartGame()
+		public void StartGame(int tick)
 		{
-			
-			//StartCoroutine(removeSoldiers(_startPositions));
+			if(tick == 2)
+			{
+				TickHandler.s_SetUp -= StartGame;
+				StartCoroutine(removeSoldiers(_startPositions));
+			}
 
 		}
 

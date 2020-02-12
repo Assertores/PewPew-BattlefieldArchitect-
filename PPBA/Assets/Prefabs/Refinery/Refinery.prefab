@@ -199,8 +199,8 @@ MonoBehaviour:
   _GhostPrefab: {fileID: 2196524662138505386, guid: 6b958e2d9daf2a64bb864547d7b7a65a,
     type: 3}
   LogicObject: {fileID: 3688118483440170598}
-  _HarvestRadius: 10
-  _HarvestIntensity: 0.01
+  _HarvestRadius: 14
+  _HarvestIntensity: 0.004
   _Positions: {x: 0, y: 0}
   _BuildingTime: 5
   _BuildingCosts: 50
