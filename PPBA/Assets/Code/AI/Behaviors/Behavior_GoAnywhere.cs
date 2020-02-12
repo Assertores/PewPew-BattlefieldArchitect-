@@ -98,7 +98,7 @@ namespace PPBA
 		}
 
 		/// <summary> Gets a random point up to 3 from transform.position </summary>
-		protected Vector3 GetRandomPoint(Pawn pawn)
+		public Vector3 GetRandomPoint(Pawn pawn)
 		{
 			UnityEngine.AI.NavMeshHit hit;
 			Vector2 probe;

@@ -703,11 +703,7 @@ namespace PPBA
 				transform.LookAt(new Vector3(_navMeshPath.corners[i - 1].x, transform.position.y, _navMeshPath.corners[i - 1].z));
 
 			if(Vector3.Magnitude(originalPos - _moveTarget) < 1f || Vector3.Magnitude(transform.position - originalPos) < 1f)
-			{
-				NavMeshHit navMeshHit = new NavMeshHit();
-				NavMesh.SamplePosition(transform.position, out navMeshHit, 3f, NavSurfaceBaker._navMask);
-				transform.position = navMeshHit.position;
-			}
+				transform.position = Behavior_GoAnywhere.s_instance.GetRandomPoint(this);
 		}
 
 		public void SetMoveTarget(Vector3 newTarget)//call this from the behaviors
