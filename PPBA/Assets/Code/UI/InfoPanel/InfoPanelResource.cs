@@ -19,11 +19,34 @@ namespace PPBA
 		{
 			if(!selfUpdate)
 			{
-				BuildingManager.s_instance._InfoPanelEvent += RefreshPanel;
+				if(_Typ == ObjectType.PAWN_HEALER ||
+					_Typ == ObjectType.PAWN_PIONEER ||
+					_Typ == ObjectType.PAWN_WARRIOR)
+				{
+					Pawn.PawnChainged += RefreshPanel;
+				}
+				else
+				{
+					BuildingManager.s_instance._InfoPanelEvent += RefreshPanel;
+				}
 			}
 			else
 			{
 				StartCoroutine(RefreshResources());
+			}
+		}
+
+		private void OnDestroy()
+		{
+			if(_Typ == ObjectType.PAWN_HEALER ||
+					_Typ == ObjectType.PAWN_PIONEER ||
+					_Typ == ObjectType.PAWN_WARRIOR)
+			{
+				Pawn.PawnChainged -= RefreshPanel;
+			}
+			else
+			{
+				BuildingManager.s_instance._InfoPanelEvent -= RefreshPanel;
 			}
 		}
 
@@ -40,10 +63,10 @@ namespace PPBA
 			switch(_type)
 			{
 				case ObjectType.REFINERY:
-					text.text = BuildingManager.s_instance._refineriesHolder.Count.ToString();
+					text.text = BuildingManager.s_instance._refineriesHolder.FindAll(x => x._team == GlobalVariables.s_instance._clients[0]._id).Count.ToString();
 					break;
 				case ObjectType.DEPOT:
-					text.text = BuildingManager.s_instance._depotHolder.Count.ToString();
+					text.text = BuildingManager.s_instance._depotHolder.FindAll(x => x._team == GlobalVariables.s_instance._clients[0]._id).Count.ToString();
 					break;
 				case ObjectType.PAWN_WARRIOR:
 					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).x.ToString();
@@ -55,7 +78,7 @@ namespace PPBA
 					text.text = Pawn.GetActivePawnTypes(GlobalVariables.s_instance._clients[0]._id).z.ToString();
 					break;
 				case ObjectType.MEDICAMP:
-					text.text = BuildingManager.s_instance._mediCampHolder.Count.ToString();
+					text.text = BuildingManager.s_instance._mediCampHolder.FindAll(x => x._team == GlobalVariables.s_instance._clients[0]._id).Count.ToString();
 					break;
 				case ObjectType.SIZE:
 					break;
@@ -68,11 +91,11 @@ namespace PPBA
 		{
 			while(true)
 			{
-				text.text =  ResourceDepot._resourceTotal[GlobalVariables.s_instance._clients[0]._id].ToString();
+				text.text = ResourceDepot._resourceTotal[GlobalVariables.s_instance._clients[0]._id].ToString();
 				yield return new WaitForSeconds(RefreshRate);
-			//	float res = JobCenter.GetResourceTotal(GlobalVariables.s_instance._clients[0]._id);
-			//	if(null != text)
-					//text.text = res.ToString();
+				//	float res = JobCenter.GetResourceTotal(GlobalVariables.s_instance._clients[0]._id);
+				//	if(null != text)
+				//text.text = res.ToString();
 			}
 		}
 

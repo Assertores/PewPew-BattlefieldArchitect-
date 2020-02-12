@@ -1059,7 +1059,7 @@ namespace PPBA
 		{
 			Vector3 ticker = Vector3.zero;
 
-			foreach(Pawn pawn in _pawns.FindAll((x) => x.isActiveAndEnabled && x._team == team))
+			foreach(Pawn pawn in _pawns.FindAll((x) => x.gameObject.activeSelf && x._team == team))
 			{
 				switch(pawn._pawnType)
 				{
@@ -1092,9 +1092,12 @@ namespace PPBA
 
 #endif
 			if(!_pawns.Contains(this))
+			{
 				_pawns.Add(this);
+				PawnChainged?.Invoke(_pawnType);
+			}
 		}
-
+		public static Action<ObjectType> PawnChainged;
 		private void OnDisable()
 		{
 #if UNITY_SERVER
@@ -1111,7 +1114,10 @@ namespace PPBA
 			MovableSpeakerController.PlaySoundAtSpot(AudioWarehouse.s_instance.Clip(UnityEngine.Random.Range(0f, 1f) < 0.5f ? ClipsPawn.UNIT_HIT_SHOT_01 : ClipsPawn.UNIT_HIT_SHOT_02), transform.position);
 #endif
 			if(_pawns.Contains(this))
+			{
 				_pawns.Remove(this);
+				PawnChainged?.Invoke(_pawnType);
+			}
 		}
 
 		private void OnDestroy()
