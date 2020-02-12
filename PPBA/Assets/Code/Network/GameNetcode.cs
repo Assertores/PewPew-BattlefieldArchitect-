@@ -47,23 +47,23 @@ namespace PPBA
 
 		private void Update()
 		{
-			Profiler.BeginSample("[Server] Listen");
+			//Profiler.BeginSample("[Server] Listen");
 			bool b = Listen();
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			if(!b)
 				return;
 			if(GlobalVariables.s_instance._clients.FindAll(x => x._isConnected == true).Count < _playerCount)
 				return;
 
-			Profiler.BeginSample("[Server] Simulate");
+			//Profiler.BeginSample("[Server] Simulate");
 			int tick = TickHandler.s_instance.Simulate();
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			if(tick < 0)
 				return;
 
-			Profiler.BeginSample("[Server] Send");
+			//Profiler.BeginSample("[Server] Send");
 			Send(tick);
-			Profiler.EndSample();
+			//Profiler.EndSample();
 		}
 
 		bool Listen()

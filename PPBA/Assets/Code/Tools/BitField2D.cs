@@ -149,7 +149,7 @@ namespace PPBA
 
 		public Vector2Int[] GetActiveBits()
 		{
-			Profiler.BeginSample("[BitField] GetActiveBits");
+			//Profiler.BeginSample("[BitField] GetActiveBits");
 			List<Vector2Int> value = new List<Vector2Int>();
 			for(int i = 0; i < _backingArray.Length; i++)
 			{
@@ -170,7 +170,7 @@ namespace PPBA
 					}
 				}
 			}
-			Profiler.EndSample();
+			//Profiler.EndSample();
 			return value.ToArray();
 		}
 
