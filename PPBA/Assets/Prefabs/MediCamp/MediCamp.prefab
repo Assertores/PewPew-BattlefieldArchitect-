@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _resources: 0
   _resourcesIncoming: 0
-  _resourcesMax: 150
+  _resourcesMax: 125
   _work: 0
   _workMax: 240
   _interactRadius: 5
