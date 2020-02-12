@@ -45,6 +45,7 @@ namespace PPBA
 					p._morale += Moralizer.s_instance.PassJudgement(MoraleEvents.ENEMYDIED);
 			}
 
+			HeatMapCalcRoutine.s_instance.RemoveSoldiers(pawn.transform);
 			//put pawn back into object pool
 			pawn.gameObject.SetActive(false);
 		}

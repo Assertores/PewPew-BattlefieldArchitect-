@@ -216,10 +216,8 @@ namespace PPBA
 		public Transform[] _startPositions;
 		public void GetStartSoldies()
 		{
-			print("111111111111111111111");
 			for(int i = 0; i < _startPositions.Length; i++)
 			{
-				print("startPositions " + _startPositions[i]);
 				AddSoldier(_startPositions[i], i,20);
 			}
 
@@ -229,8 +227,7 @@ namespace PPBA
 		IEnumerator removeSoldiers(Transform[] soldiers)
 		{
 			//  TODO WAnn fängt die runde an? While fürs warten
-
-
+			
 			yield return new WaitForSeconds(5);
 			for(int i = 0; i < soldiers.Length; i++)
 			{
