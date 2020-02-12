@@ -84,8 +84,6 @@ namespace PPBA
 				}
 				else
 				{
-					HeatMapCalcRoutine.s_instance.StartGame();
-
 					isGameStarted = true;
 					byte[] msg = new byte[] { (byte)StatusType.STARTGAME };
 					foreach(var it in connections)
